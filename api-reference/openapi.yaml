@@ -433,15 +433,15 @@ paths:
                   description: |-
                     Specify the glossary to use for the translation. **Important:** This requires the `source_lang`
                     parameter to be set. The language pair of the glossary has to match the language pair of the
-                    request.
+                    request. Glossaries created for a base language (e.g., `EN`) can be applied to variants of that language (e.g., `EN-GB`).
                   type: string
                   example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                 style_id:
                   description: |-
-                    Specify the [style rule list](/api-reference/style-rules) to use for the translation. 
+                    Specify the [style rule list](/api-reference/style-rules) to use for the translation.
 
-                    **Important:**  The target language has to match the language of the style rule list. 
-                    
+                    **Important:**  The target language has to match the language of the style rule list. Style rule lists created for a base language (e.g., `EN`) can be applied to variants of that language (e.g., `EN-GB`).
+
                     **Note:** Any request with the `style_id` parameter enabled will use `quality_optimized` models. Requests combining `style_id` and `model_type: latency_optimized` will be rejected.
                   type: string
                   example: 7ff9bfd6-cd85-4190-8503-d6215a321519
@@ -525,7 +525,7 @@ paths:
                   description: |-
                     Specify the glossary to use for the translation. **Important:** This requires the `source_lang`
                     parameter to be set. The language pair of the glossary has to match the language pair of the
-                    request.
+                    request. Glossaries created for a base language (e.g., `EN`) can be applied to variants of that language (e.g., `EN-GB`).
                   type: string
                   example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                 translation_memory_id:
@@ -682,7 +682,12 @@ paths:
                 formality:
                   $ref: '#/components/schemas/Formality'
                 glossary_id:
-                  $ref: '#/components/schemas/GlossaryId'
+                  description: |-
+                    Specify the glossary to use for the document translation. **Important:** This requires the `source_lang`
+                    parameter to be set. The language pair of the glossary has to match the language pair of the
+                    request. Glossaries created for a base language (e.g., `EN`) can be applied to variants of that language (e.g., `EN-GB`).
+                  type: string
+                  example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                 enable_beta_languages:
                   description: |-
                     No languages are currently in Beta. This parameter is maintained for backward compatibility and has no effect. Previously enabled 81 languages that are now part of the standard language list. See the [full list](/docs/getting-started/supported-languages).

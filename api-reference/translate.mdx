@@ -284,13 +284,13 @@ error.
 <ParamField body="glossary_id" type="string">
   Specify the glossary to use for the translation.
   <Note>
-    <strong>Important:</strong> This requires the <code>source_lang</code> parameter to be set and the language pair of the glossary has to match the language pair of the request.
+    <strong>Important:</strong> This requires the <code>source_lang</code> parameter to be set and the language pair of the glossary has to match the language pair of the request. Glossaries created for a base language (e.g., <code>EN</code>) can be applied to variants of that language (e.g., <code>EN-GB</code>).
   </Note>
 </ParamField>
 <ParamField body="style_id" type="string">
   Specify the style rule list to use for the translation which can be used to customize translations according to the selected formatting and style conventions.
   <Info>
-    The target language has to match the language of the style rule list. 
+    The target language has to match the language of the style rule list. Style rule lists created for a base language (e.g., `EN`) can be applied to variants of that language (e.g., `EN-GB`).
 
     Additionally, any request with the `style_id` parameter enabled will default to use the `quality_optimized` model type. Requests combining `style_id` and `model_type: latency_optimized` will be rejected.
   </Info>
