@@ -205,6 +205,10 @@ The v3 language endpoints are designed to be forward-compatible:
 - New languages will be added as DeepL support expands
 - Existing fields will not be removed or changed in backwards-incompatible ways
 
+In rare cases, a language may be removed from the default response (for example, if it moves from stable
+to beta). When this happens, it will still be accessible via `?include=beta`. We aim to avoid this, but
+build your integration to handle languages disappearing from the response gracefully.
+
 <Info>
   Build your integration to gracefully handle new BCP 47 `lang` codes and new values in the `features` array. Do not hardcode assumptions about the format of language codes -- see [Language codes follow BCP 47](/docs/resources/language-release-process#language-codes-follow-bcp-47) for details.
 </Info>
