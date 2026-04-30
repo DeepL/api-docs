@@ -4,36 +4,6 @@ This repo is home to the [DeepL Developer Docs](https://developers.deepl.com/)
 and the authoritative [OpenAPI specification](https://openapis.org/) of the
 [DeepL API](https://www.deepl.com/pro-api).
 
-## OpenAPI specification
-
-This project contains an [OpenAPI specification](https://openapis.org/) of the [DeepL API](https://www.deepl.com/pro-api), in YAML and JSON formats.
-
-| File | Purpose |
-|---|---|
-| [`api-reference/openapi.yaml`](api-reference/openapi.yaml) | Main REST API spec (source of truth) |
-| [`api-reference/openapi.json`](api-reference/openapi.json) | Same content, JSON format (auto-generated) |
-| [`api-reference/voice/voice.asyncapi.yaml`](api-reference/voice/voice.asyncapi.yaml) | AsyncAPI spec for the streaming voice API (source of truth) |
-| [`api-reference/voice/voice.asyncapi.json`](api-reference/voice/voice.asyncapi.json) | Same content, JSON format (auto-generated) |
-
-You can use this specification to explore the API in tools like [Postman](https://www.postman.com/), or to auto-generate documentation, SDKs, and code libraries using tools such as [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/DeepLcom/api-docs/main/api-reference/openapi.yaml) or [OpenAPI Generator](https://openapi-generator.tech/).
-
-Note that Swagger's "Try it out" in-browser simulator creates valid Curl requests, the requests will fail due to [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) restrictions.
-
-[Changelog](CHANGELOG.md)
-
-If you encounter issues while using this OpenAPI specification or have feature requests, please [create an issue](https://github.com/DeepLcom/api-docs/issues).
-
-### Regenerating the JSON files
-
-The JSON files are auto-generated from the YAML sources. **Don't edit them by hand.**
-
-A GitHub Actions workflow regenerates them on any PR that touches the YAML sources and commits the result back to the PR branch. To preview locally:
-
-```bash
-yq -o=json '.' api-reference/openapi.yaml > api-reference/openapi.json
-yq -o=json '.' api-reference/voice/voice.asyncapi.yaml > api-reference/voice/voice.asyncapi.json
-```
-
 ## Development
 
 Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command
@@ -114,3 +84,32 @@ mintlify broken-links
 mintlify broken-links --check-anchors
 ```
 
+## OpenAPI specification
+
+This project contains an [OpenAPI specification](https://openapis.org/) of the [DeepL API](https://www.deepl.com/pro-api), in YAML and JSON formats.
+
+| File | Purpose |
+|---|---|
+| [`api-reference/openapi.yaml`](api-reference/openapi.yaml) | Main REST API spec (source of truth) |
+| [`api-reference/openapi.json`](api-reference/openapi.json) | Same content, JSON format (auto-generated) |
+| [`api-reference/voice/voice.asyncapi.yaml`](api-reference/voice/voice.asyncapi.yaml) | AsyncAPI spec for the streaming voice API (source of truth) |
+| [`api-reference/voice/voice.asyncapi.json`](api-reference/voice/voice.asyncapi.json) | Same content, JSON format (auto-generated) |
+
+You can use this specification to explore the API in tools like [Postman](https://www.postman.com/), or to auto-generate documentation, SDKs, and code libraries using tools such as [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/DeepLcom/api-docs/main/api-reference/openapi.yaml) or [OpenAPI Generator](https://openapi-generator.tech/).
+
+Note that Swagger's "Try it out" in-browser simulator creates valid Curl requests, the requests will fail due to [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) restrictions.
+
+For release notes and the latest API changes, see [Roadmap and release notes](https://developers.deepl.com/docs/resources/roadmap-and-release-notes).
+
+If you encounter issues while using this OpenAPI specification or have feature requests, please [create an issue](https://github.com/DeepLcom/api-docs/issues).
+
+### Regenerating the JSON files
+
+The JSON files are auto-generated from the YAML sources. **Don't edit them by hand.**
+
+A GitHub Actions workflow regenerates them on any PR that touches the YAML sources and commits the result back to the PR branch. To preview locally:
+
+```bash
+yq -o=json '.' api-reference/openapi.yaml > api-reference/openapi.json
+yq -o=json '.' api-reference/voice/voice.asyncapi.yaml > api-reference/voice/voice.asyncapi.json
+```
