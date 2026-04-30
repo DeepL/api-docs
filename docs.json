@@ -46,7 +46,6 @@
             "group": "Languages",
             "pages": [
               "docs/getting-started/supported-languages",
-              "docs/learning-how-tos/examples-and-guides/enable-beta-languages",
               "docs/resources/language-release-process"
             ]
           },
