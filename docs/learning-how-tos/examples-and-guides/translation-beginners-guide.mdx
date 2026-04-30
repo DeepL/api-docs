@@ -819,9 +819,9 @@ If you omit the `model_type`, the API normally defaults to `latency_optimized`.
 
 ### Special cases
 
-* if your request omits the `source_lang`, the API uses next-gen models to ensure the best possible language detection  
-* [tag handling v2](/docs/xml-and-html-handling/tag-handling-v2#whats-new-in-v2) requires next-gen models. Setting both `model_type=latency_optimized` and `tag_handling_version=v2` yields an error.  
-* for some languages, like Thai, the API uses the same model regardless of requested `model_type`. This behavior may change as our models evolve.
+* If your request omits the `source_lang`, the API will use next-generation models to ensure the best possible language detection.  
+* [tag handling v2](/docs/xml-and-html-handling/tag-handling-v2#whats-new-in-v2) requires next-generation models. Setting both `model_type=latency_optimized` and `tag_handling_version=v2` yields an error.  
+* For some languages, like Thai, the API uses the same model, regardless of requested `model_type`. This behavior may change as our models evolve.
 
 ## Limits
 
