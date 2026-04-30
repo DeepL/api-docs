@@ -1,0 +1,126 @@
+---
+title: "How to Apply Customizations to Variants"
+description: "Learn how to apply glossaries and style rules when translating into language variants like FR-CA or EN-GB."
+public: true
+---
+
+## Glossaries
+
+### Creation — root codes only
+
+Glossaries must be created using the root/base language code. Attempting to create a glossary with a variant code (e.g. `zh-Hant`, `pt-BR`, `fr-CA`) will fail. Use the base code instead:
+
+| Use this | Not this |
+|---|---|
+| `zh` | `zh-Hant`, `zh-Hans` |
+| `pt` | `pt-BR`, `pt-PT` |
+| `fr` | `fr-CA`, `fr-CH` |
+| `de` | `de-CH` |
+| `it` | `it-CH` |
+| `es` | `es-ES`, `es-419` |
+
+### Application — variants are supported
+
+Once a glossary is created with a root code, it can be applied when translating into any variant of that language. The `target_lang` in the `/translate` call can be a variant, and the root glossary will be picked up automatically.
+
+**Example — creating a `zh` glossary, then applying it when translating into `zh-Hant`:**
+
+```python
+import deepl
+
+translator = deepl.Translator("YOUR_AUTH_KEY")
+
+# Step 1: Create glossary using root code
+glossary = translator.create_glossary(
+    "My Chinese Glossary",
+    source_lang="EN",
+    target_lang="ZH",       # root code — not ZH-HANS or ZH-HANT
+    entries={"product": "产品", "customer": "客户"}
+)
+
+# Step 2: Pass the glossary ID when translating into a variant
+result = translator.translate_text(
+    "We value every customer.",
+    source_lang="EN",
+    target_lang="ZH-HANT",          # variant target — glossary still applies
+    glossary=glossary.glossary_id   # pass the ID of the root-code glossary
+)
+
+print(result.text)
+# 我們重視每一位客戶。
+```
+
+The same pattern works for Portuguese:
+
+```python
+# Glossary created with root code "PT"
+glossary = translator.create_glossary(
+    "Portuguese Glossary",
+    source_lang="EN",
+    target_lang="PT",        # root code
+    entries={"invoice": "fatura"}
+)
+
+# Pass the same glossary ID to either variant
+result_br = translator.translate_text(
+    "Please send the invoice.",
+    source_lang="EN",
+    target_lang="PT-BR",
+    glossary=glossary.glossary_id
+)
+
+result_pt = translator.translate_text(
+    "Please send the invoice.",
+    source_lang="EN",
+    target_lang="PT-PT",
+    glossary=glossary.glossary_id
+)
+
+print(result_br.text)  # Favor enviar a fatura.
+print(result_pt.text)  # Por favor, envie a fatura.
+```
+
+---
+
+## Style rules
+
+### Creation — root codes only
+
+Style rules cannot be created for variant codes — attempting to create one for `fr-CA`, `es-419`, or `de-CH` via the API returns a "language not supported" error. Use the root code only.
+
+Style rules for creation are currently supported for: `en`, `de`, `fr`, `es`, `it`, `ja`, `ko`, `zh`. With the Q2 release, Tier 2/3 languages (`vi`, `nl`, `ar`, `pt`, etc.) are being added for root-code style rule creation.
+
+### Application — variants are supported
+
+Once created under a root code, a style rule's `style_id` can be passed in a `/translate` call targeting any variant of that language:
+
+```python
+# Style rule created for "FR" root code
+# Can be applied when translating into FR-CA, FR-CH, or FR-FR
+
+result = translator.translate_text(
+    "Please review the attached document.",
+    source_lang="EN",
+    target_lang="FR-CA",      # variant target
+    extra_params={"style_id": "your-style-rule-id"}  # root FR style rule applies
+)
+```
+
+<Note>
+Variant codes are not selectable in the style rule creation UI — only root codes appear. You'll need to handle the mapping on your end, i.e. knowing which root style rule ID to pass for a given variant target.
+</Note>
+
+<Warning>
+Some CAT tools may have their own logic that blocks passing a root language glossary or style rule when the target is a variant. This is a client-side implementation issue, not an API limitation — the DeepL API itself supports this pattern.
+</Warning>
+
+---
+
+## Relevant links
+
+**Supported languages for creation (root codes):**
+- Glossaries: [Supported languages](/docs/getting-started/supported-languages) — filter by "Glossary"
+- Style rules: [Style rules API reference](/api-reference/style-rules)
+
+**Supported for application (translate call):**
+- [/translate request reference](/api-reference/translate/request-translation) — see `glossary_id` and `style_id` parameters
