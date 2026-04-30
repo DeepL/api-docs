@@ -52,7 +52,7 @@ The following changes are planned before general availability. They are not yet 
 
 ### New: language `status` field
 
-Language objects returned by `GET /v3/languages` will include an optional `status` field for languages not yet in general availability:
+Language objects will include a `status` field indicating availability:
 
 ```json
 {
@@ -61,11 +61,67 @@ Language objects returned by `GET /v3/languages` will include an optional `statu
   "usable_as_source": true,
   "usable_as_target": true,
   "features": [],
-  "status": "beta"
+  "status": "stable"
 }
 ```
 
-Possible values: `"beta"`, `"early_access"`. Languages in GA omit this field entirely.
+Possible values: `"stable"`, `"beta"`, `"early_access"`.
+
+---
+
+### Breaking: `features` array replaced by dictionary
+
+The `features` property on languages will change from a list of strings to an object (dictionary). Each
+key is a feature name; the value is an object with at least a `status` field.
+
+Instead of:
+
+```json
+{
+  "lang": "de",
+  "name": "German",
+  ...
+  "features": [
+    "formality",
+    "tag_handling"
+  ]
+}
+```
+
+the following schema will be used:
+
+```json
+{
+  "lang": "de",
+  "name": "German",
+  ...
+  "features": {
+    "formality": {"status": "stable"},
+    "tag_handling": {"status": "stable"}
+  }
+}
+```
+
+Feature objects may include additional fields beyond `status` in a future update. To check whether a feature is
+supported for a language, check that the key exists in the `features` object.
+
+---
+
+### New: `include` query parameter
+
+`GET /v3/languages` will accept a new `include` query parameter. By default (no parameter), only
+generally available languages and features are returned. The parameter accepts the following values:
+
+| Value | Effect |
+|---|---|
+| `beta` | Includes languages and features in beta, in addition to stable |
+| `early_access` | Includes languages and features in early access and beta, in addition to stable |
+| `external` | Includes features that rely on external providers (orthogonal to stability level) |
+
+Values are composable via repeated parameters: `?include=beta&include=external`.
+
+This parameter also controls whether beta and external features appear in the `features` dictionary — see the
+`features` schema change above.
 
 ---
 
