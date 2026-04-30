@@ -1,0 +1,6 @@
+# Normalize line endings to LF on commit, regardless of contributor OS.
+# Set globally on your system with:
+#   git config --global core.autocrlf false
+#   git config --global core.eol lf
+
+* text=auto eol=lf

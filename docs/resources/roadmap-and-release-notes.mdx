@@ -58,6 +58,10 @@ rss: true
 </Update>
 
 <Update label="January 2026">
+## January 27 - Voice Usage Limits on Developer Keys
+- Added `speech_to_text_milliseconds` to the `/v2/admin/developer-keys/limits` endpoint and the `ApiKey` response schema, so admins can set and read per-key voice usage limits alongside character limits.
+- See the [Admin API reference](/api-reference/admin-api) for usage.
+
 ## January 20 - Legacy Auth Deprecation
 
 Query parameter and request body authentication methods are now [deprecated](/docs/resources/breaking-changes-change-notices/november-2025-deprecation-of-legacy-auth-methods).
@@ -72,6 +76,22 @@ Use the `DeepL-Auth-Key` header instead.
 - The `enable_beta_languages` parameter is maintained for backward compatibility but has no effect. 
 
 See [here](../getting-started/supported-languages) for the complete language list.
+</Update>
+
+<Update label="December 2025">
+## December 11 - Voice Usage in `/v2/usage` and Analytics
+- `/v2/usage` now returns `speech_to_text_milliseconds_count` and `speech_to_text_milliseconds_limit` for API Pro users, so customers using the Voice API can monitor consumption against their plan.
+- Each product usage item now includes `billing_unit`, `api_key_unit_count`, and `account_unit_count`, making per-product reporting consistent across characters and voice milliseconds.
+- The same `speech_to_text_milliseconds` field was added to usage reports and analytics components used by the [Admin API analytics endpoint](/api-reference/admin-api/get-usage-analytics).
+</Update>
+
+<Update label="November 2025">
+## November 10 - Voice API Initial Release
+- Initial release of the Voice API: `/v1/voice/realtime` (REST) and `/v1/voice/realtime/connect` (WebSocket) for real-time speech transcription and translation. The Voice API is generally available as of [April 15, 2026](#april-15---voice-api-general-availability).
+- Published a new AsyncAPI specification (`voice.asyncapi.yaml` / `voice.asyncapi.json`) documenting the WebSocket streaming protocol. See the [Voice API reference](/api-reference/voice).
+
+## November 6 - HE, TH, and VI in `/v2/languages`
+- Hebrew (`HE`), Thai (`TH`), and Vietnamese (`VI`) now appear in the [`/v2/languages`](/api-reference/languages) response, since they support document translation in addition to text translation.
 </Update>
 
 <Update label="2025">
@@ -114,6 +134,7 @@ See [here](../getting-started/supported-languages) for the complete language lis
 - Added the `show_billed_characters` parameter for text translation, allowing users to optionally include the number of billed characters in the API response. [Learn more here](/api-reference/translate#request-body-descriptions).
 - Added support for a new language for text translation: ZH-HANT (Traditional Chinese). As of this initial release, document translation is not supported for Traditional Chinese. More information is available [here](/docs/getting-started/supported-languages).
 - An official Ruby client library, evolved from a community-written library by Daniel Herzog. You can download it [here](https://rubygems.org/gems/deepl-rb) or find the source code on our [GitHub page](https://github.com/DeepLcom/deepl-rb).
+- Added Romanian (`RO`) as a supported [glossary](/api-reference/multilingual-glossaries) language.
 
 ## Q2 2024
 - Added support for DOCX and PPTX document minification to the PHP client library, making it possible for users to translate documents that exceed DeepL's file size limit due to embedded media. [Learn more here](https://github.com/DeepLcom/deepl-php?tab=readme-ov-file#document-minification).
@@ -169,5 +190,8 @@ See [here](../getting-started/supported-languages) for the complete language lis
 - Released an official [Python client library](https://github.com/DeepLcom/deepl-python).
 - Added support for [glossaries](/api-reference/multilingual-glossaries) in the DeepL API.
 - Released an open-source sample project for [translating with DeepL in Google Sheets](https://github.com/DeepLcom/google-sheets-example).
+- Added the `prefer_less` and `prefer_more` formality options on [text translation](/api-reference/translate), giving more graceful fallback than the strict `more` and `less` values for languages without full formality support.
+- Added CSV as an entries format for creating [glossaries](/api-reference/multilingual-glossaries), alongside the existing tab-separated format.
+- Removed the previous limit of 50 `text` parameters per [text translation](/api-reference/translate) request.
 - ...and much more :)
 </Update>

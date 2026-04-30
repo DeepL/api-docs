@@ -1,0 +1,31 @@
+name: Update OpenAPI JSON files from YAML sources
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "api-reference/openapi.yaml"
+      - "api-reference/voice/voice.asyncapi.yaml"
+
+jobs:
+  convert_yaml_to_json:
+    name: Convert YAML specs to JSON
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - uses: mikefarah/yq@v4.44.3
+
+      - name: Convert openapi.yaml to JSON
+        run: yq -o=json '.' api-reference/openapi.yaml > api-reference/openapi.json
+
+      - name: Convert voice.asyncapi.yaml to JSON
+        run: yq -o=json '.' api-reference/voice/voice.asyncapi.yaml > api-reference/voice/voice.asyncapi.json
+
+      - name: Commit updated JSON files
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update OpenAPI JSON files from YAML sources"
+          file_pattern: "api-reference/openapi.json api-reference/voice/voice.asyncapi.json"
