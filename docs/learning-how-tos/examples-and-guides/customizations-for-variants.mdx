@@ -50,34 +50,41 @@ print(result.text)
 # 我們重視每一位客戶。
 ```
 
-The same pattern works for Portuguese:
+A practical example is "invoice" in Portuguese. Without a glossary, DeepL returns `"fatura"` for both PT-BR and PT-PT. But in Brazil, the legally correct term is `"nota fiscal"` — a glossary enforces that distinction:
 
 ```python
-# Glossary created with root code "PT"
-glossary = translator.create_glossary(
-    "Portuguese Glossary",
+# PT-BR glossary: enforce the Brazilian legal term
+glossary_br = translator.create_glossary(
+    "PT-BR Invoice Glossary",
+    source_lang="EN",
+    target_lang="PT",        # root code
+    entries={"invoice": "nota fiscal"}
+)
+
+# PT-PT glossary: keep the standard European term
+glossary_pt = translator.create_glossary(
+    "PT-PT Invoice Glossary",
     source_lang="EN",
     target_lang="PT",        # root code
     entries={"invoice": "fatura"}
 )
 
-# Pass the same glossary ID to either variant
 result_br = translator.translate_text(
-    "Please send the invoice.",
+    "Your invoice is ready to view.",
     source_lang="EN",
     target_lang="PT-BR",
-    glossary=glossary.glossary_id
+    glossary=glossary_br.glossary_id
 )
 
 result_pt = translator.translate_text(
-    "Please send the invoice.",
+    "Your invoice is ready to view.",
     source_lang="EN",
     target_lang="PT-PT",
-    glossary=glossary.glossary_id
+    glossary=glossary_pt.glossary_id
 )
 
-print(result_br.text)  # Favor enviar a fatura.
-print(result_pt.text)  # Por favor, envie a fatura.
+print(result_br.text)  # Sua nota fiscal está pronta para ser visualizada.
+print(result_pt.text)  # A sua fatura está pronta a ser visualizada.
 ```
 
 ---
