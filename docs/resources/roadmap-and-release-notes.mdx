@@ -4,9 +4,20 @@ description: "The latest features and improvements in the DeepL API, plus what's
 rss: true
 ---
 
+<Update label="May 2026">
+## May 5 - v3/languages General Availability
+
+- [`GET /v3/languages`](/api-reference/languages/retrieve-supported-languages-by-product) and [`GET /v3/languages/resources`](/api-reference/languages/retrieve-products) are now generally available.
+- The `resource` query parameter replaces `product`. The `/v3/languages/products` endpoint has been renamed to `/v3/languages/resources`.
+- The `features` field on language objects is now an object keyed by feature name (e.g. `{"formality": {"status": "stable"}}`), replacing the previous array of strings.
+- Language objects now include a `status` field (`stable`, `beta`, `early_access`).
+- A new `include` query parameter controls whether beta (`?include=beta`) or external-provider (`?include=external`) languages and features are returned.
+- The `custom_instructions` feature key has been renamed to `style_rules`. The `custom_instructions` parameter on the translate endpoint is unaffected.
+- **`/v2/languages` and `/v2/glossary-language-pairs` are now deprecated.** Migrate to `/v3/languages` — see the [migration guide](/api-reference/languages/migrate-from-v2-languages).
+</Update>
+
 <Update label="In active development">
 - Support for uploading, modifying, and deleting [translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories) via API
-- `v3/languages` endpoint with improved language code handling and additional functionality
 - API key-level endpoint restrictions
 - Usage reporting by custom tag and language pair
 </Update>

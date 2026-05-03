@@ -1,6 +1,5 @@
 ---
 title: 'Retrieve supported languages by resource'
-tag: "BETA"
 sidebarTitle: 'Overview'
 description: "API reference for retrieving supported languages with the DeepL API across all resources."
 ---
@@ -9,15 +8,11 @@ Get information about all currently supported languages across all DeepL API res
 
 <Info>
     The `/v3/languages` endpoints provide a single source of truth for language and feature support across all DeepL
-    API resources. They replace the `/v2/languages` and `/v2/glossary-language-pairs` endpoints.
+    API resources. They replace the deprecated `/v2/languages` and `/v2/glossary-language-pairs` endpoints.
 
     If you're currently using `/v2/languages` or `/v2/glossary-language-pairs`, see the
     [migration guide](/api-reference/languages/migrate-from-v2-languages)
     for a full list of differences and code examples.
-
-    **These endpoints are available for testing in BETA.** Breaking changes may be pushed with little or no advance
-    notice, and we provide no guarantees of stability. Please do not use `/v3/languages` in production. See the
-    [changelog](/api-reference/languages/v3-languages-changelog) for recent changes.
 </Info>
 
 We also provide auto-generated API specs from DeepL's OpenAPI file, for use with API clients and code generation tools:

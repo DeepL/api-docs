@@ -928,10 +928,15 @@ paths:
         - auth_header: [ ]
   /v2/glossary-language-pairs:
     get:
+      deprecated: true
       tags:
         - ManageGlossaries
       summary: List Language Pairs Supported by Glossaries
-      description: Retrieve the list of language pairs supported by the glossary feature.
+      description: |-
+        **Deprecated.** Use `GET /v3/languages?resource=glossary` instead, which returns per-language
+        availability including source and target roles.
+
+        Retrieve the list of language pairs supported by the glossary feature.
       operationId: listGlossaryLanguages
       responses:
         200:
@@ -1830,10 +1835,15 @@ paths:
         - auth_header: [ ]
   /v2/languages:
     get:
+      deprecated: true
       tags:
         - MetaInformation
       summary: Retrieve Supported Languages
-      operationId: getLanguages
+      description: |-
+        **Deprecated.** Use `GET /v3/languages?resource=translate_text` (or the appropriate resource)
+        instead. See the [migration guide](https://developers.deepl.com/api-reference/languages/migrate-from-v2-languages)
+        for details.
+      operationId: getLanguagesV2
       parameters:
         - name: type
           in: query
@@ -1970,8 +1980,6 @@ paths:
     get:
       tags:
         - MetaInformation
-        - beta
-      x-beta: true
       summary: Retrieve Language Resources
       operationId: getLanguageResources
       description: |-
@@ -2075,8 +2083,6 @@ paths:
     get:
       tags:
         - MetaInformation
-        - beta
-      x-beta: true
       summary: Retrieve Languages
       operationId: getLanguages
       description: |-
@@ -4958,7 +4964,7 @@ components:
         Language of the text to be translated. If this parameter is omitted, the API will attempt to
         detect the language of the text and translate it.
 
-        For the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-product) (beta).
+        For the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-product).
       example: EN
     TranslationMemory:
       type: object
@@ -5130,7 +5136,7 @@ components:
       description: |-
         The language into which the text should be translated.
 
-        For the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-product) (beta).
+        For the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-product).
       example: DE
     TargetLanguageWrite:
       type: string
