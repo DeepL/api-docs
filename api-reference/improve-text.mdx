@@ -62,7 +62,7 @@ curl -X POST 'https://api.deepl.com/v2/write/rephrase' \
   Text to be improved. Only UTF-8-encoded plain text is supported. Improvements are returned in the same order as they are requested. Each of the parameter values may contain multiple sentences.
 </ParamField>
 <ParamField body="target_lang" type="string">
-  The language of the improved text. A list of supported languages have not yet been added to the `/languages` endpoint. Currently, the following languages are supported:
+  The language of the improved text. You can also retrieve supported languages programmatically via <a href="/api-reference/languages/retrieve-supported-languages-by-product"><code>GET /v3/languages?resource=write</code></a>. Currently, the following languages are supported:
 
   * `de` (German)
   * `en-GB` (British English)
@@ -110,7 +110,7 @@ curl -X POST 'https://api.deepl.com/v2/write/rephrase' \
 
   Styles prefixed with `prefer_` will fall back to the `default` style when used with a language that does not support styles (this is recommended for cases where no `target_lang` is set), the non-prefixed writing styles (except `default`) will return a HTTP 400 error in that case.
 
-  It’s not possible to include both `writing_style` and `tone` in a request; only one or the other can be included.
+  It’s not possible to include both `writing_style` and `tone` in a request; only one or the other can be included. To check writing style support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-product"><code>GET /v3/languages?resource=write</code></a> and look for the <code>writing_style</code> feature key on the target language.
 </ParamField>
 <ParamField body="tone" type="enum">
   Changes the tone of your improvements.
@@ -142,7 +142,7 @@ curl -X POST 'https://api.deepl.com/v2/write/rephrase' \
 
   Tones prefixed with `prefer_` will fall back to the `default` tone when used with a language that does not support tones (this is recommended for cases where no `target_lang` is set), the non-prefixed tones (except `default`) will return a HTTP 400 error in that case.
 
-  It’s not possible to include both `writing_style` and `tone` in a request; only one or the other can be included.
+  It’s not possible to include both `writing_style` and `tone` in a request; only one or the other can be included. To check tone support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-product"><code>GET /v3/languages?resource=write</code></a> and look for the <code>tone</code> feature key on the target language.
 </ParamField>
 
 ### Response body descriptions

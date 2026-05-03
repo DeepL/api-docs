@@ -7,3 +7,5 @@ public: true
 Our translation and document translation endpoints allow you to automatically detect the source language or set it. It is recommended to set the source language whenever possible, as this has a positive effect on translation quality. If you cannot specify the source language, the more context you provide, the better your results will be. Single words can lead to incorrect language detection, so the longer your text, the more reliable it will be.
 
 If you are translating single words or very short sentences, the results will generally be more reliable if the source language is specified. You can find all available [source languages here](/api-reference/languages), and you can read more about translation context in the next chapter.
+
+Not all source languages support automatic detection. To check which languages can be auto-detected, call [`GET /v3/languages?resource=translate_text`](/api-reference/languages/retrieve-supported-languages-by-product) and look for the `auto_detection` feature key on each language.

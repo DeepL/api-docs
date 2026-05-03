@@ -16,7 +16,7 @@ description: "Manage and use DeepL glossaries"
 
 ## Overview
 
-The `glossaries` endpoints let you work with [DeepL glossaries](https://support.deepl.com/hc/en-us/articles/360021634540-About-the-glossary), which let you specify specific translations for words or short phrases. Each glossary contains a mapping of source phrases to target phrases. During translation, DeepL intelligently flexes entries to account for case, gender, tense, and other grammar features (if the target language has flexion). You can create glossaries with [any of the languages listed here](/docs/getting-started/supported-languages).
+The `glossaries` endpoints let you work with [DeepL glossaries](https://support.deepl.com/hc/en-us/articles/360021634540-About-the-glossary), which let you specify specific translations for words or short phrases. Each glossary contains a mapping of source phrases to target phrases. During translation, DeepL intelligently flexes entries to account for case, gender, tense, and other grammar features (if the target language has flexion). You can create glossaries with [any of the languages listed here](/docs/getting-started/supported-languages). To retrieve supported glossary languages programmatically, call [`GET /v3/languages?resource=glossary`](/api-reference/languages/retrieve-supported-languages-by-product).
 
 A **glossary** contains (several) **dictionaries**. A **dictionary** is a mapping of source phrases to target phrases for a single language pair, like this:
 

@@ -44,7 +44,7 @@ To start using the Voice API:
 
 We support a wide range of source and target languages (see  below). However, while translation is always provided by
 DeepL, for some languages we use external service partners to provide transcription and translated speech.
-All source languages can be translated into any target language.
+All source languages can be translated into any target language. To retrieve supported languages and feature availability programmatically, call [`GET /v3/languages?resource=voice`](/api-reference/languages/retrieve-supported-languages-by-product) and check for the `transcription`, `transcription_external`, `translated_speech`, and `translated_speech_external` feature keys.
 
 <Accordion title="Show supported languages">
 | **Language** | **Transcription** | **Translation** | <Badge color="green">closed beta</Badge><br/>Translated Speech |
