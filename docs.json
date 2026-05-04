@@ -310,22 +310,14 @@
   "navbar": {
     "links": [
       {
-        "label": "API Pricing",
-        "href": "https://www.deepl.com/pro-api#api-pricing"
-      },
-      {
-        "label": "Manage Keys",
-        "href": "https://www.deepl.com/your-account/keys"
-      },
-      {
-        "label": "Contact Us",
-        "href": "https://www.deepl.com/contact-us"
+        "label": "Pricing",
+        "href": "https://www.deepl.com/en/pro#api"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Create free API account",
-      "href": "https://www.deepl.com/en/pro/change-plan#developer"
+      "label": "Free API Key",
+      "href": "https://www.deepl.com/en/checkout?is_api=true"
     }
   },
   "footer": {
