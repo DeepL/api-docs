@@ -149,10 +149,6 @@ The `/write/rephrase` endpoint returns a JSON object with Improvements under the
 
 ### Frequently asked questions
 
-#### Is "Corrections Only" mode available in the API?
-
-No. "Corrections Only" is available in the DeepL Translate UI but not yet via the API. When you omit both `writing_style` and `tone`, the API uses its default improvement mode, which corrects grammar and spelling but may also rephrase awkward constructions. "Corrections Only" strictly fixes spelling and grammatical errors without broader rephrasing.
-
 #### Does Cost Control factor in Write API usage?
 
 Yes. If you set a [Cost Control limit](/docs/best-practices/cost-control), it will be enforced against a *sum of Translate API + Write API characters*. At this time, it is not possible to set separate Translate API and Write API cost control limits.
@@ -168,3 +164,9 @@ Yes! The Write API is accessed using the same API keys in [the API Keys tab](htt
 #### Can I see DeepL Write API usage in my reporting?
 
 We've added a new column to the [API key-level usage report](/docs/getting-started/managing-api-keys#get-api-key-level-usage) that breaks out text improvement characters separately. The character counts in the [Usage tab](https://www.deepl.com/your-account/usage) of your API account are a sum of both Translate *and* Write characters; these are not yet broken out separately.
+
+#### Is "Corrections Only" mode available in the API?
+
+No. "Corrections Only" is a mode that fixes spelling and grammatical errors only without broader rephrasing. It is currently only available in the DeepL Translator UI. 
+
+If you make an API request to `/write/rephrase` and omit both `writing_style` and `tone`, the API uses its default improvement mode. This corrects grammar and spelling but may also make broader changes than the "Corrections Only" mode in the UI.
