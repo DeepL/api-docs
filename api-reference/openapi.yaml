@@ -4958,7 +4958,7 @@ components:
         Language of the text to be translated. If this parameter is omitted, the API will attempt to
         detect the language of the text and translate it.
 
-        For the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-product) (beta).
+        For the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-resource) (beta).
       example: EN
     TranslationMemory:
       type: object
@@ -5130,7 +5130,7 @@ components:
       description: |-
         The language into which the text should be translated.
 
-        For the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-product) (beta).
+        For the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-resource) (beta).
       example: DE
     TargetLanguageWrite:
       type: string

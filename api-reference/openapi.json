@@ -6586,7 +6586,7 @@
       },
       "SourceLanguage": {
         "type": "string",
-        "description": "Language of the text to be translated. If this parameter is omitted, the API will attempt to\ndetect the language of the text and translate it.\n\nFor the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-product) (beta).",
+        "description": "Language of the text to be translated. If this parameter is omitted, the API will attempt to\ndetect the language of the text and translate it.\n\nFor the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-resource) (beta).",
         "example": "EN"
       },
       "TranslationMemory": {
@@ -6760,7 +6760,7 @@
       },
       "TargetLanguage": {
         "type": "string",
-        "description": "The language into which the text should be translated.\n\nFor the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-product) (beta).",
+        "description": "The language into which the text should be translated.\n\nFor the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-resource) (beta).",
         "example": "DE"
       },
       "TargetLanguageWrite": {

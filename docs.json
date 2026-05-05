@@ -253,9 +253,9 @@
                 "group": "Languages By Resource",
                 "tag": "BETA",
                 "pages": [
-                  "api-reference/languages/retrieve-supported-languages-by-product",
+                  "api-reference/languages/retrieve-supported-languages-by-resource",
                   "api-reference/languages/language-feature-use-cases",
-                  "api-reference/languages/retrieve-languages-by-product",
+                  "api-reference/languages/retrieve-languages-by-resource",
                   "api-reference/languages/retrieve-products",
                   "api-reference/languages/migrate-from-v2-languages",
                   "api-reference/languages/v3-languages-changelog"
@@ -351,6 +351,14 @@
     }
   },
   "redirects": [
+    {
+      "source": "/api-reference/languages/retrieve-supported-languages-by-product",
+      "destination": "/api-reference/languages/retrieve-supported-languages-by-resource"
+    },
+    {
+      "source": "/api-reference/languages/retrieve-languages-by-product",
+      "destination": "/api-reference/languages/retrieve-languages-by-resource"
+    },
     {
       "source": "/docs/api-reference/improve-text/openapi-spec-for-text-improvement",
       "destination": "/api-reference/improve-text/request-text-improvement"
