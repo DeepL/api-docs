@@ -2118,7 +2118,7 @@ paths:
             (e.g. `?include=beta&include=external`).
 
             - `beta`: Include languages and features in beta, in addition to stable
-            - `external`: Include features that rely on external providers (orthogonal to stability level)
+            - `external`: Include features that rely on third-party service providers
       responses:
         200:
           description: JSON array where each item represents a supported language.
