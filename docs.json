@@ -256,7 +256,7 @@
                   "api-reference/languages/retrieve-supported-languages-by-resource",
                   "api-reference/languages/language-feature-use-cases",
                   "api-reference/languages/retrieve-languages-by-resource",
-                  "api-reference/languages/retrieve-products",
+                  "api-reference/languages/retrieve-resources",
                   "api-reference/languages/migrate-from-v2-languages",
                   "api-reference/languages/v3-languages-changelog"
                 ],
@@ -346,6 +346,10 @@
     {
       "source": "/api-reference/languages/retrieve-supported-languages-by-product",
       "destination": "/api-reference/languages/retrieve-supported-languages-by-resource"
+    },
+    {
+      "source": "/api-reference/languages/retrieve-products",
+      "destination": "/api-reference/languages/retrieve-resources"
     },
     {
       "source": "/api-reference/languages/retrieve-languages-by-product",
