@@ -1,7 +1,7 @@
 ---
 title: "Translate Audio Files"
 sidebarTitle: "Overview"
-description: "Translate pre-recorded audio files into text or audio in other languages using asynchronous jobs."
+description: "Translate pre-recorded audio files into plain text transcripts, SRT subtitles, or translated speech audio using asynchronous jobs."
 public: true
 ---
 
@@ -9,11 +9,15 @@ public: true
   **Closed alpha.** This API may change without notice and is only available to select DeepL customers. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details. To request access, contact your customer success manager.
 </Warning>
 
-The Voice Translate Job API provides asynchronous translation of audio files into text or audio in other languages.
+The Voice Translate Job API translates pre-recorded audio files into any combination of three output forms in any of its supported target languages:
 
-The Voice Translate Job API processes entire audio files asynchronously. This makes it suitable for pre-recorded content such as podcasts, meeting recordings, or other media files. For live audio, see the [real-time Voice API](/api-reference/voice).
+- **Plain text transcripts** (`text/plain`)
+- **SRT subtitles** (`application/x-subrip`) — preserves the original timecodes
+- **Translated speech audio** — speech-to-speech in a range of audio and video container formats (see the [Reference](/api-reference/jobs-voice-translate/reference#supported-output-formats) for the full list)
 
-Each job can translate and transcribe audio into multiple languages. For example, a single English podcast can be translated into both German text and Spanish audio in one job.
+The API processes entire audio files asynchronously. This makes it suitable for pre-recorded content such as podcasts, meeting recordings, or other media files. For live audio, see the [real-time Voice API](/api-reference/voice).
+
+Each job can produce multiple outputs from a single source. For example, one English podcast can be translated into German plain text, French SRT subtitles, and Spanish audio in a single job.
 
 For full request and response schemas, see the [Create Job](/api-reference/jobs-voice-translate/create-voice-translate-job) and [Get Job Status](/api-reference/jobs-voice-translate/get-voice-translate-job-status) endpoint references. For status values, limits, supported formats, and supported languages, see the [Reference](/api-reference/jobs-voice-translate/reference).
 
@@ -45,7 +49,8 @@ Translating an audio file is a four-step process. The examples below use the API
           },
           "targets": [
             { "language": "de", "type": "text/plain" },
-            { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+            { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" },
+            { "language": "fr", "type": "application/x-subrip" }
           ]
         }'
         ```
@@ -68,7 +73,8 @@ Translating an audio file is a four-step process. The examples below use the API
           },
           "targets": [
             { "language": "de", "type": "text/plain" },
-            { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+            { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" },
+            { "language": "fr", "type": "application/x-subrip" }
           ]
         }
         ```
@@ -151,9 +157,11 @@ Translating an audio file is a four-step process. The examples below use the API
       "parameters": { "source_language": "en" },
       "targets": [
         { "language": "de", "type": "text/plain" },
-        { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+        { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" },
+        { "language": "fr", "type": "application/x-subrip" }
       ],
       "results": [
+        { "status": "processing" },
         { "status": "processing" },
         { "status": "processing" }
       ]
@@ -176,7 +184,8 @@ Translating an audio file is a four-step process. The examples below use the API
       "parameters": { "source_language": "en" },
       "targets": [
         { "language": "de", "type": "text/plain" },
-        { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+        { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" },
+        { "language": "fr", "type": "application/x-subrip" }
       ],
       "results": [
         {
@@ -187,6 +196,11 @@ Translating an audio file is a four-step process. The examples below use the API
         {
           "status": "failed",
           "error": { "message": "processing failed" }
+        },
+        {
+          "status": "complete",
+          "download_url": "https://assets.deepl.com/collections/a74d88fb/assets/d4e5f6a7",
+          "signature": "eyJhbGciOiJIUzI1NiIs..."
         }
       ]
     }
@@ -251,6 +265,7 @@ create_resp = requests.post(
         "targets": [
             {"language": "de", "type": "text/plain"},
             {"language": "es", "type": "audio/pcm;encoding=s16le;rate=16000"},
+            {"language": "fr", "type": "application/x-subrip"},
         ],
     },
 )
@@ -293,7 +308,7 @@ for target, result in zip(status["targets"], status["results"]):
         headers={"Authorization": f"DeepL-Signature {result['signature']}"},
     )
     download_resp.raise_for_status()
-    suffix = ".txt" if target["type"] == "text/plain" else ".bin"
+    suffix = {"text/plain": ".txt", "application/x-subrip": ".srt"}.get(target["type"], ".bin")
     out_path = Path(f"output-{target['language']}{suffix}")
     out_path.write_bytes(download_resp.content)
     print(f"{target['language']}: wrote {out_path}")

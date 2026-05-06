@@ -239,6 +239,15 @@
             ]
           },
           {
+            "group": "Translate Audio Files",
+            "pages": [
+              "api-reference/jobs-voice-translate",
+              "api-reference/jobs-voice-translate/create-voice-translate-job",
+              "api-reference/jobs-voice-translate/get-voice-translate-job-status",
+              "api-reference/jobs-voice-translate/reference"
+            ]
+          },
+          {
             "group": "Write",
             "pages": [
               "api-reference/improve-text",
