@@ -1,20 +1,16 @@
 ---
-title: "Retrieve languages"
+title: "Retrieve languages (v2)"
 sidebarTitle: "Overview"
-description: "API reference for retrieving supported languages with the DeepL API."
+description: "Reference for the deprecated v2/languages endpoint. Migrate to v3/languages for new integrations."
 ---
 
-Get all currently supported source and target languages that can be used for text and document translation.
+<Warning>
+  **`/v2/languages` is deprecated.** Use [`GET /v3/languages`](/api-reference/languages/retrieve-supported-languages-by-resource) instead, which covers all DeepL API resources and provides richer feature information. See the [migration guide](/api-reference/languages/migrate-from-v2-languages) for details.
+</Warning>
 
-<Info>
-  As of April 2025, supported languages for [text improvement](/api-reference/improve-text) (DeepL API for Write) have not yet been added to the `/languages` endpoint; we'll be extending the `/languages` endpoint in the near future to include this information.
-</Info>
-<Info>
-  To get languages available for glossaries, please see [here](/api-reference/multilingual-glossaries).
-</Info>
-We also provide a spec that is auto-generated from DeepL's OpenAPI file. [You can find it here](/api-reference/languages/retrieve-supported-languages).
+`GET /v2/languages` returns the source and target languages supported for text and document translation. New integrations should use `/v3/languages`, which exposes the same translation languages along with feature support for glossaries, voice, write, and other resources.
 
-To understand how we'll update the `/languages` endpoint when we add translation support for a new language or language variant, please see [this article](/docs/resources/language-release-process).
+For background on how DeepL adds new translation languages and language variants, see [the language release process](/docs/resources/language-release-process). For the auto-generated reference spec for this endpoint, see [Retrieve supported languages](/api-reference/languages/retrieve-supported-languages).
 
 <Tabs>
 <Tab title="cURL">

@@ -1,14 +1,13 @@
 ---
 title: 'Retrieve supported languages by resource'
-tag: "BETA"
 sidebarTitle: 'Overview'
-description: "Learn how to retrieve supported language and feature data across all DeepL API resources using the v3/languages endpoints."
+description: "Learn how to retrieve supported language and feature data across all DeepL API resources"
 ---
 
-Get information about all currently supported languages across all DeepL API resources.
-
 <Info>
-    These **BETA** endpoints replace `/v2/languages` and `/v2/glossary-language-pairs` (see the [migration guide](/api-reference/languages/migrate-from-v2-languages)). Do not use them in production; breaking changes may be pushed without advance notice (see the [changelog](/api-reference/languages/v3-languages-changelog)).
+    The `/v3/languages` endpoints replace the deprecated `/v2/languages` and `/v2/glossary-language-pairs` endpoints.
+    If you're currently using either, see the [migration guide](/api-reference/languages/migrate-from-v2-languages) for
+    differences and code examples.
 </Info>
 
 We also provide auto-generated API specs from DeepL's OpenAPI file, for use with API clients and code generation tools:
@@ -33,11 +32,11 @@ are querying language support for:
 | `style_rules` | Style rules management via the `/v3/style_rules` endpoints |
 
 <Note>
-    `glossary` is a resource value indicating glossaries can be created for that language, and managed via the glossary
-    management endpoints.
+    `glossary` and `style_rules` are resource values indicating glossaries and style rules that can be created for that
+    language, and managed via the glossary and style rules management endpoints.
 
-    Support for glossaries within specific resources (for example text translation) is indicated by the `glossary`
-    feature value, explained in a later section.
+    Support for glossaries and style rules within specific resources (for example text translation) is indicated by the
+    `glossary` and `style_rules` feature value, explained in a later section.
 </Note>
 
 ## Basic example

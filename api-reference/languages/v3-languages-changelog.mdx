@@ -1,18 +1,18 @@
 ---
 title: 'v3/languages changelog'
-tag: "BETA"
 sidebarTitle: 'Changelog'
-description: 'Changes and planned updates to the v3/languages endpoints during the beta period.'
+description: 'Changes to the v3/languages endpoints, including the GA release and prior breaking changes.'
 ---
-
-<Info>
-  These endpoints are in **BETA**. We will try to announce breaking changes here before they land, but cannot guarantee
-    advance notice. Do not use these endpoints in production.
-</Info>
 
 ## Changes since the initial beta release
 
-This section lists dated changes to the API since the initial beta release.
+This section lists dated changes to the API.
+
+### 18 May 2026 — General Availability
+
+`/v3/languages` is now generally available. The endpoint replaces the deprecated `/v2/languages` and `/v2/glossary-language-pairs`. See the [migration guide](/api-reference/languages/migrate-from-v2-languages) for differences and code examples.
+
+The breaking changes listed below were applied alongside the GA release.
 
 ### 5 May 2026
 
@@ -111,17 +111,3 @@ from `GET /v3/languages` are sufficient to determine feature support for all pai
 ### 19 March 2026
 
 Initial beta release.
-
----
-
-## Possible additions
-
-These are under consideration and may or may not land before GA.
-
-- **`native_name` field** on language objects — the language's name in that language (e.g. `"Deutsch"` for German).
-
----
-
-## Current beta state
-
-For the current API contract, see the [overview](/api-reference/languages/retrieve-supported-languages-by-resource) and the auto-generated reference pages linked there.
