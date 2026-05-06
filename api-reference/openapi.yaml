@@ -5757,6 +5757,7 @@ components:
       description: The desired output format for the translation target.
       enum:
         - text/plain
+        - application/x-subrip
         - audio/opus
         - audio/flac
         - "audio/pcm;encoding=s16le;rate=16000"
