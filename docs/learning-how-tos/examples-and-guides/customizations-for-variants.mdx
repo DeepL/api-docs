@@ -1,25 +1,19 @@
 ---
-title: "How to Apply Customizations to Variants"
+title: "How to Apply Customizations to Language Variants"
 description: "Learn how to apply glossaries and style rules when translating into language variants like FR-CA or EN-GB."
 public: true
 ---
 
-DeepL supports regional language variants such as `PT-BR` vs `PT-PT`, or `FR-CA` vs `FR-FR`. When applying customizations like glossaries and style rules, there is an important distinction: both must be **created** using the root language code, but can be **applied** to any variant in your `/translate` call.
+DeepL supports regional language variants such as `PT-BR` vs `PT-PT`, or `FR-CA` vs `FR-FR`. When applying customizations like glossaries and style rules, customizations must be created using the root language code, but can be applied to any variant of that language.
 
 **This guide shows you:**
 - Why customizations must be created with root codes (e.g. `PT`, `FR`) and not variant codes
 - How to pass a root-code glossary or style rule when translating into a variant target
 - A practical example of using variant-specific glossaries to enforce locale-appropriate terminology
 
-<Warning>
-Some CAT tools may block passing a root-code glossary or style rule when the target is a variant. This is a client-side limitation, not an API restriction — the DeepL API fully supports this pattern.
-</Warning>
+## Creating a customization for a language 
 
-## Glossaries
-
-### Creation: root codes only
-
-DeepL distinguishes between root language codes (e.g. `pt`) and regional variant codes (e.g. `pt-BR`). Glossaries must be created with the root code — attempting to create one with a variant code will fail. See [supported glossary languages](/docs/getting-started/supported-languages) for the full list.
+DeepL distinguishes between root language codes (e.g. `pt`) and language variant codes (e.g. `pt-BR`). Customizations like glossaries and style rules must be created with the root code. Attempting to create one with a variant code will fail.
 
 | **Use this** | **Not this** |
 |:---|:---|
@@ -30,38 +24,13 @@ DeepL distinguishes between root language codes (e.g. `pt`) and regional variant
 | `it` | `it-CH` |
 | `es` | `es-ES`, `es-419` |
 
-### Application: variants are supported
+See [supported glossary languages](/docs/getting-started/supported-languages) for the full list.
 
-Once a glossary is created with a root code, pass its ID in the `/translate` call with a variant `target_lang` — the glossary applies automatically. See the [`glossary_id` parameter](/api-reference/translate/request-translation) in the translate reference.
+## Applying a customization to a language variant
 
-The following example creates a `ZH` glossary and applies it when translating into `ZH-HANT`:
+Once a customization is created with a root language code, pass its ID in the `/translate` call with a variant `target_lang`.
 
-```python
-import deepl
-
-translator = deepl.Translator("YOUR_AUTH_KEY")
-
-# Step 1: Create glossary using root code
-glossary = translator.create_glossary(
-    "My Chinese Glossary",
-    source_lang="EN",
-    target_lang="ZH",       # root code — not ZH-HANS or ZH-HANT
-    entries={"product": "产品", "customer": "客户"}
-)
-
-# Step 2: Pass the glossary ID when translating into a variant
-result = translator.translate_text(
-    "We value every customer.",
-    source_lang="EN",
-    target_lang="ZH-HANT",          # variant target — glossary still applies
-    glossary=glossary.glossary_id
-)
-
-print(result.text)
-# 我們重視每一位客戶。
-```
-
-The following example uses different terms for "invoice" in Brazilian and European Portuguese:
+The following example creates and applies 2 glossaries to use different terms for "invoice" in Brazilian and European Portuguese:
 
 ```python
 import deepl
@@ -102,50 +71,9 @@ print(result_br.text)  # Sua nota fiscal está pronta para ser visualizada.
 print(result_pt.text)  # A sua fatura está pronta a ser visualizada.
 ```
 
----
+## CAT Tools
 
-## Style rules
-
-[Style rules](/api-reference/style-rules) let you define writing preferences that are applied consistently across translations. They follow the same root-code constraint as glossaries.
-
-### Creation: root codes only
-
-Style rules cannot be created for variant codes — the same root-code constraint applies as for glossaries. Attempting to create a style rule for a variant code (e.g. `fr-CA`, `es-419`) returns a "language not supported" error.
-
-| **Use this** | **Not this** |
-|:---|:---|
-| `fr` | `fr-CA`, `fr-CH` |
-| `es` | `es-ES`, `es-419` |
-| `de` | `de-CH` |
-| `pt` | `pt-BR`, `pt-PT` |
-
-See the [style rules reference](/api-reference/style-rules) for the full list of supported languages.
-
-### Application: variants are supported
-
-Once created under a root code, pass the style rule's `style_id` in a `/translate` call targeting any variant of that language. See the [`style_id` parameter](/api-reference/translate/request-translation) in the translate reference.
-
-The following example applies a style rule created for `FR` when translating into `FR-CA`:
-
-```python
-import deepl
-
-translator = deepl.Translator("YOUR_AUTH_KEY")
-
-result = translator.translate_text(
-    "Please review the attached document.",
-    source_lang="EN",
-    target_lang="FR-CA",           # variant target — root FR style rule applies
-    extra_params={"style_id": "your-style-rule-id"}  # style_id is a top-level API parameter
-)
-
-print(result.text)
-# Veuillez examiner le document ci-joint.
-```
-
-<Note>
-Only root codes appear in the style rule creation UI. You'll need to map the correct root style rule ID to each variant target on your end.
-</Note>
+Some CAT tools may prevent applying a glossary or style rule linked to a root code language when the target language is a variant. This is an incorrect limitation that does not reflect the DeepL API's behavior. You'll need to reach out to your CAT tool provider to request this restriction is removed. 
 
 ---
 
