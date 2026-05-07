@@ -28,7 +28,7 @@ jobs:
               with open(src) as f:
                   data = yaml.safe_load(f)
               with open(dst, 'w') as f:
-                  json.dump(data, f, indent=2)
+                  json.dump(data, f, indent=2, ensure_ascii=False)
                   f.write('\n')
           "
 
