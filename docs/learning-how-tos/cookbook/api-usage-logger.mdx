@@ -18,7 +18,7 @@ The project is intended for teams that need usage reporting with maximum flexibi
 - **Per-request logging** for both text and document translation, with the source language, target language, billed characters, and a request ID stored for every call
 - **Error capture alongside successes**, including the error code, HTTP status, and message, so reliability and usage live in the same dataset
 - **Reporting tag and API key alias support**, letting you group usage by team, project, or service
-- **Streamlit dashboard** with three views: a Usage breakdown table, an Errors breakdown table, and a SQL Explorer for arbitrary DuckDB queries against the underlying table
+- **Streamlit dashboard** with three views: a Usage summary table, an Error summary table, and a SQL Explorer for arbitrary DuckDB queries against the underlying table
 - **CSV export** from every dashboard view
 - **Non-blocking writes** that queue log entries on a background thread, so logging never adds latency to translation calls
 - **Local stack** of Python, DuckDB, and Streamlit, with no external services required
