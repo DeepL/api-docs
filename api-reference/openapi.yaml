@@ -1754,6 +1754,10 @@ paths:
                           description: The language detected in the source text.
                           type: string
                           example: en
+                        target_language:
+                          description: The target language specified by the request.
+                          type: string
+                          example: en-US
                         text:
                           description: The improved text.
                           type: string
