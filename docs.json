@@ -251,7 +251,8 @@
             "group": "Write",
             "pages": [
               "api-reference/improve-text",
-              "api-reference/improve-text/request-text-improvement"
+              "api-reference/improve-text/request-text-improvement",
+              "api-reference/improve-text/correct-text"
             ]
           },
           {
