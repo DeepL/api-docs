@@ -11,7 +11,7 @@ This page documents `v2` glossary endpoints, legacy endpoints that let you creat
 [See here](/api-reference/multilingual-glossaries) for information on current `v3` endpoints. Using `v3` allows you to create, manage, and edit glossaries with entries in multiple language pairs, while still supporting monolingual functionality. [See here](/api-reference/glossaries/v2-vs-v3-endpoints) for an overview of the difference.
 </Info>
 
-This page describes how to use the `v2` endpoints to work with _monolingual_ glossaries - glossaries that map phrases in one language to phrases in another language. If you're new to glossaries, we suggest you use `v3` instead. 
+This page describes how to use the `v2` endpoints to work with _monolingual_ glossaries - glossaries that map phrases in one language to phrases in another language. If you're new to glossaries, we suggest you use `v3` instead.
 
 ### Create a glossary
 
@@ -49,7 +49,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: create a glossary
 POST /v2/glossaries HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: 112
 Content-Type: application/json
@@ -113,7 +113,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: create a glossary
 POST /v2/glossaries HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: 112
 Content-Type: application/json
@@ -145,7 +145,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 
 ```sh Example request: list all glossaries
 curl -X GET 'https://api.deepl.com/v2/glossaries' \
---header 'Authorization: DeepL-Auth-Key [yourAuthKey]' 
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
 ```
 
 ```json Example response
@@ -170,7 +170,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: list all glossaries
 GET /v2/glossaries HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 ```
 ```json Example response
@@ -220,7 +220,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: retrieve glossary details
 GET /v2/glossaries/{glossary_id} HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 ```
 ```json Example response
@@ -260,7 +260,7 @@ Hello!	Guten Tag!
 ```http Example request: retrieve glossary entries
 GET /v2/glossaries/{glossary_id}/entries HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
  'Accept: text/tab-separated-values'
 User-Agent: YourApp/1.2.3
 ```
@@ -289,7 +289,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: delete a glossary
 DELETE /v2/glossaries/{glossary_id} HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 ```
 </Tab>
@@ -333,7 +333,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: get glossary language pairs
 GET /v2/glossary-language-pairs HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 ```
 ```json Example response (partial—one language pair)

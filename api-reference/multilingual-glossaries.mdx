@@ -6,10 +6,10 @@ description: "Manage and use DeepL glossaries"
 ---
 
 <Info>
-  This page documents `v3` glossary endpoints, which let you **edit** glossaries and allow for **multilingual** functionality. 
-  
+  This page documents `v3` glossary endpoints, which let you **edit** glossaries and allow for **multilingual** functionality.
+
   The current`v3` endpoints are used for working with **both multilingual and monolingual** glossaries. Thus, we recommend you start using the `v3` endpoints described below for all glossary needs.
- 
+
   The previously used [v2 glossary endpoints](/api-reference/glossaries) can only be used with **monolingual** glossaries. [See here](/api-reference/glossaries/v2-vs-v3-endpoints) for more on the difference between `v2` and `v3` glossary endpoints.
 </Info>
 
@@ -34,7 +34,7 @@ Note that this mapping occurs only in one direction, which is all you need durin
 | exquisito | delicieux |
 | mouse     | mouse     |
 
-Both glossaries and style rules are unique to each of DeepL's global data centers and are not shared between them. Clients using the `api-us.deepl.com` endpoint will not be able to access glossaries or style rules created in the UI at this time. 
+Both glossaries and style rules are unique to each of DeepL's global data centers and are not shared between them. Clients using the `api-us.deepl.com` endpoint will not be able to access glossaries or style rules created in the UI at this time.
 
 
 ## Creating glossaries
@@ -132,11 +132,11 @@ This example creates a modest glossary with two dictionaries. One maps "Hello" i
     ```http Example request: create a glossary
     POST /v3/glossaries HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     Content-Length: 1234
     Content-Type: application/json
-    
+
     {
       "name": "My Glossary",
       "dictionaries": [
@@ -199,11 +199,11 @@ To use a glossary in a translation request, include its `glossary_id` . You must
     ```http Example request: translate including glossary
     POST /v2/translate HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     Content-Length: 111
     Content-Type: application/json
-    
+
     {
       "text": [
         "Hello there"
@@ -245,7 +245,7 @@ Use this endpoint to list all your glossaries, basic information about each glos
 
     ```sh Example request: list glossaries
     curl -X GET 'https://api.deepl.com/v3/glossaries' \
-    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]' 
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
     ```
 
     ```json Example response
@@ -276,7 +276,7 @@ Use this endpoint to list all your glossaries, basic information about each glos
     ```http Example request: list all glossaries
     GET /v3/glossaries HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     ```
 
@@ -345,7 +345,7 @@ Use this endpoint to retrieve basic information about a given glossary's diction
     ```http Example request: retrieve glossary details
     GET /v3/glossaries/{glossary_id} HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     ```
 
@@ -406,7 +406,7 @@ Currently you can only retrieve glossary contents in TSV format.
     ```http Example request: get glossary entries
     GET /v3/glossaries/{glossary_id}/entries HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     ```
 
@@ -467,7 +467,7 @@ Use this method to add a new dictionary to a glossary or replace an existing one
     ```http Example request: replace a dictionary
     PUT /v3/glossaries/{glossaryId}/dictionaries HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     Content-Length: 210
     Content-Type: application/json
@@ -529,7 +529,7 @@ For example, this `PATCH` changes a glossary's name.
     ```http Example request: update glossary entries
     PATCH /v3/glossaries/{glossaryId} HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     Content-Length: 147
     Content-Type: application/json
@@ -600,7 +600,7 @@ This example makes two changes. It changes the glossary's name, and it adds a ne
     ```http Example request: update glossary entries
     PATCH /v3/glossaries/{glossaryId} HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     Content-Length: 147
     Content-Type: application/json
@@ -652,7 +652,7 @@ This method deletes the specified glossary in its entirety.
     ```http Example request: delete a glossary
     DELETE /v3/glossaries/{glossary_id} HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     ```
   </Tab>
@@ -679,7 +679,7 @@ Use this method to delete a dictionary for a specific language pair.
     ```http Example request: delete a dictionary
     DELETE /v3/glossaries/{glossary_id}/dictionaries?source_lang={source_lang}&target_lang={target_lang} HTTP/2
     Host: api.deepl.com
-    Authorization: DeepL-Auth-Key [yourAuthKey] 
+    Authorization: DeepL-Auth-Key [yourAuthKey]
     User-Agent: YourApp/1.2.3
     ```
   </Tab>
@@ -690,6 +690,8 @@ Use this method to delete a dictionary for a specific language pair.
 ### Languages supported
 
 The DeepL API supports [these languages for glossaries](/docs/getting-started/supported-languages).
+
+To retrieve supported glossary languages programmatically, call [`GET /v3/languages?resource=glossary`](/api-reference/languages/retrieve-supported-languages-by-resource).
 
 ### Language variants
 

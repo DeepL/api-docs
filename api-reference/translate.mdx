@@ -68,7 +68,7 @@ The examples below use our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: text translation (without glossary)
 POST /v2/translate HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: 45
 Content-Type: application/json
@@ -79,7 +79,7 @@ Content-Type: application/json
 ```http Example request: text translation (with glossary)
 POST /v2/translate HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: 97
 Content-Type: application/json
@@ -169,8 +169,8 @@ These examples are for demonstration purposes only. In production code, the auth
 Note that we do not include examples for our client libraries in every single section of this reference, but our client libraries *do* support all use cases shown on this page.
 
 <Info>
-  Please note that the Translate API is intended to be used for translation between different languages, but requests with the same source and target language are still counted toward billing. 
-  
+  Please note that the Translate API is intended to be used for translation between different languages, but requests with the same source and target language are still counted toward billing.
+
   If trying to convert between variants of the same language (e.g. `EN-US` to `EN-GB`), please refer to [this guide](/docs/learning-how-tos/examples-and-guides/translating-between-variants). Translating between variants of the same language will result in no change to the text.
 </Info>
 
@@ -267,7 +267,7 @@ error.
   </Info>
 </ParamField>
 <ParamField body="formality" type="string">
-  Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages <code>DE</code> (German), <code>FR</code> (French), <code>IT</code> (Italian), <code>ES</code> (Spanish), <code>ES-419</code> (Latin American Spanish), <code>NL</code> (Dutch), <code>PL</code> (Polish), <code>PT-BR</code> and <code>PT-PT</code> (Portuguese), <code>JA</code> (Japanese), and <code>RU</code> (Russian). Learn more about the <a href="https://support.deepl.com/hc/en-us/articles/6306700061852-About-formality-plain-and-polite-tones-in-Japanese">plain/polite feature for Japanese ↗️</a>.
+  Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages <code>DE</code> (German), <code>FR</code> (French), <code>IT</code> (Italian), <code>ES</code> (Spanish), <code>ES-419</code> (Latin American Spanish), <code>NL</code> (Dutch), <code>PL</code> (Polish), <code>PT-BR</code> and <code>PT-PT</code> (Portuguese), <code>JA</code> (Japanese), and <code>RU</code> (Russian). Learn more about the <a href="https://support.deepl.com/hc/en-us/articles/6306700061852-About-formality-plain-and-polite-tones-in-Japanese">plain/polite feature for Japanese ↗️</a>. To check formality support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_text</code></a> and look for the <code>formality</code> feature key on the target language.
 
   <p>Setting this parameter with a target language that does not support formality will fail, unless one of the <code>prefer_...</code> options are used. Possible options are:</p>
   <ul>
@@ -283,11 +283,12 @@ error.
   <Note>
     <strong>Important:</strong> This requires the <code>source_lang</code> parameter to be set and the language pair of the glossary has to match the language pair of the request.
   </Note>
+  To check glossary support for a language pair, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_text</code></a> and verify the <code>glossary</code> feature key is present on both the source and target language.
 </ParamField>
 <ParamField body="style_id" type="string">
   Specify the style rule list to use for the translation which can be used to customize translations according to the selected formatting and style conventions.
   <Info>
-    The target language has to match the language of the style rule list. 
+    The target language has to match the language of the style rule list.
 
     Additionally, any request with the `style_id` parameter enabled will default to use the `quality_optimized` model type. Requests combining `style_id` and `model_type: latency_optimized` will be rejected.
   </Info>
@@ -295,11 +296,12 @@ error.
 <ParamField body="custom_instructions" type="array[string]">
   Specify a list of instructions to customize the translation behavior. Up to 10 custom instructions can be specified, each with a maximum of 300 characters.
 
-  <Info>  
+  <Info>
     The target language must be `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, `zh` or any variants of these languages.
 
     Any request with the `custom_instructions` parameter enabled will default to use the `quality_optimized` model type. Requests combining `custom_instructions` and `model_type: latency_optimized` will be rejected. You can find best practices on how to write custom instructions [here](/docs/best-practices/custom-instructions).
   </Info>
+  To check language support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_text</code></a> and check for the <code>style_rules</code> feature key on the target language.
 </ParamField>
 <ParamField body="translation_memory_id" type="string">
   The [translation memory](/api-reference/translation-memory/list-translation-memories) to use for the translation. The value should be the UUID of a translation memory associated with your account.
@@ -316,7 +318,7 @@ error.
   <p>For example: <code>"billed_characters": 42</code></p>
   <Info>
     At some point in the future, we intend to include <code>billed_characters</code> in the API response by default, at which point it will be necessary to set <code>show_billed_characters</code> to <code>false</code> in order for an API response not to include <code>billed_characters</code>. We will notify users in advance of making this change.
-    
+
     For requests sent as URL-encoded forms, boolean values should be specified as "1" or "0".
   </Info>
 </ParamField>
@@ -326,6 +328,7 @@ error.
     <li><code>xml</code>: Enable XML tag handling; see <a href="/docs/xml-and-html-handling/xml">XML handling</a>.</li>
     <li><code>html</code>: Enable HTML tag handling; see <a href="/docs/xml-and-html-handling/html">HTML handling</a>.</li>
   </ul>
+  To check tag handling support for a language pair, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_text</code></a> and check the <code>tag_handling</code> feature key is present on both the source and target language.
 </ParamField>
 <ParamField body="tag_handling_version" type="string">
   Select which version of the tag handling algorithm should be used. See <a href="/docs/xml-and-html-handling/tag-handling-v2">tag handling v2</a>.
@@ -430,7 +433,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: multiple sentences
 POST /v2/translate HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: 71
 Content-Type: application/json
@@ -503,7 +506,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: large volumes of text
 POST /v2/translate HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: 120
 Content-Type: application/json

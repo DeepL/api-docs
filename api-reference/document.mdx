@@ -55,7 +55,7 @@ curl -X POST 'https://api.deepl.com/v2/document' \
 --form 'source_lang=EN' \
 --form 'target_lang=DE' \
 --form 'file=@document.docx' \
---form 'glossary_id=[yourGlossaryId]' 
+--form 'glossary_id=[yourGlossaryId]'
 ```
 
 ```json Example response
@@ -71,38 +71,38 @@ The examples below use our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: document upload (no glossary)
 POST /v2/document HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: [length]
 Content-Type: multipart/form-data;boundary="boundary"
 
 --boundary,Content-Disposition: form-data; name=target_lang
-          
+
 DE
 --boundary,Content-Disposition: form-data; name=file
-          
+
 @document.docx
 ```
 
 ```http Example request: document upload (with glossary)
 POST /v2/document HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: [length]
 Content-Type: multipart/form-data;boundary="boundary"
 
 --boundary,Content-Disposition: form-data; name=source_lang
-          
+
 EN
 --boundary,Content-Disposition: form-data; name=target_lang
-          
+
 DE
 --boundary,Content-Disposition: form-data; name=file
-          
+
 @document.docx
 --boundary,Content-Disposition: form-data; name=glossary_id
-          
+
 [yourGlossaryId]
 ```
 
@@ -146,7 +146,7 @@ These examples are for demonstration purposes only. In production code, the auth
   The name of the uploaded file. Can be used as an alternative to including the file name in the file part's content disposition.
 </ParamField>
 <ParamField body="formality" type="string">
-  Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages `DE` (German), `FR` (French), `IT` (Italian), `ES` (Spanish), `NL` (Dutch), `PL` (Polish), `PT-BR` and `PT-PT` (Portuguese), `JA` (Japanese), and `RU` (Russian). Learn more about the plain/polite feature for Japanese <a href="https://support.deepl.com/hc/en-us/articles/6306700061852-About-the-plain-polite-feature-in-Japanese">here</a>. Setting this parameter with a target language that does not support formality will fail, unless one of the `prefer_...` options are used. Possible options are:
+  Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages `DE` (German), `FR` (French), `IT` (Italian), `ES` (Spanish), `NL` (Dutch), `PL` (Polish), `PT-BR` and `PT-PT` (Portuguese), `JA` (Japanese), and `RU` (Russian). Learn more about the plain/polite feature for Japanese <a href="https://support.deepl.com/hc/en-us/articles/6306700061852-About-the-plain-polite-feature-in-Japanese">here</a>. Setting this parameter with a target language that does not support formality will fail, unless one of the `prefer_...` options are used. To check formality support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_document</code></a> and look for the <code>formality</code> feature key on the target language. Possible options are:
   <ul>
     <li>`default` (default)</li>
     <li>`more` - for a more formal language</li>
@@ -156,7 +156,7 @@ These examples are for demonstration purposes only. In production code, the auth
   </ul>
 </ParamField>
 <ParamField body="glossary_id" type="string">
-  A unique ID assigned to a glossary.  
+  A unique ID assigned to a glossary. To check glossary support for a language pair, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_document</code></a> and verify the <code>glossary</code> feature key is present on both the source and target language.
 </ParamField>
 <ParamField body="output_format" type="string">
   File extension of desired format of translated file, for example: `pdf`. If unspecified, by default the translated file will be in the same format as the input file.
@@ -219,7 +219,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: check document status
 POST /v2/document/{document_id} HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: 83
 Content-Type: application/json
@@ -285,7 +285,7 @@ The example below uses our API Pro endpoint `https://api.deepl.com`. If you're a
 ```http Example request: download translated document
 POST /v2/document/{document_id}/result HTTP/2
 Host: api.deepl.com
-Authorization: DeepL-Auth-Key [yourAuthKey] 
+Authorization: DeepL-Auth-Key [yourAuthKey]
 User-Agent: YourApp/1.2.3
 Content-Length: 83
 Content-Type: application/json
@@ -312,4 +312,4 @@ The range of alternative output formats you can select are indicated in the tabl
 | Input document format | Alternative output document formats |
 | --- | --- |
 | PDF | `docx` - Microsoft Word Document |
-| Others | None | 
+| Others | None |

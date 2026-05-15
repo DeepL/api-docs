@@ -96,6 +96,8 @@ All source languages can be translated into any target language.
     you must explicitly specify the source language.
 </Warning>
 
+To retrieve supported languages and feature availability programmatically, call [`GET /v3/languages?resource=voice`](/api-reference/languages/retrieve-supported-languages-by-resource) and check for the `transcription` and `translated_speech` feature keys. The external flag on these features indicates if they are provided by an external service partner.
+
 ## Supported Audio Formats
 
 The API supports various common combinations of streaming codecs and containers with a single channel (mono) audio stream.
