@@ -6,9 +6,14 @@ rss: true
 
 <Update label="In active development">
 - Support for uploading, modifying, and deleting [translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories) via API
-- `v3/languages` endpoint with improved language code handling and additional functionality
 - API key-level endpoint restrictions
 - Usage reporting by custom tag and language pair
+</Update>
+
+<Update label="May 2026">
+## May 18 - v3/languages General Availability
+- [`GET /v3/languages`](/api-reference/languages/retrieve-supported-languages-by-resource) and [`GET /v3/languages/resources`](/api-reference/languages/retrieve-resources) are now generally available.
+- **`/v2/languages` and `/v2/glossary-language-pairs` are now deprecated.** Migrate to `/v3/languages`. See the [migration guide](/api-reference/languages/migrate-from-v2-languages) for details.
 </Update>
 
 <Update label="April 2026">

@@ -1,8 +1,13 @@
 ---
 openapi: "get /v2/glossary-language-pairs"
 title: "List language pairs supported for glossaries"
+tag: "DEPRECATED"
 playground: none
 ---
+
+<Warning>
+  **`/v2/glossary-language-pairs` is deprecated.** Use [`GET /v3/languages?resource=glossary`](/api-reference/languages/retrieve-supported-languages-by-resource) instead. See the [migration guide](/api-reference/languages/migrate-from-v2-languages) for details.
+</Warning>
 
 <Info>This endpoint returns all possible language pairs for glossaries.
 [This list of supported languages](/docs/getting-started/supported-languages) may also be useful.</Info>

@@ -257,18 +257,18 @@
           {
             "group": "Languages",
             "pages": [
-              "api-reference/languages",
-              "api-reference/languages/retrieve-supported-languages",
+              "api-reference/languages/retrieve-supported-languages-by-resource",
+              "api-reference/languages/language-feature-use-cases",
+              "api-reference/languages/retrieve-languages-by-resource",
+              "api-reference/languages/retrieve-resources",
+              "api-reference/languages/migrate-from-v2-languages",
+              "api-reference/languages/v3-languages-changelog",
               {
-                "group": "Languages By Resource",
-                "tag": "BETA",
+                "group": "v2 Languages",
+                "tag": "DEPRECATED",
                 "pages": [
-                  "api-reference/languages/retrieve-supported-languages-by-resource",
-                  "api-reference/languages/language-feature-use-cases",
-                  "api-reference/languages/retrieve-languages-by-resource",
-                  "api-reference/languages/retrieve-resources",
-                  "api-reference/languages/migrate-from-v2-languages",
-                  "api-reference/languages/v3-languages-changelog"
+                  "api-reference/languages",
+                  "api-reference/languages/retrieve-supported-languages"
                 ],
                 "drilldown": false
               }
