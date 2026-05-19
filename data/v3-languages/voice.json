@@ -1,0 +1,845 @@
+[
+  {
+    "lang": "ar",
+    "name": "Arabic",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "bg",
+    "name": "Bulgarian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "bn",
+    "name": "Bengali",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "cs",
+    "name": "Czech",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "da",
+    "name": "Danish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "de",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "el",
+    "name": "Greek",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "en",
+    "name": "English",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "en-GB",
+    "name": "English (British)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "en-US",
+    "name": "English (American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "es",
+    "name": "Spanish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "et",
+    "name": "Estonian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "fi",
+    "name": "Finnish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "fr",
+    "name": "French",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ga",
+    "name": "Irish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "he",
+    "name": "Hebrew",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "hr",
+    "name": "Croatian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "hu",
+    "name": "Hungarian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "id",
+    "name": "Indonesian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "it",
+    "name": "Italian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ja",
+    "name": "Japanese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ko",
+    "name": "Korean",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "lt",
+    "name": "Lithuanian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "lv",
+    "name": "Latvian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "mt",
+    "name": "Maltese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "nb",
+    "name": "Norwegian (bokmål)",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "nl",
+    "name": "Dutch",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pl",
+    "name": "Polish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pt",
+    "name": "Portuguese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pt-BR",
+    "name": "Portuguese (Brazilian)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pt-PT",
+    "name": "Portuguese (European)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ro",
+    "name": "Romanian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "ru",
+    "name": "Russian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "sk",
+    "name": "Slovak",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "sl",
+    "name": "Slovenian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "sv",
+    "name": "Swedish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "th",
+    "name": "Thai",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "tl",
+    "name": "Tagalog",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "transcription": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "tr",
+    "name": "Turkish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "uk",
+    "name": "Ukrainian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "vi",
+    "name": "Vietnamese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable",
+        "external": true
+      },
+      "translated_speech": {
+        "status": "stable",
+        "external": true
+      }
+    }
+  },
+  {
+    "lang": "zh",
+    "name": "Chinese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "transcription": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "zh-Hans",
+    "name": "Chinese (simplified)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "zh-Hant",
+    "name": "Chinese (traditional)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "translated_speech": {
+        "status": "stable"
+      }
+    }
+  }
+]

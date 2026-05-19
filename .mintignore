@@ -1,3 +1,5 @@
 reviews/*
 api-reference/openapi.json
 api-reference/voice/voice.asyncapi.json
+data/*
+scripts/*

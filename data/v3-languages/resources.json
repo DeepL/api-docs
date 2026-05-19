@@ -1,0 +1,98 @@
+[
+  {
+    "name": "translate_text",
+    "features": [
+      {
+        "name": "auto_detection",
+        "needs_source_support": true
+      },
+      {
+        "name": "formality",
+        "needs_target_support": true
+      },
+      {
+        "name": "glossary",
+        "needs_source_support": true,
+        "needs_target_support": true
+      },
+      {
+        "name": "style_rules",
+        "needs_target_support": true
+      },
+      {
+        "name": "tag_handling",
+        "needs_source_support": true,
+        "needs_target_support": true
+      }
+    ]
+  },
+  {
+    "name": "translate_document",
+    "features": [
+      {
+        "name": "auto_detection",
+        "needs_source_support": true
+      },
+      {
+        "name": "formality",
+        "needs_target_support": true
+      },
+      {
+        "name": "glossary",
+        "needs_source_support": true,
+        "needs_target_support": true
+      }
+    ]
+  },
+  {
+    "name": "glossary",
+    "features": []
+  },
+  {
+    "name": "style_rules",
+    "features": []
+  },
+  {
+    "name": "voice",
+    "features": [
+      {
+        "name": "auto_detection",
+        "needs_source_support": true
+      },
+      {
+        "name": "formality",
+        "needs_target_support": true
+      },
+      {
+        "name": "glossary",
+        "needs_source_support": true,
+        "needs_target_support": true
+      },
+      {
+        "name": "transcription",
+        "needs_source_support": true
+      },
+      {
+        "name": "translated_speech",
+        "needs_target_support": true
+      }
+    ]
+  },
+  {
+    "name": "write",
+    "features": [
+      {
+        "name": "auto_detection",
+        "needs_source_support": true
+      },
+      {
+        "name": "tone",
+        "needs_target_support": true
+      },
+      {
+        "name": "writing_style",
+        "needs_target_support": true
+      }
+    ]
+  }
+]

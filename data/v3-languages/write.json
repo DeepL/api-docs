@@ -1,0 +1,170 @@
+[
+  {
+    "lang": "de",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tone": {
+        "status": "stable"
+      },
+      "writing_style": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "en",
+    "name": "English",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "en-GB",
+    "name": "English (British)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "tone": {
+        "status": "stable"
+      },
+      "writing_style": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "en-US",
+    "name": "English (American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "tone": {
+        "status": "stable"
+      },
+      "writing_style": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "es",
+    "name": "Spanish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "fr",
+    "name": "French",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "it",
+    "name": "Italian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ja",
+    "name": "Japanese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ko",
+    "name": "Korean",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pt",
+    "name": "Portuguese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pt-BR",
+    "name": "Portuguese (Brazilian)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "pt-PT",
+    "name": "Portuguese (European)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "zh",
+    "name": "Chinese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "zh-Hans",
+    "name": "Chinese (simplified)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {}
+  }
+]

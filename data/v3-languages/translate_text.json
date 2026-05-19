@@ -1,0 +1,2069 @@
+[
+  {
+    "lang": "ace",
+    "name": "Acehnese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "af",
+    "name": "Afrikaans",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "an",
+    "name": "Aragonese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ar",
+    "name": "Arabic",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "as",
+    "name": "Assamese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ay",
+    "name": "Aymara",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "az",
+    "name": "Azerbaijani",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ba",
+    "name": "Bashkir",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "be",
+    "name": "Belarusian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "bg",
+    "name": "Bulgarian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "bho",
+    "name": "Bhojpuri",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "bn",
+    "name": "Bengali",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "br",
+    "name": "Breton",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "bs",
+    "name": "Bosnian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ca",
+    "name": "Catalan",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ceb",
+    "name": "Cebuano",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ckb",
+    "name": "Kurdish (Sorani)",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "cs",
+    "name": "Czech",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "cy",
+    "name": "Welsh",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "da",
+    "name": "Danish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "de",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "de-CH",
+    "name": "German (Swiss)",
+    "status": "beta",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "formality": {
+        "status": "beta"
+      },
+      "glossary": {
+        "status": "beta"
+      },
+      "tag_handling": {
+        "status": "beta"
+      }
+    }
+  },
+  {
+    "lang": "de-DE",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "el",
+    "name": "Greek",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "en",
+    "name": "English",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "en-GB",
+    "name": "English (British)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "en-US",
+    "name": "English (American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "eo",
+    "name": "Esperanto",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "es",
+    "name": "Spanish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "es-419",
+    "name": "Spanish (Latin American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "et",
+    "name": "Estonian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "eu",
+    "name": "Basque",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "fa",
+    "name": "Persian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "fi",
+    "name": "Finnish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "fr",
+    "name": "French",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "fr-CA",
+    "name": "French (Canadian)",
+    "status": "beta",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "formality": {
+        "status": "beta"
+      },
+      "glossary": {
+        "status": "beta"
+      },
+      "style_rules": {
+        "status": "beta"
+      },
+      "tag_handling": {
+        "status": "beta"
+      }
+    }
+  },
+  {
+    "lang": "fr-FR",
+    "name": "French",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ga",
+    "name": "Irish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "gl",
+    "name": "Galician",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "gn",
+    "name": "Guarani",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "gom",
+    "name": "Konkani",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "gu",
+    "name": "Gujarati",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ha",
+    "name": "Hausa",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "he",
+    "name": "Hebrew",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "hi",
+    "name": "Hindi",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "hr",
+    "name": "Croatian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ht",
+    "name": "Haitian Creole",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "hu",
+    "name": "Hungarian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "hy",
+    "name": "Armenian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "id",
+    "name": "Indonesian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ig",
+    "name": "Igbo",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "is",
+    "name": "Icelandic",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "it",
+    "name": "Italian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ja",
+    "name": "Japanese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "jv",
+    "name": "Javanese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ka",
+    "name": "Georgian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "kk",
+    "name": "Kazakh",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "kmr",
+    "name": "Kurdish (Kurmanji)",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ko",
+    "name": "Korean",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ky",
+    "name": "Kyrgyz",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "la",
+    "name": "Latin",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "lb",
+    "name": "Luxembourgish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "lmo",
+    "name": "Lombard",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ln",
+    "name": "Lingala",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "lt",
+    "name": "Lithuanian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "lv",
+    "name": "Latvian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "mai",
+    "name": "Maithili",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "mg",
+    "name": "Malagasy",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "mi",
+    "name": "Maori",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "mk",
+    "name": "Macedonian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ml",
+    "name": "Malayalam",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "mn",
+    "name": "Mongolian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "mr",
+    "name": "Marathi",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ms",
+    "name": "Malay",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "mt",
+    "name": "Maltese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "my",
+    "name": "Burmese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "nb",
+    "name": "Norwegian (bokmål)",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ne",
+    "name": "Nepali",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "nl",
+    "name": "Dutch",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "oc",
+    "name": "Occitan",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "om",
+    "name": "Oromo",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pa",
+    "name": "Punjabi",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pag",
+    "name": "Pangasinan",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pam",
+    "name": "Kapampangan",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pl",
+    "name": "Polish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "prs",
+    "name": "Dari",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ps",
+    "name": "Pashto",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pt",
+    "name": "Portuguese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pt-BR",
+    "name": "Portuguese (Brazilian)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "pt-PT",
+    "name": "Portuguese (European)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "qu",
+    "name": "Quechua",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ro",
+    "name": "Romanian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ru",
+    "name": "Russian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "formality": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "sa",
+    "name": "Sanskrit",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "scn",
+    "name": "Sicilian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "sk",
+    "name": "Slovak",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "sl",
+    "name": "Slovenian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "sq",
+    "name": "Albanian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "sr",
+    "name": "Serbian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "st",
+    "name": "Sesotho",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "su",
+    "name": "Sundanese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "sv",
+    "name": "Swedish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "sw",
+    "name": "Swahili",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ta",
+    "name": "Tamil",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "te",
+    "name": "Telugu",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "tg",
+    "name": "Tajik",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "th",
+    "name": "Thai",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "tk",
+    "name": "Turkmen",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "tl",
+    "name": "Tagalog",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "tn",
+    "name": "Tswana",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "tr",
+    "name": "Turkish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ts",
+    "name": "Tsonga",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "tt",
+    "name": "Tatar",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "uk",
+    "name": "Ukrainian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "ur",
+    "name": "Urdu",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "uz",
+    "name": "Uzbek",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "vi",
+    "name": "Vietnamese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "wo",
+    "name": "Wolof",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "xh",
+    "name": "Xhosa",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "yi",
+    "name": "Yiddish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "yue",
+    "name": "Cantonese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "zh",
+    "name": "Chinese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "zh-Hans",
+    "name": "Chinese (simplified)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "zh-Hant",
+    "name": "Chinese (traditional)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": {
+        "status": "stable"
+      },
+      "style_rules": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  },
+  {
+    "lang": "zu",
+    "name": "Zulu",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      },
+      "tag_handling": {
+        "status": "stable"
+      }
+    }
+  }
+]
