@@ -240,6 +240,7 @@
           },
           {
             "group": "Translate Audio Files",
+            "hidden": true,
             "pages": [
               "api-reference/jobs-voice-translate",
               "api-reference/jobs-voice-translate/create-voice-translate-job",
