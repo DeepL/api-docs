@@ -303,7 +303,8 @@
                 "group": "Organization Usage Analytics",
                 "pages": [
                   "api-reference/admin-api/organization-usage-analytics",
-                  "api-reference/admin-api/get-usage-analytics"
+                  "api-reference/admin-api/get-usage-analytics",
+                  "api-reference/admin-api/get-custom-tag-usage-analytics"
                 ],
                 "drilldown": false
               }

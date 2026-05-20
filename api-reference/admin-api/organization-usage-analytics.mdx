@@ -1,54 +1,38 @@
 ---
-title: "Accessing organization usage analytics"
+title: "Accessing usage analytics"
 description: "Learn how admins can retrieve and analyze usage data across their organization."
 public: true
 ---
 
-The Admin API allows admins to retrieve detailed usage statistics for their organization through the [Get usage analytics](/api-reference/admin-api/get-usage-analytics) endpoint.
+The Admin API provides two endpoints for monitoring usage across your organization:
 
-This analytics functionality enables you to:
-* Track character usage across your entire organization
-* Monitor usage by individual API keys
-* Analyze usage patterns over time
-* Generate reports for specific date ranges
-* Break down usage by service type (text translation, document translation, text improvement)
+- [Get usage analytics](/api-reference/admin-api/get-usage-analytics): retrieves total usage statistics, optionally grouped by API key or day
+- [Get custom tag usage analytics](/api-reference/admin-api/get-custom-tag-usage-analytics): retrieves usage statistics broken down by custom tags
 
-## Usage statistics endpoint
+## Organization usage
 
-The analytics endpoint provides detailed usage information for a specified date range with flexible grouping options.
+The [Get usage analytics](/api-reference/admin-api/get-usage-analytics) endpoint returns usage statistics for a specified date range with flexible grouping options. It covers all services: text translation, document translation, text improvement, and speech-to-text.
 
-### Date range queries
+## Custom tag usage
 
-Retrieve usage statistics by specifying a start and end date. Both `start_date` and `end_date` parameters are required and support the following formats (all in UTC):
-* `YYYY-MM-DD` - Simple date format (e.g., `2025-09-29`)
-* `YYYY-MM-DDTHH:MM:SS` - Full datetime format (e.g., `2025-09-29T14:30:00`)
+Custom tags are an optional dimension for breaking down usage. If your organization wants to track consumption by team, project, or any other category, you can attach a single tag to individual API requests using the `X-DeepL-Reporting-Tag` header. Each request accepts one tag.
 
-The maximum date range is 366 days.
+The [Get custom tag usage analytics](/api-reference/admin-api/get-custom-tag-usage-analytics) endpoint only returns usage from tagged requests. Untagged requests are not included, so the results will reflect a subset of your organization's total usage unless all API requests are tagged.
 
-### Grouping options
+```bash
+curl --request POST \
+  --url https://api.deepl.com/v2/translate \
+  --header 'Authorization: DeepL-Auth-Key YOUR_AUTH_KEY' \
+  --header 'X-DeepL-Reporting-Tag: your-custom-tag' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "text": ["Hello, world!"],
+    "target_lang": "DE"
+  }'
+```
 
-The optional `group_by` parameter allows you to organize usage data in different ways:
+<Warning>
+Custom tag data is currently supported for text translation. Support for additional request types will be added in a future update.
+</Warning>
 
-* **No grouping** (default): Returns total usage for the entire date range across all API keys
-* **`key`**: Groups usage by individual API key, showing totals for each key over the entire date range
-* **`key_and_day`**: Groups usage by both API key and day, providing daily breakdowns for each key
-
-### Usage breakdown
-
-All responses include a breakdown of usage by service type:
-* **Total characters**: Combined usage across all services
-* **Text translation characters**: Characters used for text translation
-* **Document translation characters**: Characters used for document translation
-* **Text improvement characters**: Characters used for text improvement (rephrasing)
-* **Speech-to-text minutes**: Duration of speech-to-text usage in minutes
-
-## Use cases
-
-The account-level analytics endpoint is particularly useful for:
-
-* **Cost monitoring**: Track usage to stay within budget limits and forecast costs
-* **Resource allocation**: Identify which teams or projects (represented by API keys) are using the most resources
-* **Usage trends**: Analyze daily or weekly usage patterns to optimize resource planning
-* **Compliance and auditing**: Generate detailed usage reports for compliance requirements
-* **Performance tracking**: Monitor adoption and usage of different DeepL services within your organization
-
+Once tags are in place, query [Get custom tag usage analytics](/api-reference/admin-api/get-custom-tag-usage-analytics) to retrieve usage broken down by tag.

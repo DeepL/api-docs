@@ -3,3 +3,35 @@ openapi: get /v2/admin/analytics
 title: "Get usage analytics"
 ---
 
+## Date range
+
+Specify the reporting window using the required `start_date` and `end_date` parameters. Both support the following formats (all in UTC):
+
+| **Format** | **Example** |
+|:---|:---|
+| `YYYY-MM-DD` | `2025-09-29` |
+| `YYYY-MM-DDTHH:MM:SS` | `2025-09-29T14:30:00` |
+
+The maximum date range is 366 days.
+
+## Grouping
+
+The optional `group_by` parameter controls how results are organized:
+
+| **Value** | **Description** |
+|:---|:---|
+| (default) | Returns total usage for the entire date range across all API keys |
+| `key` | Groups usage by individual API key, showing totals for each key over the date range |
+| `key_and_day` | Groups usage by both API key and day, providing daily breakdowns per key |
+
+## Response structure
+
+All responses include a breakdown of usage by service type:
+
+| **Field** | **Description** |
+|:---|:---|
+| `total_characters` | Combined character usage across all services |
+| `text_translation_characters` | Characters used for text translation |
+| `document_translation_characters` | Characters used for document translation |
+| `text_improvement_characters` | Characters used for text improvement (rephrasing) |
+| `speech_to_text_minutes` | Duration of speech-to-text usage in minutes |
