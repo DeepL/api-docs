@@ -2,3 +2,46 @@
 openapi: get /v2/admin/analytics/custom-tags
 title: "Get custom tag usage analytics"
 ---
+
+## Date range
+
+Specify the reporting window using the required `start_date` and `end_date` parameters in ISO 8601 date format (e.g., `2026-05-01`). The maximum date range is 366 days.
+
+## Aggregation
+
+The optional `aggregate_by` parameter controls how usage is grouped:
+
+| **Value** | **Description** |
+|:---|:---|
+| `period` (default) | Returns total usage per custom tag over the entire date range |
+| `day` | Returns usage per custom tag broken down by individual day |
+
+Use `period` when you need a summary for billing or reporting. Use `day` when you need to analyze usage trends over time.
+
+## Response structure
+
+The response contains a `custom_tag_usage_report` object with the following fields:
+
+| **Field** | **Description** |
+|:---|:---|
+| `aggregate_by` | The aggregation method used (`period` or `day`) |
+| `start_date` | Start of the reporting period (ISO 8601 datetime) |
+| `end_date` | End of the reporting period (ISO 8601 datetime) |
+| `next_page` | Integer cursor for the next page of results. `null` if there are no further pages |
+| `usage` | Array of usage entries, one per custom tag |
+
+Each entry in `usage` includes:
+- `custom_tag`: the tag identifier
+- `breakdown`: character counts split by service type
+
+### Usage breakdown
+
+| **Field** | **Description** |
+|:---|:---|
+| `total_characters` | Combined character usage across all services |
+| `text_translation_characters` | Characters used for text translation |
+| `text_improvement_characters` | Characters used for text improvement (rephrasing) |
+
+## Pagination
+
+Results are paginated. If the response includes a non-null `next_page` value, pass it as the `page` parameter in your next request to retrieve the following page. Continue until `next_page` is `null`.

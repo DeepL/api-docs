@@ -7,11 +7,12 @@ rss: true
 <Update label="In active development">
 - Support for uploading, modifying, and deleting [translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories) via API
 - API key-level endpoint restrictions
+- Usage reporting by language pair
 </Update>
 
 <Update label="May 2026">
 ## May 20 - Custom Tag Usage Analytics
-- Added [`GET /v2/admin/analytics/custom-tags`](/api-reference/admin-api/get-custom-tag-usage-analytics) to the Admin API, allowing admins to retrieve usage statistics broken down by custom tags.
+- Added [`GET /v2/admin/analytics/custom-tags`](/api-reference/admin-api/custom-tag-usage-analytics) to the Admin API, allowing admins to retrieve usage statistics broken down by custom tags.
 - Supports `aggregate_by=period` (default) to aggregate usage over the full date range, or `aggregate_by=day` for daily breakdowns.
 - Results are paginated; use the `next_page` integer from the response as the `page` parameter in subsequent requests.
 
