@@ -32,6 +32,7 @@ The response contains a `custom_tag_usage_report` object with the following fiel
 
 Each entry in `usage` includes:
 - `custom_tag`: the tag identifier
+- `usage_date`: the day the usage was recorded (ISO 8601 datetime). Only returned when `aggregate_by` is `day`
 - `breakdown`: character counts split by service type
 
 ### Usage breakdown
