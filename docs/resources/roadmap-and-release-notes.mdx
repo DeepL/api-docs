@@ -16,6 +16,12 @@ rss: true
 - Supports `aggregate_by=period` (default) to aggregate usage over the full date range, or `aggregate_by=day` for daily breakdowns.
 - Results are paginated; use the `next_page` integer from the response as the `page` parameter in subsequent requests.
 
+## May 19 - Voice API Spoken Terms
+- New optional `spoken_terms_id` parameter on [`POST /v3/voice/realtime`](/api-reference/voice/request-session) to improve transcription of frequently used terms like company-specific terminology, acronyms, product names, and team member names.
+- Spoken terms are currently in beta, supported for 18 source languages. Manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms); API management will follow in a future update.
+- The new `spoken_terms` feature and the existing `translated_speech` feature are now exposed as beta in [`GET /v3/languages?resource=voice`](/api-reference/languages/retrieve-supported-languages-by-resource), so clients can discover language support programmatically.
+- Not yet supported for transcription provided by external service partners (languages marked with ⎋). See [Voice API Customization](/api-reference/voice#customization) for details.
+
 ## May 18 - v3/languages General Availability
 - [`GET /v3/languages`](/api-reference/languages/retrieve-supported-languages-by-resource) and [`GET /v3/languages/resources`](/api-reference/languages/retrieve-resources) are now generally available.
 - **`/v2/languages` and `/v2/glossary-language-pairs` are now deprecated.** Migrate to `/v3/languages`. See the [migration guide](/api-reference/languages/migrate-from-v2-languages) for details.
@@ -41,6 +47,10 @@ rss: true
 - New `translation_memory_id` and `translation_memory_threshold` parameters on the [text translation endpoint](/api-reference/translate/request-translation) — pass a translation memory ID to apply stored translations, and set a threshold (0-100) to control how closely source text must match a stored segment.
 - New [`GET /v3/translation_memories`](/api-reference/translation-memory/list-translation-memories) endpoint to retrieve translation memories associated with your account.
 - Support for uploading, modifying, and deleting translation memories via the API will follow.
+
+## April 2 - Voice API Language Expansion
+- Added 6 new languages to the [Voice API](/api-reference/voice) for transcription: Bengali (`bn`), Croatian (`hr`), Dutch (`nl`), Irish (`ga`), Maltese (`mt`), and Tagalog (`tl`). Five of these are provided by external service partners; Dutch is provided by DeepL.
+- All supported voice languages can now be used as source languages for transcription. Previously, source language selection was restricted to a subset of the supported languages.
 </Update>
 
 <Update label="March 2026">
@@ -79,6 +89,11 @@ Query parameter and request body authentication methods are now [deprecated](/do
 - **API Pro users**: Brownout period active with intermittent `403` responses. Full deprecation in early February 2026.
 
 Use the `DeepL-Auth-Key` header instead.
+
+## January 19 - Voice API Speech-to-Speech (Closed Beta)
+- New speech-to-speech capability in the [Voice API](/api-reference/voice): synthesize translated audio (TTS output) alongside transcription and text translation in the same WebSocket session.
+- New request parameters on [`POST /v3/voice/realtime`](/api-reference/voice/request-session): `target_media_languages` (target languages for synthesized speech), `target_media_content_type` (audio format), and `target_media_voice` (voice selection).
+- Translated speech is in closed beta and not included in standard API subscriptions.
 
 ## January 8 - 81 New Languages in GA
 - Promoted all 81 beta languages to standard language support. These languages are now part of the main source and target language lists.
