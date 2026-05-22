@@ -4,6 +4,8 @@ description: "Learn how to create effective custom instructions to customize you
 public: true
 ---
 
+import { SupportedLanguages } from "/snippets/supported-languages.jsx"
+
 The `custom_instructions` parameter allows you to provide natural language instructions that customize how the DeepL API translates text. This guide provides best practices for creating effective custom instructions that produce consistent, high-quality results.
 
 ## What are custom instructions?
@@ -84,8 +86,11 @@ When using custom instructions, keep these constraints in mind:
 
 - **Maximum instructions**: Up to 10 custom instructions per request
 - **Character limit**: Each instruction can contain a maximum of 300 characters
-- **Supported target languages**: `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, `zh`, or any variants of these languages
 - **Model requirement**: Requests with `custom_instructions` automatically use the `quality_optimized` model type
+
+**Supported target languages:**
+
+<SupportedLanguages resource="translate_text" feature="style_rules" direction="target" />
 
 <Warning>
 Combining `custom_instructions` with `model_type: latency_optimized` will result in an error. Custom instructions require the quality-optimized model.

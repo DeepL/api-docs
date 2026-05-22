@@ -14,7 +14,7 @@
         "external": true
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -34,7 +34,7 @@
         "external": true
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -65,11 +65,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -89,7 +92,7 @@
         "external": true
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -110,11 +113,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -133,7 +139,7 @@
         "external": true
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -151,11 +157,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -170,7 +179,7 @@
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -185,7 +194,7 @@
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -205,11 +214,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -236,9 +248,6 @@
     "usable_as_source": true,
     "usable_as_target": true,
     "features": {
-      "auto_detection": {
-        "status": "stable"
-      },
       "glossary": {
         "status": "stable"
       },
@@ -247,7 +256,7 @@
         "external": true
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -268,11 +277,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -333,7 +345,7 @@
         "external": true
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -351,11 +363,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -376,11 +391,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -400,11 +418,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -421,11 +442,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -489,7 +513,7 @@
         "external": true
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -507,11 +531,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -531,11 +558,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -555,11 +585,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -577,7 +610,7 @@
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -595,7 +628,7 @@
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -612,11 +645,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -637,11 +673,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -660,7 +699,7 @@
         "external": true
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -694,11 +733,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -741,11 +783,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -762,11 +807,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -786,7 +834,7 @@
         "external": true
       },
       "translated_speech": {
-        "status": "stable",
+        "status": "beta",
         "external": true
       }
     }
@@ -804,11 +852,14 @@
       "glossary": {
         "status": "stable"
       },
+      "spoken_terms": {
+        "status": "beta"
+      },
       "transcription": {
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -823,7 +874,7 @@
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   },
@@ -838,7 +889,7 @@
         "status": "stable"
       },
       "translated_speech": {
-        "status": "stable"
+        "status": "beta"
       }
     }
   }

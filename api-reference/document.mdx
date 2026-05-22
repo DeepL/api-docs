@@ -4,6 +4,8 @@ sidebarTitle: "Overview"
 public: true
 ---
 
+import { SupportedLanguages } from "/snippets/supported-languages.jsx"
+
 The document translation API allows you to translate whole documents and supports the following file types and extensions:
 
 * `docx` / `doc` - Microsoft Word Document
@@ -146,7 +148,11 @@ These examples are for demonstration purposes only. In production code, the auth
   The name of the uploaded file. Can be used as an alternative to including the file name in the file part's content disposition.
 </ParamField>
 <ParamField body="formality" type="string">
-  Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages `DE` (German), `FR` (French), `IT` (Italian), `ES` (Spanish), `NL` (Dutch), `PL` (Polish), `PT-BR` and `PT-PT` (Portuguese), `JA` (Japanese), and `RU` (Russian). Learn more about the plain/polite feature for Japanese <a href="https://support.deepl.com/hc/en-us/articles/6306700061852-About-the-plain-polite-feature-in-Japanese">here</a>. Setting this parameter with a target language that does not support formality will fail, unless one of the `prefer_...` options are used. To check formality support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_document</code></a> and look for the <code>formality</code> feature key on the target language. Possible options are:
+  Sets whether the translated text should lean towards formal or informal language. Currently supported for the following target languages:
+
+  <SupportedLanguages mode="bullets" resource="translate_document" feature="formality" direction="target" />
+
+  Learn more about the plain/polite feature for Japanese <a href="https://support.deepl.com/hc/en-us/articles/6306700061852-About-the-plain-polite-feature-in-Japanese">here</a>. Setting this parameter with a target language that does not support formality will fail, unless one of the `prefer_...` options are used. To check formality support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_document</code></a> and look for the <code>formality</code> feature key on the target language. Possible options are:
   <ul>
     <li>`default` (default)</li>
     <li>`more` - for a more formal language</li>

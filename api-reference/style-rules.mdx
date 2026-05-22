@@ -4,6 +4,8 @@ sidebarTitle: "Overview"
 description: "Manage a shared list of rules for style, formatting, and more"
 ---
 
+import { SupportedLanguages } from "/snippets/supported-languages.jsx"
+
 <Info>
     The Style Rules API is currently available only to Pro API subscribers.
 </Info>
@@ -161,7 +163,9 @@ Create a new style rule list with configured rules and optional custom instructi
   The name of the style rule list. Maximum length: 1024 characters.
 </ParamField>
 <ParamField body="language" type="string" required>
-  The target language for the style rules. Supported values: `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, `zh`.
+  The target language for the style rules. Supported values:
+
+  <SupportedLanguages resource="style_rules" />
 </ParamField>
 <ParamField body="configured_rules" type="object">
   An object containing predefined rules to enable for the style rule list. Rules are organized by category (e.g., `dates_and_times`, `punctuation`). Each category can contain multiple rule options.

@@ -23,7 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Fetch latest /v3/languages responses
+      - name: Fetch latest /v3/languages responses and refresh snippet
         env:
           DEEPL_AUTH_KEY: ${{ secrets.DEEPL_API_KEY }}
         run: python3 scripts/fetch_v3_languages.py
@@ -37,7 +37,8 @@ jobs:
           title: "chore(v3-languages): refresh vended responses"
           body: |
             Automated refresh of `data/v3-languages/` from `https://api.deepl.com/v3/languages`,
-            opened by the `refresh-v3-languages` workflow.
+            with `snippets/supported-languages.jsx` regenerated from the new responses. Opened by
+            the `refresh-v3-languages` workflow.
 
             This PR is rewritten in place on each run: if the vended responses change again
             before merge, the branch is force-pushed with a new single squashed commit so the
@@ -45,6 +46,8 @@ jobs:
             responses identical to what is already on the branch, the branch is left untouched.
             If a run finds the responses match `main` (e.g. the PR was merged), this PR is
             closed and the branch deleted automatically.
-          add-paths: data/v3-languages/**
+          add-paths: |
+            data/v3-languages/**
+            snippets/supported-languages.jsx
           delete-branch: true
           labels: automated, v3-languages

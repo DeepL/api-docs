@@ -5,7 +5,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "af",
@@ -13,7 +17,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "an",
@@ -21,7 +29,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ar",
@@ -44,7 +56,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ay",
@@ -52,7 +68,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "az",
@@ -60,7 +80,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ba",
@@ -68,7 +92,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "be",
@@ -76,7 +104,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "bg",
@@ -99,7 +131,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "bn",
@@ -107,7 +143,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "br",
@@ -115,7 +155,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "bs",
@@ -123,7 +167,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ca",
@@ -131,7 +179,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ceb",
@@ -139,7 +191,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ckb",
@@ -147,7 +203,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "cs",
@@ -170,7 +230,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "da",
@@ -265,7 +329,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "es",
@@ -321,7 +389,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "fa",
@@ -329,7 +401,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "fi",
@@ -370,7 +446,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "gl",
@@ -378,7 +458,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "gn",
@@ -386,7 +470,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "gom",
@@ -394,7 +482,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "gu",
@@ -402,7 +494,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ha",
@@ -410,7 +506,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "he",
@@ -433,7 +533,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "hr",
@@ -441,7 +545,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ht",
@@ -449,7 +557,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "hu",
@@ -472,7 +584,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "id",
@@ -495,7 +611,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "is",
@@ -503,7 +623,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "it",
@@ -547,7 +671,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ka",
@@ -555,7 +683,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "kk",
@@ -563,7 +695,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "kmr",
@@ -571,7 +707,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ko",
@@ -594,7 +734,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "la",
@@ -602,7 +746,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "lb",
@@ -610,7 +758,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "lmo",
@@ -618,7 +770,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ln",
@@ -626,7 +782,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "lt",
@@ -664,7 +824,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "mg",
@@ -672,7 +836,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "mi",
@@ -680,7 +848,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "mk",
@@ -688,7 +860,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ml",
@@ -696,7 +872,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "mn",
@@ -704,7 +884,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "mr",
@@ -712,7 +896,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ms",
@@ -720,7 +908,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "mt",
@@ -728,7 +920,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "my",
@@ -736,7 +932,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "nb",
@@ -759,7 +959,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "nl",
@@ -785,7 +989,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "om",
@@ -793,7 +1001,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "pa",
@@ -801,7 +1013,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "pag",
@@ -809,7 +1025,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "pam",
@@ -817,7 +1037,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "pl",
@@ -843,7 +1067,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ps",
@@ -851,7 +1079,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "pt",
@@ -907,7 +1139,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ro",
@@ -948,7 +1184,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "scn",
@@ -956,7 +1196,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "sk",
@@ -994,7 +1238,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "sr",
@@ -1002,7 +1250,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "st",
@@ -1010,7 +1262,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "su",
@@ -1018,7 +1274,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "sv",
@@ -1041,7 +1301,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "ta",
@@ -1049,7 +1313,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "te",
@@ -1057,7 +1325,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "tg",
@@ -1065,7 +1337,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "th",
@@ -1073,7 +1349,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "tk",
@@ -1081,7 +1361,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "tl",
@@ -1089,7 +1373,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "tn",
@@ -1097,7 +1385,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "tr",
@@ -1120,7 +1412,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "uk",
@@ -1143,7 +1439,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "uz",
@@ -1151,7 +1451,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "vi",
@@ -1174,7 +1478,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "xh",
@@ -1182,7 +1490,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "yi",
@@ -1190,7 +1502,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "yue",
@@ -1198,7 +1514,11 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   },
   {
     "lang": "zh",
@@ -1245,6 +1565,10 @@
     "status": "stable",
     "usable_as_source": true,
     "usable_as_target": true,
-    "features": {}
+    "features": {
+      "auto_detection": {
+        "status": "stable"
+      }
+    }
   }
 ]

@@ -1,0 +1,98 @@
+[
+  {
+    "lang": "de",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "en",
+    "name": "English",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "en-GB",
+    "name": "English (British)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "en-US",
+    "name": "English (American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "es",
+    "name": "Spanish",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "es-419",
+    "name": "Spanish (Latin American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "fr",
+    "name": "French",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "it",
+    "name": "Italian",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "ja",
+    "name": "Japanese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "ko",
+    "name": "Korean",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "zh",
+    "name": "Chinese",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {}
+  },
+  {
+    "lang": "zh-Hans",
+    "name": "Chinese (simplified)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {}
+  }
+]

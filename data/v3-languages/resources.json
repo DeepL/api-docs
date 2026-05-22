@@ -69,6 +69,10 @@
         "needs_target_support": true
       },
       {
+        "name": "spoken_terms",
+        "needs_source_support": true
+      },
+      {
         "name": "transcription",
         "needs_source_support": true
       },

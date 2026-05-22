@@ -6,18 +6,20 @@ sidebarTitle: "Languages supported"
 mode: "wide"
 ---
 
+import { SupportedLanguages } from "/snippets/supported-languages.jsx"
+
 The DeepL API supports the following languages. These can also be retrieved programmatically via the [`/v3/languages` endpoint](/api-reference/languages/retrieve-supported-languages-by-resource), which returns language support per resource along with feature availability (e.g. formality, glossary, auto-detection). The legacy [`/v2/languages` endpoint](/api-reference/languages/retrieve-supported-languages) is also available but deprecated.
 
 ## API Supported Languages
 
-import { LanguageTable } from "/snippets/language-table.jsx"
-
-<LanguageTable />
+<SupportedLanguages mode="table" />
 
 <Info>
   Currently, characters translated into beta languages are not billed. See [Alpha and beta features](/docs/resources/alpha-and-beta-features) for more information.
 </Info>
 
-<Info>
-  Style rules are supported for the following target languages: `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, and `zh`. For more details, see the [Style Rules API documentation](/api-reference/style-rules). Writing style and tone availability for `/write/rephrase` can also be retrieved via [`GET /v3/languages?resource=write`](/api-reference/languages/retrieve-supported-languages-by-resource).
-</Info>
+Style rules are supported for the following target languages:
+
+<SupportedLanguages resource="translate_text" feature="style_rules" direction="target" />
+
+For more details, see the [Style Rules API documentation](/api-reference/style-rules). Writing style and tone availability for `/write/rephrase` can also be retrieved via [`GET /v3/languages?resource=write`](/api-reference/languages/retrieve-supported-languages-by-resource).

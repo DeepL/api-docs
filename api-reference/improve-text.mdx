@@ -3,6 +3,9 @@ title: "Improve text"
 public: true
 sidebarTitle: "Overview"
 ---
+
+import { SupportedLanguages } from "/snippets/supported-languages.jsx"
+
 <Info>
   **Introducing DeepL API for Write**
 
@@ -64,17 +67,7 @@ curl -X POST 'https://api.deepl.com/v2/write/rephrase' \
 <ParamField body="target_lang" type="string">
   The language of the improved text. Currently, the following languages are supported:
 
-  * `de` (German)
-  * `en-GB` (British English)
-  * `en-US` (American English)
-  * `es` (Spanish)
-  * `fr` (French)
-  * `it` (Italian)
-  * `ja` (Japanese)
-  * `ko` (Korean)
-  * `pt-BR` (Brazilian Portuguese)
-  * `pt-PT` (Portuguese)
-  * `zh`/`zh-Hans` (simplified Chinese)
+  <SupportedLanguages mode="bullets" resource="write" direction="target" />
 
   You can also retrieve supported languages programmatically via <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=write</code></a>.
 

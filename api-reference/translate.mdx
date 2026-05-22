@@ -5,6 +5,8 @@ description: "API reference for translating text with the DeepL API."
 public: true
 ---
 
+import { SupportedLanguages } from "/snippets/supported-languages.jsx"
+
 The text-translation API currently consists of a single endpoint, `translate`, which is described below.
 
 For highest translation quality, we recommend using our next-gen models. For details, please see [here](/api-reference/translate#about-the-model_type-parameter).
@@ -267,7 +269,11 @@ error.
   </Info>
 </ParamField>
 <ParamField body="formality" type="string">
-  Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages <code>DE</code> (German), <code>FR</code> (French), <code>IT</code> (Italian), <code>ES</code> (Spanish), <code>ES-419</code> (Latin American Spanish), <code>NL</code> (Dutch), <code>PL</code> (Polish), <code>PT-BR</code> and <code>PT-PT</code> (Portuguese), <code>JA</code> (Japanese), and <code>RU</code> (Russian). Learn more about the <a href="https://support.deepl.com/hc/en-us/articles/6306700061852-About-formality-plain-and-polite-tones-in-Japanese">plain/polite feature for Japanese ↗️</a>. To check formality support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_text</code></a> and look for the <code>formality</code> feature key on the target language.
+  Sets whether the translated text should lean towards formal or informal language. Currently supported for the following target languages:
+
+  <SupportedLanguages mode="bullets" resource="translate_text" feature="formality" direction="target" />
+
+  Learn more about the <a href="https://support.deepl.com/hc/en-us/articles/6306700061852-About-formality-plain-and-polite-tones-in-Japanese">plain/polite feature for Japanese ↗️</a>. To check formality support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_text</code></a> and look for the <code>formality</code> feature key on the target language.
 
   <p>Setting this parameter with a target language that does not support formality will fail, unless one of the <code>prefer_...</code> options are used. Possible options are:</p>
   <ul>
@@ -296,9 +302,11 @@ error.
 <ParamField body="custom_instructions" type="array[string]">
   Specify a list of instructions to customize the translation behavior. Up to 10 custom instructions can be specified, each with a maximum of 300 characters.
 
-  <Info>
-    The target language must be `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, `zh` or any variants of these languages.
+  The target language must be one of:
 
+  <SupportedLanguages resource="translate_text" feature="style_rules" direction="target" />
+
+  <Info>
     Any request with the `custom_instructions` parameter enabled will default to use the `quality_optimized` model type. Requests combining `custom_instructions` and `model_type: latency_optimized` will be rejected. You can find best practices on how to write custom instructions [here](/docs/best-practices/custom-instructions).
   </Info>
   To check language support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_text</code></a> and check for the <code>style_rules</code> feature key on the target language.
