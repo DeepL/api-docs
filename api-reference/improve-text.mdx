@@ -14,10 +14,15 @@ sidebarTitle: "Overview"
 </Info>
 ### DeepL API for Write overview
 
-DeepL API for Write is accessible through an HTTP interface and currently consists of a single endpoint for text improvement, `/write/rephrase`, which is described below. The endpoint:
+DeepL API for Write is accessible through an HTTP interface and consists of two endpoints:
 
-* Accepts both form-encoded (`Content-Type: application/x-www-form-urlencoded`) and JSON-encoded (`Content-Type: application/json`) request bodies
-* Returns JSON-encoded responses
+* [`/write/rephrase`](/api-reference/improve-text/request-text-improvement) — broad text improvement. Fixes spelling and grammar and may also rewrite sentences for clarity, style, or tone.
+* [`/write/correct`](/api-reference/improve-text/correct-text) — corrections-only mode. Fixes spelling and grammar errors with minimal changes to wording. Use this when you want the model to leave the author's voice intact.
+
+Both endpoints:
+
+* Accept both form-encoded (`Content-Type: application/x-www-form-urlencoded`) and JSON-encoded (`Content-Type: application/json`) request bodies
+* Return JSON-encoded responses
 
 The client libraries support all features of the text improvement endpoint. The text improvement feature is currently only available to DeepL API Pro customers and is not yet available in DeepL API Free.
 
@@ -183,6 +188,7 @@ We've added a new column to the [API key-level usage report](/docs/getting-start
 
 #### Is "Corrections Only" mode available in the API?
 
-No. "Corrections Only" is a mode that fixes spelling and grammatical errors only without broader rephrasing. It is currently only available in the DeepL Translator UI.
+Yes. Send your request to [`/write/correct`](/api-reference/improve-text/correct-text). This endpoint fixes spelling and grammar errors with minimal changes to wording, matching the "Corrections Only" mode in the DeepL Translator UI.
 
-If you make an API request to `/write/rephrase` and omit both `writing_style` and `tone`, the API uses its default improvement mode. This corrects grammar and spelling but may also make broader changes than the "Corrections Only" mode in the UI.
+
+If you instead send a request to `/write/rephrase` and omit both `writing_style` and `tone`, the API uses its default improvement mode. This corrects grammar and spelling but may also make broader changes than `/write/correct`.

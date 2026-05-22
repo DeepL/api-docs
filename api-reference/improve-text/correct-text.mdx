@@ -1,0 +1,7 @@
+---
+openapi: post /v2/write/correct
+title: "Correct text"
+description: "Fixes spelling and grammar errors with minimal changes to wording."
+---
+
+The `/v2/write/correct` endpoint fixes spelling and grammar errors in one or more texts with minimal changes to wording, matching the "Corrections Only" mode in the DeepL Translator UI. It does not accept `writing_style` or `tone` and does not rephrase sentences for clarity. The broader [`/v2/write/rephrase`](/api-reference/improve-text/request-text-improvement) endpoint supports those parameters.
