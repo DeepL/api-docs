@@ -1,0 +1,140 @@
+---
+title: "Sending Custom Reporting Tags with Client Libraries"
+description: "Code snippets for attaching X-DeepL-Reporting-Tag to translate requests using the official DeepL client libraries."
+public: true
+---
+
+This recipe shows how to attach a custom reporting tag to translate requests using each official DeepL client library. For an overview of what custom reporting tags are, how they're stored, and how to query their usage, see [How to Use Custom Reporting Tags](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags).
+
+<Note>
+Ruby is omitted from the snippets below because the `deepl-rb` library does not yet expose custom HTTP headers on translate requests. Support is in the works.
+</Note>
+
+## Recommended pattern: one client per tag
+
+All five client libraries shown below let you attach custom HTTP headers when constructing a `DeepLClient`. The simplest way to tag your requests is to construct one `DeepLClient` per tag value, configure it with `X-DeepL-Reporting-Tag` once, and reuse it for every request that should carry that tag.
+
+This pattern works the same way across Python, Node.js, Java, .NET, and PHP. Each `DeepLClient` instance owns its own HTTP connection pool, so keep instances around and reuse them rather than constructing a new client per request.
+
+## Code snippets
+
+The snippets below all send the same translate request (`"Welcome to your dashboard." → DE`) and tag it as `team-billing`. Replace `YOUR_AUTH_KEY` with your DeepL API authentication key.
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import deepl
+
+    client = deepl.DeepLClient("YOUR_AUTH_KEY")
+    client.headers["X-DeepL-Reporting-Tag"] = "team-billing"
+
+    result = client.translate_text(
+        "Welcome to your dashboard.",
+        target_lang="DE",
+    )
+    print(result.text)
+    ```
+
+    The Python library exposes `client.headers` as a public dictionary. Setting the key after construction merges with the library-managed `Authorization` and `User-Agent` headers.
+  </Tab>
+  <Tab title="Node.js">
+    ```typescript
+    import * as deepl from 'deepl-node';
+
+    const client = new deepl.DeepLClient('YOUR_AUTH_KEY', {
+      headers: { 'X-DeepL-Reporting-Tag': 'team-billing' },
+    });
+
+    const result = await client.translateText(
+      'Welcome to your dashboard.',
+      null,
+      'DE',
+    );
+    console.log(result.text);
+    ```
+
+    The `headers` option on `DeepLClientOptions` is merged with the library-managed `Authorization` and `User-Agent` headers at construction time.
+  </Tab>
+  <Tab title="Java">
+    ```java
+    import com.deepl.api.*;
+    import java.util.Map;
+
+    DeepLClientOptions options = new DeepLClientOptions()
+        .setHeaders(Map.of("X-DeepL-Reporting-Tag", "team-billing"));
+
+    DeepLClient client = new DeepLClient("YOUR_AUTH_KEY", options);
+
+    TextResult result = client.translateText(
+        "Welcome to your dashboard.",
+        null,
+        "DE"
+    );
+    System.out.println(result.getText());
+    ```
+
+    `DeepLClientOptions.setHeaders` accepts any `Map<String, String>`. The configured headers are sent on every request issued by this client.
+  </Tab>
+  <Tab title=".NET">
+    ```csharp
+    using DeepL;
+
+    var options = new DeepLClientOptions {
+        Headers = new Dictionary<string, string?> {
+            { "X-DeepL-Reporting-Tag", "team-billing" }
+        }
+    };
+
+    var client = new DeepLClient("YOUR_AUTH_KEY", options);
+
+    var result = await client.TranslateTextAsync(
+        "Welcome to your dashboard.",
+        null,
+        "DE"
+    );
+    Console.WriteLine(result.Text);
+    ```
+
+    `DeepLClientOptions.Headers` is a `Dictionary<string, string?>`. Headers configured here are attached to every request the client makes.
+  </Tab>
+  <Tab title="PHP">
+    ```php
+    <?php
+    require __DIR__ . '/vendor/autoload.php';
+
+    $client = new \DeepL\DeepLClient('YOUR_AUTH_KEY', [
+        'headers' => [
+            'X-DeepL-Reporting-Tag' => 'team-billing',
+        ],
+    ]);
+
+    $result = $client->translateText(
+        'Welcome to your dashboard.',
+        null,
+        'DE'
+    );
+    echo $result->text;
+    ```
+
+    The `headers` option in the constructor's options array is merged with the library-managed `Authorization` and `User-Agent` headers.
+  </Tab>
+</Tabs>
+
+**Output (all snippets):**
+
+```
+Willkommen in Ihrem Dashboard.
+```
+
+## Tagging across many values
+
+The one-client-per-tag pattern works well when your tag dimension is bounded: teams, products, or a handful of business units. If you need to tag with high-cardinality values, such as a unique tag per end customer, holding a `DeepLClient` instance for every value isn't practical.
+
+Today, none of the client libraries expose per-request custom headers through their public translate methods. The HTTP client layers in deepl-node, deepl-python, and deepl-php already support per-request header injection internally, so the foundation is in place. The Java and .NET libraries support only per-instance headers.
+
+Updates to extend per-request custom-header support across the client libraries are planned. Until those updates land, the per-instance pattern above is the supported path.
+
+## Next steps
+
+- **Concepts and limits:** Read [How to Use Custom Reporting Tags](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags) for the validation rules, naming guidance, and the relationship between tags and API keys.
+- **Query tagged usage:** See the [Get custom tag usage analytics](/api-reference/admin-api/get-custom-tag-usage-analytics) reference.
