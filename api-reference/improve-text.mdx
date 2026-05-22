@@ -93,15 +93,7 @@ curl -X POST 'https://api.deepl.com/v2/write/rephrase' \
   </Expandable>
   Currently supported for the following target languages:
 
-  * `de` (German)
-  * `en-GB` (British English)
-  * `en-US` (American English)
-  * `es` (Spanish)
-  * `fr` (French)
-  * `it` (Italian)
-  * `pt-BR` (Brazilian Portuguese)
-  * `pt-PT` (Portuguese)
-
+  <SupportedLanguages mode="bullets" resource="write" feature="writing_style" direction="target" />
 
   Styles prefixed with `prefer_` will fall back to the `default` style when used with a language that does not support styles (this is recommended for cases where no `target_lang` is set), the non-prefixed writing styles (except `default`) will return a HTTP 400 error in that case.
 
@@ -128,14 +120,7 @@ curl -X POST 'https://api.deepl.com/v2/write/rephrase' \
 
   Currently supported for the following target languages:
 
-  * `de` (German)
-  * `en-GB` (British English)
-  * `en-US` (American English)
-  * `es` (Spanish)
-  * `fr` (French)
-  * `it` (Italian)
-  * `pt-BR` (Brazilian Portuguese)
-  * `pt-PT` (Portuguese)
+  <SupportedLanguages mode="bullets" resource="write" feature="tone" direction="target" />
 
   Tones prefixed with `prefer_` will fall back to the `default` tone when used with a language that does not support tones (this is recommended for cases where no `target_lang` is set), the non-prefixed tones (except `default`) will return a HTTP 400 error in that case.
 
