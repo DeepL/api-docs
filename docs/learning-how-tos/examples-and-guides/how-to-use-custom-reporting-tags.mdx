@@ -1,0 +1,97 @@
+---
+title: "How to Use Custom Reporting Tags"
+description: "Learn how to attach reporting tags to translate requests so you can break down usage by team, project, or category."
+public: true
+---
+
+**This guide shows you:**
+- When to use custom reporting tags
+- How to attach a tag to a translate request via the `X-DeepL-Reporting-Tag` header
+- Tag naming guidance and current limitations
+
+---
+
+## What custom reporting tags are for
+
+Custom reporting tags let your organization attribute API usage to a team, project, customer, or any other category you care about. You attach a tag to each translate request, and the [Get custom tag usage analytics](/api-reference/admin-api/get-custom-tag-usage-analytics) endpoint reports usage broken down by those tags.
+
+Common use cases:
+
+- **Multi-tenant applications**: attribute translation volume to the end customer making each request
+- **Internal cost allocation**: split usage across teams or business units that share a single API key
+
+Only tagged requests appear in custom-tag reports, so tag every request you want to track.
+
+<Warning>
+Custom tag data is currently supported for text translation. Support for additional request types will be added in a future update.
+</Warning>
+
+---
+
+## How to tag a translate request
+
+Set the optional `X-DeepL-Reporting-Tag` header on your translate request. You define the tag value; no registration is required before sending it. See [Tag naming guidance](#tag-naming-guidance) and [Limitations](#limitations) for the rules tag values must follow.
+
+```sh
+curl --request POST 'https://api.deepl.com/v2/translate' \
+--header 'Authorization: DeepL-Auth-Key [your key]' \
+--header 'X-DeepL-Reporting-Tag: team-billing' \
+--header 'Content-Type: application/json' \
+--data '{
+  "text": ["Welcome to your dashboard."],
+  "target_lang": "DE"
+}'
+```
+
+**Sample response:**
+
+```json
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Willkommen in Ihrem Dashboard."
+    }
+  ]
+}
+```
+
+The translate response is unchanged by tagging. The tag is recorded server-side and surfaces only in the custom-tag analytics endpoint.
+
+---
+
+## Tag naming guidance
+
+A few practices keep your reports clean:
+
+- Tags are caller-defined strings. The API records the value you send after applying the normalization rules below.
+- Before storage, the API trims leading and trailing whitespace and lowercases the value, so `"  Sample-Tag"` is recorded as `sample-tag` and appears that way in analytics responses.
+- After normalization, characters are matched exactly. `team-billing` and `team_billing` report as two separate tags.
+- Pick a convention and stick to it. Examples: `team-billing`, `customer-{id}`, `project-{id}`.
+
+---
+
+## Tags and API keys
+
+A custom tag is independent of the API key that sent the request. The same tag value can be used across multiple API keys in your organization, and usage from every key that sends `team-billing` rolls up to a single `team-billing` row in the analytics response.
+
+The custom-tag analytics endpoint groups by tag only. Combined breakdowns such as tag-by-API-key or API-key-by-tag are not supported. For a per-key view of usage, use the [Get usage analytics](/api-reference/admin-api/get-usage-analytics) endpoint instead.
+
+Tags are a reporting feature only. You cannot use them to enforce limits, quotas, or any per-request controls. If you need separate controls across workloads, such as capping staging consumption or disabling translation for a specific environment, use a separate API key for each workload and configure [cost control limits](/docs/best-practices/cost-control) per key.
+
+---
+
+## Limitations
+
+- Tag values are limited to 100 characters. Requests with longer values are rejected with a 400 response.
+- Tag values must use ASCII characters only, with no internal whitespace and no control characters. Values like `sample tag`, `sample-tág`, or `sample\ntag` are rejected with a 400 response. Leading and trailing whitespace is trimmed before validation (see [Tag naming guidance](#tag-naming-guidance)).
+- Each request accepts one tag. Sending multiple values in the header is not supported.
+- Untagged requests are not included in custom-tag analytics. They still count toward your overall usage, which you can retrieve through the [Get usage analytics](/api-reference/admin-api/get-usage-analytics) endpoint.
+
+---
+
+## Next steps
+
+- **Query your tagged usage:** See the [Get custom tag usage analytics](/api-reference/admin-api/get-custom-tag-usage-analytics) reference for date ranges, aggregation options, and pagination.
+- **Get the bigger picture:** Read the [usage analytics overview](/api-reference/admin-api/organization-usage-analytics) to understand how custom-tag reporting fits alongside total organization usage.
+- **Explore other optional translate parameters:** Learn [how to use the context parameter](/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter) to improve translation accuracy for ambiguous content.
