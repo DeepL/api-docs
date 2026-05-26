@@ -386,10 +386,13 @@ to interact with the API.
 
 ## Limitations and Constraints
 
-* Maximum 5 target languages per session
+* Maximum 5 translation targets per session (including translated speech targets)
+* Maximum 1 translated speech target per session
 * Audio chunk size: should not exceed 100 kilobyte or 1 second duration
 * Recommended chunk duration: 50-250 milliseconds for low latency
 * Audio stream speed: maximum 2x real-time
 * Timeout: If no data is received for 30 seconds, the session will be terminated
 * Maximum connection duration: After 1 hour, the connection will be closed. You can establish a new connection by [reconnecting](/api-reference/voice/reconnect-session) to the session.
 * Using any given token more than once to establish a WebSocket connection will terminate the associated session immediately for security reasons.
+
+If you need more translation targets or translated speech targets than these limits allow, open multiple concurrent sessions over the same source audio.
