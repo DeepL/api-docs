@@ -126,6 +126,10 @@ The snippets below all send the same translate request (`"Welcome to your dashbo
 Willkommen in Ihrem Dashboard.
 ```
 
+<Tip>
+To confirm `X-DeepL-Reporting-Tag` is leaving your client correctly, point the SDK at [deepl-mock](https://github.com/DeepLcom/deepl-mock) via the `server_url` / `serverUrl` option and inspect the headers it logs. Useful for catching configuration mistakes before sending real tagged traffic.
+</Tip>
+
 ## Tagging across many values
 
 The one-client-per-tag pattern works well when your tag dimension is bounded: teams, products, or a handful of business units. If you need to tag with high-cardinality values, such as a unique tag per end customer, holding a `DeepLClient` instance for every value isn't practical.
