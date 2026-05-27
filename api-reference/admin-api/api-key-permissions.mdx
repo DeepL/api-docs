@@ -1,0 +1,78 @@
+---
+title: "API key permissions"
+description: "Learn how admins can restrict an API key's access to specific endpoints using permissions."
+public: true
+---
+
+API key permissions let admins limit what a developer API key can do. Instead of one key with full access to every endpoint, you can issue keys that are restricted to specific operations, for example a key that can only translate text or a key that can only read glossaries.
+
+<Info>
+    API key permissions are available on request. To enable this feature for your organization, contact your DeepL customer success manager or DeepL support.
+</Info>
+
+### How permissions work
+
+Every developer API key is one of two types:
+
+- **Unrestricted** - the key has no permissions assigned and can call every endpoint. This is the default for any key created before permissions were enabled, and for any key created without selecting custom permissions.
+- **Scoped** - the key has one or more permissions assigned and can only call the endpoints those permissions cover. Calls to other endpoints are rejected.
+
+<Warning>
+    Permissions are enforced only on scoped keys. Unrestricted keys retain full access to every endpoint, including endpoints that have permissions defined. Existing keys remain unrestricted by default, but admins can scope them at any time using **Edit permissions**.
+</Warning>
+
+### Available permissions
+
+| **Permission** | **Endpoints it grants access to** |
+|:---|:---|
+| Translate text | Text translation endpoints (`/v2/translate`) |
+| View glossaries and their entries | Glossary read endpoints (`GET /v3/glossaries`, `GET /v3/glossaries/{glossary_id}`, `GET /v3/glossaries/{glossary_id}/entries`) |
+| Create, modify, and delete glossaries | Glossary write endpoints (`POST`, `PATCH`, `PUT`, and `DELETE` on `/v3/glossaries`) |
+
+Additional permissions covering more of the API will be added in future updates.
+
+### Create a scoped key
+
+Open the [DeepL Keys](https://www.deepl.com/your-account/keys) page in your account and select the **Translation** tab. Click "Create key" and optionally name the key.
+
+Under **Permissions**, choose one of:
+
+- **All access** - the key remains unrestricted and can call every endpoint.
+- **Custom permissions** - select one or more permissions from the list. The key can only call endpoints covered by the selected permissions.
+
+Click "Create key" to confirm. The key is created with the chosen permissions and shown once in a popup so you can copy it.
+
+<Frame caption="Selecting custom permissions when creating a new API key">
+    ![](/_assets/images/api-key-permissions-create.png)
+</Frame>
+
+### Edit permissions on an existing key
+
+You can change permissions on any existing developer API key, including keys that were originally unrestricted.
+
+In the API keys table, open the key's menu and select "Edit permissions". Choose **All access** to make the key unrestricted, or **Custom permissions** to select specific permissions. Click "Save" to apply.
+
+<Frame caption="Editing permissions on an existing key">
+    ![](/_assets/images/api-key-permissions-edit.png)
+</Frame>
+
+### Identify scoped and unrestricted keys
+
+The API keys table includes a **Permissions** column showing each key's status:
+
+- Keys with permissions assigned display a **Scoped** badge. Click the badge to view the assigned permissions.
+- Keys without permissions display an **Unrestricted** badge.
+
+<Frame caption="The Permissions column showing scoped and unrestricted keys">
+    ![](/_assets/images/api-key-permissions-badges.png)
+</Frame>
+
+### Error responses
+
+When a scoped key calls an endpoint it does not have permission to access, the API returns a `403 Forbidden` response. To resolve the error, either call an endpoint the key has permission for, or update the key's permissions to include the required access.
+
+### Limitations
+
+- Permissions apply only to developer API keys. Admin API keys cannot be scoped and always have full access to the Admin API.
+- Speech-to-Text keys do not currently support permissions.
+- Permissions are configured per key. The same user can hold a mix of scoped and unrestricted keys.
