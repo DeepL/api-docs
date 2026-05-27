@@ -11,6 +11,10 @@ rss: true
 </Update>
 
 <Update label="May 2026">
+## May 26 - API Usage Logger Cookbook
+- Added a new cookbook, [API Usage Logger](/docs/learning-how-tos/cookbook/api-usage-logger), showing how to capture per-request DeepL API usage data (billed characters, language pairs, reporting tags, API keys, errors) and explore it through a local Streamlit dashboard.
+- Source code on GitHub: [`DeepLcom/deepl-api-usage-logger`](https://github.com/DeepLcom/deepl-api-usage-logger).
+
 ## May 20 - Custom Tag Usage Analytics
 - Added [`GET /v2/admin/analytics/custom-tags`](/api-reference/admin-api/organization-usage-analytics) to the Admin API, allowing admins to retrieve usage statistics broken down by custom tags.
 - Supports `aggregate_by=period` (default) to aggregate usage over the full date range, or `aggregate_by=day` for daily breakdowns.

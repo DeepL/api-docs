@@ -112,6 +112,7 @@
               "docs/learning-how-tos/cookbook/java-document-translator",
               "docs/learning-how-tos/cookbook/usage-analytics-dashboard",
               "docs/learning-how-tos/cookbook/sending-custom-reporting-tags-from-client-libraries",
+              "docs/learning-how-tos/cookbook/api-usage-logger",
               "docs/learning-how-tos/examples-and-guides/deepl-mcp-server-how-to-build-and-use-translation-in-llm-applications",
               "docs/learning-how-tos/cookbook/google-sheets"
             ]
