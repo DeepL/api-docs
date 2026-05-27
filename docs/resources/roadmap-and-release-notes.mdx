@@ -11,6 +11,10 @@ rss: true
 </Update>
 
 <Update label="May 2026">
+## May 27 - Custom Reporting Tags in deepl-rb
+- The Ruby client library [`deepl-rb`](https://github.com/DeepLcom/deepl-rb) v3.8.0 now accepts an `additional_headers` argument on `translate` calls, so you can send `X-DeepL-Reporting-Tag` for usage reporting.
+- See [Sending Custom Reporting Tags with Client Libraries](/docs/learning-how-tos/cookbook/sending-custom-reporting-tags-from-client-libraries) for the updated Ruby snippet.
+
 ## May 26 - API Usage Logger Cookbook
 - Added a new cookbook, [API Usage Logger](/docs/learning-how-tos/cookbook/api-usage-logger), showing how to capture per-request DeepL API usage data (billed characters, language pairs, reporting tags, API keys, errors) and explore it through a local Streamlit dashboard.
 - Source code on GitHub: [`DeepLcom/deepl-api-usage-logger`](https://github.com/DeepLcom/deepl-api-usage-logger).
