@@ -6,15 +6,13 @@ public: true
 
 This recipe shows how to attach a custom reporting tag to translate requests using each official DeepL client library. For an overview of what custom reporting tags are, how they're stored, and how to query their usage, see [How to Use Custom Reporting Tags](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags).
 
-<Note>
-Ruby is omitted from the snippets below because the `deepl-rb` library does not yet expose custom HTTP headers on translate requests. Support is in the works.
-</Note>
-
 ## Recommended pattern: one client per tag
 
-All five client libraries shown below let you attach custom HTTP headers when constructing a `DeepLClient`. The simplest way to tag your requests is to construct one `DeepLClient` per tag value, configure it with `X-DeepL-Reporting-Tag` once, and reuse it for every request that should carry that tag.
+The Python, Node.js, Java, .NET, and PHP client libraries let you attach custom HTTP headers when constructing a `DeepLClient`. The simplest way to tag your requests is to construct one `DeepLClient` per tag value, configure it with `X-DeepL-Reporting-Tag` once, and reuse it for every request that should carry that tag.
 
-This pattern works the same way across Python, Node.js, Java, .NET, and PHP. Each `DeepLClient` instance owns its own HTTP connection pool, so keep instances around and reuse them rather than constructing a new client per request.
+Each `DeepLClient` instance owns its own HTTP connection pool, so keep instances around and reuse them rather than constructing a new client per request.
+
+The Ruby library (`deepl-rb`, v3.8.0 and later) uses a module-level API and accepts an `additional_headers` argument on each `translate` call instead of a client-level option. Pass `X-DeepL-Reporting-Tag` on every call you want to tag.
 
 ## Code snippets
 
@@ -117,6 +115,28 @@ The snippets below all send the same translate request (`"Welcome to your dashbo
     ```
 
     The `headers` option in the constructor's options array is merged with the library-managed `Authorization` and `User-Agent` headers.
+  </Tab>
+  <Tab title="Ruby">
+    ```ruby
+    require 'deepl'
+
+    DeepL.configure do |config|
+      config.auth_key = 'YOUR_AUTH_KEY'
+    end
+
+    additional_headers = { 'X-DeepL-Reporting-Tag' => 'team-billing' }
+
+    result = DeepL.translate(
+      'Welcome to your dashboard.',
+      'EN',
+      'DE',
+      {},
+      additional_headers
+    )
+    puts result.text
+    ```
+
+    `additional_headers` is the fifth positional argument on `DeepL.translate`. Pass an empty options hash (`{}`) before it when you don't need any other translate options. The headers are merged with the library-managed `Authorization` and `User-Agent` headers on each request. Requires `deepl-rb` v3.8.0 or later.
   </Tab>
 </Tabs>
 
