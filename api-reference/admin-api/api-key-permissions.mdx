@@ -15,7 +15,7 @@ API key permissions let admins limit what a developer API key can do. Instead of
 Every developer API key is one of two types:
 
 - **Unrestricted** - the key has no permissions assigned and can call every endpoint. This is the default for any key created before permissions were enabled, and for any key created without selecting custom permissions.
-- **Scoped** - the key has one or more permissions assigned and can only call the endpoints those permissions cover. Calls to other endpoints are rejected.
+- **Scoped** - the key has one or more permissions assigned. It can call any endpoint covered by its permissions, plus any endpoint that has no permission requirement. It cannot call endpoints that require a permission the key has not been granted.
 
 <Warning>
     Permissions are enforced only on scoped keys. Unrestricted keys retain full access to every endpoint, including endpoints that have permissions defined. Existing keys remain unrestricted by default, but admins can scope them at any time using **Edit permissions**.
@@ -23,13 +23,15 @@ Every developer API key is one of two types:
 
 ### Available permissions
 
+Permissions cover both v2 and v3 endpoints where both versions exist.
+
 | **Permission** | **Endpoints it grants access to** |
 |:---|:---|
-| Translate text | Text translation endpoints (`/v2/translate`) |
-| View glossaries and their entries | Glossary read endpoints (`GET /v3/glossaries`, `GET /v3/glossaries/{glossary_id}`, `GET /v3/glossaries/{glossary_id}/entries`) |
-| Create, modify, and delete glossaries | Glossary write endpoints (`POST`, `PATCH`, `PUT`, and `DELETE` on `/v3/glossaries`) |
+| **Translate text** | [`POST /v2/translate`](/api-reference/translate/request-translation) |
+| **View glossaries and their entries** | [`GET /v2/glossaries`](/api-reference/glossaries/list-all-glossaries)<br/>[`GET /v2/glossaries/{glossary_id}`](/api-reference/glossaries/retrieve-glossary-details)<br/>[`GET /v2/glossaries/{glossary_id}/entries`](/api-reference/glossaries/retrieve-glossary-entries)<br/>[`GET /v2/glossary-language-pairs`](/api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries)<br/>[`GET /v3/glossaries`](/api-reference/multilingual-glossaries/list-all-glossaries)<br/>[`GET /v3/glossaries/{glossary_id}`](/api-reference/multilingual-glossaries/retrieve-glossary-details)<br/>[`GET /v3/glossaries/{glossary_id}/entries`](/api-reference/multilingual-glossaries/retrieve-glossary-entries) |
+| **Create, modify, and delete glossaries** | [`POST /v2/glossaries`](/api-reference/glossaries/create-a-glossary)<br/>[`DELETE /v2/glossaries/{glossary_id}`](/api-reference/glossaries/delete-a-glossary)<br/>[`POST /v3/glossaries`](/api-reference/multilingual-glossaries/create-a-glossary)<br/>[`PATCH /v3/glossaries/{glossary_id}`](/api-reference/multilingual-glossaries/edit-glossary-details)<br/>[`PUT /v3/glossaries/{glossary_id}/dictionaries`](/api-reference/multilingual-glossaries/replaces-or-creates-a-dictionary-in-the-glossary-with-the-specified-entries)<br/>[`DELETE /v3/glossaries/{glossary_id}`](/api-reference/multilingual-glossaries/delete-a-glossary)<br/>[`DELETE /v3/glossaries/{glossary_id}/dictionaries`](/api-reference/multilingual-glossaries/deletes-the-dictionary-associated-with-the-given-language-pair-with-the-given-glossary-id) |
 
-Additional permissions covering more of the API will be added in future updates.
+Endpoints that are not listed above have no permission requirement and remain accessible to every developer API key, scoped or unrestricted. Additional permissions covering more of the API will be added in future updates.
 
 ### Create a scoped key
 
