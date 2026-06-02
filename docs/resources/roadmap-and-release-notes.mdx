@@ -11,6 +11,11 @@ rss: true
 </Update>
 
 <Update label="June 2026">
+## June 8 - Style Rules and Translation Memories for Document Translation
+- [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accepts `style_id`, `translation_memory_id`, and `translation_memory_threshold`, bringing document translation in line with the parameters already available on text translation.
+- `style_id` applies a configured [style rule list](/api-reference/style-rules) to the document translation.
+- `translation_memory_id` and `translation_memory_threshold` work as on text translation: pass a translation memory ID to apply stored translations, and set a threshold (0-100) to control how closely source text must match a stored segment. See the [translation memories guide](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories).
+
 ## June 3 - Docs MCP Server
 - DeepL's developer documentation now exposes an MCP server at `https://developers.deepl.com/mcp`.
 - This enables AI tools to search the docs directly and get source-grounded answers about the DeepL API, with no API key required.
