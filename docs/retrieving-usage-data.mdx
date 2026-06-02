@@ -1,0 +1,98 @@
+---
+title: "Retrieving usage data"
+description: "Learn how to retrieve and monitor your DeepL API usage data."
+public: true
+---
+DeepL offers a variety of ways to retrieve usage data so you can keep track of character and minute consumption and associated costs. This guide walks through all of the ways you can get your DeepL API usage data.
+
+<Info>
+Character and minute consumption data on the ["API Keys & Limits" tab](https://www.deepl.com/en/your-account/keys), the ["API Usage" tab](https://www.deepl.com/en/your-account/usage), in API key-level CSV exports, and in the [Admin analytics API](/api-reference/admin-api/organization-usage-analytics) is available up to and including the previous UTC calendar day. For example, on 19 May 2025, data would be available up to and including 18 May 2025.
+
+We recommend the `/usage` endpoint ([docs](/api-reference/usage-and-quota)) to see near-real-time character and minute consumption data.
+</Info>
+
+## Choosing a data source
+
+| Data source | Scope | Time range | Data freshness | Interface |
+| --- | --- | --- | --- | --- |
+| [API Keys & Limits tab](#api-keys-&-limits-tab) | Per API key | Current usage period only | Previous UTC day | Admin area UI |
+| [API Usage tab](#api-usage-tab) | Account total (plus yearly-to-date on yearly plans) | Current usage period (and yearly period) | Previous UTC day | Admin area UI |
+| [API key-level CSV export](#api-key-level-csv-export) | Per API key | Custom or preset ranges up to 4 months, optional grouping by day | Previous UTC day | CSV download |
+| [`/usage` endpoint](#/usage-endpoint) | Account total | Current usage period only | Near-real-time (within minutes) | REST API |
+| [Admin analytics API](#admin-analytics-api) | Per API key or per custom tag | Custom date range, optional grouping by day | Previous UTC day | REST API |
+
+Use the **admin area UI** for a quick check while signed in, the **CSV export** for detailed or offline analysis per key, the **`/usage` endpoint** for programmatic near-real-time quota checks, and the **Admin analytics API** for programmatic reporting and cost attribution via custom tags.
+
+## Directly in the admin area UI
+
+When you are signed into your account, there are two tabs that contain API usage data.
+
+### API Keys & Limits tab
+
+The [API Keys & Limits tab](https://www.deepl.com/en/your-account/keys) shows API key-level character and speech-to-text (STT) minute consumption for the current monthly usage period only.
+
+<Frame caption="The API Keys & Limits tab">
+![](/_assets/images/api-growth-api-keys-and-limits.png)
+</Frame>
+
+### API Usage tab
+
+The [API Usage tab](https://www.deepl.com/en/your-account/usage) shows total character and STT minute usage for the current monthly usage period, and if you're on a yearly plan, it shows usage to date for your yearly billing period, too.
+
+<Frame caption="The API Usage tab">
+![](/_assets/images/api-growth-annual-usage-tab.png)
+</Frame>
+
+## CSV exports
+
+### API key-level CSV export
+
+It's possible to generate a CSV report with key-level characters translated for the specified time period. The following time periods are currently supported. Depending on the reporting time period selected, the time period might not always start and end on a full calendar day.
+
+| Time period | Range basis | Includes current day |
+| --- | --- | --- |
+| Custom date range | Start and end on UTC calendar day, up to 4 months | Depends on selected range |
+| Last 24 hours | Current time minus 24 hours | Yes |
+| Last 7 days | Current time minus 7 days | Yes |
+| Last 30 days | Current time minus 30 days | Yes |
+| Last year | Current time minus 1 year | Yes |
+| Current month | Starts on UTC calendar day | Yes |
+| Last month | Start and end on UTC calendar day | No |
+| Current usage period | Usage period boundaries | Yes |
+| Last usage period | Usage period boundaries | No |
+
+Document translation data is only included in reports with a time period starting on or after May 16, 2024 00:00 UTC. Text translation data is included for all time periods.
+
+Key-level usage is not broken out on invoices and is only available via CSV export or on the "API Keys & Limits" tab.
+
+To download a report with key-level usage, first click on the "Download key-level usage report" button on the [API Keys tab](https://www.deepl.com/en/your-account/keys) or the "Download report" link on the [Usage tab](https://www.deepl.com/en/your-account/usage).
+
+You can then select a time period and click the "Download your report" button to download your CSV report.
+
+<Frame caption="Download a CSV report with key-level usage">
+![](/_assets/images/download-key-level-usage.png)
+</Frame>
+
+For all time ranges _except_ "Last 24 hours", "Current usage period", and "Last usage period", it's also possible to group key-level usage data by UTC calendar day:
+
+<Frame caption='Select the "Group by day" option to group key-level usage data by UTC calendar day'>
+![](/_assets/images/group-by-day-option.png)
+</Frame>
+
+## /usage endpoint
+
+The [`/usage` endpoint](/api-reference/usage-and-quota) makes it possible to retrieve a near-real-time snapshot of character and minute usage in the current monthly usage period only. Data retrieved from the `/usage` endpoint is typically up to date within a few minutes of the usage being generated.
+
+## Admin analytics API
+
+The [Admin API](/api-reference/admin-api) provides programmatic access to usage data grouped by API key or by custom tag. It allows you to specify a date range and to optionally group data by day.
+
+All customers with API Growth and API Enterprise plans have access to the Admin API. The Admin API can also be enabled for select Pro API customers. Please contact your customer success manager or our support team to receive access.
+
+See the [key-level usage analytics reference](/api-reference/admin-api/get-usage-analytics) to learn more about pulling API key-level usage data.
+
+See the [custom-tag usage analytics reference](/api-reference/admin-api/get-custom-tag-usage-analytics) to learn more about pulling custom tag-level usage data.
+
+The [custom reporting tags guide](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags) provides a more detailed overview of how to set up custom tags in your API requests.
+
+We've also created an [open source project](/docs/learning-how-tos/cookbook/usage-analytics-dashboard) that demonstrates how to build your own dashboard using our Admin API.

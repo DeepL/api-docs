@@ -5,14 +5,6 @@ public: true
 ---
 
 <Info>
-Character consumption data on the ["API Keys & Limits"](https://www.deepl.com/en/your-account/keys) and ["Usage"](https://www.deepl.com/en/your-account/usage) tabs and in API key-level CSV exports is available up to and including the previous UTC calendar day. 
-
-For example, on 19 May 2025, data would be available up to and including 18 May 2025. 
-
-We recommend the /usage endpoint ([docs](/api-reference/usage-and-quota)) to see near-real-time character consumption data.
-</Info>
-
-<Info>
 This page describes managing API keys in the self-admin area. Additionally, an Admin API for API key management is 
 available to a limited set of Pro API customers. Learn more [here](/api-reference/admin-api).
 </Info>
@@ -79,41 +71,10 @@ Copies the API key to your clipboard. For security reasons, we do not show the f
 ![](/_assets/images/copy-api-key.png)
 </Frame>
 
-### Get API key-level usage
-
-It's possible to generate a CSV report with key-level characters translated for the specified time period. The following time periods are currently supported. 
-
-Depending on the reporting time period selected, the time period might not always start and end on a full calendar day.
-
-* Custom date range (start and end date based on UTC calendar day; it's possible to set a custom date range of up to 4 months)
-* Last 24 hours (current time minus 24 hours; includes any available data for the current day)
-* Last 7 days (current time minus 7 days; includes any available data for the current day)
-* Last 30 days (current time minus 30 days; includes any available data for the current day)
-* Last year (current time minus 1 year; includes any available data for the current day)
-* Current month (start date based on UTC calendar day; includes any available data for the current day)
-* Last month (start and end date based on UTC calendar day)
-* Current usage period (includes any available data for the current day)
-* Last usage period
-
 <Info>
-Document translation data is only included in reports with a time period starting on or after May 16, 2024 00:00 UTC. Text translation data is included for all time periods.
+To learn how to see API key-level usage data, see [Retrieving usage data](/docs/retrieving-usage-data).
 </Info>
 
-Key-level usage is not broken out on invoices and is only available via CSV export at this time.
-
-To download a report with key-level usage, first click on the “Download key-level usage report” button on the [API Keys tab](https://www.deepl.com/en/your-account/keys) or the “Download report” link on the [Usage tab](https://www.deepl.com/en/your-account/usage).
-
-You can then select a time period and click the “Download your report” button to download your CSV report.
-
-<Frame caption="Download a CSV report with key-level usage">
-![](/_assets/images/download-key-level-usage.png)
-</Frame>
-
-For all time ranges _except_ "Last 24 hours", "Current usage period", and "Last usage period", it's also possible to group key-level usage data by UTC calendar day:
-
-<Frame caption='Select the "Group by day" option to group key-level usage data by UTC calendar day'>
-![](/_assets/images/group-by-day-option.png)
-</Frame>
 ### **Set API key-level usage limits**
 
 It's possible to set an API key-level usage limit. Key-level limits restrict the number of total characters (across text translation, document translation, and text improvement) that can be consumed by an API key in a one-month usage period. You can see the dates of your current usage period in [the Usage tab](https://www.deepl.com/your-account/usage).

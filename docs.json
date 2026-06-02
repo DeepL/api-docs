@@ -90,7 +90,8 @@
           {
             "group": "Admin",
             "pages": [
-              "docs/getting-started/managing-api-keys"
+              "docs/getting-started/managing-api-keys",
+              "docs/retrieving-usage-data"
             ]
           },
           {
