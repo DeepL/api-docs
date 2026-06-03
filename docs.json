@@ -126,7 +126,8 @@
               "docs/getting-started/docs-mcp-server",
               "docs/getting-started/test-your-api-requests-with-postman",
               "docs/resources/deepl-developer-community",
-              "docs/resources/open-api-spec"
+              "docs/resources/open-api-spec",
+              "docs/resources/api-status-page"
             ]
           },
           {
@@ -339,6 +340,15 @@
     }
   },
   "footer": {
+    "links": [
+      {
+        "title": "Resources",
+        "items": [
+          { "label": "API Status", "href": "https://api-status.deepl.com" },
+          { "label": "DeepL Status", "href": "https://www.deeplstatus.com" }
+        ]
+      }
+    ],
     "socials": {
       "facebook": "https://www.facebook.com/DeepLcom/",
       "linkedin": "https://www.linkedin.com/company/deepl",
