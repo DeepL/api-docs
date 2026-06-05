@@ -1,0 +1,105 @@
+---
+title: "Evaluate translation quality"
+description: "API reference for detecting translation quality issues with the DeepL API."
+---
+
+<Warning>
+  **Closed alpha.** This API may change without notice and is only available to select DeepL customers. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details. To request access, contact your customer success manager.
+</Warning>
+
+## Overview
+
+Identify quality issues with your translations through a two-step process:
+
+1. [**Submit an evaluation job**](/api-reference/quality-evaluation/submit)
+2. [**Poll for the result**](/api-reference/quality-evaluation/poll)
+
+## Severity values
+
+| **`severity`** | **Description** |
+|---|---|
+| `Critical` | Renders the content unusable or significantly changes its meaning. For example, the meaning is reversed, important information is missing, or the content is unsuitable for the intended audience. |
+| `Major` | Misleads the reader or significantly alters the meaning. The general idea is clear, but specific details are wrong, terminology is incorrect, or grammar issues make the text hard to understand. |
+| `Minor` | Does not make the text unreadable, but can make it harder to understand and less appealing. |
+
+## Type and sub-type values
+
+### Accuracy
+
+| **`sub_type`** | **Description** |
+|---|---|
+| `Addition` | The target includes text that was not part of the source. |
+| `Omission` | Content from the source is missing from the target. |
+| `Mistranslation` | The content from the target doesn't match the content of the source. |
+| `Over-translation` | The target is more specific than the source. |
+| `Under-translation` | The target is less specific than the source. |
+| `Untranslated text` | Content that should have been translated has been left untranslated. |
+
+### Fluency
+
+| **`sub_type`** | **Description** |
+|---|---|
+| `Punctuation` | Punctuation is used incorrectly. |
+| `Spelling` | Incorrect spelling in the target text. |
+| `Grammar` | Issues with the grammar or syntax of the text, other than spelling and orthography. |
+| `Grammatical register` | The text uses the wrong grammatical register, such as informal forms where formal is required. |
+| `Inconsistency` | The text is not internally consistent. For example, using two different abbreviations for the same term. |
+| `Character encoding` | Characters are garbled due to incorrect application of an encoding. |
+
+### Style
+
+| **`sub_type`** | **Description** |
+|---|---|
+| `Awkward` | The text is written in an awkward style. |
+| `Inconsistent style` | The text uses inconsistent stylistic conventions across sections. |
+
+### Miscellaneous
+
+Errors that do not fall into the other categories, but are nonetheless clearly identifiable as mistakes.
+
+## About span ranges
+
+Each span describes a half-open interval over the segment's source or target text. `start` is the index of the first Unicode code point in the span; `end` is one past the last. The span covers the substring `text[start:end]` in Python-style slicing, and its length is `end - start`. For example:
+
+```text
+target:   Unser Q3-Umsatz lag 5 % unter der Prognose.
+```
+
+A target span of `{ "start": 20, "end": 29 }` covers `target[20:29]`, the 9-character substring `"5 % unter"`.
+
+* `source_spans` and `target_spans` are always present in the response. If no span is available for that side, the value is an empty array.
+* Within a single issue, ranges in `source_spans` (and `target_spans`) are sorted by `start` and do not overlap.
+* Different issues may highlight the same part of a segment.
+
+## Supported language pairs
+
+| **Source Language** | **Target Languages** |
+|---|---|
+| German (`de`) | English (`en-gb`, `en-us`) |
+| English (`en`) | German (`de`), Spanish (`es`, `es-419`), French (`fr`), Italian (`it`), Japanese (`ja`), Korean (`ko`) |
+| Spanish (`es`) | English (`en-gb`, `en-us`) |
+| French (`fr`) | English (`en-gb`, `en-us`) |
+| Italian (`it`) | English (`en-gb`, `en-us`) |
+| Japanese (`ja`) | English (`en-gb`, `en-us`), Korean (`ko`), Chinese Simplified (`zh-hans`), Chinese Traditional (`zh-hant`) |
+| Korean (`ko`) | English (`en-gb`, `en-us`), Japanese (`ja`) |
+| Chinese (`zh`) | Japanese (`ja`) |
+
+## Limits
+
+| **Limit** | **Value** |
+|---|---:|
+| Segments per request | 500 |
+| Characters per segment (`source` or `target`) | 10,000 |
+
+### Rate limits
+
+| **Endpoint** | **Limit** |
+|---|---|
+| `POST /v1/quality-evaluation` | 100 requests per minute per API key |
+| `GET /v1/quality-evaluation/{job_id}` | 1,000 requests per minute per API key |
+
+Exceeding either limit returns `429 Too Many Requests`.
+
+## Job retention
+
+Job results are retained for 24 hours after the job reaches `done` or `error` state. After that, the `GET` endpoint returns `404 Not Found` for that `job_id`.
