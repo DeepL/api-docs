@@ -276,8 +276,18 @@ Note that we do not include examples for our client libraries in every single se
   Specify the glossary to use for the translation.
   <Note>
     <strong>Important:</strong> This requires the <code>source_lang</code> parameter to be set and the language pair of the glossary has to match the language pair of the request.
+
+    Cannot be used together with <code>glossary_ids</code>.
   </Note>
   To check glossary support for a language pair, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_text</code></a> and verify the <code>glossary</code> feature key is present on both the source and target language.
+</ParamField>
+<ParamField body="glossary_ids" type="array[string]">
+  Specify up to 5 glossaries to use for the translation, as an array of glossary IDs. Each glossary's matching terms are applied to the translation.
+  <Note>
+    <strong>Important:</strong> This requires the <code>source_lang</code> parameter to be set, and every listed glossary must contain a dictionary for the requested language pair.
+
+    Cannot be used together with <code>glossary_id</code>.
+  </Note>
 </ParamField>
 <ParamField body="style_id" type="string">
   Specify the style rule list to use for the translation which can be used to customize translations according to the selected formatting and style conventions.

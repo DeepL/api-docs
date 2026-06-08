@@ -10,6 +10,13 @@ rss: true
 </Update>
 
 <Update label="June 2026">
+
+## June 23 - Multiple Glossaries per Translation Request
+- [`POST /v2/translate`](/api-reference/translate/request-translation) and [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accept a `glossary_ids` parameter, allowing you to apply up to 5 glossaries to a single translation request.
+- Useful when terminology is split across multiple glossaries (for example, a shared brand glossary plus a project-specific glossary) that you want applied together without merging them.
+- `glossary_ids` requires `source_lang` and is mutually exclusive with the existing `glossary_id` parameter. Every listed glossary must contain a dictionary for the requested language pair.
+- See the [text translation](/api-reference/translate#request-body-descriptions) and [document translation](/api-reference/document#request-body-descriptions) overview pages for parameter details.
+
 ## June 17 - `latency_optimized` Now Supported for All Features
 - The `latency_optimized` model type is now fully compatible with all Translate API features, including:
   - [Tag handling v2](/docs/xml-and-html-handling/tag-handling-v2) (`tag_handling_version=v2`)
@@ -24,6 +31,7 @@ rss: true
 - Assign one or more scopes when [creating or editing a key](https://www.deepl.com/your-account/keys). A scoped key returns `403 Forbidden` on any endpoint its scopes don't cover.
 - Currently in private beta for select customers. To request access, contact your customer success manager or [DeepL support](https://support.deepl.com/hc/en-us/requests/new).
 - Not yet supported for the Voice API; Voice scopes will follow in a future update.
+
 
 ## June 8 - Style Rules and Translation Memories for Document Translation
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accepts `style_id`, `translation_memory_id`, and `translation_memory_threshold`, bringing document translation in line with the parameters already available on text translation.
