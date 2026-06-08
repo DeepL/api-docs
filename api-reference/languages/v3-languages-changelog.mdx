@@ -8,6 +8,14 @@ description: 'Changes to the v3/languages endpoints, including the GA release an
 
 This section lists dated changes to the API.
 
+### 5 June 2026
+
+**New: `spoken_terms` feature on `voice` resource** — the `spoken_terms` feature is now reported on
+languages whose transcription is provided by external service partners, in addition to languages
+transcribed by DeepL. The feature remains in beta on all supported languages; for external-provider
+languages the feature is also marked `"external": true`. Call `GET /v3/languages?resource=voice&include=beta&include=external`
+to see the full list.
+
 ### 18 May 2026 — General Availability
 
 `/v3/languages` is now generally available. The endpoint replaces the deprecated `/v2/languages` and `/v2/glossary-language-pairs`. See the [migration guide](/api-reference/languages/migrate-from-v2-languages) for differences and code examples.
