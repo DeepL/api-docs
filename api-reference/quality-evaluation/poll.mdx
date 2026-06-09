@@ -1,0 +1,63 @@
+---
+openapi: get /v1/quality-evaluation/{job_id}
+title: "Poll for the evaluation result"
+---
+
+See the [Quality Evaluation overview](/api-reference/quality-evaluation) for severity values, sub-types, span semantics, and limits.
+
+### Severity values
+
+| **severity** | **Description** |
+|---|---|
+| `Critical` | Renders the content unusable or significantly changes its meaning. For example, the meaning is reversed, important information is missing, or the content is unsuitable for the intended audience. |
+| `Major` | Misleads the reader or significantly alters the meaning. The general idea is clear, but specific details are wrong, terminology is incorrect, or grammar issues make the text hard to understand. |
+| `Minor` | Does not make the text unreadable, but can make it harder to understand and less appealing. |
+
+### Type and sub-type values
+
+#### Accuracy
+
+| **sub_type** | **Description** |
+|---|---|
+| `Addition` | The target includes text that was not part of the source. |
+| `Omission` | Content from the source is missing from the target. |
+| `Mistranslation` | The content from the target doesn't match the content of the source. |
+| `Over-translation` | The target is more specific than the source. |
+| `Under-translation` | The target is less specific than the source. |
+| `Untranslated text` | Content that should have been translated has been left untranslated. |
+
+#### Fluency
+
+| **sub_type** | **Description** |
+|---|---|
+| `Punctuation` | Punctuation is used incorrectly. |
+| `Spelling` | Incorrect spelling in the target text. |
+| `Grammar` | Issues with the grammar or syntax of the text, other than spelling and orthography. |
+| `Grammatical register` | The text uses the wrong grammatical register, such as informal forms where formal is required. |
+| `Inconsistency` | The text is not internally consistent. For example, using two different abbreviations for the same term. |
+| `Character encoding` | Characters are garbled due to incorrect application of an encoding. |
+
+#### Style
+
+| **sub_type** | **Description** |
+|---|---|
+| `Awkward` | The text is written in an awkward style. |
+| `Inconsistent style` | The text uses inconsistent stylistic conventions across sections. |
+
+#### Miscellaneous
+
+Errors that do not fall into the other categories, but are nonetheless clearly identifiable as mistakes.
+
+### About span ranges
+
+Each span describes a half-open interval over the segment's source or target text. `start` is the index of the first Unicode code point in the span; `end` is one past the last. The span covers the substring `text[start:end]` in Python-style slicing, and its length is `end - start`. For example:
+
+```text
+target:   Unser Q3-Umsatz lag 5 % unter der Prognose.
+```
+
+A target span of `{ "start": 20, "end": 29 }` covers `target[20:29]`, the 9-character substring `"5 % unter"`.
+
+* `source_spans` and `target_spans` are always present in the response. If no span is available for that side, the value is an empty array.
+* Within a single issue, ranges in `source_spans` (and `target_spans`) are sorted by `start` and do not overlap.
+* Different issues may highlight the same part of a segment.
