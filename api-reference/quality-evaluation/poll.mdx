@@ -5,6 +5,13 @@ title: "Poll for the evaluation result"
 
 See the [Quality Evaluation overview](/api-reference/quality-evaluation) for severity values, sub-types, span semantics, and limits.
 
+### Summary
+
+The `summary` object aggregates the results across all segments:
+
+* `overall_score` rates the overall translation quality from 0 (lowest) to 100 (highest). The score is based on the severity of detected issues and adjusts for the length of the text, so a single issue has less impact on a longer translation than on a shorter one.
+* `granular_counts` breaks down the number of issues, nested by `type`, then `sub_type`, then `severity`.
+
 ### Severity values
 
 | **severity** | **Description** |
