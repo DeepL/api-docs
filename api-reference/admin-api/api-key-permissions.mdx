@@ -1,80 +1,183 @@
 ---
-title: "API key permissions"
-description: "Learn how admins can restrict an API key's access to specific endpoints using permissions."
+title: "API Key Permissions"
+description: "Learn how admins can restrict an API key's access to specific endpoints."
 public: true
 ---
 
-API key permissions let admins limit what a developer API key can do. Instead of one key with full access to every endpoint, you can issue keys that are restricted to specific operations, for example a key that can only translate text or a key that can only read glossaries.
+export const ScopeHeader = ({label, scope}) => (
+  <span style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '1rem'}}>
+    <span>{label}</span>
+    <code style={{fontWeight: 400, fontSize: '0.8125rem', backgroundColor: '#e2e8f0', color: '#475569', padding: '0.125rem 0.5rem', borderRadius: '0.375rem'}}>{scope}</code>
+  </span>
+)
 
-<Info>
-    API key permissions are available on request. To enable this feature for your organization, contact your DeepL customer success manager or DeepL support.
-</Info>
+API key permissions let admins limit what a developer API key can do. Instead of one key with full access to every endpoint, you can issue keys that are scoped to specific operations, for example a key that can only translate text or a key that can only read glossaries.
 
-### How permissions work
+Permissions are implemented as scopes. Each scope groups a set of related operations into a single capability you can grant to a key. This page uses "permissions" for the user-facing feature and "scopes" for the technical mechanism.
 
-Every developer API key is one of two types:
+Permissions are currently supported only for developer API keys. An account can hold any mix of scoped and unrestricted developer keys.
 
-- **Unrestricted** - the key has no permissions assigned and can call every endpoint. This is the default for any key created before permissions were enabled, and for any key created without selecting custom permissions.
-- **Scoped** - the key has one or more permissions assigned. It can call any endpoint covered by its permissions, plus any endpoint that has no permission requirement. It cannot call endpoints that require a permission the key has not been granted.
+### How scopes work
+
+Developer keys can be turned into scoped keys by assigning them one or more scopes. Once a key is scoped:
+
+- It can call only the endpoints fully covered by its scopes.
+- Every other endpoint returns `403 Forbidden` including any endpoint that has no scope requirement of its own.
+- Some endpoints require more than one scope. A key must hold all of them; if any is missing, the request is denied and the response lists the missing scopes.
 
 <Warning>
-    Permissions are enforced only on scoped keys. Unrestricted keys retain full access to every endpoint, including endpoints that have permissions defined. Existing keys remain unrestricted by default, but admins can scope them at any time using **Edit permissions**.
+    Scopes are enforced only on scoped keys. Unrestricted keys retain full access to every endpoint. Existing keys remain unrestricted by default, but admins can assign them scopes at any time.
 </Warning>
 
-### Available permissions
+### Available scopes
 
-Permissions cover both v2 and v3 endpoints where both versions exist.
+<style>{`
+  .scope-endpoints code { font-size: 1rem; }
+`}</style>
 
-| **Permission** | **Endpoints it grants access to** |
-|:---|:---|
-| **Translate text** | [`POST /v2/translate`](/api-reference/translate/request-translation) |
-| **View glossaries and their entries** | [`GET /v2/glossaries`](/api-reference/glossaries/list-all-glossaries)<br/>[`GET /v2/glossaries/{glossary_id}`](/api-reference/glossaries/retrieve-glossary-details)<br/>[`GET /v2/glossaries/{glossary_id}/entries`](/api-reference/glossaries/retrieve-glossary-entries)<br/>[`GET /v2/glossary-language-pairs`](/api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries)<br/>[`GET /v3/glossaries`](/api-reference/multilingual-glossaries/list-all-glossaries)<br/>[`GET /v3/glossaries/{glossary_id}`](/api-reference/multilingual-glossaries/retrieve-glossary-details)<br/>[`GET /v3/glossaries/{glossary_id}/entries`](/api-reference/multilingual-glossaries/retrieve-glossary-entries) |
-| **Create, modify, and delete glossaries** | [`POST /v2/glossaries`](/api-reference/glossaries/create-a-glossary)<br/>[`DELETE /v2/glossaries/{glossary_id}`](/api-reference/glossaries/delete-a-glossary)<br/>[`POST /v3/glossaries`](/api-reference/multilingual-glossaries/create-a-glossary)<br/>[`PATCH /v3/glossaries/{glossary_id}`](/api-reference/multilingual-glossaries/edit-glossary-details)<br/>[`PUT /v3/glossaries/{glossary_id}/dictionaries`](/api-reference/multilingual-glossaries/replaces-or-creates-a-dictionary-in-the-glossary-with-the-specified-entries)<br/>[`DELETE /v3/glossaries/{glossary_id}`](/api-reference/multilingual-glossaries/delete-a-glossary)<br/>[`DELETE /v3/glossaries/{glossary_id}/dictionaries`](/api-reference/multilingual-glossaries/deletes-the-dictionary-associated-with-the-given-language-pair-with-the-given-glossary-id) |
+<AccordionGroup>
+  <Accordion title={<ScopeHeader label="Translate text" scope="translate:text" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>POST</code></td><td><a href="/api-reference/translate/request-translation"><code>/v2/translate</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
 
-Endpoints that are not listed above have no permission requirement and remain accessible to every developer API key, scoped or unrestricted. Additional permissions covering more of the API will be added in future updates.
+  <Accordion title={<ScopeHeader label="Translate document" scope="translate:document" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>POST</code></td><td><a href="/api-reference/document/upload-and-translate-a-document"><code>/v2/document</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/document/check-document-status"><code>/v2/document/&#123;document_id&#125;</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/document/download-translated-document"><code>/v2/document/&#123;document_id&#125;/result</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
+
+  <Accordion title={<ScopeHeader label="Rephrase or correct text" scope="write:improve" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>POST</code></td><td><a href="/api-reference/improve-text/request-text-improvement"><code>/v2/write/rephrase</code></a></td></tr>
+        <tr><td><code>POST</code></td><td><a href="/api-reference/improve-text/correct-text"><code>/v2/write/correct</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
+
+  <Accordion title={<ScopeHeader label="View glossaries and their entries" scope="glossaries:read" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/multilingual-glossaries/list-all-glossaries"><code>/v3/glossaries</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/multilingual-glossaries/retrieve-glossary-details"><code>/v3/glossaries/&#123;glossary_id&#125;</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/multilingual-glossaries/retrieve-glossary-entries"><code>/v3/glossaries/&#123;glossary_id&#125;/entries</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/glossaries/list-all-glossaries"><code>/v2/glossaries</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/glossaries/retrieve-glossary-details"><code>/v2/glossaries/&#123;glossary_id&#125;</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/glossaries/retrieve-glossary-entries"><code>/v2/glossaries/&#123;glossary_id&#125;/entries</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries"><code>/v2/glossary-language-pairs</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
+
+  <Accordion title={<ScopeHeader label="Create, modify, and delete glossaries" scope="glossaries:write" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>POST</code></td><td><a href="/api-reference/multilingual-glossaries/create-a-glossary"><code>/v3/glossaries</code></a></td></tr>
+        <tr><td><code>PATCH</code></td><td><a href="/api-reference/multilingual-glossaries/edit-glossary-details"><code>/v3/glossaries/&#123;glossary_id&#125;</code></a></td></tr>
+        <tr><td><code>PUT</code></td><td><a href="/api-reference/multilingual-glossaries/replaces-or-creates-a-dictionary-in-the-glossary-with-the-specified-entries"><code>/v3/glossaries/&#123;glossary_id&#125;/dictionaries</code></a></td></tr>
+        <tr><td><code>DELETE</code></td><td><a href="/api-reference/multilingual-glossaries/delete-a-glossary"><code>/v3/glossaries/&#123;glossary_id&#125;</code></a></td></tr>
+        <tr><td><code>DELETE</code></td><td><a href="/api-reference/multilingual-glossaries/deletes-the-dictionary-associated-with-the-given-language-pair-with-the-given-glossary-id"><code>/v3/glossaries/&#123;glossary_id&#125;/dictionaries</code></a></td></tr>
+        <tr><td><code>POST</code></td><td><a href="/api-reference/glossaries/create-a-glossary"><code>/v2/glossaries</code></a></td></tr>
+        <tr><td><code>DELETE</code></td><td><a href="/api-reference/glossaries/delete-a-glossary"><code>/v2/glossaries/&#123;glossary_id&#125;</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
+
+  <Accordion title={<ScopeHeader label="View style rules and custom instructions" scope="style_rules:read" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/style-rules/list-all-style-rules"><code>/v3/style_rules</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/style-rules/get-style-rule"><code>/v3/style_rules/&#123;style_id&#125;</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/style-rules/get-custom-instruction"><code>/v3/style_rules/&#123;style_id&#125;/custom_instructions/&#123;instruction_id&#125;</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
+
+  <Accordion title={<ScopeHeader label="Create, modify, and delete style rules and custom instructions" scope="style_rules:write" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>POST</code></td><td><a href="/api-reference/style-rules/create-style-rule"><code>/v3/style_rules</code></a></td></tr>
+        <tr><td><code>PATCH</code></td><td><a href="/api-reference/style-rules/update-style-rule"><code>/v3/style_rules/&#123;style_id&#125;</code></a></td></tr>
+        <tr><td><code>PUT</code></td><td><a href="/api-reference/style-rules/update-configured-rules"><code>/v3/style_rules/&#123;style_id&#125;/configured_rules</code></a></td></tr>
+        <tr><td><code>DELETE</code></td><td><a href="/api-reference/style-rules/delete-style-rule"><code>/v3/style_rules/&#123;style_id&#125;</code></a></td></tr>
+        <tr><td><code>POST</code></td><td><a href="/api-reference/style-rules/create-custom-instruction"><code>/v3/style_rules/&#123;style_id&#125;/custom_instructions</code></a></td></tr>
+        <tr><td><code>PUT</code></td><td><a href="/api-reference/style-rules/update-custom-instruction"><code>/v3/style_rules/&#123;style_id&#125;/custom_instructions/&#123;instruction_id&#125;</code></a></td></tr>
+        <tr><td><code>DELETE</code></td><td><a href="/api-reference/style-rules/delete-custom-instruction"><code>/v3/style_rules/&#123;style_id&#125;/custom_instructions/&#123;instruction_id&#125;</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
+
+  <Accordion title={<ScopeHeader label="Retrieve translation memories" scope="translation_memories:read" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/translation-memory/list-translation-memories"><code>/v3/translation_memories</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
+
+  <Accordion title={<ScopeHeader label="Retrieve languages and resources" scope="languages:read" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/languages/retrieve-languages-by-resource"><code>/v3/languages</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/languages/retrieve-resources"><code>/v3/languages/resources</code></a></td></tr>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/languages/retrieve-supported-languages"><code>/v2/languages</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
+
+  <Accordion title={<ScopeHeader label="View subscription usage and limits" scope="usage:read" />}>
+    <table className="scope-endpoints">
+      <tbody>
+        <tr><td><code>GET</code></td><td><a href="/api-reference/usage-and-quota/check-usage-and-limits"><code>/v2/usage</code></a></td></tr>
+      </tbody>
+    </table>
+  </Accordion>
+</AccordionGroup>
 
 ### Create a scoped key
 
-Open the [DeepL Keys](https://www.deepl.com/your-account/keys) page in your account and select the **Translation** tab. Click "Create key" and optionally name the key.
+Open the [Keys](https://www.deepl.com/your-account/keys) page in your account. Click "Create key" and optionally name the key.
 
-Under **Permissions**, choose one of:
+Select **Custom permissions**, then choose one or more scopes from the list.
 
-- **All access** - the key remains unrestricted and can call every endpoint.
-- **Custom permissions** - select one or more permissions from the list. The key can only call endpoints covered by the selected permissions.
+Click "Create key" to confirm. The key is created with the chosen scopes and shown once in a popup so you can copy it.
 
-Click "Create key" to confirm. The key is created with the chosen permissions and shown once in a popup so you can copy it.
-
-<Frame caption="Selecting custom permissions when creating a new API key">
-    ![](/_assets/images/api-key-permissions-create.png)
+<Frame caption="Creating a scoped API key">
+    <img src="/_assets/images/api-key-permissions-create.png" style={{width: '100%', maxWidth: '340px'}} />
 </Frame>
 
-### Edit permissions on an existing key
+### Edit scopes on an existing key
 
-You can change permissions on any existing developer API key, including keys that were originally unrestricted.
+You can change scopes on any existing developer API key, including keys that were originally unrestricted.
 
-In the API keys table, open the key's menu and select "Edit permissions". Choose **All access** to make the key unrestricted, or **Custom permissions** to select specific permissions. Click "Save" to apply.
+In the API keys table, open the key's menu and select "Edit permissions". Choose **All access** to make the key unrestricted, or **Custom permissions** to select specific scopes. Click "Save" to apply.
 
-<Frame caption="Editing permissions on an existing key">
-    ![](/_assets/images/api-key-permissions-edit.png)
+<Frame caption="Editing scopes for an existing API key">
+    <div style={{display: 'flex', flexDirection: 'column', gap: '2.5rem', alignItems: 'center'}}>
+        <img src="/_assets/images/api-key-permissions-edit-menu.png" style={{width: '100%', maxWidth: '200px'}} />
+        <img src="/_assets/images/api-key-permissions-edit-dialog.png" style={{width: '100%', maxWidth: '480px'}} />
+    </div>
 </Frame>
 
 ### Identify scoped and unrestricted keys
 
-The API keys table includes a **Permissions** column showing each key's status:
+The API keys table includes a column showing each key's permissions. Hover over the badge to view the assigned scopes.
 
-- Keys with permissions assigned display a **Scoped** badge. Click the badge to view the assigned permissions.
-- Keys without permissions display an **Unrestricted** badge.
-
-<Frame caption="The Permissions column showing scoped and unrestricted keys">
-    ![](/_assets/images/api-key-permissions-badges.png)
+<Frame caption="Viewing keys and their scopes">
+    <div style={{display: 'flex', flexDirection: 'column', gap: '2.5rem'}}>
+        <img src="/_assets/images/api-key-permissions-badges.png" style={{width: '100%'}} />
+        <img src="/_assets/images/api-key-permissions-badge-hover.png" style={{width: '100%'}} />
+    </div>
 </Frame>
 
 ### Error responses
 
-When a scoped key calls an endpoint it does not have permission to access, the API returns a `403 Forbidden` response. To resolve the error, either call an endpoint the key has permission for, or update the key's permissions to include the required access.
-
-### Limitations
-
-- Permissions apply only to developer API keys. Admin API keys cannot be scoped and always have full access to the Admin API.
-- Speech-to-Text keys do not currently support permissions.
-- Permissions are configured per key. The same user can hold a mix of scoped and unrestricted keys.
+When a scoped key calls an endpoint outside its scopes, the API returns a `403 Forbidden` response. To resolve it, call an endpoint covered by the key's scopes, or add the missing scope to the key.
