@@ -799,7 +799,7 @@
                     "$ref": "#/components/schemas/TranslationMemoryThreshold"
                   },
                   "custom_instructions": {
-                    "description": "Specify a list of instructions to customize the translation behavior. Up to 10 custom instructions can be specified, each with a maximum of 300 characters.\n\n**Important:**  The target language must be `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, `zh` or any variants of these languages.\n\n**Note:** Any request with the `custom_instructions` parameter enabled will default to use the `quality_optimized` model type. All `model_type` values are supported.",
+                    "description": "Specify a list of instructions to customize the translation behavior. Up to 10 custom instructions can be specified, each with a maximum of 300 characters.\n\n**Important:**  The target language must be `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, `zh` or any variants of these languages.\n\nWhen no `model_type` is specified, requests with `custom_instructions` default to `quality_optimized`. All `model_type` values are supported.",
                     "type": "array",
                     "items": {
                       "type": "string",
