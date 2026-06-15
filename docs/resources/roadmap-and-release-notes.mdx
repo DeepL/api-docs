@@ -6,11 +6,16 @@ rss: true
 
 <Update label="In active development">
 - Support for uploading, modifying, and deleting [translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories) via API
-- API key-level endpoint restrictions
 - Usage reporting by language pair
 </Update>
 
 <Update label="June 2026">
+## June 15 - API Key Permissions (Private Beta)
+- Developer API keys can now be scoped to specific endpoints, so a key can be limited to, for example, translating text or reading glossaries. See [API key permissions](/docs/getting-started/managing-api-keys#api-key-permissions).
+- Assign one or more scopes when [creating or editing a key](https://www.deepl.com/your-account/keys). A scoped key returns `403 Forbidden` on any endpoint its scopes don't cover.
+- Currently in private beta for select customers. To request access, contact your customer success manager or [DeepL support](https://support.deepl.com/hc/en-us/requests/new).
+- Not yet supported for the Voice API; Voice scopes will follow in a future update.
+
 ## June 8 - Style Rules and Translation Memories for Document Translation
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accepts `style_id`, `translation_memory_id`, and `translation_memory_threshold`, bringing document translation in line with the parameters already available on text translation.
 - `style_id` applies a configured [style rule list](/api-reference/style-rules) to the document translation.
