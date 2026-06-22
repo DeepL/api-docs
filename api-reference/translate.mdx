@@ -326,7 +326,7 @@ Note that we do not include examples for our client libraries in every single se
     <li><code>v2</code>: Use the improved v2 algorithm.</li>
     <li><code>v1</code>: Use the previous v1 algorithm.</li>
   </ul>
-  When `tag_handling` is set, the response includes a `tag_handling_version` field showing which version is used, including the default applied when you don't specify `tag_handling_version`.
+  When `tag_handling` is set, the response includes a `tag_handling_version` field showing which version was applied, including the default when you don't specify one.
 </ParamField>
 <ParamField body="outline_detection" type="boolean">
   The automatic detection of the XML structure won't yield best results in all XML files. You can disable this automatic mechanism altogether by setting the <code>outline_detection</code> parameter to <code>false</code> and selecting the tags that should be considered structure tags. This will split sentences using the <code>splitting_tags</code> parameter.
