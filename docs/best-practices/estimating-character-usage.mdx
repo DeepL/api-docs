@@ -14,14 +14,13 @@ DeepL bills by source-text length in Unicode code points. Characters in the [`co
 
 ## Estimate website content
 
-If you're localizing a website, you can crawl it and count the characters. The script below fetches pages from a sitemap, strips HTML, and totals the character count.
+You don't need to crawl your entire site. Pick 5-10 representative pages (a mix of short and long ones), count the characters on each, and use the average to extrapolate across your total page count.
+
+The script below strips HTML from a page and returns the character count. Run it against a handful of URLs to get your average.
 
 ```python
-import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.request import urlopen
-
-SITEMAP_URL = "https://example.com/sitemap.xml"
 
 class TextExtractor(HTMLParser):
     def __init__(self):
@@ -48,25 +47,32 @@ def count_characters(url):
     extractor.feed(html)
     return len(extractor.get_text())
 
-def get_sitemap_urls(sitemap_url):
-    xml = urlopen(sitemap_url).read()
-    root = ET.fromstring(xml)
-    ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
-    return [loc.text for loc in root.findall(".//ns:loc", ns)]
+sample_urls = [
+    "https://example.com/about",
+    "https://example.com/products",
+    "https://example.com/faq",
+    "https://example.com/blog/recent-post",
+    "https://example.com/contact",
+]
 
-urls = get_sitemap_urls(SITEMAP_URL)
 total = 0
-
-for url in urls:
+for url in sample_urls:
     chars = count_characters(url)
     total += chars
     print(f"{chars:>10,}  {url}")
 
-print(f"\n{'Total':>10}  {total:,} characters across {len(urls)} pages")
+avg = total // len(sample_urls)
+print(f"\n{'Average':>10}  {avg:,} characters per page")
+```
+
+Then multiply the average by your total number of pages:
+
+```
+Estimated total = average characters per page × total pages on site
 ```
 
 <Tip>
-If your site doesn't have a sitemap, you can replace `get_sitemap_urls()` with a list of URLs, or use a crawler like [Scrapy](https://scrapy.org/) to discover pages.
+If you want an exact count instead of a sample-based estimate, you can extend the script to crawl your full sitemap or use a crawler like [Scrapy](https://scrapy.org/) to discover all pages automatically.
 </Tip>
 
 ## Estimate from a CMS or database
