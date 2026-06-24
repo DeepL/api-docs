@@ -1,0 +1,177 @@
+---
+title: "Estimating Character Usage"
+description: "Learn how to estimate your DeepL API character usage to find the right plan."
+public: true
+---
+
+DeepL bills by the number of characters in your **source text**, measured in [Unicode code points](/docs/resources/usage-limits#your-usage). "A", "Δ", "あ", and "深" each count as one character. This means you can estimate your usage entirely on your own, without calling the API. All you need is access to your content.
+
+This guide walks through techniques for counting characters in different content types, projecting monthly usage, and validating your estimates.
+
+## Before you start
+
+DeepL bills by source-text length in Unicode code points. Characters in the [`context` parameter](/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter) and HTML/XML tags (when [tag handling](/docs/xml-and-html-handling/xml) is enabled) do not count. For the full billing rules and per-document character minimums, see [Usage and limits](/docs/resources/usage-limits#your-usage).
+
+## Estimate website content
+
+You don't need to crawl your entire site. Pick 5-10 representative pages (a mix of short and long ones), count the characters on each, and use the average to extrapolate across your total page count.
+
+The script below strips HTML from a page and returns the character count. Run it against a handful of URLs to get your average.
+
+```python
+from html.parser import HTMLParser
+from urllib.request import urlopen
+
+class TextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+        self._skip = False
+
+    def handle_starttag(self, tag, attrs):
+        self._skip = tag in ("script", "style", "noscript")
+
+    def handle_endtag(self, tag):
+        self._skip = False
+
+    def handle_data(self, data):
+        if not self._skip:
+            self.parts.append(data)
+
+    def get_text(self):
+        return " ".join(self.parts)
+
+def count_characters(url):
+    html = urlopen(url).read().decode("utf-8", errors="replace")
+    extractor = TextExtractor()
+    extractor.feed(html)
+    return len(extractor.get_text())
+
+sample_urls = [
+    "https://example.com/about",
+    "https://example.com/products",
+    "https://example.com/faq",
+    "https://example.com/blog/recent-post",
+    "https://example.com/contact",
+]
+
+total = 0
+for url in sample_urls:
+    chars = count_characters(url)
+    total += chars
+    print(f"{chars:>10,}  {url}")
+
+avg = total // len(sample_urls)
+print(f"\n{'Average':>10}  {avg:,} characters per page")
+```
+
+Then multiply the average by your total number of pages:
+
+```
+Estimated total = average characters per page × total pages on site
+```
+
+<Tip>
+If you want an exact count instead of a sample-based estimate, you can extend the script to crawl your full sitemap or use a crawler like [Scrapy](https://scrapy.org/) to discover all pages automatically.
+</Tip>
+
+## Estimate from a CMS or database
+
+If your content lives in a CMS or a database, query it directly. This is often the most accurate approach because it reflects exactly what you'll send to the API.
+
+Most CMSes (Drupal, WordPress, Contentful, etc.) do not provide a built-in way to see total word or character counts across all published content. You'll typically need to query the underlying database or use the CMS export/API to pull content and count locally.
+
+```sql
+-- Example: estimate total characters across a content table
+SELECT
+    SUM(CHAR_LENGTH(body)) AS total_characters,
+    COUNT(*) AS total_entries
+FROM content
+WHERE status = 'published';
+```
+
+For a Drupal site specifically, the `node_field_data` and `node__body` tables contain page titles and body content. For WordPress, query the `wp_posts` table filtering on `post_status = 'publish'`.
+
+## Estimate document content
+
+For documents you plan to translate via the [Document Translation API](/api-reference/document), you can extract text locally to get a rough character count.
+
+```python
+import zipfile
+import xml.etree.ElementTree as ET
+import os
+
+def count_docx_characters(path):
+    with zipfile.ZipFile(path) as z:
+        xml_content = z.read("word/document.xml")
+    root = ET.fromstring(xml_content)
+    ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+    texts = root.findall(".//w:t", ns)
+    return sum(len(t.text) for t in texts if t.text)
+
+for path in ["report.docx", "presentation.pptx"]:
+    if os.path.exists(path):
+        chars = count_docx_characters(path)
+        print(f"{path}: {chars:,} characters")
+```
+
+For PDFs, use a library like PyMuPDF or pdfplumber to extract text.
+
+Keep in mind that your local count is an approximation. DeepL's document processing pipeline may extract text differently than a local script, for example, by reading text embedded in images or charts via OCR. Treat your local count as a lower bound.
+
+[Per-document character minimums](/docs/resources/usage-limits#maximum-upload-limits-per-document-format) apply for certain file formats, so the billed count may be higher than the actual text content.
+
+## Project monthly usage
+
+Once you know your total source characters, multiply by the number of target languages and your expected update frequency.
+
+```
+Monthly usage = source characters × target languages × update factor
+```
+
+For example, a website with 500,000 source characters translated into 5 languages with ~10% of pages updated monthly:
+
+```
+Initial translation:  500,000 × 5 = 2,500,000 characters
+Monthly updates:      50,000  × 5 =   250,000 characters/month
+```
+
+If you're translating the same content into multiple languages, each language counts separately toward your character usage.
+
+## Validate your estimate
+
+Once you've estimated locally, validate with a small sample using the [`show_billed_characters`](/api-reference/translate#request-body-descriptions) parameter. This adds a `billed_characters` field to the API response so you can compare actual billed characters against your local count.
+
+```bash
+curl -X POST https://api.deepl.com/v2/translate \
+  --header 'Authorization: DeepL-Auth-Key YOUR_AUTH_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "text": ["Sample text from your website or document."],
+    "target_lang": "DE",
+    "show_billed_characters": true
+  }'
+```
+
+```json
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Beispieltext von Ihrer Website oder Ihrem Dokument."
+    }
+  ],
+  "billed_characters": 46
+}
+```
+
+Run this on 5-10 representative pages or documents and compare the `billed_characters` value against your local character count. They should be very close. Differences typically come from HTML tags or whitespace that your local extraction handles differently than the API.
+
+## Monitor actual usage
+
+After you start translating, monitor actual usage against your estimates:
+
+- **[`/v2/usage` endpoint](/api-reference/usage-and-quota)** - programmatic access to your current billing period consumption
+- **[Usage Analytics Dashboard](/docs/learning-how-tos/cookbook/usage-analytics-dashboard)** - visualize usage across API keys with the open-source demo dashboard
+- **[API Usage Logger](/docs/learning-how-tos/cookbook/api-usage-logger)** - per-request logging with billed characters, language pairs, and reporting tags
+- **[Cost Control](/docs/best-practices/cost-control)** - set a monthly character limit on your Pro API subscription to cap spend

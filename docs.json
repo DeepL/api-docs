@@ -98,6 +98,7 @@
             "group": "Going to Production",
             "pages": [
               "docs/getting-started/regional-endpoints",
+              "docs/best-practices/estimating-character-usage",
               "docs/best-practices/pre-production-checklist",
               "docs/best-practices/error-handling",
               "docs/best-practices/cost-control",
