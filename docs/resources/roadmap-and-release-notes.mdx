@@ -10,6 +10,10 @@ rss: true
 </Update>
 
 <Update label="June 2026">
+## June 24 - API Key Permissions General Availability
+- [API key permissions](/docs/getting-started/managing-api-keys#api-key-permissions) are now generally available. Scope a developer API key to specific endpoints so it can perform only the operations you allow.
+- Available on the API Pro, API Developer, API Growth, and API Enterprise plans.
+- Assign scopes when [creating or editing a key](https://www.deepl.com/your-account/keys). A scoped key returns `403 Forbidden` on any endpoint its scopes don't cover.
 
 ## June 23 - Multiple Glossaries per Translation Request
 - [`POST /v2/translate`](/api-reference/translate/request-translation) and [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accept a `glossary_ids` parameter, allowing you to apply up to 5 glossaries to a single translation request.
