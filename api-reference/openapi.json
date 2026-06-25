@@ -3439,6 +3439,9 @@
           "400": {
             "$ref": "#/components/responses/BadRequestSpokenTerms"
           },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
           "403": {
             "$ref": "#/components/responses/ForbiddenSpokenTerms"
           },
@@ -3498,6 +3501,9 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/ForbiddenSpokenTerms"
@@ -3578,6 +3584,9 @@
           "400": {
             "$ref": "#/components/responses/BadRequestSpokenTerms"
           },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
           "403": {
             "$ref": "#/components/responses/ForbiddenSpokenTerms"
           },
@@ -3618,6 +3627,9 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/ForbiddenSpokenTerms"
@@ -3678,6 +3690,9 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/ForbiddenSpokenTerms"
@@ -3751,6 +3766,9 @@
           "400": {
             "$ref": "#/components/responses/BadRequestSpokenTerms"
           },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
           "403": {
             "$ref": "#/components/responses/ForbiddenSpokenTerms"
           },
@@ -3801,6 +3819,9 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/ForbiddenSpokenTerms"
@@ -6112,19 +6133,6 @@
             },
             "example": {
               "message": "Spoken terms quota exhausted"
-            }
-          }
-        }
-      },
-      "Conflict": {
-        "description": "Conflict. The request conflicts with the current state of the resource.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            },
-            "example": {
-              "message": "Invalid or outdated dictionary ID"
             }
           }
         }

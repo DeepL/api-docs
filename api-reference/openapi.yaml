@@ -2401,6 +2401,8 @@ paths:
                     creation_time: '2025-08-03T14:16:18.329Z'
         400:
           $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/ForbiddenSpokenTerms'
         404:
@@ -2437,6 +2439,8 @@ paths:
                 creation_time: '2025-08-03T14:16:18.329Z'
         400:
           $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/ForbiddenSpokenTerms'
         404:
@@ -2483,6 +2487,8 @@ paths:
                 $ref: '#/components/schemas/SpokenTerms'
         400:
           $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/ForbiddenSpokenTerms'
         404:
@@ -2508,6 +2514,8 @@ paths:
           description: Successfully deleted spoken terms collection.
         400:
           $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/ForbiddenSpokenTerms'
         429:
@@ -2545,6 +2553,8 @@ paths:
                 entries: "DeepL\nAPI\nwebhook"
         400:
           $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/ForbiddenSpokenTerms'
         404:
@@ -2588,6 +2598,8 @@ paths:
                 $ref: '#/components/schemas/SpokenTermsList'
         400:
           $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/ForbiddenSpokenTerms'
         404:
@@ -2620,6 +2632,8 @@ paths:
           description: Successfully deleted term list.
         400:
           $ref: '#/components/responses/BadRequestSpokenTerms'
+        401:
+          $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/ForbiddenSpokenTerms'
         404:
@@ -4148,14 +4162,6 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
           example:
             message: "Spoken terms quota exhausted"
-    Conflict:
-      description: Conflict. The request conflicts with the current state of the resource.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            message: "Invalid or outdated dictionary ID"
     UnsupportedMediaType:
       description: Unsupported Media Type. Must be application/json or application/x-www-form-urlencoded.
       content:
