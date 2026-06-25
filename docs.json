@@ -211,6 +211,21 @@
                 "drilldown": false
               },
               {
+                "group": "Spoken Terms",
+                "pages": [
+                  "api-reference/spoken-terms",
+                  "api-reference/spoken-terms/create-spoken-terms",
+                  "api-reference/spoken-terms/list-all-spoken-terms",
+                  "api-reference/spoken-terms/retrieve-spoken-terms-details",
+                  "api-reference/spoken-terms/edit-spoken-terms-details",
+                  "api-reference/spoken-terms/retrieve-spoken-terms-entries",
+                  "api-reference/spoken-terms/delete-spoken-terms",
+                  "api-reference/spoken-terms/delete-spoken-terms-list",
+                  "api-reference/spoken-terms/replace-or-create-term-list"
+                ],
+                "drilldown": false
+              },
+              {
                 "group": "Style Rules",
                 "pages": [
                   "api-reference/style-rules",

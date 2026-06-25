@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "DeepL API Documentation",
-    "description": "The DeepL API provides programmatic access to DeepL’s language AI technology.\n\nNote: this OpenAPI spec is embedded into our API documentation and has shortened descriptions.",
+    "description": "The DeepL API provides programmatic access to DeepL\u2019s language AI technology.\n\nNote: this OpenAPI spec is embedded into our API documentation and has shortened descriptions.",
     "termsOfService": "https://www.deepl.com/pro-license",
     "contact": {
       "name": "DeepL - Contact us",
@@ -747,7 +747,7 @@
                 ],
                 "properties": {
                   "text": {
-                    "description": "Text to be translated. Only UTF-8-encoded plain text is supported. The parameter may be specified\nmany times in a single request, within the request size limit (128KiB). Translations are returned\nin the same order as they are requested. Each text in the array is translated independently — texts\ndo not share context with each other.",
+                    "description": "Text to be translated. Only UTF-8-encoded plain text is supported. The parameter may be specified\nmany times in a single request, within the request size limit (128KiB). Translations are returned\nin the same order as they are requested. Each text in the array is translated independently \u2014 texts\ndo not share context with each other.",
                     "type": "array",
                     "x-default": [
                       "Hello, World!"
@@ -866,7 +866,7 @@
                 ],
                 "properties": {
                   "text": {
-                    "description": "Text to be translated. Only UTF-8-encoded plain text is supported. The parameter may be specified many times in a single request, within the request size limit (128KiB). Translations are returned in the same order as they are requested. Each text in the array is translated independently — texts do not share context with each other.",
+                    "description": "Text to be translated. Only UTF-8-encoded plain text is supported. The parameter may be specified many times in a single request, within the request size limit (128KiB). Translations are returned in the same order as they are requested. Each text in the array is translated independently \u2014 texts do not share context with each other.",
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -3313,6 +3313,512 @@
         ]
       }
     },
+    "/v3/spoken-terms": {
+      "post": {
+        "tags": [
+          "ManageSpokenTerms"
+        ],
+        "summary": "Create Spoken Terms",
+        "operationId": "createSpokenTerms",
+        "description": "Create a new spoken terms collection with one or more term lists. Each term list contains terms for a single language.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSpokenTermsParameters"
+              },
+              "examples": {
+                "Basic": {
+                  "value": {
+                    "name": "Technical Terms",
+                    "term_lists": [
+                      {
+                        "lang": "en",
+                        "entries": "DeepL\nAPI\nwebhook"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSpokenTermsParameters"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created spoken terms collection.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpokenTerms"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenSpokenTerms"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "ManageSpokenTerms"
+        ],
+        "summary": "List All Spoken Terms",
+        "operationId": "listSpokenTerms",
+        "description": "List all spoken terms collections and their metadata, but not the actual terms.",
+        "responses": {
+          "200": {
+            "description": "JSON object containing all spoken terms collections.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "spoken_terms": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SpokenTerms"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "spoken_terms": [
+                    {
+                      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+                      "name": "Technical Terms",
+                      "term_lists": [
+                        {
+                          "lang": "en",
+                          "entry_count": 3
+                        }
+                      ],
+                      "creation_time": "2025-08-03T14:16:18.329Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenSpokenTerms"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
+    "/v3/spoken-terms/{spoken_terms_id}": {
+      "get": {
+        "tags": [
+          "ManageSpokenTerms"
+        ],
+        "summary": "Retrieve Spoken Terms Details",
+        "description": "Retrieve metadata for a spoken terms collection, including term list information but not the actual terms.",
+        "operationId": "getSpokenTerms",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpokenTermsID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON object containing the spoken terms metadata.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpokenTerms"
+                },
+                "example": {
+                  "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+                  "name": "Technical Terms",
+                  "term_lists": [
+                    {
+                      "lang": "en",
+                      "entry_count": 3
+                    }
+                  ],
+                  "creation_time": "2025-08-03T14:16:18.329Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenSpokenTerms"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "ManageSpokenTerms"
+        ],
+        "summary": "Edit Spoken Terms Details",
+        "description": "Update the name of a spoken terms collection or merge new entries into an existing term list.",
+        "operationId": "patchSpokenTerms",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpokenTermsID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchSpokenTermsParameters"
+              },
+              "examples": {
+                "UpdateName": {
+                  "value": {
+                    "name": "Updated Technical Terms"
+                  }
+                },
+                "MergeEntries": {
+                  "value": {
+                    "term_lists": [
+                      {
+                        "lang": "en",
+                        "entries": "authentication\nendpoint"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchSpokenTermsParameters"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated spoken terms collection.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpokenTerms"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenSpokenTerms"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "ManageSpokenTerms"
+        ],
+        "summary": "Delete Spoken Terms",
+        "description": "Delete the entire spoken terms collection.",
+        "operationId": "deleteSpokenTerms",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpokenTermsID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully deleted spoken terms collection."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenSpokenTerms"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
+    "/v3/spoken-terms/{spoken_terms_id}/entries": {
+      "get": {
+        "tags": [
+          "ManageSpokenTerms"
+        ],
+        "summary": "Retrieve Spoken Terms Entries",
+        "description": "Retrieve the actual terms for a specific language from a spoken terms collection.",
+        "operationId": "getSpokenTermsEntries",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpokenTermsID"
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": true,
+            "description": "The language code (ISO 639-1) for the term list to retrieve.",
+            "schema": {
+              "type": "string",
+              "example": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON object containing the term list entries.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpokenTermsEntries"
+                },
+                "example": {
+                  "lang": "en",
+                  "entries": "DeepL\nAPI\nwebhook"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenSpokenTerms"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
+    "/v3/spoken-terms/{spoken_terms_id}/term-lists": {
+      "put": {
+        "tags": [
+          "ManageSpokenTerms"
+        ],
+        "summary": "Replace or Create a Term List",
+        "description": "Replace an existing term list for a language, or create a new one if it doesn't exist.",
+        "operationId": "putSpokenTermsList",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpokenTermsID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutSpokenTermsListParameters"
+              },
+              "examples": {
+                "Basic": {
+                  "value": {
+                    "lang": "en",
+                    "entries": "DeepL\nAPI\nwebhook\nintegration"
+                  }
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PutSpokenTermsListParameters"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully replaced or created term list.",
+            "headers": {
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpokenTermsList"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenSpokenTerms"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "ManageSpokenTerms"
+        ],
+        "summary": "Delete a Term List",
+        "description": "Delete a term list for a specific language from the spoken terms collection.",
+        "operationId": "deleteSpokenTermsList",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SpokenTermsID"
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": true,
+            "description": "The language code (ISO 639-1) for the term list to delete.",
+            "schema": {
+              "type": "string",
+              "example": "en"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully deleted term list."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestSpokenTerms"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenSpokenTerms"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "auth_header": []
+          }
+        ]
+      }
+    },
     "/v3/languages/resources": {
       "get": {
         "tags": [
@@ -3320,7 +3826,7 @@
         ],
         "summary": "Retrieve Language Resources",
         "operationId": "getLanguageResources",
-        "description": "Returns all DeepL API resources and the features they support.\n\nFor each feature, the response indicates which languages must support it for the feature to be\navailable — source only (`needs_source_support`), target only (`needs_target_support`), or both.\nThis allows clients to determine feature availability for a language pair by checking the\nappropriate language's `features` object returned by `GET /v3/languages`.",
+        "description": "Returns all DeepL API resources and the features they support.\n\nFor each feature, the response indicates which languages must support it for the feature to be\navailable \u2014 source only (`needs_source_support`), target only (`needs_target_support`), or both.\nThis allows clients to determine feature availability for a language pair by checking the\nappropriate language's `features` object returned by `GET /v3/languages`.",
         "responses": {
           "200": {
             "description": "JSON array where each item represents a DeepL API product.",
@@ -3355,7 +3861,7 @@
                         "example": "translate_text"
                       },
                       "features": {
-                        "description": "Features supported by this resource. Each feature indicates which languages\nmust support it for the feature to be available — source, target, or both.",
+                        "description": "Features supported by this resource. Each feature indicates which languages\nmust support it for the feature to be available \u2014 source, target, or both.",
                         "type": "array",
                         "items": {
                           "type": "object",
@@ -3946,7 +4452,7 @@
                 "custom_instructions": [
                   {
                     "label": "Currency custom instruction",
-                    "prompt": "Have currency symbols before the numerical value (e.g. $100, €100)",
+                    "prompt": "Have currency symbols before the numerical value (e.g. $100, \u20ac100)",
                     "source_language": "en"
                   }
                 ]
@@ -4294,7 +4800,7 @@
                     "type": "string",
                     "description": "Instruction text",
                     "maxLength": 300,
-                    "x-default": "Have currency symbols before the numerical value (e.g. $100, €100)"
+                    "x-default": "Have currency symbols before the numerical value (e.g. $100, \u20ac100)"
                   },
                   "source_language": {
                     "type": "string",
@@ -4304,7 +4810,7 @@
               },
               "example": {
                 "label": "Currency custom instruction",
-                "prompt": "Have currency symbols before the numerical value (e.g. $100, €100)"
+                "prompt": "Have currency symbols before the numerical value (e.g. $100, \u20ac100)"
               }
             }
           }
@@ -5398,6 +5904,15 @@
           "type": "string"
         }
       },
+      "SpokenTermsID": {
+        "name": "spoken_terms_id",
+        "description": "A unique ID assigned to the spoken terms collection.",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
       "SourceLanguage": {
         "name": "source_lang",
         "in": "query",
@@ -5562,6 +6077,71 @@
       "QuotaExceededGlossaries": {
         "description": "Quota exceeded. Too many requests were made to the glossary endpoints recently."
       },
+      "BadRequestSpokenTerms": {
+        "description": "Bad request. Please check error message and your parameters.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "Bad request"
+            }
+          }
+        }
+      },
+      "ForbiddenSpokenTerms": {
+        "description": "Forbidden. Authorization failed or feature not available for your plan.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "Forbidden. Authorization failed or feature not available for your plan."
+            }
+          }
+        }
+      },
+      "QuotaExceededSpokenTerms": {
+        "description": "Quota exceeded. Spoken terms collection limit reached for your plan.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "Spoken terms quota exhausted"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflict. The request conflicts with the current state of the resource.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "Invalid or outdated dictionary ID"
+            }
+          }
+        }
+      },
+      "UnsupportedMediaType": {
+        "description": "Unsupported Media Type. Must be application/json or application/x-www-form-urlencoded.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "message": "Unsupported Content-Type"
+            }
+          }
+        }
+      },
       "InternalServerError": {
         "description": "Internal error."
       },
@@ -5697,18 +6277,18 @@
                   "use_dd_space_spelled_out_month_space_yyyy_and_use_spanish_word_septiembre_for_ninth_month",
                   "use_dd_space_spelled_out_month_space_yyyy_and_use_spanish_word_setiembre_for_ninth_month",
                   "use_dd_space_spelled_out_month_space_yyyy_without_leading_zeros_for_single_digit_days",
-                  "use_historical_eras_and_write_numbers_in_chinese_followed_by_chinese_word_公元前_or_公元后_with_arabic_numerals_in_parentheses",
+                  "use_historical_eras_and_write_numbers_in_chinese_followed_by_chinese_word_\u516c\u5143\u524d_or_\u516c\u5143\u540e_with_arabic_numerals_in_parentheses",
                   "use_mm_slash_dd_slash_yyyy_with_leading_zeros_for_single_digit_days_and_months",
                   "use_numerals_only_with_leading_zero_for_single_digits",
                   "use_numerals_only_without_leading_zero_for_single_digits",
                   "use_spelled_out_month_space_dd_comma_space_yyyy_and_use_spanish_word_septiembre_for_ninth_month",
                   "use_spelled_out_month_space_dd_comma_space_yyyy_without_leading_zeros_for_single_digit_days",
                   "use_traditional_calendar_system_with_chinese_numbers",
-                  "use_yyyy_chinese_word_年_mm_chinese_word_月_dd_chinese_word_日_with_chinese_numbers",
-                  "use_yyyy_chinese_word_年_mm_chinese_word_月_dd_chinese_word_日_without_leading_zero_for_single_digit_months_and_days",
+                  "use_yyyy_chinese_word_\u5e74_mm_chinese_word_\u6708_dd_chinese_word_\u65e5_with_chinese_numbers",
+                  "use_yyyy_chinese_word_\u5e74_mm_chinese_word_\u6708_dd_chinese_word_\u65e5_without_leading_zero_for_single_digit_months_and_days",
                   "use_yyyy_hyphen_mm_hyphen_dd_with_leading_zero_for_single_digit_days_and_months",
                   "use_yyyy_hyphen_mm_hyphen_dd_with_leading_zeros_for_single_digit_days_and_months",
-                  "use_yyyy_korean word_년_space_mm_korean word_월_space_dd_korean word_일_without_leading_zero_for_single_digit_days_and_months",
+                  "use_yyyy_korean word_\ub144_space_mm_korean word_\uc6d4_space_dd_korean word_\uc77c_without_leading_zero_for_single_digit_days_and_months",
                   "use_yyyy_period_mm_period_dd",
                   "use_yyyy_period_space_mm_period_space_dd_period_space_without_leading_zero_for_single_digit_days_and_months",
                   "use_yyyy_slash_mm_slash_dd",
@@ -5791,19 +6371,19 @@
                   "use_12_hour_clock_and_uppercase_am_or_pm_with_periods_except_use_noon_and_midnight_instead_of_12_am_and_12_pm",
                   "use_12_hour_clock_and_uppercase_am_or_pm_without_periods",
                   "use_12_hour_clock_and_uppercase_am_or_pm_without_periods_except_use_noon_and_midnight_instead_of_12_am_and_12_pm",
-                  "use_12_hour_clock_and_write_chinese_word_上午_or_下午_or_chinese_word_早上_or_晚上_followed_by_arabic_numerals",
-                  "use_12_hour_clock_and_write_chinese_word_上午_or_下午_or_chinese_word_早上_or_晚上_followed_by_arabic_numerals_with_chinese_word_点_for_hours",
-                  "use_12_hour_clock_and_write_chinese_word_上午_or_下午_or_chinese_word_早上_or_晚上_followed_by_arabic_numerals_with_chinese_words_时_and_分_for_hours_and_minutes",
-                  "use_12_hour_clock_and_write_chinese_word_上午_or_下午_or_chinese_word_早上_or_晚上_followed_by_chinese_numbers_with_chinese_words_时_and_分_for_hours_and_minutes",
+                  "use_12_hour_clock_and_write_chinese_word_\u4e0a\u5348_or_\u4e0b\u5348_or_chinese_word_\u65e9\u4e0a_or_\u665a\u4e0a_followed_by_arabic_numerals",
+                  "use_12_hour_clock_and_write_chinese_word_\u4e0a\u5348_or_\u4e0b\u5348_or_chinese_word_\u65e9\u4e0a_or_\u665a\u4e0a_followed_by_arabic_numerals_with_chinese_word_\u70b9_for_hours",
+                  "use_12_hour_clock_and_write_chinese_word_\u4e0a\u5348_or_\u4e0b\u5348_or_chinese_word_\u65e9\u4e0a_or_\u665a\u4e0a_followed_by_arabic_numerals_with_chinese_words_\u65f6_and_\u5206_for_hours_and_minutes",
+                  "use_12_hour_clock_and_write_chinese_word_\u4e0a\u5348_or_\u4e0b\u5348_or_chinese_word_\u65e9\u4e0a_or_\u665a\u4e0a_followed_by_chinese_numbers_with_chinese_words_\u65f6_and_\u5206_for_hours_and_minutes",
                   "use_12_hour_clock_with_arabic_numerals_and_colon",
-                  "use_12_hour_clock_with_korean_words_시_and_분",
+                  "use_12_hour_clock_with_korean_words_\uc2dc_and_\ubd84",
                   "use_12_hour_clock_without_leading_zero_or_minutes_for_full_hours_use_colon_as_separator_and_lowercase_am_or_pm_without_periods",
                   "use_12_hour_clock_without_leading_zero_or_minutes_for_full_hours_use_colon_as_separator_and_uppercase_am_or_pm_without_periods",
                   "use_12_hour_clock_without_leading_zero_use_period_as_separator_and_lowercase_am_or_pm_with_periods_and_spaces",
                   "use_24_hour_clock",
                   "use_24_hour_clock_with_arabic_numerals_and_colon",
                   "use_24_hour_clock_with_colon_as_separator",
-                  "use_24_hour_clock_with_korean_words_시_and_분",
+                  "use_24_hour_clock_with_korean_words_\uc2dc_and_\ubd84",
                   "use_24_hour_clock_with_period_as_separator",
                   "use_hh_colon_mm_german_word_uhr_with_leading_zeros_for_single_digit_hours",
                   "use_hh_colon_mm_german_word_uhr_without_leading_zeros_for_single_digit_hours",
@@ -5985,8 +6565,8 @@
                   "use_chinese_characters_for_ten_thousands_and_hundred_millions",
                   "use_comma_to_separate_large_numbers_into_units_of_three_except_for_calendar_years",
                   "use_kanji_for_trillions_hundred_millions_and_ten_thousands",
-                  "use_korean_words_만_억_조_with_space",
-                  "use_korean_words_만_억_조_without_space"
+                  "use_korean_words_\ub9cc_\uc5b5_\uc870_with_space",
+                  "use_korean_words_\ub9cc_\uc5b5_\uc870_without_space"
                 ]
               },
               "large_sums_of_money": {
@@ -6064,16 +6644,16 @@
                 "description": "Formatting options for Percentage Format",
                 "enum": [
                   "use_arabic_numerals_followed_by_percent_symbol_without_space",
-                  "use_chinese_numbers_followed_by_chinese_word_百分之",
+                  "use_chinese_numbers_followed_by_chinese_word_\u767e\u5206\u4e4b",
                   "use_numerals_followed_by_full_width_percent_symbol_without_space",
-                  "use_numerals_followed_by_japanese_word_パーセント_without_space",
-                  "use_numerals_followed_by_korean_word_퍼센트",
+                  "use_numerals_followed_by_japanese_word_\u30d1\u30fc\u30bb\u30f3\u30c8_without_space",
+                  "use_numerals_followed_by_korean_word_\ud37c\uc13c\ud2b8",
                   "use_numerals_followed_by_percent_symbol",
                   "use_numerals_followed_by_space_then_german_word_prozent",
                   "use_numerals_followed_by_space_then_half_width_percent_symbol",
                   "use_numerals_followed_by_space_then_italian_word_per_cento",
                   "use_numerals_followed_by_space_then_italian_word_percento",
-                  "use_numerals_followed_by_space_then_korean_word_퍼센트",
+                  "use_numerals_followed_by_space_then_korean_word_\ud37c\uc13c\ud2b8",
                   "use_numerals_followed_by_space_then_percent_symbol",
                   "use_numerals_followed_by_space_then_spell_out_per_cent",
                   "use_numerals_followed_by_space_then_spell_out_percent",
@@ -6107,14 +6687,14 @@
                 "description": "Formatting options for Temperature Format",
                 "enum": [
                   "spell_out_unit",
-                  "spell_out_unit_followed_by_numerals_then_korean_word_도",
+                  "spell_out_unit_followed_by_numerals_then_korean_word_\ub3c4",
                   "use_arabic_numerals_followed_by_space_then_spell_out_unit",
                   "use_arabic_numerals_followed_by_unit_symbol_without_space",
                   "use_arabic_numerals_then_spell_out_unit",
                   "use_chinese_numbers_then_spell_out_unit",
                   "use_italian_word_grado_and_do_not_specify_temperature_scale",
-                  "use_numerals_followed_by_japanese_word_度_without_space",
-                  "use_numerals_followed_by_korean_word_도",
+                  "use_numerals_followed_by_japanese_word_\u5ea6_without_space",
+                  "use_numerals_followed_by_korean_word_\ub3c4",
                   "use_numerals_followed_by_space_then_spell_out_unit",
                   "use_numerals_followed_by_space_then_unit_symbol",
                   "use_numerals_followed_by_unit_symbol_without_space",
@@ -6149,7 +6729,7 @@
                 "type": "string",
                 "description": "Formatting options for Use Of Hiragana And Kanji",
                 "enum": [
-                  "use_hiragana_japanese_word_か所_or_か月_when_using_arabic_numerals_in_horizontal_writing_but_use_kanji_japanese_word_箇所_or_箇月_when_using_kanji_numbers"
+                  "use_hiragana_japanese_word_\u304b\u6240_or_\u304b\u6708_when_using_arabic_numerals_in_horizontal_writing_but_use_kanji_japanese_word_\u7b87\u6240_or_\u7b87\u6708_when_using_kanji_numbers"
                 ]
               },
               "writing_numbers": {
@@ -6166,8 +6746,8 @@
                 "type": "string",
                 "description": "Formatting options for Zero Format",
                 "enum": [
-                  "use_chinese_word_〇_for_numbering",
-                  "use_chinese_word_零_for_measurement"
+                  "use_chinese_word_\u3007_for_numbering",
+                  "use_chinese_word_\u96f6_for_measurement"
                 ]
               }
             }
@@ -6510,8 +7090,8 @@
                   "use_hyphen_without_space_on_either_side",
                   "use_hyphen_without_spaces",
                   "use_italian_words_da_a",
-                  "use_japanese_word_から",
-                  "use_korean_words_부터_까지",
+                  "use_japanese_word_\u304b\u3089",
+                  "use_korean_words_\ubd80\ud130_\uae4c\uc9c0",
                   "use_spanish_words_de_a",
                   "use_tilde"
                 ]
@@ -6669,9 +7249,9 @@
                   "use_even_on_capital_letters"
                 ]
               },
-              "accents_in_verbs_conjugated_like_french_word_céder": {
+              "accents_in_verbs_conjugated_like_french_word_c\u00e9der": {
                 "type": "string",
-                "description": "Formatting options for Accents In Verbs Conjugated Like French Word Céder",
+                "description": "Formatting options for Accents In Verbs Conjugated Like French Word C\u00e9der",
                 "enum": [
                   "use_acute_accent",
                   "use_grave_accent"
@@ -6806,7 +7386,7 @@
                 "description": "Formatting options for Past Participle Of French Word Laisser Followed By Infinitive",
                 "enum": [
                   "make_french_word_laisser_agree_with_direct_object_complement_if_it_appears_before_verb",
-                  "use_invariable_form_french_word_laissé"
+                  "use_invariable_form_french_word_laiss\u00e9"
                 ]
               },
               "personal_titles": {
@@ -7264,7 +7844,7 @@
           "prompt": {
             "type": "string",
             "description": "Prompt of the custom instruction",
-            "example": "Have currency symbols before the numerical value (e.g. $100, €100)"
+            "example": "Have currency symbols before the numerical value (e.g. $100, \u20ac100)"
           },
           "source_language": {
             "type": "string",
@@ -7664,6 +8244,144 @@
           }
         }
       },
+      "CreateSpokenTermsParameters": {
+        "type": "object",
+        "required": [
+          "name",
+          "term_lists"
+        ],
+        "properties": {
+          "name": {
+            "description": "Name for the spoken terms collection.",
+            "type": "string",
+            "maxLength": 1024,
+            "example": "Technical Terms"
+          },
+          "term_lists": {
+            "description": "Array of term lists, one per language.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpokenTermsListInput"
+            }
+          }
+        }
+      },
+      "SpokenTermsListInput": {
+        "type": "object",
+        "required": [
+          "lang",
+          "entries"
+        ],
+        "properties": {
+          "lang": {
+            "description": "Language code (ISO 639-1) for this term list.",
+            "type": "string",
+            "example": "en"
+          },
+          "entries": {
+            "description": "Newline-separated list of terms. Maximum 300 characters total.",
+            "type": "string",
+            "maxLength": 300,
+            "example": "DeepL\nAPI\nwebhook"
+          }
+        }
+      },
+      "PatchSpokenTermsParameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "New name for the spoken terms collection.",
+            "type": "string",
+            "maxLength": 1024,
+            "example": "Updated Technical Terms"
+          },
+          "term_lists": {
+            "description": "Term lists to merge with existing lists.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpokenTermsListInput"
+            }
+          }
+        }
+      },
+      "PutSpokenTermsListParameters": {
+        "type": "object",
+        "required": [
+          "lang",
+          "entries"
+        ],
+        "properties": {
+          "lang": {
+            "description": "Language code (ISO 639-1) for this term list.",
+            "type": "string",
+            "example": "en"
+          },
+          "entries": {
+            "description": "Newline-separated list of terms. Maximum 300 characters total.",
+            "type": "string",
+            "maxLength": 300,
+            "example": "DeepL\nAPI\nwebhook\nintegration"
+          }
+        }
+      },
+      "SpokenTerms": {
+        "type": "object",
+        "properties": {
+          "spoken_terms_id": {
+            "description": "A unique ID assigned to the spoken terms collection.",
+            "type": "string",
+            "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+          },
+          "name": {
+            "description": "Name of the spoken terms collection.",
+            "type": "string",
+            "example": "Technical Terms"
+          },
+          "term_lists": {
+            "description": "List of term lists contained in this collection.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpokenTermsList"
+            }
+          },
+          "creation_time": {
+            "description": "The creation time of the spoken terms collection in ISO 8601-1:2019 format (e.g.: `2025-08-03T14:16:18.329Z`).",
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-08-03T14:16:18.329Z"
+          }
+        }
+      },
+      "SpokenTermsList": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "description": "Language code (ISO 639-1).",
+            "type": "string",
+            "example": "en"
+          },
+          "entry_count": {
+            "description": "Number of terms in this list.",
+            "type": "integer",
+            "example": 3
+          }
+        }
+      },
+      "SpokenTermsEntries": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "description": "Language code (ISO 639-1).",
+            "type": "string",
+            "example": "en"
+          },
+          "entries": {
+            "description": "Newline-separated list of terms.",
+            "type": "string",
+            "example": "DeepL\nAPI\nwebhook"
+          }
+        }
+      },
       "PreserveFormattingOption": {
         "description": "Sets whether the translation engine should respect the original formatting, even if it would usually\ncorrect some aspects.",
         "type": "boolean",
@@ -7816,7 +8534,7 @@
             "$ref": "#/components/schemas/TagList"
           }
         ],
-        "description": "List of XML tags which never split sentences.\n\n\nFor some XML files, finding tags with textual content and splitting sentences using those tags won't yield the best results. The following example shows the engine splitting sentences on `par` tags and proceeding to translate the parts separately, resulting in an incorrect translation:\n * Example request:\n```\n<par>The firm said it had been </par><par> conducting an internal investigation.</par>\n```\n * Example response:\n```\n<par>Die Firma sagte, es sei eine gute Idee gewesen.</par><par> Durchführung einer internen Untersuchung.</par>\n```\n\n\nAs this can lead to bad translations, this type of structure should either be avoided, or the `non_splitting_tags` parameter should be set. The following example shows the same call, with the parameter set to `par`:\n * Example request:\n```\n<par>The firm said it had been </par><par> conducting an internal investigation.</par>\n```\n * Example response:\n```\n<par>Die Firma sagte, dass sie</par><par> eine interne Untersuchung durchgeführt</par><par> habe</par><par>.</par>\n```\n\n\nThis time, the sentence is translated as a whole. The XML tags are now considered markup and copied into the translated sentence. As the translation of the words \"had been\" has moved to another position in the German sentence, the two par tags are duplicated (which is expected here)."
+        "description": "List of XML tags which never split sentences.\n\n\nFor some XML files, finding tags with textual content and splitting sentences using those tags won't yield the best results. The following example shows the engine splitting sentences on `par` tags and proceeding to translate the parts separately, resulting in an incorrect translation:\n * Example request:\n```\n<par>The firm said it had been </par><par> conducting an internal investigation.</par>\n```\n * Example response:\n```\n<par>Die Firma sagte, es sei eine gute Idee gewesen.</par><par> Durchf\u00fchrung einer internen Untersuchung.</par>\n```\n\n\nAs this can lead to bad translations, this type of structure should either be avoided, or the `non_splitting_tags` parameter should be set. The following example shows the same call, with the parameter set to `par`:\n * Example request:\n```\n<par>The firm said it had been </par><par> conducting an internal investigation.</par>\n```\n * Example response:\n```\n<par>Die Firma sagte, dass sie</par><par> eine interne Untersuchung durchgef\u00fchrt</par><par> habe</par><par>.</par>\n```\n\n\nThis time, the sentence is translated as a whole. The XML tags are now considered markup and copied into the translated sentence. As the translation of the words \"had been\" has moved to another position in the German sentence, the two par tags are duplicated (which is expected here)."
       },
       "SplittingTagCommaSeparatedList": {
         "allOf": [
@@ -8033,7 +8751,7 @@
       },
       "VoiceSourceMediaContentType": {
         "type": "string",
-        "description": " The audio format for streaming, which specifies container, codec, and encoding parameters. See the table below for supported formats. If `audio/auto` is specified, the server will auto-detect the container and codec for all supported combinations, except PCM. That requires explicit encoding parameters. All formats need to be single channel audio.\n \n | Content Type                          | Container                                         | Codec                                     |\n | :------------------------------------ | :------------------------------------------------ | :---------------------------------------- |\n | `audio/auto`                          | Auto-detect: FLAC / Matroska / MPEG / Ogg / WebM  | Auto-detect AAC / FLAC / MP3 / OPUS       |\n | `audio/flac`                          | FLAC (flac)                                       | FLAC                                      |\n | `audio/mpeg`                          | MPEG (mp3/m4a)                                    | MP3                                       |\n | `audio/ogg`                           | Ogg (ogg/oga)                                     | Auto-detect FLAC / OPUS                   |\n | `audio/webm`                          | WebM (webm)                                       | OPUS                                      |\n | `audio/x-matroska`                    | Matroska (mkv/mka)                                | Auto-detect: AAC / FLAC / MP3 / OPUS      |\n | `audio/ogg;codecs=flac`               | Ogg (ogg/oga)                                     | FLAC                                      |\n | `audio/ogg;codecs=opus`               | Ogg (ogg/oga)                                     | OPUS                                      |\n | `audio/pcm;encoding=alaw;rate=8000`   | -                                                 | PCM A-Law 8000 Hz (G.711)                 |\n | `audio/pcm;encoding=ulaw;rate=8000`   | -                                                 | PCM µ-Law 8000 Hz (G.711)                 |\n | `audio/pcm;encoding=s16le;rate=8000`  | -                                                 | PCM signed 16-bit little-endian 8000 Hz   |\n | `audio/pcm;encoding=s16le;rate=16000` | -                                                 | PCM signed 16-bit little-endian 16000 Hz  |\n | `audio/pcm;encoding=s16le;rate=44100` | -                                                 | PCM signed 16-bit little-endian 44100 Hz  |\n | `audio/pcm;encoding=s16le;rate=48000` | -                                                 | PCM signed 16-bit little-endian 48000 Hz  |\n | `audio/webm;codecs=opus`              | WebM (webm)                                       | OPUS                                      |\n | `audio/x-matroska;codecs=aac`         | Matroska (mkv/mka)                                | AAC                                       |\n | `audio/x-matroska;codecs=flac`        | Matroska (mkv/mka)                                | FLAC                                      |\n | `audio/x-matroska;codecs=mp3`         | Matroska (mkv/mka)                                | MP3                                       |\n | `audio/x-matroska;codecs=opus`        | Matroska (mkv/mka)                                | OPUS                                      |\n \n\nWe recommend the following bitrates as good tradeoff between quality and bandwidth:\n - AAC: 96 kbps\n - FLAC: 256 kbps  (16000 Hz)\n - MP3: 128 kbps\n - OPUS: 32 kbps (recommendation for low bandwidth scenarios)\n - PCM: 256 kbps (16000 Hz, default recommendation)\n ",
+        "description": " The audio format for streaming, which specifies container, codec, and encoding parameters. See the table below for supported formats. If `audio/auto` is specified, the server will auto-detect the container and codec for all supported combinations, except PCM. That requires explicit encoding parameters. All formats need to be single channel audio.\n \n | Content Type                          | Container                                         | Codec                                     |\n | :------------------------------------ | :------------------------------------------------ | :---------------------------------------- |\n | `audio/auto`                          | Auto-detect: FLAC / Matroska / MPEG / Ogg / WebM  | Auto-detect AAC / FLAC / MP3 / OPUS       |\n | `audio/flac`                          | FLAC (flac)                                       | FLAC                                      |\n | `audio/mpeg`                          | MPEG (mp3/m4a)                                    | MP3                                       |\n | `audio/ogg`                           | Ogg (ogg/oga)                                     | Auto-detect FLAC / OPUS                   |\n | `audio/webm`                          | WebM (webm)                                       | OPUS                                      |\n | `audio/x-matroska`                    | Matroska (mkv/mka)                                | Auto-detect: AAC / FLAC / MP3 / OPUS      |\n | `audio/ogg;codecs=flac`               | Ogg (ogg/oga)                                     | FLAC                                      |\n | `audio/ogg;codecs=opus`               | Ogg (ogg/oga)                                     | OPUS                                      |\n | `audio/pcm;encoding=alaw;rate=8000`   | -                                                 | PCM A-Law 8000 Hz (G.711)                 |\n | `audio/pcm;encoding=ulaw;rate=8000`   | -                                                 | PCM \u00b5-Law 8000 Hz (G.711)                 |\n | `audio/pcm;encoding=s16le;rate=8000`  | -                                                 | PCM signed 16-bit little-endian 8000 Hz   |\n | `audio/pcm;encoding=s16le;rate=16000` | -                                                 | PCM signed 16-bit little-endian 16000 Hz  |\n | `audio/pcm;encoding=s16le;rate=44100` | -                                                 | PCM signed 16-bit little-endian 44100 Hz  |\n | `audio/pcm;encoding=s16le;rate=48000` | -                                                 | PCM signed 16-bit little-endian 48000 Hz  |\n | `audio/webm;codecs=opus`              | WebM (webm)                                       | OPUS                                      |\n | `audio/x-matroska;codecs=aac`         | Matroska (mkv/mka)                                | AAC                                       |\n | `audio/x-matroska;codecs=flac`        | Matroska (mkv/mka)                                | FLAC                                      |\n | `audio/x-matroska;codecs=mp3`         | Matroska (mkv/mka)                                | MP3                                       |\n | `audio/x-matroska;codecs=opus`        | Matroska (mkv/mka)                                | OPUS                                      |\n \n\nWe recommend the following bitrates as good tradeoff between quality and bandwidth:\n - AAC: 96 kbps\n - FLAC: 256 kbps  (16000 Hz)\n - MP3: 128 kbps\n - OPUS: 32 kbps (recommendation for low bandwidth scenarios)\n - PCM: 256 kbps (16000 Hz, default recommendation)\n ",
         "enum": [
           "audio/auto",
           "audio/flac",
@@ -8231,7 +8949,7 @@
       },
       "VoiceTargetMediaContentType": {
         "type": "string",
-        "description": " (closed beta) The audio format for synthesized target media streaming.\n Specifies container, codec, and encoding parameters for the audio returned in target_media_chunk messages.\n If not specified, defaults to audio/webm;codecs=opus.\n Only applies when target_media_languages is specified.\n \n | Content Type | Container | Codec |\n | :--- | :--- | :--- |\n | `audio/flac` | FLAC (flac) | FLAC 24000 Hz |\n | `video/mp2t;codecs=aac` | MPEG Transport Stream (Audio only) | AAC 70 kbit/s |\n | `video/mp2t;codecs=opus` | MPEG Transport Stream (Audio only) | OPUS 32 kbit/s |\n | `audio/ogg` | Ogg (ogg/oga) | OPUS 32 kbit/s |\n | `audio/ogg;codecs=flac` | Ogg (ogg/oga) | FLAC 24000 Hz |\n | `audio/ogg;codecs=opus` | Ogg (ogg/oga) | OPUS 32 kbit/s |\n | `audio/opus` | - | OPUS 32 kbit/s |\n | `audio/pcm;encoding=alaw;rate=8000` | - | PCM A-Law 8000 Hz (G.711) |\n | `audio/pcm;encoding=ulaw;rate=8000` | - | PCM µ-Law 8000 Hz (G.711) |\n | `audio/pcm;encoding=s16le;rate=16000` | - | PCM signed 16-bit little-endian 16000 Hz |\n | `audio/pcm;encoding=s16le;rate=24000` | - | PCM signed 16-bit little-endian 24000 Hz |\n | `audio/webm` | WebM (webm) | OPUS 32 kbit/s  |\n | `audio/webm;codecs=opus` | WebM (webm) | OPUS 32 kbit/s |\n | `audio/x-matroska;codecs=aac` | Matroska (mkv/mka) | AAC 70 kbit/s |\n | `audio/x-matroska;codecs=flac` | Matroska (mkv/mka) | FLAC 24000 Hz |\n | `audio/x-matroska;codecs=opus` | Matroska (mkv/mka) | OPUS 32 kbit/s |\n \n We recommend the following formats as good tradeoffs between quality and bandwidth:\n - OPUS (WebM): 32 kbps, recommended for low bandwidth scenarios (default)\n - PCM 24kHz: 384 kbps, high quality",
+        "description": " (closed beta) The audio format for synthesized target media streaming.\n Specifies container, codec, and encoding parameters for the audio returned in target_media_chunk messages.\n If not specified, defaults to audio/webm;codecs=opus.\n Only applies when target_media_languages is specified.\n \n | Content Type | Container | Codec |\n | :--- | :--- | :--- |\n | `audio/flac` | FLAC (flac) | FLAC 24000 Hz |\n | `video/mp2t;codecs=aac` | MPEG Transport Stream (Audio only) | AAC 70 kbit/s |\n | `video/mp2t;codecs=opus` | MPEG Transport Stream (Audio only) | OPUS 32 kbit/s |\n | `audio/ogg` | Ogg (ogg/oga) | OPUS 32 kbit/s |\n | `audio/ogg;codecs=flac` | Ogg (ogg/oga) | FLAC 24000 Hz |\n | `audio/ogg;codecs=opus` | Ogg (ogg/oga) | OPUS 32 kbit/s |\n | `audio/opus` | - | OPUS 32 kbit/s |\n | `audio/pcm;encoding=alaw;rate=8000` | - | PCM A-Law 8000 Hz (G.711) |\n | `audio/pcm;encoding=ulaw;rate=8000` | - | PCM \u00b5-Law 8000 Hz (G.711) |\n | `audio/pcm;encoding=s16le;rate=16000` | - | PCM signed 16-bit little-endian 16000 Hz |\n | `audio/pcm;encoding=s16le;rate=24000` | - | PCM signed 16-bit little-endian 24000 Hz |\n | `audio/webm` | WebM (webm) | OPUS 32 kbit/s  |\n | `audio/webm;codecs=opus` | WebM (webm) | OPUS 32 kbit/s |\n | `audio/x-matroska;codecs=aac` | Matroska (mkv/mka) | AAC 70 kbit/s |\n | `audio/x-matroska;codecs=flac` | Matroska (mkv/mka) | FLAC 24000 Hz |\n | `audio/x-matroska;codecs=opus` | Matroska (mkv/mka) | OPUS 32 kbit/s |\n \n We recommend the following formats as good tradeoffs between quality and bandwidth:\n - OPUS (WebM): 32 kbps, recommended for low bandwidth scenarios (default)\n - PCM 24kHz: 384 kbps, high quality",
         "enum": [
           "audio/flac",
           "video/mp2t;codecs=aac",
