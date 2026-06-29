@@ -7,7 +7,7 @@ public: false
 DeepL offers regional API endpoints that process and store data within specific geographic regions. Regional endpoints provide the same API functionality as the standard endpoint, with data processing occurring in data centers located in specific regions. These endpoints help organizations meet data residency and compliance requirements, and can also reduce latency for users in specific geographic regions.
 
 <Warning>
-Regional endpoints are only available to customers who have signed a regional deployment addendum. Without a signed addendum, requests to regional endpoints will return a 403 authentication error. Contact your account manager or [reach out to our sales team](https://www.deepl.com/contact-us) to discuss access.
+Regional endpoints are only available to customers who have signed a regional deployment addendum. Without a signed addendum, requests to regional endpoints return a 403 error. Contact your account manager or [reach out to our sales team](https://www.deepl.com/contact-us) to discuss access.
 </Warning>
 
 ## Endpoint URLs
@@ -170,9 +170,9 @@ echo $result->text;
 
 ### Access requirements
 
-Regional endpoints require activation through a regional deployment addendum. Requests to regional endpoints without activation will return a 403 authentication error. Contact your account manager or [reach out to our sales team](https://www.deepl.com/contact-us) to activate regional endpoints for your account.
+Regional endpoints require activation through a regional deployment addendum. Requests to regional endpoints without activation return a 403 error (`Your account is denied access`). Contact your account manager or [reach out to our sales team](https://www.deepl.com/contact-us) to activate regional endpoints for your account.
 
-If your account has regional endpoint access, any API key can be used with any regional endpoint.
+While API keys are not region-specific, each DeepL account is restricted to a single region. Your keys work only with the regional endpoint your account is assigned to.
 
 ### API compatibility
 
