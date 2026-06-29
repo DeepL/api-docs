@@ -214,7 +214,7 @@
                 "group": "Spoken Terms",
                 "pages": [
                   "api-reference/spoken-terms",
-                  "api-reference/spoken-terms/create-spoken-terms",
+                  "api-reference/spoken-terms/create-spoken-terms-collection",
                   "api-reference/spoken-terms/list-all-spoken-terms",
                   "api-reference/spoken-terms/retrieve-spoken-terms-details",
                   "api-reference/spoken-terms/edit-spoken-terms-details",

@@ -3318,9 +3318,9 @@
         "tags": [
           "ManageSpokenTerms"
         ],
-        "summary": "Create Spoken Terms",
+        "summary": "Create Spoken Terms collection",
         "operationId": "createSpokenTerms",
-        "description": "Create a new spoken terms collection with one or more term lists. Each term list contains terms for a single language.",
+        "description": "Create a new Spoken Terms collection with one or more term lists. Each term list contains terms for a single language.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3351,7 +3351,7 @@
         },
         "responses": {
           "201": {
-            "description": "Successfully created spoken terms collection.",
+            "description": "Successfully created Spoken Terms collection.",
             "headers": {
               "X-Trace-ID": {
                 "$ref": "#/components/headers/X-Trace-ID"
@@ -3382,6 +3382,9 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
+          },
+          "456": {
+            "$ref": "#/components/responses/QuotaExceededSpokenTerms"
           }
         },
         "security": [
@@ -3394,12 +3397,12 @@
         "tags": [
           "ManageSpokenTerms"
         ],
-        "summary": "List All Spoken Terms",
+        "summary": "List all Spoken Terms collections",
         "operationId": "listSpokenTerms",
-        "description": "List all spoken terms collections and their metadata, but not the actual terms.",
+        "description": "List all Spoken Terms collections and their metadata, but not the actual terms.",
         "responses": {
           "200": {
-            "description": "JSON object containing all spoken terms collections.",
+            "description": "JSON object containing all Spoken Terms collections.",
             "headers": {
               "X-Trace-ID": {
                 "$ref": "#/components/headers/X-Trace-ID"
@@ -3436,17 +3439,11 @@
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequestSpokenTerms"
-          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/ForbiddenSpokenTerms"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
@@ -3464,8 +3461,8 @@
         "tags": [
           "ManageSpokenTerms"
         ],
-        "summary": "Retrieve Spoken Terms Details",
-        "description": "Retrieve metadata for a spoken terms collection, including term list information but not the actual terms.",
+        "summary": "Retrieve Spoken Terms collection details",
+        "description": "Retrieve metadata for a Spoken Terms collection, including term list information but not the actual terms.",
         "operationId": "getSpokenTerms",
         "parameters": [
           {
@@ -3474,7 +3471,7 @@
         ],
         "responses": {
           "200": {
-            "description": "JSON object containing the spoken terms metadata.",
+            "description": "JSON object containing the Spoken Terms metadata.",
             "headers": {
               "X-Trace-ID": {
                 "$ref": "#/components/headers/X-Trace-ID"
@@ -3525,8 +3522,8 @@
         "tags": [
           "ManageSpokenTerms"
         ],
-        "summary": "Edit Spoken Terms Details",
-        "description": "Update the name of a spoken terms collection or merge new entries into an existing term list.",
+        "summary": "Edit Spoken Terms collection details",
+        "description": "Update the name of a Spoken Terms collection or merge new entries into an existing term list.",
         "operationId": "patchSpokenTerms",
         "parameters": [
           {
@@ -3567,7 +3564,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successfully updated spoken terms collection.",
+            "description": "Successfully updated Spoken Terms collection.",
             "headers": {
               "X-Trace-ID": {
                 "$ref": "#/components/headers/X-Trace-ID"
@@ -3613,8 +3610,8 @@
         "tags": [
           "ManageSpokenTerms"
         ],
-        "summary": "Delete Spoken Terms",
-        "description": "Delete the entire spoken terms collection.",
+        "summary": "Delete Spoken Terms collection",
+        "description": "Delete the entire Spoken Terms collection.",
         "operationId": "deleteSpokenTerms",
         "parameters": [
           {
@@ -3623,7 +3620,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Successfully deleted spoken terms collection."
+            "description": "Successfully deleted Spoken Terms collection."
           },
           "400": {
             "$ref": "#/components/responses/BadRequestSpokenTerms"
@@ -3650,8 +3647,8 @@
         "tags": [
           "ManageSpokenTerms"
         ],
-        "summary": "Retrieve Spoken Terms Entries",
-        "description": "Retrieve the actual terms for a specific language from a spoken terms collection.",
+        "summary": "Retrieve Spoken Terms entries",
+        "description": "Retrieve the actual terms for a specific language from a Spoken Terms collection.",
         "operationId": "getSpokenTermsEntries",
         "parameters": [
           {
@@ -3716,7 +3713,7 @@
         "tags": [
           "ManageSpokenTerms"
         ],
-        "summary": "Replace or Create a Term List",
+        "summary": "Replace or create a term list",
         "description": "Replace an existing term list for a language, or create a new one if it doesn't exist.",
         "operationId": "putSpokenTermsList",
         "parameters": [
@@ -3795,8 +3792,8 @@
         "tags": [
           "ManageSpokenTerms"
         ],
-        "summary": "Delete a Term List",
-        "description": "Delete a term list for a specific language from the spoken terms collection.",
+        "summary": "Delete a term list",
+        "description": "Delete a term list for a specific language from the Spoken Terms collection.",
         "operationId": "deleteSpokenTermsList",
         "parameters": [
           {
@@ -5193,7 +5190,7 @@
                   }
                 },
                 "with_spoken_terms": {
-                  "summary": "With spoken terms to inform transcription",
+                  "summary": "With Spoken Terms to inform transcription",
                   "value": {
                     "source_media_content_type": "audio/pcm; encoding=s16le; rate=16000",
                     "source_language": "en",
@@ -5927,7 +5924,7 @@
       },
       "SpokenTermsID": {
         "name": "spoken_terms_id",
-        "description": "A unique ID assigned to the spoken terms collection.",
+        "description": "A unique ID assigned to the Spoken Terms collection.",
         "in": "path",
         "required": true,
         "schema": {
@@ -6125,14 +6122,14 @@
         }
       },
       "QuotaExceededSpokenTerms": {
-        "description": "Quota exceeded. Spoken terms collection limit reached for your plan.",
+        "description": "Quota exceeded. Spoken Terms collection limit reached for your plan.",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/ErrorResponse"
             },
             "example": {
-              "message": "Spoken terms quota exhausted"
+              "message": "Spoken Terms quota exhausted"
             }
           }
         }
@@ -8095,7 +8092,7 @@
       "SpokenTermsId": {
         "type": "string",
         "format": "uuid",
-        "description": "(beta) The ID of a spoken terms list used to inform transcription.",
+        "description": "(beta) The ID of a Spoken Terms collection used to inform transcription.",
         "example": "7c4f1080-cfe2-41d4-8269-0e6ec15a0354"
       },
       "ModelType": {
@@ -8260,7 +8257,7 @@
         ],
         "properties": {
           "name": {
-            "description": "Name for the spoken terms collection.",
+            "description": "Name for the Spoken Terms collection.",
             "type": "string",
             "maxLength": 1024,
             "example": "Technical Terms"
@@ -8298,7 +8295,7 @@
         "type": "object",
         "properties": {
           "name": {
-            "description": "New name for the spoken terms collection.",
+            "description": "New name for the Spoken Terms collection.",
             "type": "string",
             "maxLength": 1024,
             "example": "Updated Technical Terms"
@@ -8336,12 +8333,12 @@
         "type": "object",
         "properties": {
           "spoken_terms_id": {
-            "description": "A unique ID assigned to the spoken terms collection.",
+            "description": "A unique ID assigned to the Spoken Terms collection.",
             "type": "string",
             "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
           },
           "name": {
-            "description": "Name of the spoken terms collection.",
+            "description": "Name of the Spoken Terms collection.",
             "type": "string",
             "example": "Technical Terms"
           },
@@ -8353,7 +8350,7 @@
             }
           },
           "creation_time": {
-            "description": "The creation time of the spoken terms collection in ISO 8601-1:2019 format (e.g.: `2025-08-03T14:16:18.329Z`).",
+            "description": "The creation time of the Spoken Terms collection in ISO 8601-1:2019 format (e.g.: `2025-08-03T14:16:18.329Z`).",
             "type": "string",
             "format": "date-time",
             "example": "2025-08-03T14:16:18.329Z"

@@ -2,22 +2,22 @@
 title: "Spoken Terms"
 public: true
 sidebarTitle: "Overview"
-description: "Manage and use DeepL spoken terms"
+description: "Manage and use DeepL Spoken Terms"
 ---
 
 <Info>
-  Spoken terms are available for Voice API and select API Pro plans. Check your [plan limits](https://www.deepl.com/en/pro#api) to see if spoken terms are included.
+  Spoken Terms are available for Voice API and select API Pro plans. Check your [plan limits](https://www.deepl.com/en/pro#api) to see if Spoken Terms are included.
 </Info>
 
 ## Overview
 
-The `spoken-terms` endpoints let you manage [DeepL spoken terms](https://support.deepl.com/hc/en-us/articles/27381969228956-About-spoken-terms) for voice translation. Spoken terms are monolingual collections that ensure specific words or phrases are recognized correctly within a single language during speech recognition. A spoken terms collection contains one or more term lists, with each term list containing terms for a single language.
+The `spoken-terms` endpoints let you manage [DeepL Spoken Terms](https://support.deepl.com/hc/en-us/articles/27381969228956-About-spoken-terms) for voice translation. Spoken Terms are monolingual collections that ensure specific words or phrases are recognized correctly within a single language during speech recognition. A Spoken Terms collection contains one or more term lists, with each term list containing terms for a single language.
 
-## Creating spoken terms
+## Creating Spoken Terms
 
 ### Format
 
-Spoken terms use a simple newline-separated format. Each line contains one term:
+Spoken Terms use a simple newline-separated format. Each line contains one term:
 
 ```
 DeepL
@@ -27,13 +27,13 @@ webhook
 
 Terms are case-sensitive and should not contain tabs or other control characters.
 
-### Create spoken terms
+### Create Spoken Terms collection
 
 `POST /v3/spoken-terms`
 
-To create a spoken terms collection, send the API an array of term lists. Each term list contains terms for a single language.
+To create a Spoken Terms collection, each request can optionally contain one or more term lists. Each term list contains terms for a single language.
 
-This example creates a spoken terms collection with English technical terms:
+This example creates a Spoken Terms collection with English technical terms:
 
 <Tabs>
   <Tab title="cURL">
@@ -92,17 +92,17 @@ This example creates a spoken terms collection with English technical terms:
   </Tab>
 </Tabs>
 
-## Using spoken terms
+## Using Spoken Terms
 
-To use spoken terms with the [Voice API](/api-reference/voice#customization), include the `spoken_terms_id` in your voice session request. The specified terms will be recognized correctly during speech recognition for the specified language.
+To use Spoken Terms with the [Voice API](/api-reference/voice#customization), include the `spoken_terms_id` parameter in your voice session request. The specified terms will be recognized correctly during speech recognition for the specified language.
 
-## Retrieving spoken terms
+## Retrieving Spoken Terms
 
-### List all spoken terms
+### List all Spoken Terms collections
 
 `GET /v3/spoken-terms`
 
-Use this endpoint to list all your spoken terms collections, basic information about each collection's term lists, and each collection's name and creation time. The response will not include the actual terms.
+Use this endpoint to list all your Spoken Terms collections, basic information about each collection's term lists, and each collection's name and creation time. The response will not include the actual terms.
 
 <Tabs>
   <Tab title="cURL">
@@ -161,11 +161,11 @@ Use this endpoint to list all your spoken terms collections, basic information a
   </Tab>
 </Tabs>
 
-### Get spoken terms metadata
+### Get Spoken Terms collection metadata
 
 `GET /v3/spoken-terms/{spoken_terms_id}`
 
-Use this endpoint to retrieve basic information about a spoken terms collection's term lists, plus the collection's name and creation time.
+Use this endpoint to retrieve basic information about a Spoken Terms collection's term lists, plus the collection's name and creation time.
 
 <Tabs>
   <Tab title="cURL">
@@ -216,11 +216,11 @@ Use this endpoint to retrieve basic information about a spoken terms collection'
   </Tab>
 </Tabs>
 
-### Get spoken terms entries
+### Get Spoken Terms entries
 
 `GET /v3/spoken-terms/{spoken_terms_id}/entries?lang={language}`
 
-Use this endpoint to retrieve the terms for a specific language from a spoken terms collection.
+Use this endpoint to retrieve the terms for a specific language from a Spoken Terms collection.
 
 <Tabs>
   <Tab title="cURL">
@@ -257,7 +257,7 @@ Use this endpoint to retrieve the terms for a specific language from a spoken te
   </Tab>
 </Tabs>
 
-## Editing spoken terms
+## Editing Spoken Terms
 
 ### Replace or create a term list
 
@@ -265,7 +265,7 @@ Use this endpoint to retrieve the terms for a specific language from a spoken te
 
 The `PUT` method creates a new term list in the collection, or replaces an existing one for the specified language. If the collection has no term list for the given language, add it with the entries provided. If a term list already exists for that language, replace it.
 
-Use this method to add a new language to your spoken terms collection or to completely replace the terms for an existing language. To merge terms with an existing list, use the `PATCH` method.
+Use this method to add a new language to your Spoken Terms collection or to completely replace the terms for an existing language. To merge terms with an existing list, use the `PATCH` method.
 
 <Tabs>
   <Tab title="cURL">
@@ -315,11 +315,11 @@ Use this method to add a new language to your spoken terms collection or to comp
 
 `PATCH /v3/spoken-terms/{spoken_terms_id}`
 
-While the `PUT` method operates on a single term list, `PATCH` affects an element of the entire spoken terms collection. This could be metadata like the collection's name, or a term list for a particular language.
+While the `PUT` method operates on a single term list, `PATCH` affects an element of the entire Spoken Terms collection. This could be metadata like the collection's name, or a term list for a particular language.
 
 This method returns the collection's name and metadata about each of its term lists.
 
-This example changes a spoken terms collection's name:
+This example changes a Spoken Terms collection's name:
 
 <Tabs>
   <Tab title="cURL">
@@ -444,13 +444,13 @@ This example adds new terms to the English term list:
   </Tab>
 </Tabs>
 
-## Deleting spoken terms
+## Deleting Spoken Terms
 
-### Delete a spoken terms collection
+### Delete a Spoken Terms collection
 
 `DELETE /v3/spoken-terms/{spoken_terms_id}`
 
-This method deletes the specified spoken terms collection in its entirety.
+This method deletes the specified Spoken Terms collection in its entirety.
 
 <Tabs>
   <Tab title="cURL">
@@ -485,7 +485,7 @@ This method deletes the specified spoken terms collection in its entirety.
 
 `DELETE /v3/spoken-terms/{spoken_terms_id}/term-lists?lang={language}`
 
-Use this method to delete a term list for a specific language from the spoken terms collection.
+Use this method to delete a term list for a specific language from the Spoken Terms collection.
 
 <Tabs>
   <Tab title="cURL">
@@ -520,7 +520,7 @@ Use this method to delete a term list for a specific language from the spoken te
 
 ### Languages supported
 
-Spoken terms are available for all [DeepL Voice languages](https://support.deepl.com/hc/en-us/articles/26625846174364-DeepL-Voice-languages). Visit the Voice languages page for the complete list of supported languages and their availability.
+Spoken Terms are available for all [DeepL Voice languages](https://support.deepl.com/hc/en-us/articles/26625846174364-DeepL-Voice-languages). Visit the Voice languages page for the complete list of supported languages and their availability.
 
 ### Comparison with glossaries
 
@@ -529,14 +529,13 @@ Spoken terms are available for all [DeepL Voice languages](https://support.deepl
 | **Purpose** | Translate specific terms between languages | Ensure recognition of specific terms within a language |
 | **Direction** | Bidirectional (en→de, de→en) | Monolingual (en→en) |
 | **Format** | TSV with source and target columns | Single-column, newline-separated |
-| **Use case** | Text and document translation | Voice recognition and translation |
 | **Entry structure** | `source_term\ttarget_term` | `term` |
 
 ## Restrictions
 
 ### Size
 
-Each term list has a limit of 300 characters per language. The total number of spoken terms collections you can create is limited by your plan.
+Each term list has a limit of 300 characters per language. The total number of Spoken Terms collections you can create is limited by your plan.
 
 The name of the collection can contain up to 1024 UTF-8 bytes.
 
