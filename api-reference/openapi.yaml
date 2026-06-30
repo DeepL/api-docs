@@ -498,6 +498,10 @@ paths:
         - AdminApi
       summary: Set developer key usage limits as an admin
       operationId: adminSetDeveloperKeyUsageLimits
+      description: |
+        Sets the usage limits for a developer key. This replaces all limits for the key: any
+        limit omitted from the request is reset to `null` (disabled). To change one limit while
+        keeping the others, include their current values in the request.
       requestBody:
         required: true
         content:
@@ -513,6 +517,8 @@ paths:
                   $ref: '#/components/schemas/ApiKeyUsageCharacters'
                 speech_to_text_milliseconds:
                   $ref: '#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds'
+                speech_to_speech_milliseconds:
+                  $ref: '#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds'
       responses:
         200:
           description: The set usage limits function returns a JSON representation of the modified API key.
@@ -4274,6 +4280,13 @@ components:
         Setting the limit to `null` disables the limit, effectively allowing unlimited usage.
       type: number
       example: 3600000
+    ApiKeyUsageSpeechToSpeechMilliseconds:
+      description: |
+        Restricts the number of milliseconds of speech-to-speech that can be consumed by an API key in a one-month usage period.
+        Setting the limit to `0` means the API key will not be able to consume speech-to-speech milliseconds.
+        Setting the limit to `null` disables the limit, effectively allowing unlimited usage.
+      type: number
+      example: 3600000
     ApiKey:
       description: The API key.
       type: object
@@ -4302,6 +4315,8 @@ components:
               $ref: '#/components/schemas/ApiKeyUsageCharacters'
             speech_to_text_milliseconds:
               $ref: '#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds'
+            speech_to_speech_milliseconds:
+              $ref: '#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds'
     ConfiguredRules:
       description: The enabled rules for the style rule list including what option
         was selected for each rule. This schema combines rules from all supported
