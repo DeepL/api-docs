@@ -1,0 +1,109 @@
+---
+title: "DeepL Remote MCP"
+sidebarTitle: "Remote MCP"
+description: "Connect DeepL to Claude, ChatGPT, Microsoft Copilot, and other AI tools through DeepL's hosted Model Context Protocol (MCP) server."
+public: false
+---
+
+DeepL's hosted MCP server lets AI assistants — Claude, ChatGPT, Microsoft Copilot, and any other
+MCP-compatible client — translate text and documents, rephrase and correct writing, and use your
+organization's glossaries and style rules, directly from chat.
+
+The server is hosted by DeepL at a single endpoint. Sign in with your DeepL account over OAuth —
+there's nothing to install and no setup to manage. It works with your existing seat-based DeepL plan.
+
+| **Property** | **Value** |
+|----------|-------|
+| Endpoint | `https://mcp.deepl.com/v1/mcp` |
+| Transport | Streamable HTTP |
+| Authentication | OAuth 2.1 — sign in with your DeepL account |
+
+<Info>
+Requires an active seat-based DeepL subscription. You sign in with your DeepL account; there's no
+separate setup required.
+</Info>
+
+## Connect the connector
+
+### Prerequisites
+
+- An active seat-based DeepL subscription.
+- An AI client that supports remote MCP servers over Streamable HTTP (e.g. Claude, ChatGPT, Microsoft Copilot Studio).
+
+### Connect
+
+<Steps>
+  <Step title="Add the server by URL">
+    In your AI client, add a new MCP / custom connector and enter the server URL:
+
+    ```text
+    https://mcp.deepl.com/v1/mcp
+    ```
+  </Step>
+  <Step title="Sign in with DeepL">
+    The client discovers DeepL's OAuth endpoints automatically (authorization server metadata and
+    dynamic client registration). Approve the connection and sign in with your DeepL account.
+  </Step>
+  <Step title="Approve consent">
+    Review and approve the consent screen. No further configuration is required.
+  </Step>
+  <Step title="Start translating">
+    Ask the assistant to translate or rephrase, for example:
+    _"Translate this email to German with a formal tone."_
+  </Step>
+</Steps>
+
+## Translate a document
+
+Document translation moves file bytes **out of band** so document content never passes through the
+model's context window:
+
+<Steps>
+  <Step title="Start an upload">
+    Ask the assistant to translate a file. It calls `upload-document`, which returns an upload session
+    and a short-lived link.
+  </Step>
+  <Step title="Provide the file">
+    A client with filesystem access (e.g. a coding agent) uploads the file directly. In other clients,
+    the assistant gives you a link to upload the file yourself.
+  </Step>
+  <Step title="Poll and download">
+    The assistant checks progress with `get-document-status`, then returns the translated file via
+    `download-document` once it's ready.
+  </Step>
+</Steps>
+
+## Tool reference
+
+The server exposes 16 tools. Translation, rephrasing, and correction generate new content; glossary
+and style-rule tools are read-only.
+
+| **Tool** | **Title** | **Type** | **Description** |
+|------|-------|:----:|-------------|
+| `translate-text` | Translate Text | Write | Translate text between languages, with optional formality and tone. |
+| `rephrase-text` | Rephrase Text | Write | Rephrase text in a chosen writing style or tone. |
+| `correct-text` | Correct Text | Write | Fix grammar, spelling, and punctuation. |
+| `upload-document` | Upload Document for Translation | Write | Start an out-of-band document-translation session. |
+| `get-document-status` | Check Document Translation Status | Read | Check the status of a document-translation session. |
+| `download-document` | Download Translated Document | Write | Retrieve the translated document. |
+| `get-source-languages` | List Source Languages | Read | List supported source languages. |
+| `get-target-languages` | List Target Languages | Read | List supported target languages. |
+| `get-writing-styles` | List Writing Styles | Read | List available rephrasing styles. |
+| `get-writing-tones` | List Writing Tones | Read | List available rephrasing tones. |
+| `list-glossaries` | List Glossaries | Read | List glossaries available to your organization. |
+| `get-glossary-info` | Get Glossary Details | Read | Get metadata for a glossary. |
+| `get-glossary-dictionary-entries` | Get Glossary Entries | Read | Get the entries of a glossary dictionary. |
+| `list-style-rules` | List Style Rules | Read | List style rules (style guides) available to your organization. |
+| `get-style-rule` | Get Style Rule | Read | Get the details of a style rule. |
+| `get-custom-instruction` | Get Custom Instruction | Read | Get a custom instruction attached to a style rule. |
+
+## Data handling
+
+- Text payloads are not stored beyond the request.
+- Document-translation sessions are retained briefly (then deleted) to support the out-of-band upload and download flow; file bytes are streamed to DeepL for translation and are not stored by the connector.
+- All traffic is encrypted in transit (HTTPS/TLS). The connector talks only to DeepL's own services.
+
+## Related
+
+- [Supported languages](/docs/getting-started/supported-languages)
+- [Translate Text API reference](/docs/api-reference/translate)
