@@ -8,6 +8,14 @@ description: 'Changes to the v3/languages endpoints, including the GA release an
 
 This section lists dated changes to the API.
 
+### 2 July 2026
+
+**New: Hindi, Malay, and Tamil on the `voice` resource** — `hi` (Hindi), `ms` (Malay), and `ta` (Tamil)
+are now reported on the `voice` resource as beta languages. Translation is provided by DeepL, while
+`transcription`, `translated_speech`, and `spoken_terms` are provided by external service partners and
+marked `"external": true`. Because they are beta and external, they appear only when both flags are set:
+call `GET /v3/languages?resource=voice&include=beta&include=external` to see them.
+
 ### 5 June 2026
 
 **New: `spoken_terms` feature on `voice` resource** — the `spoken_terms` feature is now reported on

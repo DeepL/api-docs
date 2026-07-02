@@ -9,6 +9,13 @@ rss: true
 - Usage reporting by language pair
 </Update>
 
+<Update label="July 2026">
+## July 2 - New Voice API Languages: Hindi, Malay, and Tamil
+- The Voice API now supports `hi` (Hindi), `ms` (Malay), and `ta` (Tamil) in beta. Translation is provided by DeepL; transcription and translated speech are provided by external service partners.
+- These languages are marked `"external": true` in the [`GET /v3/languages?resource=voice`](/api-reference/languages/retrieve-supported-languages-by-resource) response. Because they are beta and external, call with `include=beta&include=external` to see them.
+- See the [supported languages table](/api-reference/voice#supported-languages) for the full list.
+</Update>
+
 <Update label="June 2026">
 ## June 24 - API Key Permissions General Availability
 - [API key permissions](/docs/getting-started/managing-api-keys#api-key-permissions) are now generally available. Scope a developer API key to specific endpoints so it can perform only the operations you allow.
