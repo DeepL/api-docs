@@ -2,3 +2,4 @@
 reviews/*
 .DS_Store
 .tool-versions
+pipeline/gap-report.*
