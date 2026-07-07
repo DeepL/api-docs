@@ -202,6 +202,34 @@ python pipeline/run.py --resume promote pipeline/drafts/20260706-192742
 python pipeline/run.py generate --section admin --skip post_review
 ```
 
+## Batch Runner (`batch.py`)
+
+Run all IA Phase 2 tasks through the pipeline in sequence. Each task is a freeform description (pulled from the IA Proposal). A planning step uses Claude to resolve each description into concrete file paths, then runs the full pipeline per task.
+
+```bash
+# Preview plans — see what files each task would read/write
+python pipeline/batch.py --plan
+
+# Dry-run — plan + dry-run each pipeline step
+python pipeline/batch.py --dry-run
+
+# Run all tasks end-to-end (1 PR per task)
+python pipeline/batch.py
+
+# Run specific tasks by index
+python pipeline/batch.py --only 1,3,5
+
+# Start from a specific task
+python pipeline/batch.py --start 3
+
+# Skip ship step (review locally before creating PRs)
+python pipeline/batch.py --skip ship,post_review
+```
+
+After each task ships, the runner switches back to the base branch for the next task. If a task fails, it logs the failure, cleans up, and continues.
+
+Task descriptions are defined in the `TASKS` list at the top of `batch.py`. Edit that list to add, remove, or reorder tasks.
+
 ## Running Steps Individually
 
 Each script is standalone. You can run any step without the E2E runner.

@@ -176,24 +176,17 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
         ),
     }
 
-    if task_type == "split":
+    if len(targets) > 1:
         output_instruction = (
             f"Output each target file separated by a line containing only:\n"
             f"--- SPLIT: <target_path> ---\n\n"
             f"Target files to produce:\n{target_block}\n\n"
+            f"For each target, output the FULL file content (not just changes).\n"
             f"Start with:\n--- SPLIT: {targets[0]} ---\n"
             f"Then the full .mdx content for that file.\n"
             f"Then:\n--- SPLIT: {targets[1]} ---\n"
             f"Then the full .mdx content for that file.\n"
             f"And so on for each target."
-        )
-    elif task_type == "retire":
-        output_instruction = (
-            f"Output each target file that needs updating, separated by:\n"
-            f"--- SPLIT: <target_path> ---\n\n"
-            f"Target files to update:\n{target_block}\n\n"
-            f"For each target, output the FULL updated file content (not just the additions).\n"
-            f"Start with:\n--- SPLIT: {targets[0]} ---"
         )
     else:
         output_instruction = (
@@ -403,7 +396,7 @@ def main():
     raw_output = response.content[0].text
 
     # Parse output
-    if args.task_type in ("split", "retire") and len(targets) > 1:
+    if len(targets) > 1:
         file_outputs = parse_split_output(raw_output, targets)
     else:
         file_outputs = {targets[0]: raw_output}
