@@ -1,0 +1,366 @@
+---
+title: "Monolingual glossaries (v2 endpoints)"
+public: true
+sidebarTitle: "Overview"
+description: "Manage glossaries using the v2 endpoints"
+---
+
+<Info>
+This page documents `v2` glossary endpoints, legacy endpoints that let you create and manage glossaries for a single language pair.
+
+[See here](/api-reference/multilingual-glossaries) for information on current `v3` endpoints. Using `v3` allows you to create, manage, and edit glossaries with entries in multiple language pairs, while still supporting monolingual functionality. [See here](/api-reference/glossaries/v2-vs-v3-endpoints) for an overview of the difference.
+
+The `/v2/glossary-language-pairs` endpoint is also deprecated. Use [`GET /v3/languages?resource=glossary`](/api-reference/languages/retrieve-supported-languages-by-resource) instead.
+</Info>
+
+This page describes how to use the `v2` endpoints to work with _monolingual_ glossaries - glossaries that map phrases in one language to phrases in another language. If you're new to glossaries, we suggest you use `v3` instead.
+
+### Create a glossary
+
+<Tabs>
+<Tab title="cURL">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```sh Example request: create a glossary
+curl -X POST 'https://api.deepl.com/v2/glossaries' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "name": "My Glossary",
+  "source_lang": "en",
+  "target_lang": "de",
+  "entries": "Hello\tGuten Tag",
+  "entries_format": "tsv"
+}'
+```
+```json Example response
+{
+  "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "ready": true,
+  "name": "My Glossary",
+  "source_lang": "en",
+  "target_lang": "de",
+  "creation_time": "2021-08-03T14:16:18.329Z",
+  "entry_count": 1
+}
+```
+</Tab>
+<Tab title="HTTP Request">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: create a glossary
+POST /v2/glossaries HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: 112
+Content-Type: application/json
+
+{"name":"My Glossary","source_lang":"en","target_lang":"de","entries":"Hello\tGuten Tag","entries_format":"tsv"}
+```
+
+```json Example response
+{
+  "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "ready": true,
+  "name": "My Glossary",
+  "source_lang": "en",
+  "target_lang": "de",
+  "creation_time": "2021-08-03T14:16:18.329Z",
+  "entry_count": 1
+}
+```
+</Tab>
+</Tabs>
+The following example shows how to create a glossary from an example `csv` file (`glossary.csv`, with 2 example entries) via the command line using [`jq`](https://jqlang.github.io/jq/). Note that you'll need to install `jq` if you haven't already. Installation instructions for various operating systems are available [here](https://jqlang.github.io/jq/download/).
+
+<Tabs>
+<Tab title="cURL">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+
+```sh Create file + example request
+cat >glossary.csv <<EOL
+Hello,Hallo
+World,Welt
+EOL
+
+curl -X POST 'https://api.deepl.com/v2/glossaries' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data "$(jq -Rs '{
+  "name": "My Glossary",
+  "source_lang": "en",
+  "target_lang": "de",
+  "entries": .,
+  "entries_format": "csv"
+}' glossary.csv)"
+```
+
+```json Example response
+{
+  "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "ready": true,
+  "name": "My Glossary",
+  "source_lang": "en",
+  "target_lang": "de",
+  "creation_time": "2021-08-03T14:16:18.329Z",
+  "entry_count": 2
+}
+```
+</Tab>
+<Tab title="HTTP Request">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: create a glossary
+POST /v2/glossaries HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: 112
+Content-Type: application/json
+
+{"name":"My Glossary","source_lang":"en","target_lang":"de","entries":"Hello,Hallo\nWorld,Welt","entries_format":"csv"}
+```
+
+```json Example reponse
+{
+  "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "ready": true,
+  "name": "My Glossary",
+  "source_lang": "en",
+  "target_lang": "de",
+  "creation_time": "2021-08-03T14:16:18.329Z",
+  "entry_count": 2
+}
+```
+</Tab>
+</Tabs>
+
+### List all glossaries
+
+List all glossaries and their meta-information, but not the glossary entries.
+
+<Tabs>
+<Tab title="cURL">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```sh Example request: list all glossaries
+curl -X GET 'https://api.deepl.com/v2/glossaries' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+```json Example response
+{
+  "glossaries": [
+    {
+      "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+      "name": "My Glossary",
+      "ready": true,
+      "source_lang": "EN",
+      "target_lang": "DE",
+      "creation_time": "2021-08-03T14:16:18.329Z",
+      "entry_count": 1
+    }
+  ]
+}
+```
+</Tab>
+<Tab title ="HTTP Request">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: list all glossaries
+GET /v2/glossaries HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+```
+```json Example response
+{
+  "glossaries": [
+    {
+      "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+      "name": "My Glossary",
+      "ready": true,
+      "source_lang": "EN",
+      "target_lang": "DE",
+      "creation_time": "2021-08-03T14:16:18.329Z",
+      "entry_count": 1
+    }
+  ]
+}
+```
+</Tab>
+</Tabs>
+### Retrieve glossary details
+
+Retrieve meta information for a single glossary, omitting the glossary entries.
+
+<Tabs>
+<Tab title="cURL">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```sh Example request: retrieve glossary details
+curl -X GET 'https://api.deepl.com/v2/glossaries/{glossary_id}' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+```json Example response
+{
+  "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "ready": true,
+  "name": "My Glossary",
+  "source_lang": "en",
+  "target_lang": "de",
+  "creation_time": "2021-08-03T14:16:18.329Z",
+  "entry_count": 1
+}
+```
+</Tab>
+<Tab title="HTTP Request">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: retrieve glossary details
+GET /v2/glossaries/{glossary_id} HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+```
+```json Example response
+{
+  "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "ready": true,
+  "name": "My Glossary",
+  "source_lang": "en",
+  "target_lang": "de",
+  "creation_time": "2021-08-03T14:16:18.329Z",
+  "entry_count": 1
+}
+```
+</Tab>
+</Tabs>
+### Retrieve glossary entries
+
+List the entries of a single glossary in the format specified by the `Accept` header.
+
+
+<Tabs>
+<Tab title="cURL">
+
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```sh Example request: retrieve glossary entries
+curl -X GET 'https://api.deepl.com/v2/glossaries/{glossary_id}/entries' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Accept: text/tab-separated-values'
+```
+
+```text Example response
+Hello!	Guten Tag!
+```
+</Tab>
+<Tab title="HTTP Request">
+```http Example request: retrieve glossary entries
+GET /v2/glossaries/{glossary_id}/entries HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+ 'Accept: text/tab-separated-values'
+User-Agent: YourApp/1.2.3
+```
+
+```text Example response
+Hello!	Guten Tag!
+```
+</Tab>
+</Tabs>
+### Delete a glossary
+
+Deletes the specified glossary.
+
+<Tabs>
+<Tab title="cURL">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```sh Example request: delete a glossary
+curl -X DELETE 'https://api.deepl.com/v2/glossaries/{glossary_id}' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+</Tab>
+<Tab title="HTTP Request">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: delete a glossary
+DELETE /v2/glossaries/{glossary_id} HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+```
+</Tab>
+</Tabs>
+
+### Listing language pairs
+The `/glossary-language-pairs` endpoint lists all the language pairs - the source and target languages - that glossaries support.
+
+<Info>
+Since DeepL supports many glossary languages, the list of potential pairs is quite long. [This list of glossary languages](/docs/getting-started/supported-languages) may also be useful.
+</Info>
+
+<Tabs>
+<Tab title="cURL">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+
+```sh Example request: get glossary language pairs
+curl -X GET 'https://api.deepl.com/v2/glossary-language-pairs' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+```json Example response (partial—one language pair)
+{
+  "supported_languages": [
+    {
+      "source_lang": "de",
+      "target_lang": "en"
+    },
+    {
+      "source_lang": "en",
+      "target_lang": "de"
+    }
+  ]
+}
+```
+</Tab>
+<Tab title="HTTP Request">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: get glossary language pairs
+GET /v2/glossary-language-pairs HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+```
+```json Example response (partial—one language pair)
+{
+  "supported_languages": [
+    {
+      "source_lang": "de",
+      "target_lang": "en"
+    },
+    {
+      "source_lang": "en",
+      "target_lang": "de"
+    }
+  ]
+}
+```
+</Tab>
+</Tabs>
+
+### Editing a v2 glossary
+`v2` glossaries are immutable: once created, the glossary entries for a given glossary ID cannot be modified.
+
+As a workaround for effectively editable glossaries, we suggest to identify glossaries by name instead of ID in your application and then use the following procedure for modifications:
+
+* [download](/api-reference/glossaries#retrieve-glossary-details) and store the current glossary's entries
+* locally modify the glossary entries
+* [delete](/api-reference/glossaries#delete-a-glossary) the existing glossary
+* [create a new glossary](/api-reference/glossaries#create-a-glossary) with the same name

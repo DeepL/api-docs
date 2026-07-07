@@ -1,97 +1,88 @@
 ---
 title: "Managing admin API keys"
-description: "Create, copy, rename, and deactivate admin API keys in the DeepL self-admin area."
+description: "Learn how admins can create and manage admin API keys."
 public: true
 ---
 
-<Info>
-  The Admin API is available to all API Growth and API Enterprise subscribers, and to a limited set of Pro API subscribers. To enable access, contact your DeepL customer success manager or DeepL support.
-</Info>
+### Get started
 
-Once Admin API access is enabled for your account, you can find and manage your admin API keys in the ["Admin Keys" tab](https://www.deepl.com/your-account/admin) when signed into your DeepL API account. You can have multiple simultaneously active admin API keys on a single subscription.
+Once the Admin API access has been enabled for your account, you can find and manage your admin API keys in the 
+[“Admin Keys” tab](https://www.deepl.com/your-account/admin) when signed into your DeepL API account. 
+It’s possible to have multiple, simultaneously active admin API keys in a single API subscription.
 
 <Frame caption="The Admin Keys tab">
-  ![](/_assets/images/admin-api-tab.png)
+    ![](/_assets/images/admin-api-tab.png)
 </Frame>
 
-## Create a key
+### Create new key
 
-Click "Create Key" to create a new admin API key. You can optionally give the key a custom name during creation. If you don't provide a name, it defaults to "DeepL Admin Key".
+Create a new admin API key by clicking on the "Create Key" button. 
+You can optionally give an API key a custom name during the creation process. 
+If you do not name the key, the name “DeepL Admin Key” will be given to the key automatically.
 
 You can create up to 25 simultaneously active admin API keys.
 
 <Frame caption="Create an admin API key">
-  ![](/_assets/images/admin-api-create-key.png)
+    ![](/_assets/images/admin-api-create-key.png)
 </Frame>
 
-After creating a key, a popup displays the newly created key:
+After creating a key, a popup with the newly created key will appear:
 
 <Frame caption="Copy an admin API key after creating it">
-  ![](/_assets/images/admin-api-key-created.png)
+    ![](/_assets/images/admin-api-key-created.png)
 </Frame>
 
-Copy the key from this popup and use it immediately. You can also copy it from the table in the "Admin Keys" tab at any time.
+You can copy the key from this popup and use the key immediately. 
+You can also copy the key from the table in the “Admin Keys” tab at any time.
 
-Admin keys always have an `:adm` suffix, which distinguishes them from developer keys.
+Note that the generated admin keys always have an *:adm* suffix, to distinguish them from the developer keys which do not have a suffix.
 
-Naming your keys makes them searchable via the search bar on the "Admin Keys" tab:
+Giving your API keys a name during the key creation process makes it possible for you to search for the key by name
+using the search bar on the “Admin Keys” tab:
 
 <Frame caption="Search for an admin API key by key name">
-  ![](/_assets/images/admin-api-search-key.png)
+    ![](/_assets/images/admin-api-search-key.png)
 </Frame>
 
-## Deactivate a key
+### Deactivate key
 
 <Warning>
-  An API key stops working immediately when deactivated. Deactivation is permanent and cannot be reversed.
+    **IMPORTANT:** An API key will stop working immediately when deactivated. After a key is deactivated, it cannot be reactivated—deactivating a key is permanent!
 </Warning>
 
-To deactivate an active admin API key, select "Deactivate key" from the key's options menu:
+To deactivate an active admin API key: 
 
 <Frame caption='Select "Deactivate key" from key options'>
-  ![](/_assets/images/admin-api-deactivate-key.png)
+    ![](/_assets/images/admin-api-deactivate-key.png)
 </Frame>
 
 <Frame caption="Confirm deactivation of the key">
-  ![](/_assets/images/admin-api-confirm-deactivation.png)
+    ![](/_assets/images/admin-api-confirm-deactivation.png)
 </Frame>
 
 <Frame caption="The key has been deactivated and will stop working immediately">
-  ![](/_assets/images/admin-api-key-deactivated.png)
+    ![](/_assets/images/admin-api-key-deactivated.png)
 </Frame>
 
-## Rename a key
+### Rename key
 
-You can rename both active and deactivated keys. Two keys may share the same name.
+Allows you to edit the name of an API key. Note that it *is* possible for two keys to have the same name.
 
-Select "Rename key" from the key's options menu:
+Both active and deactivated keys can be renamed.
 
 <Frame caption='Select "Rename key" from key options'>
-  ![](/_assets/images/admin-api-rename-key-1.png)
+    ![](/_assets/images/admin-api-rename-key-1.png)
 </Frame>
-
 <Frame caption="Renaming an admin key">
-  ![](/_assets/images/admin-api-rename-key-2.png)
+    ![](/_assets/images/admin-api-rename-key-2.png)
 </Frame>
 
-## Copy a key
+### Copy key
 
-To copy an admin API key to your clipboard, click the "Copy" icon next to the key. Both active and deactivated keys can be copied.
+To copy an admin API key to your clipboard click the "Copy" icon next to the key. 
 
 <Frame caption="Copy an admin API key">
-  ![](/_assets/images/admin-api-copy-key.png)
+    ![](/_assets/images/admin-api-copy-key.png)
 </Frame>
 
-For security reasons, the full key is not shown in the "Admin Keys" tab table.
-
-## Using admin keys in the API
-
-With an admin key, you can manage developer API keys programmatically. These operations are equivalent to those available in the ["API Keys & Limits" tab](https://www.deepl.com/your-account/keys) of the self-admin area.
-
-Use the admin key for authentication by passing it in the `Authorization` header of each request:
-
-```http
-Authorization: DeepL-Auth-Key [yourAdminKey]
-```
-
-The Admin API is available at `https://api.deepl.com/v2/admin/developer-keys`. See the [developer keys endpoint reference](/api-reference/admin-api) for full request and response schemas.
+For security reasons, we do not show the full key in the table in the “Admin Keys” tab. Both active and deactivated keys can be copied.

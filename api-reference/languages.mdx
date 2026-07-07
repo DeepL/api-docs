@@ -1,0 +1,387 @@
+---
+title: "Retrieve languages (v2)"
+sidebarTitle: "Overview"
+description: "Reference for the deprecated v2/languages endpoint. Migrate to v3/languages for new integrations."
+---
+
+<Warning>
+  **`/v2/languages` is deprecated.** Use [`GET /v3/languages`](/api-reference/languages/retrieve-supported-languages-by-resource) instead, which covers all DeepL API resources and provides richer feature information. See the [migration guide](/api-reference/languages/migrate-from-v2-languages) for details.
+</Warning>
+
+`GET /v2/languages` returns the source and target languages supported for text and document translation. New integrations should use `/v3/languages`, which exposes the same translation languages along with feature support for glossaries, voice, write, and other resources.
+
+For background on how DeepL adds new translation languages and language variants, see [the language release process](/docs/resources/language-release-process). For the auto-generated reference spec for this endpoint, see [Retrieve supported languages](/api-reference/languages/retrieve-supported-languages).
+
+<Tabs>
+<Tab title="cURL">
+
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```sh Example request: supported target languages
+curl -X GET 'https://api.deepl.com/v2/languages?type=target' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+```json Example response
+[
+  {
+    "language": "AR",
+    "name": "Arabic",
+    "supports_formality": false
+  },
+  {
+    "language": "BG",
+    "name": "Bulgarian",
+    "supports_formality": false
+  },
+  {
+    "language": "CS",
+    "name": "Czech",
+    "supports_formality": false
+  },
+  {
+    "language": "DA",
+    "name": "Danish",
+    "supports_formality": false
+  },
+  {
+    "language": "DE",
+    "name": "German",
+    "supports_formality": true
+  },
+  {
+    "language": "EL",
+    "name": "Greek",
+    "supports_formality": false
+  },
+  {
+    "language": "EN-GB",
+    "name": "English (British)",
+    "supports_formality": false
+  },
+  {
+    "language": "EN-US",
+    "name": "English (American)",
+    "supports_formality": false
+  },
+  {
+    "language": "ES",
+    "name": "Spanish",
+    "supports_formality": true
+  },
+  {
+    "language": "ES-419",
+    "name": "Spanish (Latin American)",
+    "supports_formality": true
+  },
+  {
+    "language": "ET",
+    "name": "Estonian",
+    "supports_formality": false
+  },
+  {
+    "language": "FI",
+    "name": "Finnish",
+    "supports_formality": false
+  },
+  {
+    "language": "FR",
+    "name": "French",
+    "supports_formality": true
+  },
+  {
+    "language": "HU",
+    "name": "Hungarian",
+    "supports_formality": false
+  },
+  {
+    "language": "ID",
+    "name": "Indonesian",
+    "supports_formality": false
+  },
+  {
+    "language": "IT",
+    "name": "Italian",
+    "supports_formality": true
+  },
+  {
+    "language": "JA",
+    "name": "Japanese",
+    "supports_formality": true
+  },
+  {
+    "language": "KO",
+    "name": "Korean",
+    "supports_formality": false
+  },
+  {
+    "language": "LT",
+    "name": "Lithuanian",
+    "supports_formality": false
+  },
+  {
+    "language": "LV",
+    "name": "Latvian",
+    "supports_formality": false
+  },
+  {
+    "language": "NB",
+    "name": "Norwegian (Bokmål)",
+    "supports_formality": false
+  },
+  {
+    "language": "NL",
+    "name": "Dutch",
+    "supports_formality": true
+  },
+  {
+    "language": "PL",
+    "name": "Polish",
+    "supports_formality": true
+  },
+  {
+    "language": "PT-BR",
+    "name": "Portuguese (Brazilian)",
+    "supports_formality": true
+  },
+  {
+    "language": "PT-PT",
+    "name": "Portuguese (European)",
+    "supports_formality": true
+  },
+  {
+    "language": "RO",
+    "name": "Romanian",
+    "supports_formality": false
+  },
+  {
+    "language": "RU",
+    "name": "Russian",
+    "supports_formality": true
+  },
+  {
+    "language": "SK",
+    "name": "Slovak",
+    "supports_formality": false
+  },
+  {
+    "language": "SL",
+    "name": "Slovenian",
+    "supports_formality": false
+  },
+  {
+    "language": "SV",
+    "name": "Swedish",
+    "supports_formality": false
+  },
+  {
+    "language": "TR",
+    "name": "Turkish",
+    "supports_formality": false
+  },
+  {
+    "language": "UK",
+    "name": "Ukrainian",
+    "supports_formality": false
+  },
+  {
+    "language": "ZH",
+    "name": "Chinese (simplified)",
+    "supports_formality": false
+  },
+  {
+    "language": "ZH-HANS",
+    "name": "Chinese (simplified)",
+    "supports_formality": false
+  },
+  {
+    "language": "ZH-HANT",
+    "name": "Chinese (traditional)",
+    "supports_formality": false
+  }
+]
+```
+</Tab>
+<Tab title="HTTP Request">
+```http Example request: supported target languages
+GET /v2/languages?type=target HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+```
+```json Example response
+[
+  {
+    "language": "BG",
+    "name": "Bulgarian",
+    "supports_formality": false
+  },
+  {
+    "language": "CS",
+    "name": "Czech",
+    "supports_formality": false
+  },
+  {
+    "language": "DA",
+    "name": "Danish",
+    "supports_formality": false
+  },
+  {
+    "language": "DE",
+    "name": "German",
+    "supports_formality": true
+  },
+  {
+    "language": "EL",
+    "name": "Greek",
+    "supports_formality": false
+  },
+  {
+    "language": "EN-GB",
+    "name": "English (British)",
+    "supports_formality": false
+  },
+  {
+    "language": "EN-US",
+    "name": "English (American)",
+    "supports_formality": false
+  },
+  {
+    "language": "ES",
+    "name": "Spanish",
+    "supports_formality": true
+  },
+  {
+    "language": "ES-419",
+    "name": "Spanish (Latin American)",
+    "supports_formality": true
+  },
+  {
+    "language": "ET",
+    "name": "Estonian",
+    "supports_formality": false
+  },
+  {
+    "language": "FI",
+    "name": "Finnish",
+    "supports_formality": false
+  },
+  {
+    "language": "FR",
+    "name": "French",
+    "supports_formality": true
+  },
+  {
+    "language": "HU",
+    "name": "Hungarian",
+    "supports_formality": false
+  },
+  {
+    "language": "ID",
+    "name": "Indonesian",
+    "supports_formality": false
+  },
+  {
+    "language": "IT",
+    "name": "Italian",
+    "supports_formality": true
+  },
+  {
+    "language": "JA",
+    "name": "Japanese",
+    "supports_formality": true
+  },
+  {
+    "language": "KO",
+    "name": "Korean",
+    "supports_formality": false
+  },
+  {
+    "language": "LT",
+    "name": "Lithuanian",
+    "supports_formality": false
+  },
+  {
+    "language": "LV",
+    "name": "Latvian",
+    "supports_formality": false
+  },
+  {
+    "language": "NB",
+    "name": "Norwegian (Bokmål)",
+    "supports_formality": false
+  },
+  {
+    "language": "NL",
+    "name": "Dutch",
+    "supports_formality": true
+  },
+  {
+    "language": "PL",
+    "name": "Polish",
+    "supports_formality": true
+  },
+  {
+    "language": "PT-BR",
+    "name": "Portuguese (Brazilian)",
+    "supports_formality": true
+  },
+  {
+    "language": "PT-PT",
+    "name": "Portuguese (European)",
+    "supports_formality": true
+  },
+  {
+    "language": "RO",
+    "name": "Romanian",
+    "supports_formality": false
+  },
+  {
+    "language": "RU",
+    "name": "Russian",
+    "supports_formality": true
+  },
+  {
+    "language": "SK",
+    "name": "Slovak",
+    "supports_formality": false
+  },
+  {
+    "language": "SL",
+    "name": "Slovenian",
+    "supports_formality": false
+  },
+  {
+    "language": "SV",
+    "name": "Swedish",
+    "supports_formality": false
+  },
+  {
+    "language": "TR",
+    "name": "Turkish",
+    "supports_formality": false
+  },
+  {
+    "language": "UK",
+    "name": "Ukrainian",
+    "supports_formality": false
+  },
+  {
+    "language": "ZH",
+    "name": "Chinese (simplified)",
+    "supports_formality": false
+  },
+  {
+    "language": "ZH-HANS",
+    "name": "Chinese (simplified)",
+    "supports_formality": false
+  }
+]
+```
+</Tab>
+</Tabs>
+### Query parameters
+
+<ParamField query="type" type="enum">
+Supported values are `source` or `target`. If type parameter is not included, defaults to `source`.
+</ParamField>

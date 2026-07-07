@@ -159,6 +159,7 @@
               {
                 "group": "Translate Text",
                 "pages": [
+                  "api-reference/translate",
                   "api-reference/translate/request-translation"
                 ],
                 "drilldown": false
@@ -166,6 +167,7 @@
               {
                 "group": "Translate Documents",
                 "pages": [
+                  "api-reference/document",
                   "api-reference/document/upload-and-translate-a-document",
                   "api-reference/document/check-document-status",
                   "api-reference/document/download-translated-document"
@@ -181,6 +183,7 @@
               {
                 "group": "Glossaries",
                 "pages": [
+                  "api-reference/multilingual-glossaries",
                   "api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries",
                   "api-reference/multilingual-glossaries/create-a-glossary",
                   "api-reference/multilingual-glossaries/list-all-glossaries",
@@ -194,6 +197,7 @@
                     "group": "Glossaries v2",
                     "tag": "DEPRECATED",
                     "pages": [
+                      "api-reference/glossaries",
                       "api-reference/glossaries/v2-vs-v3-endpoints",
                       "api-reference/glossaries/create-a-glossary",
                       "api-reference/glossaries/list-all-glossaries",
@@ -209,6 +213,7 @@
               {
                 "group": "Style Rules",
                 "pages": [
+                  "api-reference/style-rules",
                   "api-reference/style-rules/list-all-style-rules",
                   "api-reference/style-rules/create-style-rule",
                   "api-reference/style-rules/get-style-rule",
@@ -234,6 +239,7 @@
           {
             "group": "Voice",
             "pages": [
+              "api-reference/voice",
               "api-reference/voice/request-session",
               "api-reference/voice/websocket-streaming",
               "api-reference/voice/reconnect-session"
@@ -243,6 +249,7 @@
             "group": "Translate Audio Files",
             "hidden": true,
             "pages": [
+              "api-reference/jobs-voice-translate",
               "api-reference/jobs-voice-translate/create-voice-translate-job",
               "api-reference/jobs-voice-translate/get-voice-translate-job-status",
               "api-reference/jobs-voice-translate/reference"
@@ -251,6 +258,7 @@
           {
             "group": "Write",
             "pages": [
+              "api-reference/improve-text",
               "api-reference/improve-text/request-text-improvement",
               "api-reference/improve-text/correct-text"
             ]
@@ -258,15 +266,18 @@
           {
             "group": "Languages",
             "pages": [
+              "api-reference/languages/retrieve-supported-languages-by-resource",
+              "api-reference/languages/language-feature-use-cases",
               "api-reference/languages/retrieve-languages-by-resource",
               "api-reference/languages/retrieve-resources",
+              "api-reference/languages/migrate-from-v2-languages",
               "api-reference/languages/v3-languages-changelog",
               {
                 "group": "v2 Languages",
                 "tag": "DEPRECATED",
                 "pages": [
-                  "api-reference/languages/retrieve-supported-languages",
-                  "api-reference/languages/migrate-from-v2-languages"
+                  "api-reference/languages",
+                  "api-reference/languages/retrieve-supported-languages"
                 ],
                 "drilldown": false
               }
@@ -275,6 +286,7 @@
           {
             "group": "Admin",
             "pages": [
+              "api-reference/admin-api",
               "api-reference/admin-api/managing-admin-keys",
               {
                 "group": "Managing Developer Keys",
@@ -291,6 +303,7 @@
               {
                 "group": "Usage & Quota",
                 "pages": [
+                  "api-reference/usage-and-quota",
                   "api-reference/usage-and-quota/check-usage-and-limits"
                 ],
                 "drilldown": false
@@ -332,14 +345,8 @@
       {
         "title": "Resources",
         "items": [
-          {
-            "label": "API Status",
-            "href": "https://api-status.deepl.com"
-          },
-          {
-            "label": "DeepL Status",
-            "href": "https://www.deeplstatus.com"
-          }
+          { "label": "API Status", "href": "https://api-status.deepl.com" },
+          { "label": "DeepL Status", "href": "https://www.deeplstatus.com" }
         ]
       }
     ],
@@ -352,9 +359,7 @@
   },
   "api": {
     "examples": {
-      "languages": [
-        "curl"
-      ],
+      "languages": ["curl"],
       "defaults": "required"
     },
     "playground": {
@@ -369,7 +374,7 @@
   "redirects": [
     {
       "source": "/api-reference/languages/retrieve-supported-languages-by-product",
-      "destination": "/api-reference/languages/retrieve-languages-by-resource"
+      "destination": "/api-reference/languages/retrieve-supported-languages-by-resource"
     },
     {
       "source": "/api-reference/languages/retrieve-products",

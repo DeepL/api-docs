@@ -1,0 +1,348 @@
+---
+title: "Translate documents"
+sidebarTitle: "Overview"
+public: true
+---
+
+The document translation API allows you to translate whole documents and supports the following file types and extensions:
+
+* `docx` / `doc` - Microsoft Word Document
+* `pptx` - Microsoft PowerPoint Document
+* `xlsx` - Microsoft Excel Document
+* `pdf` - Portable Document Format
+* `htm / html` - HTML Document
+* `txt` - Plain Text Document
+* `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)
+* `srt` - SRT (SubRip Subtitle) Document
+* `idml` - Adobe InDesign Markup Language
+* `xml` - XML Document
+* `json` - JSON Document
+* `dita` - DITA topic (Darwin Information Typing Architecture)
+* `mif` - Adobe FrameMaker Interchange Format
+* `jpeg` / `jpg` / `png` - Image (currently in beta)
+
+Please note that with every submitted document of type .pptx, .docx, .doc, .xlsx, or .pdf, you are billed a minimum of 50,000 characters with the DeepL API plan, no matter how many characters are included in the document.
+
+The maximum upload limit for documents is [available here](/docs/resources/usage-limits#maximum-upload-limits-per-document-format) and may vary based on API plan and document type.
+
+We also provide specs that are auto-generated from DeepL's OpenAPI file. [You can find it here](/api-reference/document/upload-and-translate-a-document).
+
+<Info>
+When translating a `doc` file, you will receive a `docx` file as the output format.
+</Info>
+
+### Step 1: upload a document to the `/document` endpoint
+
+This call uploads a document and queues it for translation. The call returns once the upload is complete, returning a document ID and key which can be used to [query the translation status](/api-reference/document#step-2%3A-check-the-document-status-and-wait-for-translation-to-complete) and to [download the translated document](/api-reference/document#step-3%3A-download-the-translated-document) once translation is complete.
+
+Because the request includes a file upload, it must be an HTTP POST request with content type `multipart/form-data`.
+
+Please be aware that the uploaded document is automatically removed from the server once the translated document has been downloaded. You have to upload the document again in order to restart the translation.
+
+You may specify the glossary to use for the document translation using the `glossary_id` parameter. **Important:** This requires the `source_lang` parameter to be set and the language pair of the glossary has to match the language pair of the request.
+
+For more detail about request body parameters, see the [Request Body Descriptions](/api-reference/document#request-body-descriptions) section further down on the page.
+
+<Tabs>
+<Tab title="cURL">
+The examples below use our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```sh Example request: document upload (no glossary)
+curl -X POST 'https://api.deepl.com/v2/document' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--form 'target_lang=DE' \
+--form 'file=@document.docx'
+```
+
+```sh Example request: document upload (with glossary)
+curl -X POST 'https://api.deepl.com/v2/document' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--form 'source_lang=EN' \
+--form 'target_lang=DE' \
+--form 'file=@document.docx' \
+--form 'glossary_id=[yourGlossaryId]'
+```
+
+```json Example response
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "document_key": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"
+}
+```
+</Tab>
+<Tab title="HTTP Request">
+The examples below use our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: document upload (no glossary)
+POST /v2/document HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: [length]
+Content-Type: multipart/form-data;boundary="boundary"
+
+--boundary,Content-Disposition: form-data; name=target_lang
+
+DE
+--boundary,Content-Disposition: form-data; name=file
+
+@document.docx
+```
+
+```http Example request: document upload (with glossary)
+POST /v2/document HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: [length]
+Content-Type: multipart/form-data;boundary="boundary"
+
+--boundary,Content-Disposition: form-data; name=source_lang
+
+EN
+--boundary,Content-Disposition: form-data; name=target_lang
+
+DE
+--boundary,Content-Disposition: form-data; name=file
+
+@document.docx
+--boundary,Content-Disposition: form-data; name=glossary_id
+
+[yourGlossaryId]
+```
+
+```json Example response
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "document_key": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"
+}
+```
+</Tab>
+</Tabs>
+
+These examples are for demonstration purposes only. In production code, the authentication key should not be hard-coded but instead fetched from a configuration file or environment variable.
+
+#### Request Body Descriptions
+
+**Note:** the `model_type` parameter is not supported for API document translation and is only supported for [text translation](/api-reference/translate#about-the-model_type-parameter). It’s possible to submit a document translation request that includes the parameter, but the parameter will be ignored and will not have an effect on translation results.
+
+<ParamField body="source_lang" type="string">
+  Language of the text to be translated. If omitted, the API will attempt to detect the language of the text and translate it. You can find supported languages <a href="/docs/getting-started/supported-languages">here</a>.
+</ParamField>
+<ParamField body="target_lang" type="string" required>
+  The language into which the text should be translated. You can find supported languages <a href="/docs/getting-started/supported-languages">here</a>.
+</ParamField>
+<ParamField body="file" type="binary" required>
+  The document file to be translated. The file name should be included in this part's content disposition. As an alternative, the filename parameter can be used.
+  The following file types and extensions are supported:
+  <ul>
+    <li>`docx`: Microsoft Word Document</li>
+    <li>`pptx`: Microsoft PowerPoint Document</li>
+    <li>`xlsx`: Microsoft Excel Document</li>
+    <li>`pdf`: Portable Document Format</li>
+    <li>`htm / .html`: HTML Document</li>
+    <li>`txt`: Plain Text Document</li>
+    <li>`xlf / xliff`: XLIFF Document (versions 1.2, 2.0, and 2.1)</li>
+    <li>`srt` - SRT (SubRip Subtitle) Document</li>
+    <li>`idml`: Adobe InDesign Markup Language</li>
+    <li>`xml`: XML Document</li>
+    <li>`json`: JSON Document</li>
+    <li>`dita`: DITA topic (Darwin Information Typing Architecture)</li>
+    <li>`mif`: Adobe FrameMaker Interchange Format</li>
+    <li>`jpeg` / `jpg` / `png` - Image (currently in beta)</li>
+  </ul>
+</ParamField>
+<ParamField body="filename" type="string">
+  The name of the uploaded file. Can be used as an alternative to including the file name in the file part's content disposition.
+</ParamField>
+<ParamField body="formality" type="string">
+  Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages `DE` (German), `FR` (French), `IT` (Italian), `ES` (Spanish), `NL` (Dutch), `PL` (Polish), `PT-BR` and `PT-PT` (Portuguese), `JA` (Japanese), and `RU` (Russian). Learn more about the plain/polite feature for Japanese <a href="https://support.deepl.com/hc/en-us/articles/6306700061852-About-the-plain-polite-feature-in-Japanese">here</a>. Setting this parameter with a target language that does not support formality will fail, unless one of the `prefer_...` options are used. To check formality support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_document</code></a> and look for the <code>formality</code> feature key on the target language. Possible options are:
+  <ul>
+    <li>`default` (default)</li>
+    <li>`more` - for a more formal language</li>
+    <li>`less` - for a more informal language</li>
+    <li>`prefer_more` - for a more formal language if available, otherwise fallback to default formality</li>
+    <li>`prefer_less` - for a more informal language if available, otherwise fallback to default formality</li>
+  </ul>
+</ParamField>
+<ParamField body="glossary_id" type="string">
+  A unique ID assigned to a glossary. To check glossary support for a language pair, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_document</code></a> and verify the <code>glossary</code> feature key is present on both the source and target language.
+  <Note>
+    Cannot be used together with <code>glossary_ids</code>.
+  </Note>
+</ParamField>
+<ParamField body="glossary_ids" type="array[string]">
+  Specify up to 5 glossaries to use for the document translation, as an array of glossary IDs. Each glossary's matching terms are applied to the translated document.
+  <Note>
+    <strong>Important:</strong> This requires the <code>source_lang</code> parameter to be set, and every listed glossary must contain a dictionary for the requested language pair.
+
+    Cannot be used together with <code>glossary_id</code>.
+  </Note>
+</ParamField>
+<ParamField body="style_id" type="string">
+  Specify the style rule list to use for the translation which can be used to customize translations according to the selected formatting and style conventions.
+  <Info>
+    The target language has to match the language of the style rule list.
+  </Info>
+</ParamField>
+<ParamField body="translation_memory_id" type="string">
+  The [translation memory](/api-reference/translation-memory/list-translation-memories) to use for the translation. The value should be the UUID of a translation memory associated with your account.
+</ParamField>
+<ParamField body="translation_memory_threshold" type="integer">
+  The minimum matching percentage required for a translation memory segment to be applied (recommended to be 75% or higher). Accepts values from 0 to 100. Default: `75`.
+</ParamField>
+<ParamField body="output_format" type="string">
+  File extension of desired format of translated file, for example: `pdf`. If unspecified, by default the translated file will be in the same format as the input file.
+  Note: Not all combinations of input file and translation file extensions are permitted. See <a href="/api-reference/document#document-format-conversions">Document format conversions</a> for the permitted combinations.
+</ParamField>
+
+### Step 2: check the document status and wait for translation to complete
+
+Retrieve the current status of a document translation process.
+
+Please note that the `seconds_remaining` parameter is just an estimate and can be unreliable (e.g. sometimes it might return 2^27). We recommend polling the document status, either in regular intervals or with exponential back-off. Translation time depends on the document size and server load, but should be in the order of seconds for small documents and 1-2 minutes for larger documents once translation has started.
+
+<Tabs>
+<Tab title="cURL">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```sh Example request: check document status
+curl -X POST 'https://api.deepl.com/v2/document/{document_id}' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "document_key": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"
+}'
+```
+
+```json Example response: translating
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "translating",
+  "seconds_remaining": 20
+}
+```
+
+```json Example response: done
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "done",
+  "billed_characters": 1337
+}
+```
+
+```json Example response: queued
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "queued"
+}
+```
+
+```json Example response: error
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "error",
+  "message": "Source and target language are equal."
+}
+```
+</Tab>
+<Tab title="HTTP Request">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: check document status
+POST /v2/document/{document_id} HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: 83
+Content-Type: application/json
+
+{"document_key":"0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"}
+```
+
+```json Example response: translating
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "translating",
+  "seconds_remaining": 20
+}
+```
+
+```json Example response: done
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "done",
+  "billed_characters": 1337
+}
+```
+
+```json Example response: queued
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "queued"
+}
+```
+
+```json Example response: error
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "error",
+  "message": "Source and target language are equal."
+}
+```
+</Tab>
+</Tabs>
+
+### Step 3: download the translated document
+
+Once the status of the document translation process is `done`, the result can be downloaded.
+
+For privacy reasons the translated document is automatically removed from the server once it was downloaded and cannot be downloaded again.
+
+<Tabs>
+<Tab title="cURL">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```sh Example request: download translated document
+curl -X POST 'https://api.deepl.com/v2/document/{document_id}/result' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "document_key": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"
+}'
+```
+</Tab>
+<Tab title="HTTP Request">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: download translated document
+POST /v2/document/{document_id}/result HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: 83
+Content-Type: application/json
+
+{"document_key":"0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"}
+```
+</Tab>
+</Tabs>
+
+### Client libraries and document translation
+
+The examples on this page show how to translate documents with DeepL using the API directly.
+
+DeepL's [client libraries](/docs/getting-started/client-libraries) simplify API document translation by providing a convenience function to upload the document, check translation status and download the translated document with a single function call.
+
+### Document format conversions
+
+By default, the DeepL API returns translated documents in the same format as the input document.
+
+Using the `output_format` parameter during document upload, you can select alternative output formats. For example, you can translate a PDF file and receive the translation as an editable Microsoft Word Document (DOCX), allowing you to make additional changes as necessary.
+
+The range of alternative output formats you can select are indicated in the table below:
+
+| Input document format | Alternative output document formats |
+| --- | --- |
+| PDF | `docx` - Microsoft Word Document |
+| Others | None |

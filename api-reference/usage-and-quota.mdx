@@ -1,0 +1,79 @@
+---
+title: "Retrieve usage and quota"
+public: true
+sidebarTitle: "Overview"
+description: "API reference for retrieving usage and quota for the current billing period with the DeepL API."
+---
+Retrieve usage information **within the current billing period** together with the corresponding account limits. For **Pro API users**, the `/usage`endpoint returns the following:
+
+* Text and document translation characters consumed in the current billing period in total _and_ for the API key used to make the request
+* Text improvement (`/write`) characters consumed in the current billing period in total _and_ for the API key used to make the request
+* Total characters consumed in the current billing period by the API key used to make the request
+* The key-level character limit for the API key used to make the request, if applicable (if a [key-level usage limit](../docs/getting-started/managing-api-keys#set-api-key-level-usage-limits) is set, it will be reflected in the `api_key_character_limit` field in the response; `1000000000000` will be returned if no key-level limit is set)
+* The current billing period start timestamp
+* The current billing period end timestamp
+* Total characters consumed in the current billing period
+* Subscription-level character limit that applies to the current billing period (if [Cost Control](../docs/best-practices/cost-control.md) is set, it will be reflected in the `character_limit` field in the response; `1000000000000` will be returned if no limit is set)
+
+An example request and response is shown below.
+
+<Info>
+Note that responses for Free API and Pro Classic users only contain `character_count` and `character_limit`.
+</Info>
+
+The value in the `character_count`field includes both text and document translations as well as text improvement (DeepL API for Write) characters. Characters are counted based on the source text length in Unicode code points, so for example "A", "Δ", "あ", and "深" are each counted as a single character.
+
+We also provide a spec that is auto-generated from DeepL's OpenAPI file. [You can find it here](/api-reference/usage-and-quota/check-usage-and-limits).
+
+<Tabs>
+<Tab title="cURL">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```bash Example request: check usage and limits
+curl -X GET 'https://api.deepl.com/v2/usage' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+```json Example response
+{
+    "products": [
+        {
+            "product_type": "write",
+            "api_key_character_count": 1000000,
+            "character_count": 1250000
+        },
+        {
+            "product_type": "translate",
+            "api_key_character_count": 880000,
+            "character_count": 900000
+        }
+    ],
+    "api_key_character_count": 1880000,
+    "api_key_character_limit": 0,
+    "start_time": "2025-04-24T14:58:02Z",
+    "end_time": "2025-05-24T14:58:02Z",
+    "character_count": 2150000,
+    "character_limit": 20000000
+}
+```
+</Tab>
+<Tab title="HTTP Request">
+The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+```http Example request: check usage and limits
+GET /v2/usage HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey] 
+User-Agent: YourApp/1.2.3
+```
+
+```json Example response
+{
+  "character_count": 180118,
+  "character_limit": 1250000
+}
+```
+</Tab>
+</Tabs>
+
+If you are looking for general API limitations, please see [here](/docs/resources/usage-limits).

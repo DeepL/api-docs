@@ -1,0 +1,369 @@
+---
+title: "Translate Audio Files"
+sidebarTitle: "Overview"
+description: "Translate pre-recorded audio files into plain text transcripts, SRT subtitles, or translated speech audio using asynchronous jobs."
+public: true
+---
+
+<Warning>
+  **Closed alpha.** This API may change without notice and is only available to select DeepL customers. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details. To request access, contact your customer success manager.
+</Warning>
+
+The Voice Translate Job API translates pre-recorded audio files into any combination of three output forms in any of its supported target languages:
+
+- **Plain text transcripts** (`text/plain`)
+- **SRT subtitles** (`application/x-subrip`) — preserves the original timecodes
+- **Translated speech audio** — speech-to-speech in a range of audio and video container formats (see the [Reference](/api-reference/jobs-voice-translate/reference#supported-output-formats) for the full list)
+
+The API processes entire audio files asynchronously. This makes it suitable for pre-recorded content such as podcasts, meeting recordings, or other media files. For live audio, see the [real-time Voice API](/api-reference/voice).
+
+Each job can produce multiple outputs from a single source. For example, one English podcast can be translated into German plain text, French SRT subtitles, and Spanish audio in a single job.
+
+For full request and response schemas, see the [Create Job](/api-reference/jobs-voice-translate/create-voice-translate-job) and [Get Job Status](/api-reference/jobs-voice-translate/get-voice-translate-job-status) endpoint references. For status values, limits, supported formats, and supported languages, see the [Reference](/api-reference/jobs-voice-translate/reference).
+
+## Workflow
+
+Translating an audio file is a four-step process. The examples below use the API Pro endpoint `https://api.deepl.com`. API Free users should use `https://api-free.deepl.com` instead.
+
+<Steps>
+  <Step>
+    ### Create Job
+    Make a `POST` request to `/v1/jobs/voice/translate` with file metadata, processing parameters, and translation targets.
+
+    The response includes a `job_id`, an `upload_url`, and an upload `signature` for authenticating the upload. (A separate result `signature` is returned per target later, in step 3.)
+
+    <Tabs>
+      <Tab title="cURL">
+        ```sh Example request
+        curl -X POST 'https://api.deepl.com/v1/jobs/voice/translate' \
+        --header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+        --header 'Content-Type: application/json' \
+        --data '{
+          "source_file": {
+            "name": "podcast-episode-42.mp3",
+            "content_type": "audio/mpeg",
+            "content_length": 15728640
+          },
+          "parameters": {
+            "source_language": "en"
+          },
+          "targets": [
+            { "language": "de", "type": "text/plain" },
+            { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" },
+            { "language": "fr", "type": "application/x-subrip" }
+          ]
+        }'
+        ```
+      </Tab>
+      <Tab title="HTTP Request">
+        ```http Example request
+        POST /v1/jobs/voice/translate HTTP/2
+        Host: api.deepl.com
+        Authorization: DeepL-Auth-Key [yourAuthKey]
+        Content-Type: application/json
+
+        {
+          "source_file": {
+            "name": "podcast-episode-42.mp3",
+            "content_type": "audio/mpeg",
+            "content_length": 15728640
+          },
+          "parameters": {
+            "source_language": "en"
+          },
+          "targets": [
+            { "language": "de", "type": "text/plain" },
+            { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" },
+            { "language": "fr", "type": "application/x-subrip" }
+          ]
+        }
+        ```
+      </Tab>
+    </Tabs>
+
+    ```json Example response
+    {
+      "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+      "upload_url": "https://assets.deepl.com/collections/a74d88fb-.../assets/b1c2d3e4-...",
+      "signature": "eyJhbGciOiJIUzI1NiIs..."
+    }
+    ```
+
+    See the [Create Job endpoint reference](/api-reference/jobs-voice-translate/create-voice-translate-job) for the full request and response schema.
+  </Step>
+  <Step>
+    ### Upload File
+    Upload the source audio file to the `upload_url` returned in step 1.
+
+    <Tabs>
+      <Tab title="cURL">
+        ```sh Upload with authorization header (recommended)
+        curl -X PUT '{upload_url}' \
+        --header 'Authorization: DeepL-Signature {signature}' \
+        --header 'Content-Type: application/octet-stream' \
+        --data-binary @podcast-episode-42.mp3
+        ```
+      </Tab>
+      <Tab title="HTTP Request">
+        ```http Upload with authorization header (recommended)
+        PUT {upload_url} HTTP/2
+        Authorization: DeepL-Signature {signature}
+        Content-Type: application/octet-stream
+
+        [binary audio data]
+        ```
+      </Tab>
+    </Tabs>
+
+    A successful upload returns `204 No Content` with an empty body. The `Content-Type: application/octet-stream` on the PUT is just for transport; the asset host stores the body as opaque bytes. The audio MIME type from `source_file.content_type` in the create request is what's used for processing.
+
+    See [Choosing an Authentication Method](#choosing-an-authentication-method) for details on the two upload options.
+  </Step>
+  <Step>
+    ### Poll Status
+    Poll `GET /v1/jobs/voice/translate/{job_id}` until every result reaches `complete`, `downloaded`, or `failed`. We recommend polling every 5 seconds.
+
+    The `results` array is parallel to `targets`: `results[i]` is the outcome for `targets[i]`. When a result reaches `complete`, it includes its own `download_url` and result `signature` — distinct from the upload signature returned by the create endpoint, and distinct per target. `complete` becomes `downloaded` only after you fetch the result; it does not transition on its own, so it's safe to stop polling at `complete`.
+
+    <Tabs>
+      <Tab title="cURL">
+        ```sh Example request
+        curl 'https://api.deepl.com/v1/jobs/voice/translate/a74d88fb-ed2a-4943-a664-a4512398b994' \
+        --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+        ```
+      </Tab>
+      <Tab title="HTTP Request">
+        ```http Example request
+        GET /v1/jobs/voice/translate/a74d88fb-ed2a-4943-a664-a4512398b994 HTTP/2
+        Host: api.deepl.com
+        Authorization: DeepL-Auth-Key [yourAuthKey]
+        ```
+      </Tab>
+    </Tabs>
+
+    ```json Example response: processing
+    {
+      "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+      "product": "voice",
+      "operation": "translate",
+      "created_at": "2026-10-01T01:03:03.444Z",
+      "updated_at": "2026-10-01T04:03:03.333Z",
+      "usage": { "storage_used": 31457280 },
+      "source_file": {
+        "name": "podcast-episode-42.mp3",
+        "content_type": "audio/mpeg",
+        "content_length": 15728640
+      },
+      "parameters": { "source_language": "en" },
+      "targets": [
+        { "language": "de", "type": "text/plain" },
+        { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" },
+        { "language": "fr", "type": "application/x-subrip" }
+      ],
+      "results": [
+        { "status": "processing" },
+        { "status": "processing" },
+        { "status": "processing" }
+      ]
+    }
+    ```
+
+    ```json Example response: complete with mixed results
+    {
+      "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+      "product": "voice",
+      "operation": "translate",
+      "created_at": "2026-10-01T01:03:03.444Z",
+      "updated_at": "2026-10-01T04:03:03.333Z",
+      "usage": { "storage_used": 31457280 },
+      "source_file": {
+        "name": "podcast-episode-42.mp3",
+        "content_type": "audio/mpeg",
+        "content_length": 15728640
+      },
+      "parameters": { "source_language": "en" },
+      "targets": [
+        { "language": "de", "type": "text/plain" },
+        { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" },
+        { "language": "fr", "type": "application/x-subrip" }
+      ],
+      "results": [
+        {
+          "status": "complete",
+          "download_url": "https://assets.deepl.com/collections/a74d88fb/assets/c3d4e5f6",
+          "signature": "eyJhbGciOiJIUzI1NiIs..."
+        },
+        {
+          "status": "failed",
+          "error": { "message": "processing failed" }
+        },
+        {
+          "status": "complete",
+          "download_url": "https://assets.deepl.com/collections/a74d88fb/assets/d4e5f6a7",
+          "signature": "eyJhbGciOiJIUzI1NiIs..."
+        }
+      ]
+    }
+    ```
+
+    See the [Get Job Status endpoint reference](/api-reference/jobs-voice-translate/get-voice-translate-job-status) for the full response schema, and the [Reference](/api-reference/jobs-voice-translate/reference#result-status-lifecycle) for the status lifecycle.
+  </Step>
+  <Step>
+    ### Download Result
+    Download each completed result using the `download_url` and result `signature` from that result entry in the poll response. Each completed target has its own pair; signatures are not interchangeable across targets, and the upload signature from step 1 cannot be used here.
+
+    <Tabs>
+      <Tab title="cURL">
+        ```sh Download with authorization header (recommended)
+        curl '{download_url}' \
+        --header 'Authorization: DeepL-Signature {signature}' \
+        --output translated-output.txt
+        ```
+      </Tab>
+      <Tab title="HTTP Request">
+        ```http Download with authorization header (recommended)
+        GET {download_url} HTTP/2
+        Authorization: DeepL-Signature {signature}
+        ```
+      </Tab>
+    </Tabs>
+
+    A successful download returns `200 OK` with the translated file as the binary response body.
+
+    After a result is downloaded, its status changes to `downloaded` and the assets are marked for deletion. See [Choosing an Authentication Method](#choosing-an-authentication-method) for details on the two download options.
+  </Step>
+</Steps>
+
+## Complete Example
+
+The following Python script runs all four steps end-to-end: it creates a job, uploads the source file, polls until every target reaches a terminal state, and downloads each completed result.
+
+```python complete_example.py
+import os
+import time
+from pathlib import Path
+
+import requests
+
+API_BASE = "https://api.deepl.com"
+AUTH_KEY = os.environ["DEEPL_AUTH_KEY"]
+SOURCE_PATH = Path("podcast-episode-42.mp3")
+
+api_headers = {"Authorization": f"DeepL-Auth-Key {AUTH_KEY}"}
+
+# 1. Create the job
+create_resp = requests.post(
+    f"{API_BASE}/v1/jobs/voice/translate",
+    headers={**api_headers, "Content-Type": "application/json"},
+    json={
+        "source_file": {
+            "name": SOURCE_PATH.name,
+            "content_type": "audio/mpeg",
+            "content_length": SOURCE_PATH.stat().st_size,
+        },
+        "parameters": {"source_language": "en"},
+        "targets": [
+            {"language": "de", "type": "text/plain"},
+            {"language": "es", "type": "audio/pcm;encoding=s16le;rate=16000"},
+            {"language": "fr", "type": "application/x-subrip"},
+        ],
+    },
+)
+create_resp.raise_for_status()
+job = create_resp.json()
+job_id = job["job_id"]
+
+# 2. Upload the source file using the upload signature
+with SOURCE_PATH.open("rb") as f:
+    upload_resp = requests.put(
+        job["upload_url"],
+        headers={
+            "Authorization": f"DeepL-Signature {job['signature']}",
+            "Content-Type": "application/octet-stream",
+        },
+        data=f,
+    )
+upload_resp.raise_for_status()
+
+# 3. Poll until every result is complete, downloaded, or failed
+TERMINAL = {"complete", "downloaded", "failed"}
+while True:
+    status_resp = requests.get(
+        f"{API_BASE}/v1/jobs/voice/translate/{job_id}",
+        headers=api_headers,
+    )
+    status_resp.raise_for_status()
+    status = status_resp.json()
+    if all(r["status"] in TERMINAL for r in status["results"]):
+        break
+    time.sleep(5)
+
+# 4. Download each completed result with its own result signature
+for target, result in zip(status["targets"], status["results"]):
+    if result["status"] != "complete":
+        print(f"{target['language']} ({target['type']}): {result['status']}")
+        continue
+    download_resp = requests.get(
+        result["download_url"],
+        headers={"Authorization": f"DeepL-Signature {result['signature']}"},
+    )
+    download_resp.raise_for_status()
+    suffix = {"text/plain": ".txt", "application/x-subrip": ".srt"}.get(target["type"], ".bin")
+    out_path = Path(f"output-{target['language']}{suffix}")
+    out_path.write_bytes(download_resp.content)
+    print(f"{target['language']}: wrote {out_path}")
+```
+
+Run it with `DEEPL_AUTH_KEY=... python complete_example.py`.
+
+## Choosing an Authentication Method
+
+There are two ways to authenticate uploads and downloads. The default is the `Authorization: DeepL-Signature {signature}` header, which the workflow examples above use. The alternative is a pre-signed URL, opted into per request with `?include=signed_url`.
+
+| **Method**                         | **How it's used**                                                              | **When to use it**                                                                                       |
+| :--------------------------------- | :----------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------- |
+| `Authorization` header (default)   | Send `Authorization: DeepL-Signature {signature}` on the PUT/GET               | Server-to-server flows you control. Don't expose the signature to untrusted clients.                     |
+| Pre-signed URL (`?include=signed_url`) | Use `signed_upload_url` / `signed_download_url` directly; no auth header needed | Browsers, mobile clients, or any caller that can't set custom headers.                                   |
+
+Both methods use the same time-limited windows: 5 minutes for upload after job creation, 1 hour for download after upload. The `signature` and signed URL stop working when those windows close.
+
+<Tip>
+  Use the `Authorization` header by default. A leaked signed URL could allow an attacker to upload malicious content to your job or download your results.
+</Tip>
+
+### Pre-signed URL example
+
+Add `?include=signed_url` to the create or poll request to receive pre-signed URLs alongside the regular ones.
+
+```sh Create with signed URL
+curl -X POST 'https://api.deepl.com/v1/jobs/voice/translate?include=signed_url' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{ ... }'
+```
+
+```json Response includes signed_upload_url
+{
+  "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "upload_url": "https://assets.deepl.com/collections/a74d88fb/assets/b1c2d3e4",
+  "signature": "eyJhbGciOiJIUzI1NiIs...",
+  "signed_upload_url": "https://assets.deepl.com/collections/a74d88fb/assets/b1c2d3e4?X-Signature=eyJhbGciOi..."
+}
+```
+
+```sh Upload using the signed URL (no auth header)
+curl -X PUT '{signed_upload_url}' \
+--header 'Content-Type: application/octet-stream' \
+--data-binary @podcast-episode-42.mp3
+```
+
+The same pattern applies to downloads: pass `?include=signed_url` to the poll request, and each completed result will also include `signed_download_url`.
+
+## Next Steps
+
+Now that you understand how to translate audio files asynchronously:
+
+- **Create a job:** Review the [Create Job endpoint reference](/api-reference/jobs-voice-translate/create-voice-translate-job) for the full request and response schema
+- **Poll job status:** Review the [Get Job Status endpoint reference](/api-reference/jobs-voice-translate/get-voice-translate-job-status) for the full response schema
+- **Look up limits and formats:** See the [Reference](/api-reference/jobs-voice-translate/reference) for status values, limits, supported audio formats, languages, and output formats
+- **Try realtime translation:** Use the [Voice API](/api-reference/voice) for streaming audio translation over WebSocket instead of batch processing
