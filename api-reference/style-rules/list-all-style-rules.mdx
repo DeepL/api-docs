@@ -1,4 +1,9 @@
 ---
 openapi: get /v3/style_rules
 title: "Get all style rule lists"
+description: "List all style rule lists for your account, with optional detail on configured rules and custom instructions."
 ---
+
+Returns all style rule lists associated with your account. By default, the response includes only metadata (name, language, version, timestamps). Pass `?detailed=true` to include each list's configured rules and custom instructions.
+
+See the [Style rules overview](/api-reference/style-rules) for how to create, update, and use style rule lists in translation requests.

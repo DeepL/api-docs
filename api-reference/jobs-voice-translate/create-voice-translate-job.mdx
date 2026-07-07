@@ -1,4 +1,16 @@
 ---
 openapi: post /v1/jobs/voice/translate
 title: "Create a voice translation job"
+description: "Create an asynchronous job to translate a pre-recorded audio file into text, SRT subtitles, or translated speech audio."
 ---
+
+Creates an asynchronous job for translating a pre-recorded audio file. The response includes a `job_id`, an `upload_url`, and an upload `signature` for authenticating the file upload.
+
+Translating an audio file is a four-step process:
+
+1. **Create job** — `POST /v1/jobs/voice/translate` (this endpoint)
+2. **Upload file** — PUT the source audio to the `upload_url` from step 1
+3. **Poll status** — `GET /v1/jobs/voice/translate/{job_id}` until all results reach a terminal state
+4. **Download results** — Fetch each completed result using its `download_url` and result `signature`
+
+See the [Translate Audio Files overview](/api-reference/jobs-voice-translate) for the complete workflow, a runnable end-to-end Python example, authentication method details, and supported formats.

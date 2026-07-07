@@ -1,4 +1,17 @@
 ---
 openapi: post /v2/document
 title: "Upload and translate a document"
+description: "Upload a document for translation. Returns a document ID and key used to check status and download the result."
 ---
+
+Document translation is an asynchronous three-step process:
+
+1. **Upload** — Submit the document with `POST /v2/document`. Returns a `document_id` and `document_key`.
+2. **Poll** — Check translation status with `POST /v2/document/{document_id}` until status is `done`.
+3. **Download** — Retrieve the translated file with `POST /v2/document/{document_id}/result`.
+
+See the [Translate documents overview](/api-reference/document) for supported file formats, request parameters, format conversion options, and client library guidance.
+
+<Info>
+  The uploaded document is automatically removed from the server once the translated document has been downloaded. To retranslate, upload the document again.
+</Info>

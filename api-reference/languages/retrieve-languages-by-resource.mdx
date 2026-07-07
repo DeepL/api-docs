@@ -1,5 +1,11 @@
 ---
 openapi: get /v3/languages
 title: "Retrieve languages"
+description: "Retrieve supported languages and feature availability for a specific DeepL API resource."
 ---
 
+Returns the languages supported for a given DeepL API resource, along with feature availability per language (such as formality, glossary support, transcription, and writing style).
+
+Use the `resource` query parameter to filter results by API product. Supported values include `translate_text`, `translate_document`, `glossary`, `write`, and `voice`.
+
+This endpoint replaces the deprecated [`GET /v2/languages`](/api-reference/languages) endpoint. See the [migration guide](/api-reference/languages/migrate-from-v2-languages) for details.

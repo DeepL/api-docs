@@ -1,7 +1,9 @@
 ---
 openapi: post /v2/write/rephrase
 title: "Improve text"
-description: "Improves text by correcting spelling and grammar and rewriting for a target writing style or tone."
+description: "Improve one or more texts by correcting spelling and grammar, with optional rewriting for a target style or tone."
 ---
 
-The `/v2/write/rephrase` endpoint improves one or more texts by correcting spelling and grammar and rephrasing sentences for clarity. With the optional `writing_style` or `tone` parameters, the rewrite targets a specific style or tone. Its corrections-only counterpart, [`/v2/write/correct`](/api-reference/improve-text/correct-text), is limited to fixing mistakes with minimal changes to wording.
+The `/v2/write/rephrase` endpoint improves one or more texts by correcting spelling and grammar and rephrasing sentences for clarity. With the optional `writing_style` or `tone` parameters, the rewrite targets a specific style or tone. Its corrections-only counterpart, [`/v2/write/correct`](/api-reference/improve-text/correct-text), fixes mistakes with minimal changes to wording.
+
+See the [Improve text overview](/api-reference/improve-text) for supported languages, request body descriptions, response field descriptions, and frequently asked questions.

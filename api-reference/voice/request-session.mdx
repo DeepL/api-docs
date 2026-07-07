@@ -1,4 +1,11 @@
 ---
 openapi: post /v3/voice/realtime
 title: "Request Session"
+description: "Request an ephemeral streaming URL and authentication token to initiate a Voice API WebSocket session."
 ---
+
+Initiates a Voice API session and returns a one-time `streaming_url` and `token` for establishing a WebSocket connection. This is step 1 of the two-step Voice API flow.
+
+Use the returned `streaming_url` and `token` to connect to the WebSocket endpoint described in the [WebSocket Streaming](/api-reference/voice/websocket-streaming) reference.
+
+See the [Voice API overview](/api-reference/voice) for the complete connection flow, supported audio formats, language support, message encoding options, and reconnection guidance.

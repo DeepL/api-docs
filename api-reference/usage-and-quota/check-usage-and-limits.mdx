@@ -1,4 +1,9 @@
 ---
 openapi: get /v2/usage
 title: "Check usage and limits"
+description: "Retrieve character usage and account limits for the current billing period."
 ---
+
+Returns character usage and limits for the current billing period. For Pro API accounts, the response breaks down usage by product (`translate`, `write`) and by API key.
+
+See the [Usage and quota overview](/api-reference/usage-and-quota) for field descriptions, plan-specific response differences, and an example response.

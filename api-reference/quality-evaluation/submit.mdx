@@ -1,14 +1,21 @@
 ---
 openapi: post /v1/quality-evaluation
 title: "Submit an evaluation job"
+description: "Submit a batch of translation segments for quality evaluation. Returns a job ID for polling results."
 ---
 
-See the [Quality Evaluation overview](/api-reference/quality-evaluation) for severity values, sub-types, span semantics, and limits.
+<Warning>
+  **Closed alpha.** This API may change without notice and is only available to select DeepL customers. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details. To request access, contact your customer success manager.
+</Warning>
 
-### Supported language pairs
+This endpoint is asynchronous. After submission, poll `GET /v1/quality-evaluation/{job_id}` to retrieve results once processing is complete.
 
-| **Source Language** | **Target Languages** |
-|---|---|
+See the [Quality Evaluation overview](/api-reference/quality-evaluation) for severity values, sub-types, span semantics, limits, rate limits, and job retention details.
+
+## Supported language pairs
+
+| **Source language** | **Target languages** |
+|:---|:---|
 | German (`de`) | English (`en-gb`, `en-us`) |
 | English (`en`) | German (`de`), Spanish (`es`, `es-419`), French (`fr`), Italian (`it`), Japanese (`ja`), Korean (`ko`) |
 | Spanish (`es`) | English (`en-gb`, `en-us`) |
