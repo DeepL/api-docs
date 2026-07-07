@@ -7,7 +7,7 @@ public: true
 Below you will find general guidance on how to handle status codes and error details to ensure a smooth document translation experience.
 
 ### Document File Size Limits
-We impose [size limits](/docs/resources/usage-limits) per file type. Limits vary by format — for example, `.docx` / `.pptx` / `.pdf` can be up to 100 MB on API Pro, `.idml` / `.mif` / `.xlsx` up to 30 MB, `.json` 1 MB, `.dita` 5 MB.
+We impose [size limits](/docs/resources/usage-limits) per file type. Limits vary by format and API plan.
 For `.pptx` and `.docx` types, our .NET, PHP and NodeJS client libraries offer functionality to minify files by temporarily extracting large media formats before sending them to the DeepL API. Stripped media are reinserted after document translation is completed.
 
 This allows users to translate files that might hit the size limit.
