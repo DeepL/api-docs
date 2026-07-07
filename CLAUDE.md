@@ -16,7 +16,7 @@ No marketing language or sales copy. Flag "best-in-class", "game-changing", "maj
 
 Frame version comparisons neutrally. Focus on what the new version provides, not what the old version "lacked." Never say a previous version was "bad" or "broken."
 
-Action-oriented descriptions: frontmatter `description` fields should tell developers what they'll learn. "Learn how to X" over "Information about X."
+Action-oriented descriptions: frontmatter `description` fields should tell developers what they'll learn. "Learn how to X" over "Information about X." Descriptions must be uniquely descriptive of the specific page content — never generic enough to apply to multiple pages.
 
 When noting limitations or incompatibilities, mention if they're temporary. "Currently only compatible with X. Support for Y will be added in a future update." Avoid indefinite phrases like "for the time being" without specifics.
 
@@ -122,7 +122,7 @@ When NOT to include inline examples: if the guide has a comprehensive example se
 
 Text columns: left-align. Status/symbol columns (✅/❌): center-align. Numeric columns: right-align.
 
-Use bold text for all table headers. Use title case for headers. Use code formatting for code terms in cells. Use line breaks (`<br>`) sparingly, only when necessary for readability. Keep cell content concise: tables should be scannable.
+Use bold text for all table headers. Use sentence case for headers. Use code formatting for code terms in cells. Use line breaks (`<br>`) sparingly, only when necessary for readability. Keep cell content concise: tables should be scannable.
 
 Similar table types (feature matrices, comparison tables) should use the same structure throughout the docs.
 

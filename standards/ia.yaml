@@ -22,7 +22,7 @@ section_requirements:
 
   api_reference_tab:
     - auto-generated from the OpenAPI spec
-    - one overview page per product family
+    - no standalone overview/narrative pages (fold into first endpoint page or Documentation tab)
     - one page per endpoint
 
 # --- Code samples ---

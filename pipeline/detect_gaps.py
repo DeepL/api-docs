@@ -9,6 +9,7 @@ Usage:
     python pipeline/detect_gaps.py                    # full audit
     python pipeline/detect_gaps.py --section translate # audit one section
     python pipeline/detect_gaps.py --output json       # machine-readable output
+    python pipeline/detect_gaps.py --force             # report gaps even when files exist
 """
 
 import argparse
@@ -183,7 +184,7 @@ def find_docs_for_family(family_name, existing_docs):
     return matches
 
 
-def detect_gaps(families, standards, existing_docs, section_filter=None):
+def detect_gaps(families, standards, existing_docs, section_filter=None, force=False):
     gaps = []
 
     for family_name, family in families.items():
@@ -208,12 +209,14 @@ def detect_gaps(families, standards, existing_docs, section_filter=None):
                 "overview" in d["path"].lower() or "intro" in d["path"].lower()
                 for d in family_docs
             )
-            if not has_orientation:
+            if not has_orientation or force:
+                gap_type = "missing_orientation" if not has_orientation else "undocumented_product"
                 gaps.append({
-                    "type": "missing_orientation",
+                    "type": gap_type,
                     "severity": "high",
                     "family": family_name,
-                    "description": f"{family_name} section has no orientation/overview page",
+                    "description": f"{family_name} section has no orientation/overview page"
+                                   + (" (force regenerate)" if has_orientation else ""),
                 })
 
             # Check: has at least one tutorial?
@@ -224,12 +227,13 @@ def detect_gaps(families, standards, existing_docs, section_filter=None):
                 or "first" in d["path"].lower()
                 for d in family_docs
             )
-            if not has_tutorial:
+            if not has_tutorial or force:
                 gaps.append({
                     "type": "missing_tutorial",
                     "severity": "high",
                     "family": family_name,
-                    "description": f"{family_name} section has no tutorial",
+                    "description": f"{family_name} section has no tutorial"
+                                   + (" (force regenerate)" if has_tutorial else ""),
                 })
 
         # Code samples are tracked in the samples repo, not here.
@@ -335,13 +339,14 @@ def main():
     parser = argparse.ArgumentParser(description="Detect documentation gaps")
     parser.add_argument("--section", help="Audit only this product family")
     parser.add_argument("--output", choices=["text", "json"], default="text")
+    parser.add_argument("--force", action="store_true", help="Report gaps even when files exist (for regeneration)")
     args = parser.parse_args()
 
     standards = load_standards()
     spec = load_openapi()
     existing_docs = find_existing_docs()
     families, ungrouped_tags = derive_product_families(spec, standards)
-    gaps = detect_gaps(families, standards, existing_docs, args.section)
+    gaps = detect_gaps(families, standards, existing_docs, args.section, force=args.force)
 
     print(format_report(gaps, ungrouped_tags, args.output))
     return 1 if gaps else 0

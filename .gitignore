@@ -3,3 +3,5 @@ reviews/*
 .DS_Store
 .tool-versions
 pipeline/gap-report.*
+pipeline/drafts/
+__pycache__/
