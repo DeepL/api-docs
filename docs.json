@@ -46,8 +46,7 @@
             "group": "Languages",
             "pages": [
               "docs/getting-started/supported-languages",
-              "docs/resources/language-release-process",
-              "api-reference/languages/retrieve-languages-by-resource"
+              "docs/resources/language-release-process"
             ]
           },
           {
@@ -77,8 +76,7 @@
                   "docs/xml-and-html-handling/tag-handling-v2"
                 ],
                 "drilldown": false
-              },
-              "api-reference/translate/request-translation"
+              }
             ]
           },
           {
@@ -94,66 +92,6 @@
             "pages": [
               "docs/getting-started/managing-api-keys",
               "docs/retrieving-usage-data"
-            ]
-          },
-          {
-            "group": "admin-api",
-            "pages": [
-              "api-reference/admin-api/managing-admin-keys"
-            ]
-          },
-          {
-            "group": "document",
-            "pages": [
-              "api-reference/document/upload-and-translate-a-document"
-            ]
-          },
-          {
-            "group": "glossaries",
-            "pages": [
-              "api-reference/glossaries/create-a-glossary"
-            ]
-          },
-          {
-            "group": "improve-text",
-            "pages": [
-              "api-reference/improve-text/request-text-improvement"
-            ]
-          },
-          {
-            "group": "jobs-voice-translate",
-            "pages": [
-              "api-reference/jobs-voice-translate/create-voice-translate-job"
-            ]
-          },
-          {
-            "group": "multilingual-glossaries",
-            "pages": [
-              "api-reference/multilingual-glossaries/create-a-glossary"
-            ]
-          },
-          {
-            "group": "quality-evaluation",
-            "pages": [
-              "api-reference/quality-evaluation/submit"
-            ]
-          },
-          {
-            "group": "style-rules",
-            "pages": [
-              "api-reference/style-rules/list-all-style-rules"
-            ]
-          },
-          {
-            "group": "usage-and-quota",
-            "pages": [
-              "api-reference/usage-and-quota/check-usage-and-limits"
-            ]
-          },
-          {
-            "group": "voice",
-            "pages": [
-              "api-reference/voice/request-session"
             ]
           },
           {
@@ -221,7 +159,6 @@
               {
                 "group": "Translate Text",
                 "pages": [
-                  "api-reference/translate",
                   "api-reference/translate/request-translation"
                 ],
                 "drilldown": false
@@ -229,7 +166,6 @@
               {
                 "group": "Translate Documents",
                 "pages": [
-                  "api-reference/document",
                   "api-reference/document/upload-and-translate-a-document",
                   "api-reference/document/check-document-status",
                   "api-reference/document/download-translated-document"
@@ -245,7 +181,6 @@
               {
                 "group": "Glossaries",
                 "pages": [
-                  "api-reference/multilingual-glossaries",
                   "api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries",
                   "api-reference/multilingual-glossaries/create-a-glossary",
                   "api-reference/multilingual-glossaries/list-all-glossaries",
@@ -259,7 +194,6 @@
                     "group": "Glossaries v2",
                     "tag": "DEPRECATED",
                     "pages": [
-                      "api-reference/glossaries",
                       "api-reference/glossaries/v2-vs-v3-endpoints",
                       "api-reference/glossaries/create-a-glossary",
                       "api-reference/glossaries/list-all-glossaries",
@@ -275,7 +209,6 @@
               {
                 "group": "Style Rules",
                 "pages": [
-                  "api-reference/style-rules",
                   "api-reference/style-rules/list-all-style-rules",
                   "api-reference/style-rules/create-style-rule",
                   "api-reference/style-rules/get-style-rule",
@@ -301,7 +234,6 @@
           {
             "group": "Voice",
             "pages": [
-              "api-reference/voice",
               "api-reference/voice/request-session",
               "api-reference/voice/websocket-streaming",
               "api-reference/voice/reconnect-session"
@@ -311,7 +243,6 @@
             "group": "Translate Audio Files",
             "hidden": true,
             "pages": [
-              "api-reference/jobs-voice-translate",
               "api-reference/jobs-voice-translate/create-voice-translate-job",
               "api-reference/jobs-voice-translate/get-voice-translate-job-status",
               "api-reference/jobs-voice-translate/reference"
@@ -320,7 +251,6 @@
           {
             "group": "Write",
             "pages": [
-              "api-reference/improve-text",
               "api-reference/improve-text/request-text-improvement",
               "api-reference/improve-text/correct-text"
             ]
@@ -338,7 +268,6 @@
                 "group": "v2 Languages",
                 "tag": "DEPRECATED",
                 "pages": [
-                  "api-reference/languages",
                   "api-reference/languages/retrieve-supported-languages"
                 ],
                 "drilldown": false
@@ -348,7 +277,6 @@
           {
             "group": "Admin",
             "pages": [
-              "api-reference/admin-api",
               "api-reference/admin-api/managing-admin-keys",
               {
                 "group": "Managing Developer Keys",
@@ -365,7 +293,6 @@
               {
                 "group": "Usage & Quota",
                 "pages": [
-                  "api-reference/usage-and-quota",
                   "api-reference/usage-and-quota/check-usage-and-limits"
                 ],
                 "drilldown": false
