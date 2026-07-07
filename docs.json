@@ -46,7 +46,8 @@
             "group": "Languages",
             "pages": [
               "docs/getting-started/supported-languages",
-              "docs/resources/language-release-process"
+              "docs/resources/language-release-process",
+              "api-reference/languages/retrieve-languages-by-resource"
             ]
           },
           {
@@ -76,7 +77,8 @@
                   "docs/xml-and-html-handling/tag-handling-v2"
                 ],
                 "drilldown": false
-              }
+              },
+              "api-reference/translate/request-translation"
             ]
           },
           {
@@ -92,6 +94,66 @@
             "pages": [
               "docs/getting-started/managing-api-keys",
               "docs/retrieving-usage-data"
+            ]
+          },
+          {
+            "group": "admin-api",
+            "pages": [
+              "api-reference/admin-api/managing-admin-keys"
+            ]
+          },
+          {
+            "group": "document",
+            "pages": [
+              "api-reference/document/upload-and-translate-a-document"
+            ]
+          },
+          {
+            "group": "glossaries",
+            "pages": [
+              "api-reference/glossaries/create-a-glossary"
+            ]
+          },
+          {
+            "group": "improve-text",
+            "pages": [
+              "api-reference/improve-text/request-text-improvement"
+            ]
+          },
+          {
+            "group": "jobs-voice-translate",
+            "pages": [
+              "api-reference/jobs-voice-translate/create-voice-translate-job"
+            ]
+          },
+          {
+            "group": "multilingual-glossaries",
+            "pages": [
+              "api-reference/multilingual-glossaries/create-a-glossary"
+            ]
+          },
+          {
+            "group": "quality-evaluation",
+            "pages": [
+              "api-reference/quality-evaluation/submit"
+            ]
+          },
+          {
+            "group": "style-rules",
+            "pages": [
+              "api-reference/style-rules/list-all-style-rules"
+            ]
+          },
+          {
+            "group": "usage-and-quota",
+            "pages": [
+              "api-reference/usage-and-quota/check-usage-and-limits"
+            ]
+          },
+          {
+            "group": "voice",
+            "pages": [
+              "api-reference/voice/request-session"
             ]
           },
           {
@@ -345,8 +407,14 @@
       {
         "title": "Resources",
         "items": [
-          { "label": "API Status", "href": "https://api-status.deepl.com" },
-          { "label": "DeepL Status", "href": "https://www.deeplstatus.com" }
+          {
+            "label": "API Status",
+            "href": "https://api-status.deepl.com"
+          },
+          {
+            "label": "DeepL Status",
+            "href": "https://www.deeplstatus.com"
+          }
         ]
       }
     ],
@@ -359,7 +427,9 @@
   },
   "api": {
     "examples": {
-      "languages": ["curl"],
+      "languages": [
+        "curl"
+      ],
       "defaults": "required"
     },
     "playground": {
