@@ -8,7 +8,7 @@ Below you will find general guidance on how to handle status codes and error det
 
 ### Document File Size Limits
 We impose [size limits](/docs/resources/usage-limits) per file type. Limits vary by format and API plan.
-For `.pptx` and `.docx` types, our .NET, PHP and NodeJS client libraries offer functionality to minify files by temporarily extracting large media formats before sending them to the DeepL API. Stripped media are reinserted after document translation is completed.
+For DOCX and PPTX, our .NET, PHP and NodeJS client libraries offer functionality to minify files by temporarily extracting large media formats before sending them to the DeepL API. Stripped media are reinserted after document translation is completed.
 
 This allows users to translate files that might hit the size limit.
 
