@@ -7,7 +7,7 @@ public: true
 
 The text-translation API currently consists of a single endpoint, `translate`, which is described below.
 
-For highest translation quality, we recommend using our next-gen models. For details, please see [here](/api-reference/translate#about-the-model_type-parameter).
+For details on model selection, see the [`model_type` parameter](#about-the-model_type-parameter).
 
 To learn more about context in DeepL API translations, see our [context parameter guide](/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter).
 
@@ -210,15 +210,11 @@ Note that we do not include examples for our client libraries in every single se
   Specifies which DeepL model should be used for translation.
 
   Possible values:
-  - `latency_optimized`: Uses the lowest latency translation models available (usually classic models; default parameter value)
-  - `quality_optimized`: Uses the highest quality translation models available (currently next-gen models)
-  - `prefer_quality_optimized`: Same as `quality_optimized`, with fallback to classic models if no next-gen model is present (as of December 2025, all languages have next-gen models)
+  - `latency_optimized`: Optimizes for the lowest latency (default parameter value)
+  - `quality_optimized`: Optimizes for the highest translation quality
+  - `prefer_quality_optimized`: Same as `quality_optimized`
 
   When the `model_type` parameter is set, the response includes a `model_type_used` field indicating which model was used.
-
-  <Warning>
-    To ensure accurate automatic language detection, the API uses next-gen models for all requests that omit `source_lang`, regardless of `model_type`. If your source language is known, you can specify `source_lang` to allow classic models to be used where available for your language pair. See [supported languages](/docs/getting-started/supported-languages) for language-specific model availability.
-  </Warning>
 
   See [About the model_type parameter](#about-the-model_type-parameter) for more details.
 </ParamField>
