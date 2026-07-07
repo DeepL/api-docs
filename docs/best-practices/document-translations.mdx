@@ -7,10 +7,65 @@ public: true
 Below you will find general guidance on how to handle status codes and error details to ensure a smooth document translation experience.
 
 ### Document File Size Limits
-We impose [size limits](/docs/resources/usage-limits) per file type. 
-For `.pptx` and `.docx` types, our .NET, PHP and NodeJS client libraries offer functionality to minify files by temporarily extracting large media formats before sending them to the DeepL API. Stripped media are reinserted after document translation is completed. 
+We impose [size limits](/docs/resources/usage-limits) per file type. Limits vary by format and API plan.
+For DOCX and PPTX, our .NET, PHP and NodeJS client libraries offer functionality to minify files by temporarily extracting large media formats before sending them to the DeepL API. Stripped media are reinserted after document translation is completed.
 
 This allows users to translate files that might hit the size limit.
+
+### One source/target language pair per upload
+The `source_lang` and `target_lang` values on the request apply to the entire uploaded file. For most formats, keep each upload to a single source language for consistent results — behavior on content that isn't in the selected source language is not guaranteed.
+
+**XLIFF** is the exception: `<source>` elements are translated as independent segments, so XLIFF files containing segments in different languages are handled segment-by-segment. Note: the per-`<file>` `source-language` attribute inside an XLIFF is ignored — DeepL uses the request's `source_lang` value for every segment.
+
+All content in the uploaded file counts toward billed characters, including content that was not actually translated.
+
+### Same-language source and target are rejected
+Requests where the source and target languages are equal — including regional variants of the same language, e.g. `EN` → `EN-US` or `EN-US` → `EN-GB` — are rejected with HTTP 400 (`Source and target language are equal.`). To adapt regional spelling, post-process the translated output yourself.
+
+### Format-specific gotchas
+
+Each supported format has behaviors and constraints worth knowing before you upload. The most common surprises:
+
+**XML**
+- Only text between element tags is translated. Attribute values and processing instructions are left alone.
+- XML `<!-- comments -->` may be picked up as translatable text and their delimiters escaped in the output — strip comments before uploading if downstream tooling relies on them.
+- `CDATA` section content **is** translated — the markers are stripped and the inner text is sent to the engine. Move code, regex, and other non-translatable content out of `CDATA` blocks first.
+- `translate="no"` on any XML element excludes its content from translation.
+- Files using ITS 2.0 external rules (`its:rules/@xlink:href`) currently return HTTP 500 — inline the rules or remove the reference.
+- Malformed XML currently returns HTTP 500 instead of a 4xx. Validate with a standard XML parser before uploading.
+
+**XLIFF**
+- Only `<source>` content is translated; results are written to the corresponding `<target>`. **Existing `<target>` values are overwritten** — remove or split out already-translated units if you need to preserve them.
+- The per-`<file>` `source-language` / `target-language` attributes are ignored — DeepL uses the API's `source_lang` and `target_lang` for the entire upload.
+- `translate="no"` on `<trans-unit>` (1.2) or `<unit>` (2.0) is fully honored.
+- The `state` attribute is preserved as-is; if you use `state="needs-translation"`, update it yourself after translation.
+- An unsupported `trgLang` value on the root `<xliff>` element (e.g. `arb-MOD`) is rejected as "Invalid target language" even if the API `target_lang` is valid — remove or fix the attribute.
+
+**DITA**
+- Only DITA topic files (`.dita`) are supported. `.ditamap` uploads are rejected.
+- `translate="no"` is fully honored on inline and block-level elements.
+- Content references (`conref`, `conkeyref`) are not resolved — translate each referenced source topic independently.
+- Newlines inside `<codeblock>`, `<pre>`, `<msgblock>`, and `<screen>` may be collapsed to single spaces. Move code samples out of the file before translation if line breaks matter.
+- Topics with dense inline-element markup (combinations of `<filepath>`, `<cmdname>`, `<option>`, nested `<indexterm>`) may fail with an internal error — simplify or split the topic.
+
+**JSON**
+- Only string values are translated; keys, numbers, booleans, and `null` are not touched. Nested objects and arrays are traversed at every depth.
+- Files must be strict, parseable JSON — no trailing commas, no comments. JSONC-style extensions are not supported.
+- **Upload limit is 1 MB** regardless of plan. Large metadata payloads (e.g., DataCite, Zenodo, Backstage catalog dumps) may need to be split, or translated string-by-string via the text-translation API.
+- Embedded HTML or Markdown inside string values (common in Contentful Rich Text and similar CMS payloads) is handled — DeepL translates the natural-language text and attempts to preserve the embedded markup. Review the output for complex rich-text content.
+- To protect specific values from translation, encode them as non-strings (numbers/booleans/null) or pre-process the file to strip them.
+
+**IDML**
+- InDesign embeds font references, not the fonts themselves. If the target language uses characters not in the original font (e.g., Japanese in a Latin-only font), the output may show boxes or substituted glyphs — open the translated file in InDesign and swap fonts before distributing.
+- Translated text is often longer than the source. Expect overset text (indicated by a red "+" in InDesign) in fixed-size frames; review and resize after translation.
+- IDML does not use `translate="no"`. Protect content via InDesign character styles or by removing the affected text frames before exporting.
+
+**MIF**
+- The file must be genuine Adobe FrameMaker MIF. `.mif` files from other tools (e.g. Quartus memory-init files, MathML wrapped as MIF) currently return HTTP 500 rather than being rejected cleanly. Rename or convert them before uploading.
+- MIF 8.00 and later are supported. Older MIF variants are best-effort — open and re-save from a recent FrameMaker version if the upload fails.
+- Save as UTF-8 from FrameMaker before uploading; the file should begin with a `<MIFFile ...>` header.
+- Some valid FrameMaker 10 MIF files may fail with HTTP 500 — try re-saving from a newer FrameMaker version.
+- MIF does not use `translate="no"`. Protect content via FrameMaker conditional text or character formatting.
 
 ### Error 429: Too Many Requests
 This error may occur when: 
