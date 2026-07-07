@@ -5,9 +5,7 @@ description: "Learn how to work with structured XML content with the DeepL API."
 
 When enabling `tag_handling` by setting it to `xml`, the DeepL API is able to process structured XML content. This includes whole XML files, as the following example shows.
 
-Please note that for XML structured content in classic models, we set the parameter `split_sentences` to `nonewlines` to make sure that newlines do not alter the results. The response is beautified for better readability.
-
-Please note that for next-gen models, the parameter `split_sentences`passed by the user is ignored and a value of `nonewlines`is used for maximum translation quality.
+Please note that for XML structured content, the `split_sentences` parameter is set to `nonewlines` to ensure that newlines do not alter the results. The response is beautified for better readability.
 
 Parameters and corresponding results:
 
