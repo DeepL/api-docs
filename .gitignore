@@ -2,3 +2,7 @@
 reviews/*
 .DS_Store
 .tool-versions
+pipeline/gap-report.*
+pipeline/generation-report.json
+pipeline/drafts/
+__pycache__/
