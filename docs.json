@@ -258,7 +258,6 @@
           {
             "group": "Languages",
             "pages": [
-              "api-reference/languages/retrieve-supported-languages-by-resource",
               "api-reference/languages/language-feature-use-cases",
               "api-reference/languages/retrieve-languages-by-resource",
               "api-reference/languages/retrieve-resources",
@@ -371,7 +370,7 @@
   "redirects": [
     {
       "source": "/api-reference/languages/retrieve-supported-languages-by-product",
-      "destination": "/api-reference/languages/retrieve-supported-languages-by-resource"
+      "destination": "/api-reference/languages/retrieve-languages-by-resource"
     },
     {
       "source": "/api-reference/languages/retrieve-products",
