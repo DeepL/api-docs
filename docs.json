@@ -55,6 +55,7 @@
               {
                 "group": "Text Translation",
                 "pages": [
+                  "docs/learning-how-tos/examples-and-guides/translating-text",
                   "docs/learning-how-tos/examples-and-guides/translation-beginners-guide",
                   "docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter",
                   "docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags",
@@ -92,12 +93,6 @@
             "pages": [
               "docs/getting-started/managing-api-keys",
               "docs/retrieving-usage-data"
-            ]
-          },
-          {
-            "group": "learning-how-tos",
-            "pages": [
-              "docs/learning-how-tos/examples-and-guides/translating-text"
             ]
           },
           {
