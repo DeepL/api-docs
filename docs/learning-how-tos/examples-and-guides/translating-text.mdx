@@ -1,0 +1,349 @@
+---
+title: "How to Translate Text"
+description: "Send text translation requests to the DeepL API, with examples for glossaries, multiple sentences, large volumes, and in-text markup."
+public: true
+---
+
+The `/v2/translate` endpoint translates one or more text strings into a target language. The total request body size must not exceed 128 KiB (128 · 1024 bytes). If your content exceeds this limit, split it across multiple requests.
+
+For the full parameter reference, see the [Translate text API reference](/api-reference/translate/request-translation).
+
+## Basic translation
+
+The examples below show a minimal translation request — with and without a glossary. Use the tabs to switch between cURL, HTTP, and SDK examples.
+
+<Info>
+  The examples below use the API Pro endpoint `https://api.deepl.com`. If you're on the API Free plan, use `https://api-free.deepl.com` instead. Glossary examples are shown in full for the cURL and HTTP tabs. For SDK languages (Python, PHP, C#, Node.js, Java), only the non-glossary case is shown here; see the [SDK-specific glossary guide](/docs/learning-how-tos/examples-and-guides/using-glossaries) for glossary usage with each SDK.
+</Info>
+
+<Tabs>
+<Tab title="cURL">
+```sh Example request: text translation (without glossary)
+curl -X POST 'https://api.deepl.com/v2/translate' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "text": [
+    "Hello, world!"
+  ],
+  "target_lang": "DE"
+}'
+```
+
+```sh Example request: text translation (with glossary)
+curl -X POST 'https://api.deepl.com/v2/translate' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "text": [
+    "Hello, world!"
+  ],
+  "target_lang": "DE",
+  "source_lang": "EN",
+  "glossary_id": "[yourGlossaryId]"
+}'
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Hallo, Welt!"
+    }
+  ]
+}
+```
+</Tab>
+<Tab title="HTTP">
+```http Example request: text translation (without glossary)
+POST /v2/translate HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: 45
+Content-Type: application/json
+
+{"text":["Hello, world!"],"target_lang":"DE"}
+```
+
+```http Example request: text translation (with glossary)
+POST /v2/translate HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: 97
+Content-Type: application/json
+
+{"text":["Hello, world!"],"target_lang":"DE","source_lang":"EN","glossary_id":"[yourGlossaryId]"}
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Hallo, Welt!"
+    }
+  ]
+}
+```
+</Tab>
+<Tab title="Python">
+```py Example request: text translation (without glossary)
+import deepl
+
+auth_key = "f63c02c5-f056-..."  # Replace with your key
+deepl_client = deepl.DeepLClient(auth_key)
+
+result = deepl_client.translate_text("Hello, world!", target_lang="FR")
+print(result.text)  # Output: Bonjour, le monde !
+```
+
+`translate_text()` returns a `TextResult` object. The key fields are:
+
+- `result.text` — the translated string
+- `result.detected_source_lang` — the source language detected by the API (e.g., `"EN"`)
+</Tab>
+<Tab title="PHP">
+```php Example request: text translation (without glossary)
+$authKey = "f63c02c5-f056-..."; // Replace with your key
+$deeplClient = new DeepL\DeepLClient($authKey);
+
+$result = $deeplClient->translateText('Hello, world!', null, 'fr');
+echo $result->text; // Output: Bonjour, le monde!
+```
+
+`translateText()` returns a `TextResult` object. The key fields are:
+
+- `$result->text` — the translated string
+- `$result->detectedSourceLang` — the source language detected by the API (e.g., `"EN"`)
+</Tab>
+<Tab title="C#">
+```cs Example request: text translation (without glossary)
+var authKey = "f63c02c5-f056-..."; // Replace with your key
+var deeplClient = new DeepLClient(authKey);
+
+var translatedText = await deeplClient.TranslateTextAsync(
+      "Hello, world!",
+      LanguageCode.English,
+      LanguageCode.French);
+Console.WriteLine(translatedText); // Output: Bonjour, le monde !
+```
+
+`TranslateTextAsync()` returns a `TextResult` object. The key fields are:
+
+- `translatedText.Text` — the translated string
+- `translatedText.DetectedSourceLanguageCode` — the source language detected by the API (e.g., `"EN"`)
+</Tab>
+<Tab title="Node.js">
+```javascript Example request: text translation (without glossary)
+import * as deepl from 'deepl-node';
+
+const authKey = "f63c02c5-f056-..."; // Replace with your key
+const deeplClient = new deepl.DeepLClient(authKey);
+
+(async () => {
+    const result = await deeplClient.translateText('Hello, world!', null, 'fr');
+    console.log(result.text); // Output: Bonjour, le monde !
+})();
+```
+
+`translateText()` returns a `TextResult` object. The key fields are:
+
+- `result.text` — the translated string
+- `result.detectedSourceLang` — the source language detected by the API (e.g., `"en"`)
+</Tab>
+<Tab title="Java">
+```java Example request: text translation (without glossary)
+import com.deepl.api.*;
+
+class Example {
+    DeepLClient deeplClient;
+
+    public Example() throws Exception {
+        String authKey = "f63c02c5-f056-...";  // Replace with your key
+        deeplClient = new DeepLClient(authKey);
+        TextResult result =
+                deeplClient.translateText("Hello, world!", null, "fr");
+        System.out.println(result.getText()); // Output: Bonjour, le monde !
+    }
+}
+```
+
+`translateText()` returns a `TextResult` object. The key fields are:
+
+- `result.getText()` — the translated string
+- `result.getDetectedSourceLanguage()` — the source language detected by the API (e.g., `"en"`)
+</Tab>
+</Tabs>
+
+In production code, do not hard-code your authentication key. Fetch it from an environment variable or configuration file instead.
+
+## Optimizing for speed or quality
+
+Set `model_type` to `latency_optimized` for real-time applications or `quality_optimized` for high-quality batch jobs. This is handled on a best-effort basis — not every language pair or feature will behave differently depending on this setting. When `model_type` is set, the response includes a `model_type_used` field indicating which model was actually used.
+
+```sh Example request: quality-optimized translation
+curl -X POST 'https://api.deepl.com/v2/translate' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "text": [
+    "Hello, world!"
+  ],
+  "target_lang": "DE",
+  "model_type": "quality_optimized"
+}'
+```
+
+<Note>
+  `prefer_quality_optimized` is a legacy alias for `quality_optimized` and behaves identically. For new integrations, use `quality_optimized` instead. For the full list of accepted values, see the [Translate text API reference](/api-reference/translate/request-translation).
+</Note>
+
+## Multiple sentences
+
+By default, the translation engine splits input text into sentences before translating, using punctuation marks as delimiters. You can send a full paragraph as a single `text` value and the engine will split, translate, and reassemble it automatically.
+
+In some cases, sentence splitting may produce incorrect results — for example, if your text contains unusual character sequences that include punctuation. You can disable splitting by setting `split_sentences` to `0`. Note that disabling splitting may cause very long sentences to be cut off; if this is a concern, split the sentences manually before sending them.
+
+Avoid sending requests where source and target language are the same — they are still billed.
+
+<Info>
+  The Translate API is intended for translation between different languages, but requests where the source and target language are the same are still counted toward billing.
+
+  If you want to convert between variants of the same language (for example, `EN-US` to `EN-GB`), see [Translating Between Language Variants](/docs/learning-how-tos/examples-and-guides/translating-between-variants). Translating between variants of the same language results in no change to the text.
+</Info>
+
+<Tabs>
+<Tab title="cURL">
+```sh Example request: multiple sentences
+curl -X POST 'https://api.deepl.com/v2/translate' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "text": [
+    "The table is green. The chair is black."
+  ],
+  "target_lang": "DE"
+}'
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Der Tisch ist grün. Der Stuhl ist schwarz."
+    }
+  ]
+}
+```
+</Tab>
+<Tab title="HTTP">
+```http Example request: multiple sentences
+POST /v2/translate HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: 71
+Content-Type: application/json
+
+{"text": ["The table is green. The chair is black."],"target_lang":"DE"}
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Der Tisch ist grün. Der Stuhl ist schwarz."
+    }
+  ]
+}
+```
+</Tab>
+</Tabs>
+
+## Translating large volumes of text
+
+There are three strategies for translating larger volumes of text:
+
+- **Submit whole paragraphs.** If your text is contiguous, send it as a single `text` value. The engine splits it into sentences, translates them, and returns the complete translated paragraph.
+- **Use multiple `text` values per request.** A single request can include up to 50 text strings. The API returns translations in the same order they were sent.
+- **Make parallel requests.** Call the translate function from multiple threads or processes simultaneously.
+
+
+<Tabs>
+<Tab title="cURL">
+```sh Example request: multiple text strings
+curl -X POST 'https://api.deepl.com/v2/translate' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "text": [
+    "This is the first sentence.",
+    "This is the second sentence.",
+    "This is the third sentence."
+  ],
+  "target_lang": "DE"
+}'
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Das ist der erste Satz."
+    },
+    {
+      "detected_source_language": "EN",
+      "text": "Das ist der zweite Satz."
+    },
+    {
+      "detected_source_language": "EN",
+      "text": "Dies ist der dritte Satz."
+    }
+  ]
+}
+```
+</Tab>
+<Tab title="HTTP">
+```http Example request: multiple text strings
+POST /v2/translate HTTP/2
+Host: api.deepl.com
+Authorization: DeepL-Auth-Key [yourAuthKey]
+User-Agent: YourApp/1.2.3
+Content-Length: 120
+Content-Type: application/json
+
+{"text":["This is the first sentence.","This is the second sentence.","This is the third sentence."],"target_lang":"DE"}
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Das ist der erste Satz."
+    },
+    {
+      "detected_source_language": "EN",
+      "text": "Das ist der zweite Satz."
+    },
+    {
+      "detected_source_language": "EN",
+      "text": "Dies ist der dritte Satz."
+    }
+  ]
+}
+```
+</Tab>
+</Tabs>
+
+## In-text markup
+
+Take care with custom markers or delimiters embedded in your text. Unusual character sequences that contain punctuation or symbols may be translated or removed by the engine, corrupting your markup structure.
+
+If your text contains embedded markers, either strip them out before sending, or convert them to XML or HTML tags and enable [XML handling](/docs/xml-and-html-handling/xml) or [HTML handling](/docs/xml-and-html-handling/html) so the engine preserves them during translation.

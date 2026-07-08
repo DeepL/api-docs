@@ -95,6 +95,12 @@
             ]
           },
           {
+            "group": "learning-how-tos",
+            "pages": [
+              "docs/learning-how-tos/examples-and-guides/translating-text"
+            ]
+          },
+          {
             "group": "Going to Production",
             "pages": [
               "docs/getting-started/regional-endpoints",
@@ -159,7 +165,6 @@
               {
                 "group": "Translate Text",
                 "pages": [
-                  "api-reference/translate",
                   "api-reference/translate/request-translation"
                 ],
                 "drilldown": false
@@ -345,8 +350,14 @@
       {
         "title": "Resources",
         "items": [
-          { "label": "API Status", "href": "https://api-status.deepl.com" },
-          { "label": "DeepL Status", "href": "https://www.deeplstatus.com" }
+          {
+            "label": "API Status",
+            "href": "https://api-status.deepl.com"
+          },
+          {
+            "label": "DeepL Status",
+            "href": "https://www.deeplstatus.com"
+          }
         ]
       }
     ],
@@ -359,7 +370,9 @@
   },
   "api": {
     "examples": {
-      "languages": ["curl"],
+      "languages": [
+        "curl"
+      ],
       "defaults": "required"
     },
     "playground": {
