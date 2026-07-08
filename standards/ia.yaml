@@ -1,58 +1,62 @@
 # Product family map — what the pipeline can't infer from prose.
 #
 # OpenAPI tags group the API Reference automatically, but they don't say which
-# product family a developer thinks in terms of, or WHERE that family's narrative
-# docs should live. This file supplies both, and nothing else. All rules live in
-# prose: .claude/agents/docs-ia.md (structure), diataxis.md, docs-writer.md.
-# Live site structure (which page is in which tab) lives in docs.json.
+# product family a developer thinks in terms of, how those endpoints split into
+# groups, or WHERE the family's narrative docs live. This file supplies that, and
+# nothing else. All rules live in prose: .claude/agents/docs-ia.md (structure),
+# diataxis.md, docs-writer.md. Live site structure lives in docs.json.
 #
 # Each family has:
-#   tags                 OpenAPI tags that belong to this family
-#   api_reference_group  the group name(s) in the API Reference tab (string or list)
-#   narrative_home       WHERE its tutorials/how-tos/explanations live:
-#       own              its own top-level product tab (tab name == family name)
-#       <TabName>        nests under another tab (e.g. Translate, Home)
-#       reference_only   no narrative, intentionally (rare — early alpha only)
-#       unplaced         not yet decided; the pipeline flags it for a human
+#   narrative_home   WHERE its guides live:
+#       own            its own top-level product tab (tab name == family name)
+#       <TabName>      nests under another tab (e.g. Translate, Home)
+#       reference_only no narrative, intentionally (rare — early alpha only)
+#       unplaced       not yet decided; the pipeline flags it for a human
+#   groups           the endpoint groups in this family. Each group is a coverage
+#                    unit: the pipeline expects at least one guide (tutorial OR
+#                    how-to) covering it. A guide declares what it covers with a
+#                    `covers: [<group name>]` frontmatter field. Each group lists
+#                    the OpenAPI tags whose endpoints it contains.
 #
-# API grouping and narrative_home are independent (see docs-ia.md). A family can be
-# its own API Reference group while its narrative nests under another product.
+# API grouping and narrative_home are independent (see docs-ia.md). A family can
+# have several groups while all their guides live under one tab.
 #
-# When the pipeline finds an OpenAPI tag not listed here, it flags it for placement.
+# When the pipeline finds an OpenAPI tag not listed in any group, it flags it.
 
 families:
   Translate:
-    tags: [TranslateText, TranslateDocuments]
-    api_reference_group: Translate
     narrative_home: own
+    groups:
+      - {name: Translate, tags: [TranslateText, TranslateDocuments]}
 
   Customize:
-    tags: [ManageGlossaries, ManageMultilingualGlossaries, TranslationMemories]
-    api_reference_group: Customize
     narrative_home: Translate          # nests as a group inside the Translate tab
+    groups:
+      - {name: Customize, tags: [ManageGlossaries, ManageMultilingualGlossaries, TranslationMemories]}
     # Style rules live under Customize but have no OpenAPI tag yet.
 
   Voice:
-    tags: [VoiceAPI, VoiceTranslateJob]
-    api_reference_group: [Voice, Translate Audio Files]
     narrative_home: own
+    groups:
+      - {name: Voice, tags: [VoiceAPI]}                       # real-time streaming
+      - {name: Translate Audio Files, tags: [VoiceTranslateJob]}  # async file jobs
 
   Admin:
-    tags: [AdminApi]
-    api_reference_group: Admin
     narrative_home: own
+    groups:
+      - {name: Admin, tags: [AdminApi]}
 
   Write:
-    tags: [RephraseText, CorrectText]
-    api_reference_group: Write
     narrative_home: unplaced           # no product tab today — human decides own/under
+    groups:
+      - {name: Write, tags: [RephraseText, CorrectText]}
 
   Languages:
-    tags: [MetaInformation]
-    api_reference_group: Languages
     narrative_home: Home               # cross-cutting; lives in the Home hub
+    groups:
+      - {name: Languages, tags: [MetaInformation]}
 
   QualityEvaluation:
-    tags: [QualityEvaluation]
-    api_reference_group: Quality Evaluation
-    narrative_home: unplaced           # alpha — human decides (Shir mused: maybe under Translate)
+    narrative_home: unplaced           # alpha — human decides (maybe under Translate)
+    groups:
+      - {name: Quality Evaluation, tags: [QualityEvaluation]}

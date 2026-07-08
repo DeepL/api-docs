@@ -68,23 +68,31 @@ def load_file(path):
         return ""
 
 
-def load_openapi_for_family(family_name, families):
-    """Extract the relevant portion of the OpenAPI spec for a product family."""
+def load_openapi_for_tags(tags):
+    """Extract the portion of the OpenAPI spec whose endpoints carry any of `tags`."""
     with open(OPENAPI_PATH) as f:
         spec = yaml.safe_load(f)
 
-    family_config = families.get(family_name, {})
-    family_tags = set(family_config.get("tags", [family_name]))
-
+    want = set(tags)
     relevant_paths = {}
     for path, methods in (spec.get("paths") or {}).items():
         for method, details in methods.items():
             if method in ("get", "post", "put", "patch", "delete"):
-                endpoint_tags = set(details.get("tags", []))
-                if endpoint_tags & family_tags:
+                if set(details.get("tags", [])) & want:
                     relevant_paths.setdefault(path, {})[method] = details
 
     return yaml.dump({"paths": relevant_paths}, default_flow_style=False)
+
+
+def family_all_tags(cfg):
+    return [t for grp in cfg.get("groups", []) for t in grp.get("tags", [])]
+
+
+def group_tags(cfg, group_name):
+    for grp in cfg.get("groups", []):
+        if grp.get("name") == group_name:
+            return grp.get("tags", [])
+    return family_all_tags(cfg)
 
 
 def find_existing_docs_for_family(family_name):
@@ -105,8 +113,7 @@ def find_existing_docs_for_family(family_name):
     home = cfg.get("narrative_home")
     if home and home not in ("own", "reference_only", "unplaced"):
         names.append(home)  # parent tab it nests under
-    ref = cfg.get("api_reference_group")
-    names += [ref] if isinstance(ref, str) else list(ref or [])
+    names += [grp.get("name") for grp in cfg.get("groups", []) if grp.get("name")]
 
     page_paths = []
     for name in names:
@@ -154,6 +161,19 @@ This is the landing page for the section: what the product does, who it's for, a
 Target path: docs/{family_name.lower()}/overview.mdx
 
 Follow the docs-writer guidelines exactly — they cover structure, DRY rules, and what to include/exclude.
+
+{openapi_section}
+{existing_docs_summary}"""
+
+    elif gap_type == "missing_group_coverage":
+        group = gap.get("group", family_name)
+        return f"""Write a guide for the "{group}" capability of the {family_name} product.
+
+The endpoints below (the {group} group) have no guide yet. Write the single most valuable guide for a developer's first real need with them — a tutorial or a how-to, whichever fits best. Give it a goal-oriented title grounded in these endpoints; don't invent capabilities.
+
+IMPORTANT: include `covers: [{group}]` in the frontmatter so the pipeline records that this guide covers the {group} group.
+
+Follow the docs-writer guidelines exactly.
 
 {openapi_section}
 {existing_docs_summary}"""
@@ -261,7 +281,7 @@ def determine_output_path(gap, family_name, content=None):
     elif gap_type == "missing_tutorial":
         return DOCS_DIR / family_name.lower() / "tutorial.mdx"
 
-    elif gap_type == "missing_howto":
+    elif gap_type in ("missing_howto", "missing_group_coverage"):
         # The model picks the topic; derive the filename from its title.
         slug = slugify(title_from_content(content))
         return DOCS_DIR / family_name.lower() / f"{slug}.mdx"
@@ -368,7 +388,10 @@ def main():
         print(f"[{i+1}/{len(gaps)}] Generating: {gap['type']} for {family}...")
 
         try:
-            openapi_context = load_openapi_for_family(family, families)
+            # Scope the spec to the gap's group when it targets one, else the whole family.
+            cfg = families.get(family, {})
+            tags = group_tags(cfg, gap["group"]) if gap.get("group") else family_all_tags(cfg)
+            openapi_context = load_openapi_for_tags(tags)
             existing_docs = find_existing_docs_for_family(family)
             user_prompt = build_generation_prompt(gap, family, openapi_context, existing_docs)
 

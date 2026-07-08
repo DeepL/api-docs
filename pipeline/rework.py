@@ -222,7 +222,7 @@ def load_openapi_for_paths(source_paths):
     relevant_tags = set()
     for family, config in families.items():
         if family.lower() in sections:
-            relevant_tags.update(config.get("tags", []))
+            relevant_tags.update(t for grp in config.get("groups", []) for t in grp.get("tags", []))
 
     if not relevant_tags:
         return None

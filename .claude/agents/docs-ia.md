@@ -76,12 +76,32 @@ that warrants its own space. A product tab has:
 
 - **An overview / landing page** — orientation: what the product does, links to
   everything in the tab. (Structural page, exempt from one-Diataxis-type.)
-- **At least one tutorial** — a guided, start-to-finish first success.
-- **How-to guides** for its major capabilities.
+- **Guides** — a section has as *many* tutorials and how-tos as it has tasks worth
+  documenting. There is no "one tutorial and you're done." The bar is coverage per
+  endpoint group (below), not a fixed count.
 
 Families filed `under` a product tab (e.g. Customize under Translate) live as a group
-inside that tab and don't need their own overview or tutorial — their coverage is the
-parent tab's concern.
+inside that tab and don't need their own overview — but their groups still need guide
+coverage (below).
+
+## Coverage: every endpoint group needs a guide
+
+Each family splits into one or more **endpoint groups** (declared in `ia.yaml`; e.g.
+Voice has `Voice` for real-time streaming and `Translate Audio Files` for async jobs).
+The coverage bar: **every group needs at least one guide — a tutorial OR a how-to —
+that covers it.** A section can and should have more; this is the floor that catches
+"we documented jobs but nothing for real-time."
+
+Guides declare what they cover with a frontmatter field:
+
+```
+covers: [Voice]
+```
+
+The pipeline checks, per group, that at least one guide declares it. A group with
+endpoints and no covering guide is a gap — regardless of how many guides the section
+already has for *other* groups. Coverage is location-independent: the declaration is
+what counts, not which tab the guide sits in.
 
 ### 3. API Reference (one unified tab)
 
@@ -112,17 +132,21 @@ type — structure, voice, title conventions, the cookbook test — live in
 
 ## What "complete" means (how gaps are judged)
 
-Per family, based on its `narrative_home`:
+The deterministic pipeline (`detect_gaps`) checks:
 
-- **`own`**: needs an overview, at least one tutorial, and how-to coverage of its
-  capabilities in its tab, plus a link from Home. Anything missing is a gap.
-- **`<Tab>`**: coverage is checked inside the parent tab, not as a standalone section.
-- **`reference_only`**: no hard requirements, but the pipeline emits a low-severity
-  "consider a guide" nudge (and expects one once the feature leaves alpha).
+- **Guide coverage** — every endpoint group needs ≥1 guide that `covers` it (see
+  above). Applies to `own` and `under` families alike. This is the main gap.
+- **`own` families** also need an overview page and a link from Home.
+- **`reference_only`**: no coverage requirement, just a low-severity "consider a
+  guide" nudge (expected once the feature leaves alpha).
 - **`unplaced`**: a gap — a human must choose the narrative home.
+- **API Reference** is checked for narrative pages that don't belong there, and for
+  endpoint groups missing from the nav.
 
-Separately, the API Reference tab is checked for narrative pages that don't belong
-there.
+What the deterministic pass deliberately does NOT judge: whether the *content* of a
+guide is good, or whether a page is the right Diataxis type. That's the review step
+and human judgment. `detect_gaps` answers "does a guide exist for this group," not
+"is it any good."
 
 ## Principles for ongoing content
 

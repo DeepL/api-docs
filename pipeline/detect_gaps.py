@@ -135,13 +135,18 @@ def extract_endpoints(spec):
     return endpoints
 
 
-def endpoints_for_family(endpoints, family_tags):
-    tags = set(family_tags)
+def endpoints_for_tags(endpoints, tags):
+    tags = set(tags)
     return [e for e in endpoints if set(e["tags"]) & tags]
 
 
+def family_tags(cfg):
+    """Union of all endpoint tags across a family's groups."""
+    return [t for grp in cfg.get("groups", []) for t in grp.get("tags", [])]
+
+
 def ungrouped_tags(endpoints, families):
-    mapped = {t for cfg in families.values() for t in cfg.get("tags", [])}
+    mapped = {t for cfg in families.values() for t in family_tags(cfg)}
     seen = {t for e in endpoints for t in e["tags"]}
     return seen - mapped
 
@@ -211,13 +216,30 @@ def is_openapi_page(fm):
 # Gap detection                                                                #
 # --------------------------------------------------------------------------- #
 
-def gap(gap_type, severity, family, path=None, desc=""):
+def gap(gap_type, severity, family, path=None, desc="", group=None):
     g = {"type": gap_type, "severity": severity, "description": desc}
     if family:
         g["family"] = family
+    if group:
+        g["group"] = group
     if path:
         g["path"] = path
     return g
+
+
+def covered_group_names(docs_json, apiref_tab):
+    """Endpoint-group names declared covered by any guide (`covers` frontmatter)."""
+    covered = set()
+    for p in all_doc_pages(docs_json, apiref_tab):
+        fm, _ = page_frontmatter(p)
+        if not fm:
+            continue
+        cov = fm.get("covers")
+        if isinstance(cov, str):
+            covered.add(cov)
+        elif isinstance(cov, list):
+            covered.update(cov)
+    return covered
 
 
 def detect_gaps(docs_json, endpoints, families, section=None, force=False):
@@ -230,23 +252,23 @@ def detect_gaps(docs_json, endpoints, families, section=None, force=False):
     apiref_pages = collect_pages_under(docs_json, apiref_tab) if apiref_tab else []
     apiref_groups = set(group_names_under(docs_json, apiref_tab)) if apiref_tab else set()
 
+    covered = covered_group_names(docs_json, apiref_tab)
+
     # --- Per-family, cross-surface checks --------------------------------- #
     for family, cfg in families.items():
         if section and family.lower() != section.lower():
             continue
 
-        eps = endpoints_for_family(endpoints, cfg.get("tags", []))
-
-        # API Reference: is the family's group (or groups) present for its endpoints?
-        ref_groups = cfg.get("api_reference_group")
-        ref_groups = [ref_groups] if isinstance(ref_groups, str) else list(ref_groups or [])
-        if eps and apiref_tab and ref_groups and not any(g in apiref_groups for g in ref_groups):
-            gaps.append(gap("missing_api_reference_group", "high", family,
-                            desc=f"{family} has {len(eps)} endpoints but none of its API Reference group(s) {ref_groups} exist in the API Reference tab"))
-
-        # Narrative coverage depends on WHERE the family's docs are meant to live.
-        # (API grouping and narrative placement are independent — see docs-ia.md.)
+        groups = cfg.get("groups", [])
+        eps = endpoints_for_tags(endpoints, family_tags(cfg))
         home = cfg.get("narrative_home", "unplaced")
+
+        # API Reference: each group with endpoints needs a matching group in the ref tab.
+        for grp in groups:
+            gname = grp.get("name", "")
+            if apiref_tab and gname not in apiref_groups and endpoints_for_tags(endpoints, grp.get("tags", [])):
+                gaps.append(gap("missing_api_reference_group", "high", family, group=gname,
+                                desc=f"'{gname}' has endpoints but no matching group in the API Reference tab"))
 
         if home == "reference_only":
             if eps:
@@ -260,30 +282,31 @@ def detect_gaps(docs_json, endpoints, families, section=None, force=False):
                                 desc=f"{family} has {len(eps)} endpoints but no decided narrative home — a human must choose own / a parent tab / reference_only"))
             continue
 
-        if home != "own":
-            # Nests under another tab (e.g. Customize under Translate). Coverage is the
-            # parent tab's concern; no standalone overview/tutorial requirement.
-            continue
+        # Per-group guide coverage: each endpoint group needs at least one guide
+        # (tutorial OR how-to) declaring it via `covers`. Sections have many guides;
+        # this is the real bar, not "has one tutorial". Applies wherever the family's
+        # guides live (own tab or nested), since `covers` is location-independent.
+        for grp in groups:
+            gname = grp.get("name", "")
+            if gname not in covered and endpoints_for_tags(endpoints, grp.get("tags", [])):
+                gaps.append(gap("missing_group_coverage", "high", family, group=gname,
+                                desc=f"No guide (tutorial or how-to) covers the '{gname}' endpoints"))
 
-        # home == "own": a top-level product tab named after the family.
+        if home != "own":
+            continue  # nested under another tab: overview/hub are the parent's concern
+
+        # own tab: overview page + a Home hub link.
         tab_pages = collect_pages_under(docs_json, family)
         if eps and not tab_pages:
             gaps.append(gap("missing_product_tab", "high", family,
-                            desc=f"{family} has {len(eps)} endpoints but no '{family}' product tab (needs overview + tutorial + how-tos)"))
+                            desc=f"{family} has {len(eps)} endpoints but no '{family}' product tab"))
             continue
 
         present = [(p, page_frontmatter(p)[0]) for p in tab_pages]
         if force or not any(is_overview(p, fm) for p, fm in present):
             gaps.append(gap("missing_overview", "high", family,
                             desc=f"{family} tab has no overview/landing page"))
-        if force or not any(is_tutorial(p, fm) for p, fm in present):
-            gaps.append(gap("missing_tutorial", "high", family,
-                            desc=f"{family} tab has no tutorial"))
-        if eps and (force or not any(is_howto(p, fm) for p, fm in present)):
-            gaps.append(gap("missing_howto", "medium", family,
-                            desc=f"{family} tab exposes {len(eps)} endpoints but has no how-to guide"))
 
-        # Home hub links every own-tab product.
         if home_tab and not any(family.lower() in p.lower() for p in home_pages):
             gaps.append(gap("missing_hub_entry", "medium", family,
                             desc=f"Home hub has no page/link surfacing the {family} product"))
