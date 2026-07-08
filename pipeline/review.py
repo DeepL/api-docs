@@ -225,7 +225,10 @@ def review_draft(client, system_prompt, filename, content, previous_fixes=None):
 
 
 def apply_fix(client, filename, content, finding):
-    """Apply a single fix to draft content via Claude. Returns updated content."""
+    """Apply a single fix to draft content via Claude. Returns updated content.
+
+    Raises ValueError if the response is not valid MDX (e.g. chain-of-thought leak).
+    """
     user_prompt = build_fix_prompt(filename, content, finding)
 
     response = client.messages.create(
@@ -243,6 +246,19 @@ def apply_fix(client, filename, content, finding):
         result = result[first_newline + 1:]
         if result.endswith("```"):
             result = result[:-3].strip()
+
+    # Validate: the result must start with YAML frontmatter.
+    # If the model returned reasoning/commentary instead of file content,
+    # try to extract the frontmatter block; otherwise reject the fix.
+    if not result.startswith("---"):
+        fm_start = result.find("\n---\n")
+        if fm_start >= 0:
+            result = result[fm_start + 1:]
+        else:
+            raise ValueError(
+                f"Fix response is not valid MDX (does not start with frontmatter). "
+                f"First 80 chars: {result[:80]!r}"
+            )
 
     return result
 
@@ -401,8 +417,8 @@ def main():
     parser.add_argument(
         "--max-iterations",
         type=int,
-        default=2,
-        help="Max review-fix cycles per file (default: 2)",
+        default=5,
+        help="Max review-fix cycles per file (default: 5)",
     )
     parser.add_argument(
         "--file",

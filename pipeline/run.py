@@ -19,6 +19,9 @@ Usage:
     python pipeline/run.py --resume review --latest
     python pipeline/run.py --resume promote pipeline/drafts/20260706-192742
 
+    # Pause after rework for manual review before continuing
+    python pipeline/run.py rework consolidate --source ... --pause rework
+
     # Skip steps
     python pipeline/run.py generate --section admin --skip post_review
 
@@ -31,9 +34,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from util import REPO_ROOT, find_latest_run
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DRAFTS_DIR = REPO_ROOT / "pipeline" / "drafts"
 
 STEPS = ["generate", "evaluate", "review", "promote", "ship", "post_review"]
 
@@ -46,16 +48,6 @@ STEP_SCRIPTS = {
     "ship": "ship.py",
     "post_review": "post_review.py",
 }
-
-
-def find_latest_run():
-    if not DRAFTS_DIR.exists():
-        return None
-    runs = sorted(
-        [d for d in DRAFTS_DIR.iterdir() if d.is_dir()],
-        key=lambda d: d.stat().st_mtime,
-    )
-    return runs[-1] if runs else None
 
 
 def run_step(step_name, args, run_dir=None, dry_run=False):
@@ -114,6 +106,7 @@ def parse_args():
     resume_step = None
     run_dir = None
     skip_steps = set()
+    pause_after = set()
     dry_run = False
 
     args = sys.argv[1:]
@@ -146,6 +139,13 @@ def parse_args():
             i += 1
             continue
 
+        if arg == "--pause":
+            i += 1
+            if i < len(args):
+                pause_after.add(args[i])
+            i += 1
+            continue
+
         mode_args.append(arg)
         i += 1
 
@@ -172,6 +172,7 @@ def parse_args():
         "resume_step": resume_step,
         "run_dir": run_dir,
         "skip_steps": skip_steps,
+        "pause_after": pause_after,
         "dry_run": dry_run,
     }
 
@@ -183,6 +184,7 @@ def main():
     resume_step = config["resume_step"]
     run_dir = config["run_dir"]
     skip_steps = config["skip_steps"]
+    pause_after = config["pause_after"]
     dry_run = config["dry_run"]
 
     if resume_step:
@@ -253,6 +255,20 @@ def main():
                 print(f"    python pipeline/run.py --resume {step} --latest")
                 print(f"{'='*60}")
             return 1
+
+        # Pause after this step if requested
+        if step in pause_after:
+            next_step_idx = steps_to_run.index(step) + 1
+            next_step = steps_to_run[next_step_idx] if next_step_idx < len(steps_to_run) else None
+            print(f"\n{'='*60}")
+            print(f"  PAUSED after '{step}'. Review the output, then resume:")
+            if run_dir:
+                rd = run_dir.relative_to(REPO_ROOT) if run_dir.is_relative_to(REPO_ROOT) else run_dir
+                print(f"  Drafts: {rd}/")
+            if next_step:
+                print(f"    python pipeline/run.py --resume {next_step} --latest")
+            print(f"{'='*60}")
+            return 0
 
         # After generate/rework, pick up the NEW run directory for subsequent steps
         if step in ("generate", "rework") and not run_dir:

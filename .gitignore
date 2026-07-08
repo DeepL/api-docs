@@ -5,4 +5,5 @@ reviews/*
 pipeline/gap-report.*
 pipeline/generation-report.json
 pipeline/drafts/
+pipeline/batch-plan.json
 __pycache__/

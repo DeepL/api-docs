@@ -213,20 +213,27 @@ python pipeline/batch.py --plan
 # Dry-run — plan + dry-run each pipeline step
 python pipeline/batch.py --dry-run
 
-# Run all tasks end-to-end (1 PR per task)
+# Run all tasks, 1 PR per task
 python pipeline/batch.py
 
 # Run specific tasks by index
 python pipeline/batch.py --only 1,3,5
 
-# Start from a specific task
-python pipeline/batch.py --start 3
+# Accumulate all tasks on one branch → push → PR → post review suggestions
+python pipeline/batch.py --branch docs/ia-phase2-reworks
 
-# Skip ship step (review locally before creating PRs)
-python pipeline/batch.py --skip ship,post_review
+# Subset on one branch
+python pipeline/batch.py --branch docs/ia-phase2-reworks --only 8,9,10,11,12
+
+# Stop after committing (review locally before pushing)
+python pipeline/batch.py --branch docs/ia-phase2-reworks --no-push
 ```
 
-After each task ships, the runner switches back to the base branch for the next task. If a task fails, it logs the failure, cleans up, and continues.
+With `--branch`, each task runs through rework → evaluate → review → promote, then commits the promoted changes. After all tasks, the runner pushes the branch, creates a PR, and posts "consider" suggestions as inline PR comments via `post_review.py`. Use `--no-push` to stop after committing for local review.
+
+Without `--branch`, each task gets its own branch and PR.
+
+If a task fails, the runner cleans up uncommitted changes and continues with the next task.
 
 Task descriptions are defined in the `TASKS` list at the top of `batch.py`. Edit that list to add, remove, or reorder tasks.
 

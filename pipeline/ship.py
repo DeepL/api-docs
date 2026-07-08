@@ -16,44 +16,20 @@ Usage:
 
 import argparse
 import json
-import subprocess
 import sys
 from pathlib import Path
 
-
-REPO_ROOT = Path(__file__).resolve().parent.parent
-
-STAGE_PATTERNS = [
-    "docs/**/*.mdx",
-    "docs.json",
-]
-
-
-def run(cmd, check=True, capture=True, **kwargs):
-    """Run a subprocess command and return the result."""
-    result = subprocess.run(
-        cmd,
-        capture_output=capture,
-        text=True,
-        cwd=REPO_ROOT,
-        **kwargs,
-    )
-    if check and result.returncode != 0:
-        stderr = result.stderr.strip() if result.stderr else ""
-        raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{stderr}")
-    return result
-
-
-def find_latest_run():
-    """Find the most recent draft run directory."""
-    drafts_dir = REPO_ROOT / "pipeline" / "drafts"
-    if not drafts_dir.exists():
-        return None
-    runs = sorted(
-        [d for d in drafts_dir.iterdir() if d.is_dir()],
-        key=lambda d: d.stat().st_mtime,
-    )
-    return runs[-1] if runs else None
+from util import (
+    REPO_ROOT,
+    run_cmd as run,
+    find_latest_run,
+    get_docs_changes,
+    get_current_branch,
+    branch_exists,
+    check_gh_available,
+    stage_and_commit_docs,
+    push_and_create_pr,
+)
 
 
 def load_report(run_dir):
@@ -63,48 +39,6 @@ def load_report(run_dir):
         return None
     with open(report_path) as f:
         return json.load(f)
-
-
-def get_docs_changes():
-    """Get the list of docs-related changed files from git status."""
-    result = run(["git", "status", "--porcelain"], check=False)
-    if result.returncode != 0:
-        return []
-    changes = []
-    for line in result.stdout.strip().splitlines():
-        if not line:
-            continue
-        # status is first two chars, then a space, then the path
-        filepath = line[3:].strip()
-        # Handle renames: "old -> new"
-        if " -> " in filepath:
-            filepath = filepath.split(" -> ")[1]
-        if filepath.startswith("docs/") or filepath == "docs.json":
-            changes.append(filepath)
-    return changes
-
-
-def get_current_branch():
-    """Get the current git branch name."""
-    result = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
-    return result.stdout.strip()
-
-
-def branch_exists(branch_name):
-    """Check if a local branch already exists."""
-    result = run(["git", "rev-parse", "--verify", branch_name], check=False)
-    return result.returncode == 0
-
-
-def check_gh_available():
-    """Check that the gh CLI is installed and authenticated."""
-    result = run(["which", "gh"], check=False)
-    if result.returncode != 0:
-        return False, "gh CLI not found. Install it: https://cli.github.com/"
-    result = run(["gh", "auth", "status"], check=False)
-    if result.returncode != 0:
-        return False, "gh CLI not authenticated. Run: gh auth login"
-    return True, ""
 
 
 def build_commit_message(report, run_id):
@@ -275,14 +209,10 @@ def main():
     # --- Determine branch ---
     current_branch = get_current_branch()
     branch_name = args.branch or f"docs/pipeline-{run_id}"
-    need_new_branch = current_branch in ("main", "master")
+    need_new_branch = current_branch != branch_name
 
-    if not need_new_branch and current_branch != branch_name:
-        # Already on a feature branch, use it
-        branch_name = current_branch
-        print(f"  Using current branch: {branch_name}")
-    elif need_new_branch:
-        print(f"  Will create branch: {branch_name}")
+    if need_new_branch:
+        print(f"  Will create branch: {branch_name} (off main)")
     else:
         print(f"  On branch: {branch_name}")
 
@@ -314,31 +244,25 @@ def main():
     # --- Create branch ---
     if need_new_branch:
         if branch_exists(branch_name):
-            print(f"Error: branch {branch_name} already exists locally.")
-            print(f"Use --branch to pick a different name, or switch to it with git checkout.")
-            return 1
-        print(f"Creating branch: {branch_name}")
-        run(["git", "checkout", "-b", branch_name])
+            print(f"Switching to existing branch: {branch_name}")
+            run(["git", "stash", "push", "-m", "pipeline-ship"])
+            run(["git", "checkout", branch_name])
+            run(["git", "stash", "pop"])
+        else:
+            print(f"Creating branch: {branch_name} (off main)")
+            run(["git", "stash", "push", "-m", "pipeline-ship"])
+            run(["git", "checkout", "-b", branch_name, "main"])
+            run(["git", "stash", "pop"])
 
     # --- Stage and commit ---
     print("Staging docs files...")
-    for pattern in STAGE_PATTERNS:
-        run(["git", "add", pattern], check=False)
-
-    # Verify something is staged
-    staged = run(["git", "diff", "--cached", "--name-only"])
-    if not staged.stdout.strip():
+    ok, num_files = stage_and_commit_docs(commit_msg)
+    if not ok:
         print("Error: nothing staged after git add. Check that changed files match staging patterns.")
         return 1
+    print(f"  Staged and committed {num_files} files")
 
-    staged_files = staged.stdout.strip().splitlines()
-    print(f"  Staged {len(staged_files)} files")
-
-    print("Committing...")
-    run(["git", "commit", "-m", commit_msg])
-    print("  Committed.")
-
-    # --- Push ---
+    # --- Push and create PR ---
     if not args.yes:
         print(f"\nReady to push branch '{branch_name}' and create a PR.")
         try:
@@ -351,18 +275,12 @@ def main():
             print(f"To push later: git push -u origin {branch_name}")
             return 0
 
-    print(f"Pushing branch: {branch_name}")
-    run(["git", "push", "-u", "origin", branch_name])
+    print(f"Pushing and creating PR...")
+    pr_url = push_and_create_pr(branch_name, pr_title, pr_body)
+    if not pr_url:
+        print("Failed to push or create PR.")
+        return 1
 
-    # --- Create PR ---
-    print("Creating PR...")
-    result = run([
-        "gh", "pr", "create",
-        "--title", pr_title,
-        "--body", pr_body,
-    ])
-
-    pr_url = result.stdout.strip()
     print(f"\nPR created: {pr_url}")
 
     return 0

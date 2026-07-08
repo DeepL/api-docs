@@ -66,7 +66,7 @@ OPENAPI_PATH = REPO_ROOT / "api-reference" / "openapi.yaml"
 STANDARDS_PATH = REPO_ROOT / "standards" / "ia.yaml"
 
 MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 8192
+MAX_TOKENS = 16384
 
 TASK_TYPES = ["consolidate", "merge", "split", "expand", "retire", "rework"]
 
@@ -117,14 +117,33 @@ writing principles. When they conflict, the docs-writer guidelines win.
 ## Output Format
 
 - Output ONLY the .mdx file content. No commentary, no explanation, no markdown fences.
-- Start with frontmatter (---).
+- Start with frontmatter (---). Every page MUST have `title` and `description` fields. If the source is missing a description, write one (under 160 chars, specific, not generic).
 - Follow the Diataxis type appropriate for the target page.
-- Preserve valuable existing content. Don't discard information unless the instruction says to.
 - Never invent API parameters or behavior not present in the source content or OpenAPI spec.
+
+## Content Preservation
+
+When consolidating, merging, or retiring pages, be SELECTIVE but not destructive:
+
+- Carry over content that is UNIQUE and useful: limits, warnings, behavioral quirks,
+  non-obvious constraints, worked examples that teach something. These are the things
+  a developer can't find elsewhere.
+- Do NOT carry over content that duplicates the OpenAPI spec (parameter lists, response
+  schemas, endpoint paths), generic boilerplate ("learn more about X"), or content that
+  already exists on another page in the docs.
+- Do NOT summarize a detailed page into a one-line stub. If a source has 10 useful
+  paragraphs, the target should have those 10 paragraphs (edited for fit), not a sentence
+  that says "see the API reference."
+- If the target is an openapi: stub page (auto-rendered from the OpenAPI spec), add
+  supplementary prose BELOW the frontmatter — context, examples, warnings, and guidance
+  that the spec alone cannot convey.
+- After writing, mentally check: did you drop any content that a developer would miss?
+  If yes, add it back. Did you keep content that's already in the spec or elsewhere?
+  If yes, cut it.
 """
 
 
-def build_rework_prompt(task_type, source_contents, targets, instruction, openapi_context=None):
+def build_rework_prompt(task_type, source_contents, targets, instruction, openapi_context=None, retire_paths=None):
     """Build the user prompt for a rework task.
 
     Args:
@@ -133,6 +152,7 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
         targets: list of target output paths
         instruction: User's explicit instruction
         openapi_context: Optional OpenAPI spec excerpt for context
+        retire_paths: list of page paths being deleted (avoid linking to these)
     """
     source_block = "\n\n".join(
         f"### Source: {path}\n```mdx\n{content}\n```"
@@ -148,8 +168,10 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
     type_guidance = {
         "consolidate": (
             "Consolidate multiple source pages into the target page. "
-            "Absorb useful content from all sources. The target should be a complete, "
-            "self-contained page that replaces all the sources."
+            "Carry over content that is UNIQUE and useful (limits, warnings, worked examples, "
+            "behavioral quirks). Cut content that duplicates the OpenAPI spec or exists "
+            "elsewhere. The result should be a focused, high-quality page — not a dump of "
+            "everything from every source, but also not a stub that lost all the detail."
         ),
         "merge": (
             "Merge the source pages into a single new page. "
@@ -166,9 +188,9 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
             "then write it properly for that type."
         ),
         "retire": (
-            "This page is being retired. Fold its useful content into the target page(s). "
-            "Each target should absorb only the content relevant to it. "
-            "The source page will be deleted after promotion."
+            "This page is being retired. Fold its unique, useful content into the target page(s). "
+            "Each target absorbs the content relevant to it. Cut anything duplicated by the "
+            "OpenAPI spec or other docs pages. The source page will be deleted after promotion."
         ),
         "rework": (
             "Rework this page to improve its quality, focus, and Diataxis compliance. "
@@ -194,6 +216,19 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
             f"Start with frontmatter (---)."
         )
 
+    retire_block = ""
+    if retire_paths:
+        retire_list = "\n".join(f"- {p}" for p in retire_paths)
+        retire_block = f"""
+
+## Pages being deleted
+
+These pages will be removed after this task. Do NOT link to them in your output.
+If the source content links to any of these, replace with a link to the appropriate
+target page or remove the link.
+
+{retire_list}"""
+
     return f"""{type_guidance[task_type]}
 
 ## Instruction
@@ -204,6 +239,7 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
 
 {source_block}
 {openapi_block}
+{retire_block}
 
 ## Output
 
@@ -302,6 +338,12 @@ def main():
         help="What to do with the content",
     )
     parser.add_argument(
+        "--retire",
+        nargs="*",
+        default=[],
+        help="Page paths being retired/deleted (so output avoids linking to them)",
+    )
+    parser.add_argument(
         "--label",
         help="Short label for the run directory (e.g. 'consolidate-onboarding')",
     )
@@ -381,19 +423,20 @@ def main():
     # Build prompts
     system_prompt = build_system_prompt()
     user_prompt = build_rework_prompt(
-        args.task_type, source_contents, targets, args.instruction, openapi_context
+        args.task_type, source_contents, targets, args.instruction, openapi_context,
+        retire_paths=args.retire,
     )
 
     # Call Claude
     print("Calling Claude...")
     client = anthropic.Anthropic()
-    response = client.messages.create(
+    with client.messages.stream(
         model=MODEL,
         max_tokens=MAX_TOKENS * len(targets),
         system=system_prompt,
         messages=[{"role": "user", "content": user_prompt}],
-    )
-    raw_output = response.content[0].text
+    ) as stream:
+        raw_output = stream.get_final_text()
 
     # Parse output
     if len(targets) > 1:
