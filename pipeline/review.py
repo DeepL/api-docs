@@ -74,28 +74,9 @@ def resolve_run_dir(args):
 
 
 def build_review_system_prompt():
-    """Build system prompt for the review step, combining style guide and review criteria."""
-    claude_md = load_file(CLAUDE_MD_PATH)
-    editorial = load_file(EDITORIAL_REVIEWER_PATH)
-    diataxis = load_file(DIATAXIS_PATH)
-
-    return f"""You are a documentation reviewer for DeepL's developer documentation.
-
-Your job is to review .mdx drafts against the style guide and editorial standards below,
-and return structured findings as JSON.
-
-## Style Guide (CLAUDE.md)
-
-{claude_md}
-
-## Editorial Review Criteria
-
-{editorial}
-
-## Diataxis Framework and Review Criteria
-
-{diataxis}
-"""
+    """System prompt for the review step (assembled from the agent files, one place)."""
+    from util import build_review_system_prompt as _build
+    return _build()
 
 
 def build_review_user_prompt(filename, content, previous_fixes=None):
@@ -225,7 +206,10 @@ def review_draft(client, system_prompt, filename, content, previous_fixes=None):
 
 
 def apply_fix(client, filename, content, finding):
-    """Apply a single fix to draft content via Claude. Returns updated content."""
+    """Apply a single fix to draft content via Claude. Returns updated content.
+
+    Raises ValueError if the response is not valid MDX (e.g. chain-of-thought leak).
+    """
     user_prompt = build_fix_prompt(filename, content, finding)
 
     response = client.messages.create(
@@ -243,6 +227,19 @@ def apply_fix(client, filename, content, finding):
         result = result[first_newline + 1:]
         if result.endswith("```"):
             result = result[:-3].strip()
+
+    # Validate: the result must start with YAML frontmatter.
+    # If the model returned reasoning/commentary instead of file content,
+    # try to extract the frontmatter block; otherwise reject the fix.
+    if not result.startswith("---"):
+        fm_start = result.find("\n---\n")
+        if fm_start >= 0:
+            result = result[fm_start + 1:]
+        else:
+            raise ValueError(
+                f"Fix response is not valid MDX (does not start with frontmatter). "
+                f"First 80 chars: {result[:80]!r}"
+            )
 
     return result
 
@@ -401,8 +398,8 @@ def main():
     parser.add_argument(
         "--max-iterations",
         type=int,
-        default=2,
-        help="Max review-fix cycles per file (default: 2)",
+        default=5,
+        help="Max review-fix cycles per file (default: 5)",
     )
     parser.add_argument(
         "--file",

@@ -77,6 +77,16 @@ Before returning your draft, check:
 
 If you have concerns about the draft's Diataxis adherence, delegate a review to the **diataxis** agent before returning.
 
+## Reworking and Consolidating Pages
+
+When consolidating, merging, or retiring pages, be SELECTIVE but not destructive:
+
+- Carry over content that is UNIQUE and useful: limits, warnings, behavioral quirks, non-obvious constraints, worked examples that teach something. These are the things a developer can't find elsewhere.
+- Do NOT carry over content that duplicates the OpenAPI spec (parameter lists, response schemas, endpoint paths), generic boilerplate ("learn more about X"), or content that already exists on another page.
+- Do NOT summarize a detailed page into a one-line stub. If a source has 10 useful paragraphs, the target should have those 10 paragraphs (edited for fit), not a sentence that says "see the API reference."
+- If the target is an `openapi:` stub page (auto-rendered from the OpenAPI spec), add supplementary prose BELOW the frontmatter: context, examples, warnings, and guidance the spec alone can't convey. Never turn a reference stub into a narrative page.
+- After writing, check: did you drop any content a developer would miss? Add it back. Did you keep content already in the spec or elsewhere? Cut it.
+
 ## Delegating to the Diataxis Agent
 
 Use the diataxis agent (via the Agent tool, subagent_type: diataxis) for:

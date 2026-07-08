@@ -118,9 +118,9 @@ def check_file(filepath, verbose=False):
                 "message": "Missing 'title' field in frontmatter",
             })
 
-        # Has description
+        # Has description (skip for openapi pages — content is spec-rendered)
         desc = fm.get("description", "")
-        if not desc:
+        if not desc and not fm.get("openapi"):
             findings.append({
                 "file": filename,
                 "line": 1,
@@ -181,28 +181,32 @@ def check_file(filepath, verbose=False):
             })
 
     # --- Structure checks ---
-    has_h2 = any(line.startswith("## ") for line in lines)
-    if not has_h2:
-        findings.append({
-            "file": filename,
-            "line": 1,
-            "check": "structure_has_h2",
-            "category": "structure",
-            "severity": ERROR,
-            "message": "No ## heading found",
-        })
+    # Pages with openapi: frontmatter are spec-rendered stubs — body content is
+    # auto-generated from the OpenAPI spec, so prose checks don't apply.
+    is_openapi_page = bool(fm.get("openapi"))
 
-    # Word count (excluding frontmatter)
-    body_words = len(body.split())
-    if body_words < 100:
-        findings.append({
-            "file": filename,
-            "line": 1,
-            "check": "structure_word_count",
-            "category": "structure",
-            "severity": ERROR,
-            "message": f"Body has only {body_words} words (minimum 100)",
-        })
+    if not is_openapi_page:
+        has_h2 = any(line.startswith("## ") for line in lines)
+        if not has_h2:
+            findings.append({
+                "file": filename,
+                "line": 1,
+                "check": "structure_has_h2",
+                "category": "structure",
+                "severity": ERROR,
+                "message": "No ## heading found",
+            })
+
+        body_words = len(body.split())
+        if body_words < 100:
+            findings.append({
+                "file": filename,
+                "line": 1,
+                "check": "structure_word_count",
+                "category": "structure",
+                "severity": ERROR,
+                "message": f"Body has only {body_words} words (minimum 100)",
+            })
 
     # Callout count
     callout_count = len(CALLOUT_PATTERN.findall(content))
@@ -217,7 +221,7 @@ def check_file(filepath, verbose=False):
         })
 
     # --- Code checks (non-overview pages only) ---
-    if not is_overview:
+    if not is_overview and not is_openapi_page:
         # Has at least one code block
         code_block_starts = [
             (i, line) for i, line in enumerate(lines, start=1)

@@ -20,10 +20,38 @@ import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_JSON_PATH = REPO_ROOT / "docs.json"
+STANDARDS_PATH = REPO_ROOT / "standards" / "ia.yaml"
 DRAFTS_DIR = REPO_ROOT / "pipeline" / "drafts"
+
+
+def load_families():
+    try:
+        with open(STANDARDS_PATH) as f:
+            return (yaml.safe_load(f) or {}).get("families", {})
+    except FileNotFoundError:
+        return {}
+
+
+def target_tab_for_family(family_name, families):
+    """Which top-level tab a family's narrative pages belong under (or None)."""
+    home = families.get(family_name, {}).get("narrative_home")
+    if home == "own":
+        return family_name              # tab named after the family
+    if home and home not in ("reference_only", "unplaced"):
+        return home                     # nests under another tab
+    return None
+
+
+def find_tab(tabs, name):
+    for tab in tabs:
+        if name and tab.get("tab", "").lower() == name.lower():
+            return tab
+    return None
 
 
 def find_latest_run():
@@ -99,11 +127,37 @@ def page_in_nav(pages, nav_path):
 
 
 def find_group(groups, group_name):
-    """Find a group by name in the groups list. Returns (index, group) or (None, None)."""
-    for i, g in enumerate(groups):
+    """Find a group by name, searching nested subgroups too. Returns the group dict or None."""
+    for g in groups:
         if g.get("group", "").lower() == group_name.lower():
-            return i, g
-    return None, None
+            return g
+        for item in g.get("pages", []):
+            if isinstance(item, dict) and item.get("group", "").lower() == group_name.lower():
+                return item
+    return None
+
+
+def find_group_by_sibling_path(groups, nav_path):
+    """Find the most specific group containing a page with the longest common path prefix."""
+    best_group = None
+    best_prefix_len = 0
+    parts = nav_path.split("/")
+
+    def _search(group):
+        nonlocal best_group, best_prefix_len
+        for item in group.get("pages", []):
+            if isinstance(item, str):
+                item_parts = item.split("/")
+                common = sum(1 for a, b in zip(parts, item_parts) if a == b)
+                if common > best_prefix_len:
+                    best_prefix_len = common
+                    best_group = group
+            elif isinstance(item, dict):
+                _search(item)
+
+    for g in groups:
+        _search(g)
+    return best_group
 
 
 def find_going_to_production_index(groups):
@@ -114,28 +168,33 @@ def find_going_to_production_index(groups):
     return len(groups)
 
 
-def insert_page_in_group(group, nav_path, gap_type):
-    """Insert a page path into a group's pages array at the appropriate position."""
-    pages = group["pages"]
+OVERVIEW_TYPES = {"missing_overview", "missing_product_tab", "undocumented_product", "missing_orientation"}
 
-    if gap_type in ("undocumented_product", "missing_orientation"):
-        # Overview pages go first
-        pages.insert(0, nav_path)
+
+def insert_page(pages, nav_path, gap_type):
+    """Insert a page path into a pages array at the appropriate position."""
+    if gap_type in OVERVIEW_TYPES:
+        pages.insert(0, nav_path)                       # overview goes first
     elif gap_type == "missing_tutorial":
-        # Tutorials go after overview (position 1), or first if no overview
-        insert_at = 0
+        insert_at = 0                                    # tutorial right after overview
         for i, item in enumerate(pages):
             if isinstance(item, str) and "overview" in item.lower():
                 insert_at = i + 1
                 break
         pages.insert(insert_at, nav_path)
     else:
-        # Everything else appends
         pages.append(nav_path)
 
 
-def update_docs_json(docs_json, nav_path, family_name, gap_type):
-    """Add nav_path to the docs.json navigation under the correct group.
+def tab_contains_page(tab, nav_path):
+    """Whether nav_path already appears anywhere under a tab (its pages or groups)."""
+    if page_in_nav(tab.get("pages", []), nav_path):
+        return True
+    return any(page_in_nav(g.get("pages", []), nav_path) for g in tab.get("groups", []))
+
+
+def update_docs_json(docs_json, nav_path, family_name, gap_type, families):
+    """Add nav_path to docs.json under the family's tab (resolved via narrative_home).
 
     Returns a description of the change made, or None if no change was needed.
     """
@@ -143,27 +202,119 @@ def update_docs_json(docs_json, nav_path, family_name, gap_type):
     if not tabs:
         return None
 
-    # Only modify the Documentation tab (first tab)
-    doc_tab = tabs[0]
-    groups = doc_tab.get("groups", [])
+    # Already present anywhere? skip.
+    if any(tab_contains_page(tab, nav_path) for tab in tabs):
+        return None
 
-    # Check if page already exists anywhere in the Documentation tab
-    for g in groups:
-        if page_in_nav(g.get("pages", []), nav_path):
+    # Resolve the family's target tab (own tab, or the tab it nests under).
+    tab = find_tab(tabs, target_tab_for_family(family_name, families))
+    if tab is not None:
+        # Place directly under the tab (current policy — no sub-grouping).
+        insert_page(tab.setdefault("pages", []), nav_path, gap_type)
+        return f"Added '{nav_path}' under tab '{tab.get('tab')}'"
+
+    # Fallback: family doesn't resolve to a tab — original group-based placement
+    # on the first tab.
+    doc_tab = tabs[0]
+    groups = doc_tab.setdefault("groups", [])
+    group = find_group(groups, family_name) or find_group_by_sibling_path(groups, nav_path)
+    if group:
+        insert_page(group["pages"], nav_path, gap_type)
+        return f"Added '{nav_path}' to existing group '{group['group']}'"
+    new_group = {"group": family_name, "pages": [nav_path]}
+    groups.insert(find_going_to_production_index(groups), new_group)
+    return f"Created new group '{family_name}' with page '{nav_path}'"
+
+
+def remove_from_nav(docs_json, nav_path):
+    """Remove a page path from all tabs/groups in docs.json. Returns True if found and removed."""
+
+    def _remove_recursive(pages):
+        found = False
+        i = 0
+        while i < len(pages):
+            item = pages[i]
+            if isinstance(item, str) and item == nav_path:
+                pages.pop(i)
+                found = True
+                continue
+            if isinstance(item, dict) and "pages" in item:
+                if _remove_recursive(item["pages"]):
+                    found = True
+            i += 1
+        return found
+
+    tabs = docs_json.get("navigation", {}).get("tabs", [])
+    removed = False
+    for tab in tabs:
+        for group in tab.get("groups", []):
+            if _remove_recursive(group.get("pages", [])):
+                removed = True
+    return removed
+
+
+def add_redirect(docs_json, source_path, dest_path):
+    """Add a redirect entry to docs.json. Returns description of change or None."""
+    source = "/" + page_path_for_nav(source_path)
+    destination = "/" + page_path_for_nav(dest_path)
+
+    redirects = docs_json.setdefault("redirects", [])
+    for r in redirects:
+        if r["source"] == source:
             return None
 
-    # Find the matching group by family name
-    _, group = find_group(groups, family_name)
+    redirects.append({"source": source, "destination": destination})
+    return f"redirect: {source} → {destination}"
 
-    if group:
-        insert_page_in_group(group, nav_path, gap_type)
-        return f"Added '{nav_path}' to existing group '{group['group']}'"
-    else:
-        # Create a new group
-        new_group = {"group": family_name, "pages": [nav_path]}
-        insert_idx = find_going_to_production_index(groups)
-        groups.insert(insert_idx, new_group)
-        return f"Created new group '{family_name}' with page '{nav_path}'"
+
+def retire_pages(run_dir, docs_json, dry_run=False):
+    """Delete retired pages, remove from navigation, and add redirects. Returns list of retired paths."""
+    retire_path = run_dir / "retire.json"
+    if not retire_path.exists():
+        return []
+
+    with open(retire_path) as f:
+        retire_list = json.load(f)
+
+    report = load_report(run_dir)
+    targets = report.get("targets", []) if report else []
+
+    retired = []
+    nav_removals = []
+    redirect_changes = []
+
+    for rel_path in retire_list:
+        full_path = REPO_ROOT / rel_path
+        nav_path = page_path_for_nav(rel_path)
+
+        if dry_run:
+            exists = full_path.exists()
+            print(f"  {'DELETE' if exists else 'SKIP (not found)'}: {rel_path}")
+        else:
+            if full_path.exists():
+                full_path.unlink()
+                print(f"  Retired: {rel_path}")
+                retired.append(rel_path)
+
+        if remove_from_nav(docs_json, nav_path):
+            nav_removals.append(nav_path)
+            if dry_run:
+                print(f"    nav: removed '{nav_path}'")
+
+        redirect_dest = next((t for t in targets if t != rel_path), None)
+        if redirect_dest:
+            change = add_redirect(docs_json, rel_path, redirect_dest)
+            if change:
+                redirect_changes.append(change)
+                if dry_run:
+                    print(f"    {change}")
+
+    if nav_removals:
+        print(f"\n{'Would remove' if dry_run else 'Removed'} {len(nav_removals)} page(s) from docs.json navigation.")
+    if redirect_changes:
+        print(f"{'Would add' if dry_run else 'Added'} {len(redirect_changes)} redirect(s).")
+
+    return retired
 
 
 def run_broken_links_check():
@@ -255,9 +406,10 @@ def main():
     report = load_report(run_dir)
     family_map = build_family_map(report)
 
-    # Load docs.json
+    # Load docs.json + the family map (for narrative-home-based placement)
     with open(DOCS_JSON_PATH) as f:
         docs_json = json.load(f)
+    families = load_families()
 
     nav_changes = []
     promoted = []
@@ -280,24 +432,27 @@ def main():
 
         promoted.append(canonical_rel)
 
-        # Update docs.json navigation
-        if family:
-            change = update_docs_json(docs_json, nav_path, family, gap_type)
+        # Update docs.json navigation (skip api-reference/ — those are auto-discovered from openapi frontmatter)
+        if family and not canonical_rel.startswith("api-reference/"):
+            change = update_docs_json(docs_json, nav_path, family, gap_type, families)
             if change:
                 nav_changes.append(change)
                 if args.dry_run:
                     print(f"    nav: {change}")
 
+    # Retire pages (delete files + remove from nav)
+    retired = retire_pages(run_dir, docs_json, dry_run=args.dry_run)
+
     # Write updated docs.json
-    if nav_changes and not args.dry_run:
+    if (nav_changes or retired) and not args.dry_run:
         with open(DOCS_JSON_PATH, "w") as f:
             json.dump(docs_json, f, indent=2)
             f.write("\n")
         print(f"\nUpdated docs.json:")
         for change in nav_changes:
             print(f"  {change}")
-    elif nav_changes and args.dry_run:
-        print(f"\nWould update docs.json with {len(nav_changes)} change(s)")
+    elif (nav_changes or retired) and args.dry_run:
+        print(f"\nWould update docs.json with {len(nav_changes)} addition(s) and {len(retired)} removal(s)")
     else:
         print("\nNo docs.json changes needed (all pages already in navigation).")
 

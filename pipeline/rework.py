@@ -58,15 +58,14 @@ except ImportError:
     sys.exit(1)
 
 
+from util import build_authoring_system_prompt
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CLAUDE_MD_PATH = REPO_ROOT / "CLAUDE.md"
-DOCS_WRITER_PATH = REPO_ROOT / ".claude" / "agents" / "docs-writer.md"
-DIATAXIS_PATH = REPO_ROOT / ".claude" / "agents" / "diataxis.md"
 OPENAPI_PATH = REPO_ROOT / "api-reference" / "openapi.yaml"
 STANDARDS_PATH = REPO_ROOT / "standards" / "ia.yaml"
 
 MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 8192
+MAX_TOKENS = 16384
 
 TASK_TYPES = ["consolidate", "merge", "split", "expand", "retire", "rework"]
 
@@ -87,44 +86,14 @@ def canonical_to_draft_name(canonical_path):
 
 
 def build_system_prompt():
-    claude_md = load_file(CLAUDE_MD_PATH)
-    docs_writer = load_file(DOCS_WRITER_PATH)
-    diataxis = load_file(DIATAXIS_PATH)
-    standards = load_file(STANDARDS_PATH)
-
-    return f"""You are a documentation editor for DeepL's developer documentation.
-
-You rework existing .mdx files for a Mintlify-powered docs site. The docs-writer guidelines
-below are your primary instructions. The style guide (CLAUDE.md) provides general
-writing principles. When they conflict, the docs-writer guidelines win.
-
-## Style Guide (CLAUDE.md)
-
-{claude_md}
-
-## Docs Writer Guidelines
-
-{docs_writer}
-
-## Diataxis Framework
-
-{diataxis}
-
-## IA Standards
-
-{standards}
-
-## Output Format
-
-- Output ONLY the .mdx file content. No commentary, no explanation, no markdown fences.
-- Start with frontmatter (---).
-- Follow the Diataxis type appropriate for the target page.
-- Preserve valuable existing content. Don't discard information unless the instruction says to.
-- Never invent API parameters or behavior not present in the source content or OpenAPI spec.
-"""
+    # All writing rules (style, Diataxis, IA, content-preservation) live in the
+    # agent files and are assembled in one place: util.build_authoring_system_prompt.
+    return build_authoring_system_prompt(
+        "You are a documentation editor for DeepL's developer documentation."
+    )
 
 
-def build_rework_prompt(task_type, source_contents, targets, instruction, openapi_context=None):
+def build_rework_prompt(task_type, source_contents, targets, instruction, openapi_context=None, retire_paths=None):
     """Build the user prompt for a rework task.
 
     Args:
@@ -133,6 +102,7 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
         targets: list of target output paths
         instruction: User's explicit instruction
         openapi_context: Optional OpenAPI spec excerpt for context
+        retire_paths: list of page paths being deleted (avoid linking to these)
     """
     source_block = "\n\n".join(
         f"### Source: {path}\n```mdx\n{content}\n```"
@@ -145,35 +115,16 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
     if openapi_context:
         openapi_block = f"\n\n## OpenAPI spec (for reference)\n\n```yaml\n{openapi_context}\n```"
 
+    # Mechanical intent per task type only. The quality rules — what to carry vs cut,
+    # content preservation, Diataxis purity — live in docs-writer.md / diataxis.md and
+    # are already in the system prompt. Don't restate them here.
     type_guidance = {
-        "consolidate": (
-            "Consolidate multiple source pages into the target page. "
-            "Absorb useful content from all sources. The target should be a complete, "
-            "self-contained page that replaces all the sources."
-        ),
-        "merge": (
-            "Merge the source pages into a single new page. "
-            "Combine the best of both, cut duplication, and produce one coherent page."
-        ),
-        "split": (
-            "Split the source page into multiple target pages. "
-            "Each target should serve exactly one Diataxis type. "
-            "Don't duplicate content across targets — cross-link instead."
-        ),
-        "expand": (
-            "Expand this thin page into a complete, useful page. "
-            "Determine the appropriate Diataxis type from the existing content and title, "
-            "then write it properly for that type."
-        ),
-        "retire": (
-            "This page is being retired. Fold its useful content into the target page(s). "
-            "Each target should absorb only the content relevant to it. "
-            "The source page will be deleted after promotion."
-        ),
-        "rework": (
-            "Rework this page to improve its quality, focus, and Diataxis compliance. "
-            "Follow the instruction for what specifically to change."
-        ),
+        "consolidate": "Consolidate the source pages into the target page.",
+        "merge": "Merge the source pages into a single coherent page at the target path.",
+        "split": "Split the source into the target pages, one Diataxis type each.",
+        "expand": "Expand this thin page into a complete page.",
+        "retire": "Retire this page: fold its content into the target page(s). The source is deleted after promotion.",
+        "rework": "Rework this page per the instruction.",
     }
 
     if len(targets) > 1:
@@ -194,6 +145,19 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
             f"Start with frontmatter (---)."
         )
 
+    retire_block = ""
+    if retire_paths:
+        retire_list = "\n".join(f"- {p}" for p in retire_paths)
+        retire_block = f"""
+
+## Pages being deleted
+
+These pages will be removed after this task. Do NOT link to them in your output.
+If the source content links to any of these, replace with a link to the appropriate
+target page or remove the link.
+
+{retire_list}"""
+
     return f"""{type_guidance[task_type]}
 
 ## Instruction
@@ -204,6 +168,7 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
 
 {source_block}
 {openapi_block}
+{retire_block}
 
 ## Output
 
@@ -252,12 +217,12 @@ def load_openapi_for_paths(source_paths):
 
     with open(STANDARDS_PATH) as f:
         standards = yaml.safe_load(f)
-    overrides = standards.get("product_family_overrides", {})
+    families = standards.get("families", {})
 
     relevant_tags = set()
-    for family, config in overrides.items():
+    for family, config in families.items():
         if family.lower() in sections:
-            relevant_tags.update(config.get("tags", []))
+            relevant_tags.update(t for grp in config.get("groups", []) for t in grp.get("tags", []))
 
     if not relevant_tags:
         return None
@@ -300,6 +265,12 @@ def main():
         "--instruction",
         required=True,
         help="What to do with the content",
+    )
+    parser.add_argument(
+        "--retire",
+        nargs="*",
+        default=[],
+        help="Page paths being retired/deleted (so output avoids linking to them)",
     )
     parser.add_argument(
         "--label",
@@ -381,19 +352,20 @@ def main():
     # Build prompts
     system_prompt = build_system_prompt()
     user_prompt = build_rework_prompt(
-        args.task_type, source_contents, targets, args.instruction, openapi_context
+        args.task_type, source_contents, targets, args.instruction, openapi_context,
+        retire_paths=args.retire,
     )
 
     # Call Claude
     print("Calling Claude...")
     client = anthropic.Anthropic()
-    response = client.messages.create(
+    with client.messages.stream(
         model=MODEL,
         max_tokens=MAX_TOKENS * len(targets),
         system=system_prompt,
         messages=[{"role": "user", "content": user_prompt}],
-    )
-    raw_output = response.content[0].text
+    ) as stream:
+        raw_output = stream.get_final_text()
 
     # Parse output
     if len(targets) > 1:
