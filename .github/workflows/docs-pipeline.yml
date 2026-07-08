@@ -1,0 +1,78 @@
+name: Docs Pipeline
+
+# Kick off the agentic docs pipeline ONLY when the API spec changes on main.
+# A spec change is the signal that the docs may now be missing or stale, so the
+# pipeline detects gaps, drafts + reviews the missing content, and opens a PR.
+# There is deliberately no schedule/cron trigger — spec change is the only
+# automatic entry point. (workflow_dispatch is a manual escape hatch.)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "api-reference/openapi.yaml"
+      - "api-reference/openapi.json"
+      - "api-reference/voice/voice.asyncapi.yaml"
+      - "api-reference/voice/voice.asyncapi.json"
+  workflow_dispatch:
+    inputs:
+      section:
+        description: "Limit to one product family (optional, e.g. voice)"
+        required: false
+        default: ""
+      dry_run:
+        description: "Rehearse: run every step but do not open a PR"
+        type: boolean
+        default: false
+
+# Two pipeline runs at once would race on branches and PRs.
+concurrency:
+  group: docs-pipeline
+  cancel-in-progress: false
+
+permissions:
+  contents: write # create the branch + commit the drafts
+  pull-requests: write # open the PR
+
+jobs:
+  run:
+    name: Detect gaps, generate, review, open PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # ship.py branches off main; needs history
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install anthropic pyyaml
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Run the docs pipeline
+        env:
+          # Required — add this secret in repo Settings → Secrets → Actions.
+          # The pipeline can't call Claude without it.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # ship.py / post_review.py use the gh CLI, which reads GH_TOKEN.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          ARGS="generate"
+          if [ -n "${{ github.event.inputs.section }}" ]; then
+            ARGS="$ARGS --section ${{ github.event.inputs.section }}"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          echo "Running: python pipeline/run.py $ARGS"
+          # run.py chains detect→generate→evaluate→review→promote→ship→post_review
+          # and auto-passes --yes to ship (non-dry-run), so this opens a PR.
+          python pipeline/run.py $ARGS
