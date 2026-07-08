@@ -548,6 +548,10 @@
     {
       "source": "/docs/learning-how-tos/cookbook/context-parameter-examples",
       "destination": "/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter"
+    },
+    {
+      "source": "/api-reference/translate",
+      "destination": "/docs/learning-how-tos/examples-and-guides/translating-text"
     }
   ],
   "integrations": {
