@@ -8,11 +8,12 @@ name: Docs Pipeline
 on:
   push:
     branches: [main]
+    # Watch only the YAML sources. The .json specs are auto-generated from these
+    # (see update_openapi_json.yml) and merge in the same commit, so watching the
+    # YAML alone catches every real spec change and can't double-fire.
     paths:
       - "api-reference/openapi.yaml"
-      - "api-reference/openapi.json"
       - "api-reference/voice/voice.asyncapi.yaml"
-      - "api-reference/voice/voice.asyncapi.json"
   workflow_dispatch:
     inputs:
       section:
