@@ -1,0 +1,235 @@
+---
+title: "Stream Real-Time Voice Translation"
+description: "Learn how to open a WebSocket session to transcribe and translate live audio into multiple languages using the DeepL Voice API."
+covers: [Voice]
+---
+
+Real-time voice translation lets you stream live audio to DeepL and receive transcriptions and translations as the speaker talks. This guide walks you through the full flow: creating a session, connecting via WebSocket, and handling reconnections if the connection drops.
+
+## Prerequisites
+
+- A DeepL API Pro account with Voice API access
+- An audio source you can encode as Opus (in an Ogg or WebM container) or raw PCM
+- A WebSocket client library in your language of choice
+
+## Step 1: Create a session
+
+The API uses a two-step flow: create a session via POST to get a WebSocket URL and token, then stream audio over that WebSocket. If the connection drops, you can request a new URL using the token from the last successful message, without losing session state.
+
+Send a POST request with your audio format and target languages. The only required field is `source_media_content_type`.
+
+```bash
+curl -X POST https://api.deepl.com/v3/voice/realtime \
+  -H "Authorization: DeepL-Auth-Key YOUR_AUTH_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source_media_content_type": "audio/ogg; codecs=opus",
+    "source_language": "en",
+    "source_language_mode": "auto",
+    "target_languages": ["de", "fr", "es"],
+    "message_format": "json"
+  }'
+```
+
+A successful response looks like this:
+
+```json
+{
+  "session_id": "4f911080-cfe2-41d4-8269-0e6ec15a0354",
+  "streaming_url": "wss://api.deepl.com/v3/voice/realtime/connect",
+  "token": "VGhpcyBpcyBhIGZha2UgdG9rZW4K"
+}
+```
+
+Save all three values. You'll use `streaming_url` to connect and `token` to reconnect if the session drops.
+
+If you know the speaker's language in advance, set `source_language_mode` to `fixed` — this skips language detection and reduces latency. Leave it as `auto` (the default) when the language may vary.
+
+See the [POST /v3/voice/realtime reference](/api-reference/voice/realtime-session) for the full list of request parameters.
+
+## Step 2: Connect via WebSocket
+
+Open a WebSocket connection to the `streaming_url` from the session response. Include the token as a query parameter:
+
+```text
+wss://api.deepl.com/v3/voice/realtime/connect?token=VGhpcyBpcyBhIGZha2UgdG9rZW4K
+```
+
+The following example shows how to open the connection, send a binary audio frame, and read a message:
+
+```python
+import asyncio
+import websockets
+
+async def connect_and_stream(streaming_url: str, token: str, audio_frame: bytes):
+    url_with_token = f"{streaming_url}?token={token}"
+    async with websockets.connect(url_with_token) as ws:
+        # Send a binary audio frame
+        await ws.send(audio_frame)
+        # Read the next message from the server
+        message = await ws.recv()
+        print(message)
+```
+
+Once connected, begin sending audio frames as binary messages. The API returns transcript and translation messages as text frames on the same connection.
+
+<Tip>
+Update your saved token each time you receive a new one in a message from the server. The token rotates during a session and you'll need the latest one to reconnect.
+</Tip>
+
+See the [WebSocket Streaming reference](/api-reference/voice/websocket-streaming) for the full message schema, including interim vs. final transcript events.
+
+## Step 3: Handle reconnections
+
+Networks drop. The API gives you a way to resume a session without starting over.
+
+If your WebSocket connection closes unexpectedly, call `GET /v3/voice/realtime` with the most recent token you received:
+
+```bash
+curl "https://api.deepl.com/v3/voice/realtime?token=VGhpcyBpcyBhIGZha2UgdG9rZW4K" \
+  -H "Authorization: DeepL-Auth-Key YOUR_AUTH_KEY"
+```
+
+The response has the same shape as the session creation response:
+
+```json
+{
+  "session_id": "4f911080-cfe2-41d4-8269-0e6ec15a0354",
+  "streaming_url": "wss://api.deepl.com/v3/voice/realtime/connect",
+  "token": "VGhpcyBpcyBhIGZha2UgdG9rZW4K"
+}
+```
+
+Error response (expired token):
+
+```json
+{
+  "message": "Invalid token"
+}
+```
+
+Use the new `streaming_url` and `token` to reconnect exactly as you did in Step 2.
+
+<Warning>
+Always use the latest token received from the server. Using a stale or expired token returns a 401 and the session cannot be resumed.
+</Warning>
+
+To recover, call `POST /v3/voice/realtime` to start a new session.
+
+## Complete example
+
+This Python example shows the full flow: create a session, stream audio from a file, and reconnect on disconnect.
+
+```python
+import asyncio
+import json
+import aiohttp
+import websockets
+
+# This example streams audio from a local Ogg/Opus file.
+# Install dependencies: pip install aiohttp websockets
+# Usage: place your audio file at the path set in AUDIO_FILE_PATH, then run:
+#   python voice_translation.py
+
+AUTH_KEY = "YOUR_AUTH_KEY"
+SESSION_ENDPOINT = "https://api.deepl.com/v3/voice/realtime"
+AUDIO_FILE_PATH = "audio.ogg"  # Path to a local Ogg/Opus audio file
+CHUNK_SIZE = 4096  # Bytes per audio frame sent to the API
+
+
+async def file_audio_source(path: str):
+    """Async generator that yields chunks of a local audio file."""
+    with open(path, "rb") as f:
+        while True:
+            chunk = f.read(CHUNK_SIZE)
+            if not chunk:
+                break
+            yield chunk
+            await asyncio.sleep(0)  # Yield control to the event loop
+
+
+async def create_session() -> dict:
+    """Request a streaming URL and initial token from the Voice API."""
+    async with aiohttp.ClientSession() as http:
+        async with http.post(
+            SESSION_ENDPOINT,
+            headers={"Authorization": f"DeepL-Auth-Key {AUTH_KEY}"},
+            json={
+                "source_media_content_type": "audio/ogg; codecs=opus",
+                "source_language": "en",
+                "source_language_mode": "fixed",
+                "target_languages": ["de", "fr"],
+                "message_format": "json",
+            },
+        ) as resp:
+            resp.raise_for_status()
+            return await resp.json()
+
+
+async def reconnect(token: str) -> dict:
+    """Obtain a fresh streaming URL using the last known token."""
+    async with aiohttp.ClientSession() as http:
+        async with http.get(
+            SESSION_ENDPOINT,
+            headers={"Authorization": f"DeepL-Auth-Key {AUTH_KEY}"},
+            params={"token": token},
+        ) as resp:
+            resp.raise_for_status()
+            return await resp.json()
+
+
+async def stream_audio(streaming_url: str, token: str, audio_source) -> str:
+    """
+    Stream audio frames and print incoming transcripts.
+    Returns the latest token for reconnection use.
+    """
+    latest_token = token
+    url_with_token = f"{streaming_url}?token={token}"
+
+    async with websockets.connect(url_with_token) as ws:
+        async def send_audio():
+            async for frame in audio_source:
+                await ws.send(frame)
+            await ws.close()
+
+        async def receive_messages():
+            nonlocal latest_token
+            async for message in ws:
+                data = json.loads(message)
+                # Rotate the token whenever the server sends a new one
+                if "token" in data:
+                    latest_token = data["token"]
+                if data.get("type") == "transcript":
+                    print(f"[{data['language']}] {data['text']}")
+
+        await asyncio.gather(send_audio(), receive_messages())
+
+    return latest_token
+
+
+async def main():
+    session = await create_session()
+    token = session["token"]
+    url = session["streaming_url"]
+
+    while True:
+        # Re-open the file on each reconnect attempt; the generator is exhausted after each stream_audio call.
+        audio_source = file_audio_source(AUDIO_FILE_PATH)
+        try:
+            token = await stream_audio(url, token, audio_source)
+            break  # Clean close — we're done
+        except websockets.exceptions.ConnectionClosed:
+            print("Connection dropped, reconnecting...")
+            session = await reconnect(token)
+            token = session["token"]
+            url = session["streaming_url"]
+
+
+asyncio.run(main())
+```
+
+## Next steps
+
+- See the [WebSocket Streaming reference](/api-reference/voice/websocket-streaming) for the complete message schema and all event types.
+- To translate pre-recorded audio files instead of live streams, see [Translate Audio Files](/api-reference/jobs-voice-translate).
+- To apply a custom glossary to your translations, see the [Glossaries documentation](/docs/api/glossaries).

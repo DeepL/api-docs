@@ -149,6 +149,8 @@
       {
         "tab": "Voice",
         "pages": [
+          "docs/voice/stream-real-time-voice-translation",
+          "docs/voice/translate-an-audio-file",
           "api-reference/voice"
         ]
       },
@@ -353,8 +355,14 @@
       {
         "title": "Resources",
         "items": [
-          { "label": "API Status", "href": "https://api-status.deepl.com" },
-          { "label": "DeepL Status", "href": "https://www.deeplstatus.com" }
+          {
+            "label": "API Status",
+            "href": "https://api-status.deepl.com"
+          },
+          {
+            "label": "DeepL Status",
+            "href": "https://www.deeplstatus.com"
+          }
         ]
       }
     ],
@@ -367,7 +375,9 @@
   },
   "api": {
     "examples": {
-      "languages": ["curl"],
+      "languages": [
+        "curl"
+      ],
       "defaults": "required"
     },
     "playground": {
