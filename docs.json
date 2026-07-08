@@ -151,6 +151,70 @@
         ]
       },
       {
+<<<<<<< Updated upstream
+=======
+        "tab": "Translate",
+        "groups": [
+          {
+            "group": "Text Translation",
+            "pages": [
+              "docs/learning-how-tos/examples-and-guides/translation-beginners-guide",
+              "docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter",
+              "docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags",
+              "docs/learning-how-tos/examples-and-guides/translating-between-variants",
+              "docs/learning-how-tos/examples-and-guides/customizations-for-variants",
+              "docs/learning-how-tos/examples-and-guides/placeholder-tags",
+              "docs/best-practices/language-detection"
+            ]
+          },
+          {
+            "group": "Document Translation",
+            "pages": [
+              "docs/best-practices/document-translations"
+            ]
+          },
+          {
+            "group": "XML & HTML",
+            "pages": [
+              "docs/xml-and-html-handling/xml",
+              "docs/xml-and-html-handling/structured-content",
+              "docs/xml-and-html-handling/html",
+              "docs/xml-and-html-handling/customized-xml-outline-detection",
+              "docs/xml-and-html-handling/tag-handling-v2"
+            ]
+          },
+          {
+            "group": "Customize",
+            "pages": [
+              "docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world",
+              "docs/best-practices/custom-instructions",
+              "docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Voice",
+        "pages": [
+          "api-reference/voice",
+          "docs/voice/stream-real-time-voice-translation",
+          "docs/voice/translate-an-audio-file"
+        ]
+      },
+      {
+        "tab": "Admin",
+        "pages": [
+          "docs/getting-started/managing-api-keys",
+          "docs/retrieving-usage-data",
+          "api-reference/admin-api",
+          "api-reference/admin-api/managing-admin-keys",
+          "api-reference/admin-api/managing-developer-keys",
+          "api-reference/usage-and-quota",
+          "api-reference/admin-api/organization-usage-analytics"
+        ]
+      },
+      {
+>>>>>>> Stashed changes
         "tab": "API Reference",
         "groups": [
           {
@@ -345,8 +409,14 @@
       {
         "title": "Resources",
         "items": [
-          { "label": "API Status", "href": "https://api-status.deepl.com" },
-          { "label": "DeepL Status", "href": "https://www.deeplstatus.com" }
+          {
+            "label": "API Status",
+            "href": "https://api-status.deepl.com"
+          },
+          {
+            "label": "DeepL Status",
+            "href": "https://www.deeplstatus.com"
+          }
         ]
       }
     ],
@@ -359,7 +429,9 @@
   },
   "api": {
     "examples": {
-      "languages": ["curl"],
+      "languages": [
+        "curl"
+      ],
       "defaults": "required"
     },
     "playground": {
