@@ -74,28 +74,9 @@ def resolve_run_dir(args):
 
 
 def build_review_system_prompt():
-    """Build system prompt for the review step, combining style guide and review criteria."""
-    claude_md = load_file(CLAUDE_MD_PATH)
-    editorial = load_file(EDITORIAL_REVIEWER_PATH)
-    diataxis = load_file(DIATAXIS_PATH)
-
-    return f"""You are a documentation reviewer for DeepL's developer documentation.
-
-Your job is to review .mdx drafts against the style guide and editorial standards below,
-and return structured findings as JSON.
-
-## Style Guide (CLAUDE.md)
-
-{claude_md}
-
-## Editorial Review Criteria
-
-{editorial}
-
-## Diataxis Framework and Review Criteria
-
-{diataxis}
-"""
+    """System prompt for the review step (assembled from the agent files, one place)."""
+    from util import build_review_system_prompt as _build
+    return _build()
 
 
 def build_review_user_prompt(filename, content, previous_fixes=None):

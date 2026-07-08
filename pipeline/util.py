@@ -14,6 +14,103 @@ STAGE_PATTERNS = [
 ]
 
 
+# --------------------------------------------------------------------------- #
+# Prompt assembly — the ONE place output behavior is controlled.               #
+#                                                                              #
+# Every pipeline step that talks to the model builds its prompt here, from the #
+# agent files below. To change how docs read, edit those files — not the       #
+# Python. The .md files are human-usable on their own (they're the same        #
+# instructions a person authoring or reviewing docs by hand would follow).     #
+# --------------------------------------------------------------------------- #
+
+AGENTS_DIR = REPO_ROOT / ".claude" / "agents"
+CLAUDE_MD_PATH = REPO_ROOT / "CLAUDE.md"
+DOCS_WRITER_PATH = AGENTS_DIR / "docs-writer.md"      # how to write
+DIATAXIS_PATH = AGENTS_DIR / "diataxis.md"            # the four content types
+DOCS_IA_PATH = AGENTS_DIR / "docs-ia.md"              # site structure + placement
+EDITORIAL_REVIEWER_PATH = AGENTS_DIR / "editorial-reviewer.md"  # review rubric
+
+
+def load_text(path):
+    try:
+        return Path(path).read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return ""
+
+
+OUTPUT_RULES = """## Output Format
+
+- Output ONLY the .mdx file content. No commentary, no explanation, no markdown fences.
+- Start with frontmatter (---). Every page MUST have `title` and `description`
+  (description under 160 chars, specific, not generic).
+- Serve the Diataxis type appropriate for the page (overview/landing pages are exempt).
+- Never invent API parameters or behavior. Only document what the source content or the
+  OpenAPI spec provides."""
+
+
+def build_authoring_system_prompt(role):
+    """System prompt for any step that WRITES docs (generate, rework).
+
+    All substance comes from the agent files so there is a single place to change it.
+    """
+    return f"""{role}
+
+You write .mdx files for a Mintlify-powered docs site. The docs-writer guidelines are
+your primary instructions. CLAUDE.md provides general writing principles. When they
+conflict, the docs-writer guidelines win.
+
+## Style Guide (CLAUDE.md)
+
+{load_text(CLAUDE_MD_PATH)}
+
+## Docs Writer Guidelines
+
+{load_text(DOCS_WRITER_PATH)}
+
+## Diataxis Framework
+
+{load_text(DIATAXIS_PATH)}
+
+## Information Architecture
+
+{load_text(DOCS_IA_PATH)}
+
+{OUTPUT_RULES}"""
+
+
+def build_review_system_prompt():
+    """System prompt for the review step."""
+    return f"""You are a documentation reviewer for DeepL's developer documentation.
+
+Review .mdx drafts against the guidelines below and return structured findings as JSON.
+
+## Style Guide (CLAUDE.md)
+
+{load_text(CLAUDE_MD_PATH)}
+
+## Editorial Review Criteria
+
+{load_text(EDITORIAL_REVIEWER_PATH)}
+
+## Diataxis Framework and Review Criteria
+
+{load_text(DIATAXIS_PATH)}
+
+## Information Architecture
+
+{load_text(DOCS_IA_PATH)}
+"""
+
+
+def load_planning_context():
+    """IA + Diataxis prose for the batch planner, so its routing rules aren't a
+    third hand-maintained copy of the content-type rules."""
+    return (
+        f"## Information Architecture\n\n{load_text(DOCS_IA_PATH)}\n\n"
+        f"## Diataxis Framework\n\n{load_text(DIATAXIS_PATH)}"
+    )
+
+
 def run_cmd(cmd, check=True, capture=True, **kwargs):
     """Run a subprocess command and return the result."""
     result = subprocess.run(

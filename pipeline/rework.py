@@ -58,10 +58,9 @@ except ImportError:
     sys.exit(1)
 
 
+from util import build_authoring_system_prompt
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CLAUDE_MD_PATH = REPO_ROOT / "CLAUDE.md"
-DOCS_WRITER_PATH = REPO_ROOT / ".claude" / "agents" / "docs-writer.md"
-DIATAXIS_PATH = REPO_ROOT / ".claude" / "agents" / "diataxis.md"
 OPENAPI_PATH = REPO_ROOT / "api-reference" / "openapi.yaml"
 STANDARDS_PATH = REPO_ROOT / "standards" / "ia.yaml"
 
@@ -87,60 +86,11 @@ def canonical_to_draft_name(canonical_path):
 
 
 def build_system_prompt():
-    claude_md = load_file(CLAUDE_MD_PATH)
-    docs_writer = load_file(DOCS_WRITER_PATH)
-    diataxis = load_file(DIATAXIS_PATH)
-    standards = load_file(STANDARDS_PATH)
-
-    return f"""You are a documentation editor for DeepL's developer documentation.
-
-You rework existing .mdx files for a Mintlify-powered docs site. The docs-writer guidelines
-below are your primary instructions. The style guide (CLAUDE.md) provides general
-writing principles. When they conflict, the docs-writer guidelines win.
-
-## Style Guide (CLAUDE.md)
-
-{claude_md}
-
-## Docs Writer Guidelines
-
-{docs_writer}
-
-## Diataxis Framework
-
-{diataxis}
-
-## IA Standards
-
-{standards}
-
-## Output Format
-
-- Output ONLY the .mdx file content. No commentary, no explanation, no markdown fences.
-- Start with frontmatter (---). Every page MUST have `title` and `description` fields. If the source is missing a description, write one (under 160 chars, specific, not generic).
-- Follow the Diataxis type appropriate for the target page.
-- Never invent API parameters or behavior not present in the source content or OpenAPI spec.
-
-## Content Preservation
-
-When consolidating, merging, or retiring pages, be SELECTIVE but not destructive:
-
-- Carry over content that is UNIQUE and useful: limits, warnings, behavioral quirks,
-  non-obvious constraints, worked examples that teach something. These are the things
-  a developer can't find elsewhere.
-- Do NOT carry over content that duplicates the OpenAPI spec (parameter lists, response
-  schemas, endpoint paths), generic boilerplate ("learn more about X"), or content that
-  already exists on another page in the docs.
-- Do NOT summarize a detailed page into a one-line stub. If a source has 10 useful
-  paragraphs, the target should have those 10 paragraphs (edited for fit), not a sentence
-  that says "see the API reference."
-- If the target is an openapi: stub page (auto-rendered from the OpenAPI spec), add
-  supplementary prose BELOW the frontmatter — context, examples, warnings, and guidance
-  that the spec alone cannot convey.
-- After writing, mentally check: did you drop any content that a developer would miss?
-  If yes, add it back. Did you keep content that's already in the spec or elsewhere?
-  If yes, cut it.
-"""
+    # All writing rules (style, Diataxis, IA, content-preservation) live in the
+    # agent files and are assembled in one place: util.build_authoring_system_prompt.
+    return build_authoring_system_prompt(
+        "You are a documentation editor for DeepL's developer documentation."
+    )
 
 
 def build_rework_prompt(task_type, source_contents, targets, instruction, openapi_context=None, retire_paths=None):
@@ -288,10 +238,10 @@ def load_openapi_for_paths(source_paths):
 
     with open(STANDARDS_PATH) as f:
         standards = yaml.safe_load(f)
-    overrides = standards.get("product_family_overrides", {})
+    families = standards.get("families", {})
 
     relevant_tags = set()
-    for family, config in overrides.items():
+    for family, config in families.items():
         if family.lower() in sections:
             relevant_tags.update(config.get("tags", []))
 

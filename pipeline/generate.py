@@ -31,11 +31,10 @@ except ImportError:
     sys.exit(1)
 
 
+from util import build_authoring_system_prompt
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OPENAPI_PATH = REPO_ROOT / "api-reference" / "openapi.yaml"
-CLAUDE_MD_PATH = REPO_ROOT / "CLAUDE.md"
-DIATAXIS_PATH = REPO_ROOT / ".claude" / "agents" / "diataxis.md"
-DOCS_WRITER_PATH = REPO_ROOT / ".claude" / "agents" / "docs-writer.md"
 STANDARDS_PATH = REPO_ROOT / "standards" / "ia.yaml"
 DOCS_DIR = REPO_ROOT / "docs"
 
@@ -50,12 +49,12 @@ def load_file(path):
         return ""
 
 
-def load_openapi_for_family(family_name, overrides):
+def load_openapi_for_family(family_name, families):
     """Extract the relevant portion of the OpenAPI spec for a product family."""
     with open(OPENAPI_PATH) as f:
         spec = yaml.safe_load(f)
 
-    family_config = overrides.get(family_name, {})
+    family_config = families.get(family_name, {})
     family_tags = set(family_config.get("tags", [family_name]))
 
     relevant_paths = {}
@@ -70,58 +69,37 @@ def load_openapi_for_family(family_name, overrides):
 
 
 def find_existing_docs_for_family(family_name):
-    """Find existing docs content for a product family (for context)."""
-    from detect_gaps import FAMILY_TO_DOCS_DIRS, find_existing_docs
+    """Load existing docs content for a family (for context/cross-linking).
 
-    existing = find_existing_docs()
-    prefixes = FAMILY_TO_DOCS_DIRS.get(family_name, [f"docs/{family_name.lower()}"])
+    Membership comes from docs.json (the live structure), not a hardcoded
+    directory map: gather the pages under the family's product tab and its API
+    Reference group.
+    """
+    from detect_gaps import load_docs_json, collect_pages_under, load_yaml, STANDARDS_PATH as SP
+
+    cfg = load_yaml(SP).get("families", {}).get(family_name, {})
+    docs_json = load_docs_json()
+
+    page_paths = []
+    for name in (cfg.get("product_tab"), cfg.get("api_reference_group"), family_name):
+        if name:
+            page_paths.extend(collect_pages_under(docs_json, name))
+
     context_docs = {}
-    for doc_key, doc in existing.items():
-        for prefix in prefixes:
-            if doc_key.startswith(prefix) or doc["path"].startswith(prefix):
-                full_path = REPO_ROOT / doc["path"]
-                if full_path.exists():
-                    context_docs[doc["path"]] = load_file(full_path)
+    for pp in dict.fromkeys(page_paths):  # dedupe, preserve order
+        for ext in (".mdx", ".md"):
+            full_path = REPO_ROOT / (pp + ext)
+            if full_path.exists():
+                context_docs[pp + ext] = load_file(full_path)
                 break
     return context_docs
 
 
 def build_system_prompt():
-    """Build the system prompt from CLAUDE.md, docs-writer agent, and Diataxis guidelines."""
-    claude_md = load_file(CLAUDE_MD_PATH)
-    diataxis = load_file(DIATAXIS_PATH)
-    docs_writer = load_file(DOCS_WRITER_PATH)
-    standards = load_file(STANDARDS_PATH)
-
-    return f"""You are a documentation writer for DeepL's developer documentation.
-
-You write .mdx files for a Mintlify-powered docs site. The docs-writer guidelines
-below are your primary instructions. The style guide (CLAUDE.md) provides general
-writing principles. When they conflict, the docs-writer guidelines win.
-
-## Style Guide (CLAUDE.md)
-
-{claude_md}
-
-## Docs Writer Guidelines
-
-{docs_writer}
-
-## Diataxis Framework
-
-{diataxis}
-
-## IA Standards
-
-{standards}
-
-## Output Format
-
-- Output ONLY the .mdx file content. No commentary, no explanation, no markdown fences.
-- Start with frontmatter (---).
-- Follow the Diataxis type specified in the request exactly.
-- Never invent API parameters or behavior. Only document what's in the OpenAPI spec provided.
-"""
+    # All writing rules live in the agent files, assembled in one place.
+    return build_authoring_system_prompt(
+        "You are a documentation writer for DeepL's developer documentation."
+    )
 
 
 def build_generation_prompt(gap, family_name, openapi_context, existing_docs_context):
@@ -325,7 +303,7 @@ def main():
         return 0
 
     standards = yaml.safe_load(open(STANDARDS_PATH))
-    overrides = standards.get("product_family_overrides", {})
+    families = standards.get("families", {})
 
     if args.dry_run:
         print(f"Would generate content for {len(gaps)} gaps:\n")
@@ -354,7 +332,7 @@ def main():
         print(f"[{i+1}/{len(gaps)}] Generating: {gap['type']} for {family}...")
 
         try:
-            openapi_context = load_openapi_for_family(family, overrides)
+            openapi_context = load_openapi_for_family(family, families)
             existing_docs = find_existing_docs_for_family(family)
             user_prompt = build_generation_prompt(gap, family, openapi_context, existing_docs)
 
