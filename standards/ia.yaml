@@ -1,76 +1,51 @@
-# Developer Docs IA Standards
+# Product family map — the ONE thing the pipeline can't infer from prose.
 #
-# Defines WHAT each product section needs in the docs.
-# Does NOT define HOW to write each content type (that's in CLAUDE.md
-# and the Diataxis agents).
+# OpenAPI endpoints carry tags, but tags don't say which product family a
+# developer thinks they belong to, which product tab they document, or which
+# API Reference group they live under. This file supplies exactly that mapping
+# and nothing else.
 #
-# Product sections are auto-derived from OpenAPI spec tags.
-# This file only stores overrides (grouping multiple tags into one
-# product family) and the universal requirements that apply to all sections.
-
-# --- What every product section needs ---
-# These requirements apply to every product family in the docs.
-# A "product section" = a top-level group in the Documentation tab
-# (e.g., Translate, Voice, Write, Admin, Customize).
-
-section_requirements:
-  documentation_tab:
-    - orientation page (what this product is, links to everything in the section)
-    - at least one tutorial
-    - how-to guides as needed for common tasks
-    - code samples for every endpoint (see code_samples below)
-
-  api_reference_tab:
-    - auto-generated from the OpenAPI spec
-    - no standalone overview/narrative pages (fold into first endpoint page or Documentation tab)
-    - one page per endpoint
-
-# --- Code samples ---
-# Managed in a separate repo. Docs pull in whatever that repo provides.
-# Language requirements, SDK usage standards, and contribution guidelines
-# live in the samples repo itself.
-code_samples:
-  source: separate-repo
-  sync_mechanism: TBD  # git submodule, build-time fetch, or Mintlify snippet imports
-
-# --- Product family overrides ---
-# The pipeline auto-derives product sections from OpenAPI tags.
-# This section ONLY exists to group multiple fine-grained tags
-# into a single docs product family, or to flag a tag as its own
-# top-level section.
+# Everything evaluative — what each tab must contain, the no-narrative-in-
+# reference rule, Diataxis rules, title conventions — lives in prose:
+#   .claude/agents/docs-ia.md      (structure + requirements)
+#   .claude/agents/diataxis.md     (content-type rules)
+#   .claude/agents/docs-writer.md  (writing rules)
+# The live structure of the site (which page is in which tab) lives in docs.json.
 #
-# Tags not listed here get auto-grouped by common prefix or become
-# their own section. Add an override when the auto-grouping is wrong.
-#
-# When a new product launches with new OpenAPI tags, the pipeline
-# will flag it as "new ungrouped tags" for a human to decide:
-# does this become its own product family, or does it belong
-# under an existing one?
+# Keep this map current: when the pipeline finds an OpenAPI tag not listed here,
+# it flags it for a human to place. Don't add rules here — add them to docs-ia.md.
 
-product_family_overrides:
+families:
   Translate:
     tags: [TranslateText, TranslateDocuments]
+    product_tab: Translate            # tab name in docs.json
+    api_reference_group: Translate    # group name under the API Reference tab
+
   Customize:
     tags: [ManageGlossaries, ManageMultilingualGlossaries, TranslationMemories]
-    note: Style rules currently live under Customize too but don't have their own OpenAPI tag yet.
+    product_tab: Customize
+    api_reference_group: Customize
+    # Style rules live under Customize but have no OpenAPI tag yet.
+
   Write:
     tags: [RephraseText, CorrectText]
+    product_tab: Write
+    api_reference_group: Write
+
   Voice:
     tags: [VoiceAPI, VoiceTranslateJob]
+    product_tab: Voice
+    api_reference_group: Voice
+
   Admin:
     tags: [AdminApi]
+    product_tab: Admin
+    api_reference_group: Admin
+
   Languages:
     tags: [MetaInformation]
-  # QualityEvaluation is not yet grouped — pipeline will flag it
-  # for a human decision on where it belongs.
+    product_tab: null                 # no standalone product tab; lives in Home
+    api_reference_group: Languages
 
-# --- Cross-cutting sections ---
-# Sections that don't map to a single product family.
-# These exist by convention, not by OpenAPI tag.
-
-cross_cutting_sections:
-  - Getting Started     # onboarding, first API request, SDKs
-  - Going to Production # error handling, CORS, cost control, rate limits
-  - Cookbooks           # scenario-based guides requiring external tools
-  - Developer Tools     # CLI, MCP, Postman, community
-  - API Updates         # changelog, breaking changes, alpha/beta
+  # QualityEvaluation has no family yet — the pipeline will flag it for a human
+  # to decide where it belongs.
