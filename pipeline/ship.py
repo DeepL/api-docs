@@ -206,6 +206,26 @@ def main():
         return 1
     print("  gh CLI: OK")
 
+    # Guard: only ship from a clean, main-based checkout. The promoted changes in
+    # the working tree are relative to HEAD, so shipping is only well-defined when
+    # HEAD is main; from a feature or stale branch the PR would be built on the
+    # wrong base (or docs.json wouldn't match main's structure). Refuse rather than
+    # guess. CI always runs on main, so this is a no-op there — it only catches an
+    # accidental local run on the wrong branch.
+    head = run(["git", "rev-parse", "HEAD"]).stdout.strip()
+    try:
+        main_sha = run(["git", "rev-parse", "origin/main"]).stdout.strip()
+    except RuntimeError:
+        main_sha = ""
+    if head != main_sha:
+        print("Error: ship expects a checkout at origin/main.")
+        print(f"  HEAD:        {head[:12] or '(unknown)'}")
+        print(f"  origin/main: {main_sha[:12] or '(not found — run: git fetch origin)'}")
+        print("  You're on a feature or stale branch. Run the pipeline from a fresh")
+        print("  checkout/worktree off main, or use `run.py --skip ship post_review`")
+        print("  and open the PR yourself.")
+        return 1
+
     # --- Determine branch ---
     current_branch = get_current_branch()
     branch_name = args.branch or f"docs/pipeline-{run_id}"
@@ -242,17 +262,18 @@ def main():
         return 0
 
     # --- Create branch ---
+    # No stashing. The guard above ensures HEAD == origin/main, so branching here
+    # keeps main as the base and the promoted working-tree changes apply with no
+    # conflict — no stash/pop, and unrelated uncommitted work is never touched.
+    # (The old approach stashed the tree and popped it onto a main branch; on a
+    # divergent branch that pop conflicted, crashed, and committed conflict markers.)
     if need_new_branch:
         if branch_exists(branch_name):
             print(f"Switching to existing branch: {branch_name}")
-            run(["git", "stash", "push", "-m", "pipeline-ship"])
             run(["git", "checkout", branch_name])
-            run(["git", "stash", "pop"])
         else:
             print(f"Creating branch: {branch_name} (off main)")
-            run(["git", "stash", "push", "-m", "pipeline-ship"])
-            run(["git", "checkout", "-b", branch_name, "main"])
-            run(["git", "stash", "pop"])
+            run(["git", "checkout", "-b", branch_name])
 
     # --- Stage and commit ---
     print("Staging docs files...")
