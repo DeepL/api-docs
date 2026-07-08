@@ -32,7 +32,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Home",
         "groups": [
           {
             "group": "Getting Started",
@@ -47,51 +47,6 @@
             "pages": [
               "docs/getting-started/supported-languages",
               "docs/resources/language-release-process"
-            ]
-          },
-          {
-            "group": "Translate",
-            "pages": [
-              {
-                "group": "Text Translation",
-                "pages": [
-                  "docs/learning-how-tos/examples-and-guides/translation-beginners-guide",
-                  "docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter",
-                  "docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags",
-                  "docs/learning-how-tos/examples-and-guides/translating-between-variants",
-                  "docs/learning-how-tos/examples-and-guides/customizations-for-variants",
-                  "docs/learning-how-tos/examples-and-guides/placeholder-tags",
-                  "docs/best-practices/language-detection"
-                ],
-                "drilldown": false
-              },
-              "docs/best-practices/document-translations",
-              {
-                "group": "XML & HTML",
-                "pages": [
-                  "docs/xml-and-html-handling/xml",
-                  "docs/xml-and-html-handling/structured-content",
-                  "docs/xml-and-html-handling/html",
-                  "docs/xml-and-html-handling/customized-xml-outline-detection",
-                  "docs/xml-and-html-handling/tag-handling-v2"
-                ],
-                "drilldown": false
-              }
-            ]
-          },
-          {
-            "group": "Customize",
-            "pages": [
-              "docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world",
-              "docs/best-practices/custom-instructions",
-              "docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories"
-            ]
-          },
-          {
-            "group": "Admin",
-            "pages": [
-              "docs/getting-started/managing-api-keys",
-              "docs/retrieving-usage-data"
             ]
           },
           {
@@ -148,6 +103,65 @@
               }
             ]
           }
+        ]
+      },
+      {
+        "tab": "Translate",
+        "groups": [
+          {
+            "group": "Text Translation",
+            "pages": [
+              "docs/learning-how-tos/examples-and-guides/translation-beginners-guide",
+              "docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter",
+              "docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags",
+              "docs/learning-how-tos/examples-and-guides/translating-between-variants",
+              "docs/learning-how-tos/examples-and-guides/customizations-for-variants",
+              "docs/learning-how-tos/examples-and-guides/placeholder-tags",
+              "docs/best-practices/language-detection"
+            ]
+          },
+          {
+            "group": "Document Translation",
+            "pages": [
+              "docs/best-practices/document-translations"
+            ]
+          },
+          {
+            "group": "XML & HTML",
+            "pages": [
+              "docs/xml-and-html-handling/xml",
+              "docs/xml-and-html-handling/structured-content",
+              "docs/xml-and-html-handling/html",
+              "docs/xml-and-html-handling/customized-xml-outline-detection",
+              "docs/xml-and-html-handling/tag-handling-v2"
+            ]
+          },
+          {
+            "group": "Customize",
+            "pages": [
+              "docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world",
+              "docs/best-practices/custom-instructions",
+              "docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Voice",
+        "pages": [
+          "api-reference/voice"
+        ]
+      },
+      {
+        "tab": "Admin",
+        "pages": [
+          "docs/getting-started/managing-api-keys",
+          "docs/retrieving-usage-data",
+          "api-reference/admin-api",
+          "api-reference/admin-api/managing-admin-keys",
+          "api-reference/admin-api/managing-developer-keys",
+          "api-reference/usage-and-quota",
+          "api-reference/admin-api/organization-usage-analytics"
         ]
       },
       {
@@ -239,7 +253,6 @@
           {
             "group": "Voice",
             "pages": [
-              "api-reference/voice",
               "api-reference/voice/request-session",
               "api-reference/voice/websocket-streaming",
               "api-reference/voice/reconnect-session"
@@ -286,12 +299,9 @@
           {
             "group": "Admin",
             "pages": [
-              "api-reference/admin-api",
-              "api-reference/admin-api/managing-admin-keys",
               {
                 "group": "Managing Developer Keys",
                 "pages": [
-                  "api-reference/admin-api/managing-developer-keys",
                   "api-reference/admin-api/managing-developer-keys/create-key",
                   "api-reference/admin-api/managing-developer-keys/get-keys",
                   "api-reference/admin-api/managing-developer-keys/deactivate-key",
@@ -303,7 +313,6 @@
               {
                 "group": "Usage & Quota",
                 "pages": [
-                  "api-reference/usage-and-quota",
                   "api-reference/usage-and-quota/check-usage-and-limits"
                 ],
                 "drilldown": false
@@ -311,7 +320,6 @@
               {
                 "group": "Organization Usage Analytics",
                 "pages": [
-                  "api-reference/admin-api/organization-usage-analytics",
                   "api-reference/admin-api/get-usage-analytics",
                   "api-reference/admin-api/get-custom-tag-usage-analytics"
                 ],
