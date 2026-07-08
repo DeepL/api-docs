@@ -17,6 +17,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -40,6 +41,24 @@ DOCS_DIR = REPO_ROOT / "docs"
 
 MODEL = "claude-sonnet-4-6"
 MAX_TOKENS = 8192
+
+# Gap types that aren't "write a new page" tasks — generate skips these. They need a
+# human decision (placement), a nav edit, or a removal, handled elsewhere.
+NON_GENERATIVE = {
+    "narrative_home_unplaced", "missing_hub_entry", "apiref_narrative_page",
+    "ungrouped_tag", "missing_api_reference_group", "reference_only_no_guide",
+}
+OVERVIEW_TYPES = {"missing_overview", "missing_product_tab", "undocumented_product", "missing_orientation"}
+
+
+def slugify(text):
+    s = re.sub(r"[^a-z0-9]+", "-", (text or "").lower()).strip("-")
+    return s or "how-to"
+
+
+def title_from_content(content):
+    m = re.search(r'^title:\s*["\']?(.+?)["\']?\s*$', content or "", re.MULTILINE)
+    return m.group(1).strip() if m else ""
 
 
 def load_file(path):
@@ -127,10 +146,10 @@ def build_generation_prompt(gap, family_name, openapi_context, existing_docs_con
 {openapi_context}
 ```"""
 
-    if gap_type == "undocumented_product":
+    if gap_type in OVERVIEW_TYPES:
         return f"""Write an overview page (Diataxis: explanation/orientation) for the {family_name} product section.
 
-This product has NO documentation pages yet. This will be the landing page for the section.
+This is the landing page for the section: what the product does, who it's for, and links to everything in it.
 
 Target path: docs/{family_name.lower()}/overview.mdx
 
@@ -139,14 +158,12 @@ Follow the docs-writer guidelines exactly — they cover structure, DRY rules, a
 {openapi_section}
 {existing_docs_summary}"""
 
-    elif gap_type == "missing_orientation":
-        return f"""Write an overview page (Diataxis: explanation/orientation) for the {family_name} section.
+    elif gap_type == "missing_howto":
+        return f"""Write a how-to guide (Diataxis: how-to) for the {family_name} product.
 
-This section has existing docs but no overview page. This will be the landing page for the section.
+The section exposes the endpoints below but has no how-to guide. Choose the SINGLE most valuable how-to — a specific, real task a developer needs to accomplish with these endpoints (not an overview, not a tutorial). Give it a goal-oriented title ("Handle ...", "Use ...", "Configure ..."). Ground it in the actual endpoints; don't invent capabilities.
 
-Target path: docs/{family_name.lower()}/overview.mdx
-
-Follow the docs-writer guidelines exactly — they cover structure, DRY rules, and what to include/exclude.
+Follow the docs-writer guidelines exactly.
 
 {openapi_section}
 {existing_docs_summary}"""
@@ -234,23 +251,25 @@ def generate_content(client, system_prompt, user_prompt):
     return response.content[0].text
 
 
-def determine_output_path(gap, family_name):
+def determine_output_path(gap, family_name, content=None):
     """Determine where to write the generated content."""
     gap_type = gap["type"]
 
-    if gap_type in ("undocumented_product", "missing_orientation"):
+    if gap_type in OVERVIEW_TYPES:
         return DOCS_DIR / family_name.lower() / "overview.mdx"
 
     elif gap_type == "missing_tutorial":
         return DOCS_DIR / family_name.lower() / "tutorial.mdx"
 
+    elif gap_type == "missing_howto":
+        # The model picks the topic; derive the filename from its title.
+        slug = slugify(title_from_content(content))
+        return DOCS_DIR / family_name.lower() / f"{slug}.mdx"
+
     elif gap_type in ("thin_page", "missing_code_examples"):
         return REPO_ROOT / gap["path"]
 
-    elif gap_type == "missing_description":
-        return None  # handled differently
-
-    return None
+    return None  # missing_description handled inline; non-generative types skipped
 
 
 def apply_description(gap, description):
@@ -315,13 +334,16 @@ def main():
     families = standards.get("families", {})
 
     if args.dry_run:
-        print(f"Would generate content for {len(gaps)} gaps:\n")
+        print(f"Would process {len(gaps)} gaps:\n")
         for g in gaps:
             family = g.get("family", "unknown")
-            out_path = determine_output_path(g, family)
             print(f"  [{g['severity'].upper()}] {g['type']}: {g['description']}")
-            if out_path:
-                print(f"    -> {out_path.relative_to(REPO_ROOT)}")
+            if g["type"] in NON_GENERATIVE:
+                print("    -> skip (needs a human decision or a non-generation step)")
+            else:
+                out_path = determine_output_path(g, family)
+                if out_path:
+                    print(f"    -> {out_path.relative_to(REPO_ROOT)}")
             print()
         return 0
 
@@ -338,6 +360,11 @@ def main():
 
     for i, gap in enumerate(gaps):
         family = gap.get("family", "unknown")
+
+        if gap["type"] in NON_GENERATIVE:
+            print(f"[{i+1}/{len(gaps)}] Skipping {gap['type']} for {family} (needs a human decision or a non-generation step)")
+            continue
+
         print(f"[{i+1}/{len(gaps)}] Generating: {gap['type']} for {family}...")
 
         try:
@@ -357,7 +384,7 @@ def main():
                     print(f"  Could not apply description to {page_path}")
                     errors.append({"gap": gap, "error": "Could not insert description"})
             else:
-                out_path = determine_output_path(gap, family)
+                out_path = determine_output_path(gap, family, content)
                 if out_path:
                     rel = out_path.relative_to(REPO_ROOT)
 
