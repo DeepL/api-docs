@@ -1,76 +1,62 @@
-# Developer Docs IA Standards
+# Product family map — what the pipeline can't infer from prose.
 #
-# Defines WHAT each product section needs in the docs.
-# Does NOT define HOW to write each content type (that's in CLAUDE.md
-# and the Diataxis agents).
+# OpenAPI tags group the API Reference automatically, but they don't say which
+# product family a developer thinks in terms of, how those endpoints split into
+# groups, or WHERE the family's narrative docs live. This file supplies that, and
+# nothing else. All rules live in prose: .claude/agents/docs-ia.md (structure),
+# diataxis.md, docs-writer.md. Live site structure lives in docs.json.
 #
-# Product sections are auto-derived from OpenAPI spec tags.
-# This file only stores overrides (grouping multiple tags into one
-# product family) and the universal requirements that apply to all sections.
-
-# --- What every product section needs ---
-# These requirements apply to every product family in the docs.
-# A "product section" = a top-level group in the Documentation tab
-# (e.g., Translate, Voice, Write, Admin, Customize).
-
-section_requirements:
-  documentation_tab:
-    - orientation page (what this product is, links to everything in the section)
-    - at least one tutorial
-    - how-to guides as needed for common tasks
-    - code samples for every endpoint (see code_samples below)
-
-  api_reference_tab:
-    - auto-generated from the OpenAPI spec
-    - no standalone overview/narrative pages (fold into first endpoint page or Documentation tab)
-    - one page per endpoint
-
-# --- Code samples ---
-# Managed in a separate repo. Docs pull in whatever that repo provides.
-# Language requirements, SDK usage standards, and contribution guidelines
-# live in the samples repo itself.
-code_samples:
-  source: separate-repo
-  sync_mechanism: TBD  # git submodule, build-time fetch, or Mintlify snippet imports
-
-# --- Product family overrides ---
-# The pipeline auto-derives product sections from OpenAPI tags.
-# This section ONLY exists to group multiple fine-grained tags
-# into a single docs product family, or to flag a tag as its own
-# top-level section.
+# Each family has:
+#   narrative_home   WHERE its guides live:
+#       own            its own top-level product tab (tab name == family name)
+#       <TabName>      nests under another tab (e.g. Translate, Home)
+#       reference_only no narrative, intentionally (rare — early alpha only)
+#       unplaced       not yet decided; the pipeline flags it for a human
+#   groups           the endpoint groups in this family. Each group is a coverage
+#                    unit: the pipeline expects at least one guide (tutorial OR
+#                    how-to) covering it. A guide declares what it covers with a
+#                    `covers: [<group name>]` frontmatter field. Each group lists
+#                    the OpenAPI tags whose endpoints it contains.
 #
-# Tags not listed here get auto-grouped by common prefix or become
-# their own section. Add an override when the auto-grouping is wrong.
+# API grouping and narrative_home are independent (see docs-ia.md). A family can
+# have several groups while all their guides live under one tab.
 #
-# When a new product launches with new OpenAPI tags, the pipeline
-# will flag it as "new ungrouped tags" for a human to decide:
-# does this become its own product family, or does it belong
-# under an existing one?
+# When the pipeline finds an OpenAPI tag not listed in any group, it flags it.
 
-product_family_overrides:
+families:
   Translate:
-    tags: [TranslateText, TranslateDocuments]
+    narrative_home: own
+    groups:
+      - {name: Translate, tags: [TranslateText, TranslateDocuments]}
+
   Customize:
-    tags: [ManageGlossaries, ManageMultilingualGlossaries, TranslationMemories]
-    note: Style rules currently live under Customize too but don't have their own OpenAPI tag yet.
-  Write:
-    tags: [RephraseText, CorrectText]
+    narrative_home: Translate          # nests as a group inside the Translate tab
+    groups:
+      - {name: Customize, tags: [ManageGlossaries, ManageMultilingualGlossaries, TranslationMemories]}
+    # Style rules live under Customize but have no OpenAPI tag yet.
+
   Voice:
-    tags: [VoiceAPI, VoiceTranslateJob]
+    narrative_home: own
+    groups:
+      - {name: Voice, tags: [VoiceAPI]}                       # real-time streaming
+      - {name: Translate Audio Files, tags: [VoiceTranslateJob]}  # async file jobs
+
   Admin:
-    tags: [AdminApi]
+    narrative_home: own
+    groups:
+      - {name: Admin, tags: [AdminApi]}
+
+  Write:
+    narrative_home: unplaced           # no product tab today — human decides own/under
+    groups:
+      - {name: Write, tags: [RephraseText, CorrectText]}
+
   Languages:
-    tags: [MetaInformation]
-  # QualityEvaluation is not yet grouped — pipeline will flag it
-  # for a human decision on where it belongs.
+    narrative_home: Home               # cross-cutting; lives in the Home hub
+    groups:
+      - {name: Languages, tags: [MetaInformation]}
 
-# --- Cross-cutting sections ---
-# Sections that don't map to a single product family.
-# These exist by convention, not by OpenAPI tag.
-
-cross_cutting_sections:
-  - Getting Started     # onboarding, first API request, SDKs
-  - Going to Production # error handling, CORS, cost control, rate limits
-  - Cookbooks           # scenario-based guides requiring external tools
-  - Developer Tools     # CLI, MCP, Postman, community
-  - API Updates         # changelog, breaking changes, alpha/beta
+  QualityEvaluation:
+    narrative_home: unplaced           # alpha — human decides (maybe under Translate)
+    groups:
+      - {name: Quality Evaluation, tags: [QualityEvaluation]}

@@ -1,15 +1,26 @@
 #!/usr/bin/env python3
 """
-Detect documentation gaps by comparing existing docs against IA standards.
+Detect documentation gaps by cross-referencing three surfaces:
 
-Deterministic script — no AI. Reads the OpenAPI spec, scans existing docs,
-compares against standards/ia.yaml, and outputs a structured gap report.
+  1. The API Reference   (endpoints, from the OpenAPI spec)
+  2. The product tabs     (tutorials / how-tos / overviews, from docs.json)
+  3. The Home hub         (cross-cutting content + links to each product)
+
+Structure comes from docs.json (Mintlify's live source of truth for what page
+sits in which tab). The one thing docs.json can't tell us — which OpenAPI tags
+belong to which product family — comes from standards/ia.yaml. The RULES for what
+"complete" means are prose in .claude/agents/docs-ia.md; this script implements the
+mechanical, deterministic subset of those rules. Judgment calls (is THIS specific
+new endpoint missing a how-to, is a page really the wrong Diataxis type) are left
+to the LLM audit — see audit_gaps.py (follow-up).
+
+Deterministic — no AI, no API calls.
 
 Usage:
-    python pipeline/detect_gaps.py                    # full audit
-    python pipeline/detect_gaps.py --section translate # audit one section
-    python pipeline/detect_gaps.py --output json       # machine-readable output
-    python pipeline/detect_gaps.py --force             # report gaps even when files exist
+    python pipeline/detect_gaps.py                     # full audit
+    python pipeline/detect_gaps.py --section voice     # one family
+    python pipeline/detect_gaps.py --output json       # machine-readable
+    python pipeline/detect_gaps.py --force             # report even when files exist
 """
 
 import argparse
@@ -23,314 +34,376 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parent.parent
 STANDARDS_PATH = REPO_ROOT / "standards" / "ia.yaml"
 OPENAPI_PATH = REPO_ROOT / "api-reference" / "openapi.yaml"
-DOCS_DIR = REPO_ROOT / "docs"
-API_REF_DIR = REPO_ROOT / "api-reference"
+DOCS_JSON_PATH = REPO_ROOT / "docs.json"
+
+# Tab-name matching. Structure is in flux (the doc tab is being split from a single
+# "Documentation" tab into per-product tabs), so accept the known aliases.
+HOME_TAB_NAMES = {"Home", "Documentation"}
+API_REFERENCE_TAB_NAMES = {"API Reference", "API reference"}
 
 
-def load_standards():
-    with open(STANDARDS_PATH) as f:
+# --------------------------------------------------------------------------- #
+# Loading                                                                      #
+# --------------------------------------------------------------------------- #
+
+def load_yaml(path):
+    with open(path) as f:
         return yaml.safe_load(f)
 
 
-def load_openapi():
-    with open(OPENAPI_PATH) as f:
-        return yaml.safe_load(f)
+def load_docs_json():
+    with open(DOCS_JSON_PATH) as f:
+        return json.load(f)
 
 
-def derive_product_families(spec, standards):
-    """
-    Auto-derive product families from OpenAPI tags, applying overrides
-    from ia.yaml. Returns {family_name: {tags: [...], endpoints: [...]}}.
-    """
-    overrides = standards.get("product_family_overrides", {})
+# --------------------------------------------------------------------------- #
+# docs.json — the live structure of the site                                   #
+# --------------------------------------------------------------------------- #
 
-    tag_to_family = {}
-    for family_name, config in overrides.items():
-        for tag in config.get("tags", []):
-            tag_to_family[tag] = family_name
+def _nav_root(docs_json):
+    return docs_json.get("navigation", docs_json)
 
-    endpoints = extract_endpoints(spec)
 
-    families = {}
-    ungrouped_tags = set()
+def list_tab_names(docs_json):
+    return [t.get("tab", "") for t in _nav_root(docs_json).get("tabs", [])]
 
-    for ep in endpoints:
-        for tag in ep.get("tags", []):
-            family = tag_to_family.get(tag)
-            if not family:
-                ungrouped_tags.add(tag)
-                family = tag
-            families.setdefault(family, {"tags": set(), "endpoints": []})
-            families[family]["tags"].add(tag)
-            families[family]["endpoints"].append(ep)
 
-    for name in families:
-        families[name]["tags"] = sorted(families[name]["tags"])
+def collect_pages_under(docs_json, name):
+    """All page paths under the tab OR group whose title == `name`."""
+    pages = []
 
-    return families, ungrouped_tags
+    def rec(node, active):
+        if isinstance(node, dict):
+            here = node.get("tab") == name or node.get("group") == name
+            active = active or here
+            for key in ("tabs", "groups", "pages"):
+                for child in node.get(key, []):
+                    rec(child, active)
+        elif isinstance(node, list):
+            for child in node:
+                rec(child, active)
+        elif isinstance(node, str) and active:
+            pages.append(node)
 
+    rec(_nav_root(docs_json), False)
+    return pages
+
+
+def group_names_under(docs_json, name):
+    """Group titles nested under a tab/group (used to match API Reference groups)."""
+    groups = []
+
+    def rec(node, active):
+        if isinstance(node, dict):
+            here = node.get("tab") == name or node.get("group") == name
+            if active and "group" in node:
+                groups.append(node["group"])
+            active = active or here
+            for key in ("tabs", "groups", "pages"):
+                for child in node.get(key, []):
+                    rec(child, active)
+        elif isinstance(node, list):
+            for child in node:
+                rec(child, active)
+
+    rec(_nav_root(docs_json), False)
+    return groups
+
+
+def first_present(names, present):
+    for n in names:
+        if n in present:
+            return n
+    return None
+
+
+# --------------------------------------------------------------------------- #
+# OpenAPI — endpoints and their families                                       #
+# --------------------------------------------------------------------------- #
 
 def extract_endpoints(spec):
     endpoints = []
     for path, methods in (spec.get("paths") or {}).items():
-        for method, details in methods.items():
-            if method in ("get", "post", "put", "patch", "delete"):
+        for method, details in (methods or {}).items():
+            if method in ("get", "post", "put", "patch", "delete") and isinstance(details, dict):
                 endpoints.append({
                     "method": method.upper(),
                     "path": path,
-                    "summary": details.get("summary", ""),
                     "tags": details.get("tags", []),
-                    "operation_id": details.get("operationId", ""),
+                    "summary": details.get("summary", ""),
                 })
     return endpoints
 
 
-def find_existing_docs():
-    docs = {}
-    for dirpath in [DOCS_DIR, API_REF_DIR]:
-        if not dirpath.exists():
+def endpoints_for_tags(endpoints, tags):
+    tags = set(tags)
+    return [e for e in endpoints if set(e["tags"]) & tags]
+
+
+def family_tags(cfg):
+    """Union of all endpoint tags across a family's groups."""
+    return [t for grp in cfg.get("groups", []) for t in grp.get("tags", [])]
+
+
+def ungrouped_tags(endpoints, families):
+    mapped = {t for cfg in families.values() for t in family_tags(cfg)}
+    seen = {t for e in endpoints for t in e["tags"]}
+    return seen - mapped
+
+
+# --------------------------------------------------------------------------- #
+# Pages — frontmatter + coarse Diataxis classification                         #
+# --------------------------------------------------------------------------- #
+
+def page_frontmatter(page_path):
+    """Return (frontmatter_dict, raw_content). (None, None) if the file is missing."""
+    for ext in (".mdx", ".md"):
+        fp = REPO_ROOT / (page_path + ext)
+        if fp.exists():
+            try:
+                content = fp.read_text(encoding="utf-8")
+            except Exception:
+                return {}, ""
+            if content.startswith("---"):
+                end = content.find("---", 3)
+                if end != -1:
+                    try:
+                        return (yaml.safe_load(content[3:end]) or {}), content
+                    except yaml.YAMLError:
+                        return {}, content
+            return {}, content
+    return None, None  # page listed in nav but file missing
+
+
+def slug(page_path):
+    return page_path.rsplit("/", 1)[-1].lower()
+
+
+# Coarse role detection. Precise Diataxis typing is the LLM audit's job; here we
+# only need "does this tab have AN overview / A tutorial / A how-to at all".
+def is_overview(page_path, fm):
+    s = slug(page_path)
+    t = (fm or {}).get("type", "")
+    st = str((fm or {}).get("sidebarTitle", "")).lower()
+    return (
+        t in ("overview", "explanation")
+        or s in ("overview", "intro", "introduction", "index")
+        or st == "overview"
+    )
+
+
+def is_tutorial(page_path, fm):
+    s = slug(page_path)
+    if (fm or {}).get("type") == "tutorial":
+        return True
+    return any(k in s for k in ("tutorial", "quickstart", "beginners-guide", "beginner", "get-started", "first"))
+
+
+def is_howto(page_path, fm):
+    s = slug(page_path)
+    if (fm or {}).get("type") in ("how-to", "howto"):
+        return True
+    padded = f"-{s}-"
+    return any(s.startswith(v) or f"-{v}-" in padded for v in
+               ("how-to", "use", "handle", "set-up", "setup", "configure", "migrate", "solve", "control", "manage", "enable"))
+
+
+def is_openapi_page(fm):
+    return bool(fm) and ("openapi" in fm)
+
+
+# --------------------------------------------------------------------------- #
+# Gap detection                                                                #
+# --------------------------------------------------------------------------- #
+
+def gap(gap_type, severity, family, path=None, desc="", group=None):
+    g = {"type": gap_type, "severity": severity, "description": desc}
+    if family:
+        g["family"] = family
+    if group:
+        g["group"] = group
+    if path:
+        g["path"] = path
+    return g
+
+
+def covered_group_names(docs_json, apiref_tab):
+    """Endpoint-group names declared covered by any guide (`covers` frontmatter)."""
+    covered = set()
+    for p in all_doc_pages(docs_json, apiref_tab):
+        fm, _ = page_frontmatter(p)
+        if not fm:
             continue
-        for mdx in dirpath.rglob("*.mdx"):
-            rel = mdx.relative_to(REPO_ROOT)
-            frontmatter = extract_frontmatter(mdx)
-            docs[str(rel.with_suffix(""))] = {
-                "path": str(rel),
-                "frontmatter": frontmatter,
-                "has_code_examples": has_code_examples(mdx),
-                "word_count": count_words(mdx),
-            }
-    return docs
+        cov = fm.get("covers")
+        if isinstance(cov, str):
+            covered.add(cov)
+        elif isinstance(cov, list):
+            covered.update(cov)
+    return covered
 
 
-def extract_frontmatter(path):
-    try:
-        content = path.read_text(encoding="utf-8")
-    except Exception:
-        return {}
-    if not content.startswith("---"):
-        return {}
-    end = content.find("---", 3)
-    if end == -1:
-        return {}
-    try:
-        return yaml.safe_load(content[3:end]) or {}
-    except yaml.YAMLError:
-        return {}
-
-
-def has_code_examples(path):
-    try:
-        content = path.read_text(encoding="utf-8")
-    except Exception:
-        return False
-    return "```" in content
-
-
-def count_words(path):
-    try:
-        content = path.read_text(encoding="utf-8")
-    except Exception:
-        return 0
-    if content.startswith("---"):
-        end = content.find("---", 3)
-        if end != -1:
-            content = content[end + 3:]
-    return len(content.split())
-
-
-
-
-FAMILY_TO_DOCS_DIRS = {
-    "Translate": [
-        "docs/learning-how-tos/examples-and-guides/translation",
-        "docs/learning-how-tos/examples-and-guides/how-to-use-context",
-        "docs/learning-how-tos/examples-and-guides/placeholder",
-        "docs/learning-how-tos/examples-and-guides/translating-between",
-        "docs/learning-how-tos/examples-and-guides/customizations-for-variants",
-        "docs/xml-and-html-handling",
-        "docs/best-practices/document-translations",
-        "docs/best-practices/language-detection",
-        "docs/translate",
-    ],
-    "Customize": [
-        "docs/learning-how-tos/examples-and-guides/glossaries",
-        "docs/best-practices/custom-instructions",
-        "docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories",
-        "docs/customize",
-    ],
-    "Voice": ["docs/voice"],
-    "Write": ["docs/write"],
-    "Admin": [
-        "docs/getting-started/managing-api-keys",
-        "docs/retrieving-usage-data",
-        "docs/admin",
-    ],
-    "Languages": [
-        "docs/getting-started/supported-languages",
-        "docs/resources/language-release-process",
-        "docs/languages",
-    ],
-}
-
-
-def find_docs_for_family(family_name, existing_docs):
-    prefixes = FAMILY_TO_DOCS_DIRS.get(family_name, [f"docs/{family_name.lower()}"])
-    matches = []
-    for doc_key, doc in existing_docs.items():
-        for prefix in prefixes:
-            if doc_key.startswith(prefix) or doc["path"].startswith(prefix):
-                matches.append(doc)
-                break
-    return matches
-
-
-def detect_gaps(families, standards, existing_docs, section_filter=None, force=False):
+def detect_gaps(docs_json, endpoints, families, section=None, force=False):
     gaps = []
+    tab_names = set(list_tab_names(docs_json))
+    home_tab = first_present(HOME_TAB_NAMES, tab_names)
+    apiref_tab = first_present(API_REFERENCE_TAB_NAMES, tab_names)
 
-    for family_name, family in families.items():
-        if section_filter and family_name.lower() != section_filter.lower():
+    home_pages = collect_pages_under(docs_json, home_tab) if home_tab else []
+    apiref_pages = collect_pages_under(docs_json, apiref_tab) if apiref_tab else []
+    apiref_groups = set(group_names_under(docs_json, apiref_tab)) if apiref_tab else set()
+
+    covered = covered_group_names(docs_json, apiref_tab)
+
+    # --- Per-family, cross-surface checks --------------------------------- #
+    for family, cfg in families.items():
+        if section and family.lower() != section.lower():
             continue
 
-        family_docs = find_docs_for_family(family_name, existing_docs)
-        endpoint_count = len(family.get("endpoints", []))
+        groups = cfg.get("groups", [])
+        eps = endpoints_for_tags(endpoints, family_tags(cfg))
+        home = cfg.get("narrative_home", "unplaced")
 
-        # Check: does this product family have ANY docs-tab pages?
-        if not family_docs:
-            gaps.append({
-                "type": "undocumented_product",
-                "severity": "high",
-                "family": family_name,
-                "endpoint_count": endpoint_count,
-                "description": f"{family_name} has {endpoint_count} endpoints but no documentation pages",
-            })
-        else:
-            # Check: has orientation page?
-            has_orientation = any(
-                "overview" in d["path"].lower() or "intro" in d["path"].lower()
-                for d in family_docs
-            )
-            if not has_orientation or force:
-                gap_type = "missing_orientation" if not has_orientation else "undocumented_product"
-                gaps.append({
-                    "type": gap_type,
-                    "severity": "high",
-                    "family": family_name,
-                    "description": f"{family_name} section has no orientation/overview page"
-                                   + (" (force regenerate)" if has_orientation else ""),
-                })
+        # API Reference: each group with endpoints needs a matching group in the ref tab.
+        for grp in groups:
+            gname = grp.get("name", "")
+            if apiref_tab and gname not in apiref_groups and endpoints_for_tags(endpoints, grp.get("tags", [])):
+                gaps.append(gap("missing_api_reference_group", "high", family, group=gname,
+                                desc=f"'{gname}' has endpoints but no matching group in the API Reference tab"))
 
-            # Check: has at least one tutorial?
-            has_tutorial = any(
-                d.get("frontmatter", {}).get("type") == "tutorial"
-                or "beginner" in d["path"].lower()
-                or "quickstart" in d["path"].lower()
-                or "first" in d["path"].lower()
-                for d in family_docs
-            )
-            if not has_tutorial or force:
-                gaps.append({
-                    "type": "missing_tutorial",
-                    "severity": "high",
-                    "family": family_name,
-                    "description": f"{family_name} section has no tutorial"
-                                   + (" (force regenerate)" if has_tutorial else ""),
-                })
-
-        # Code samples are tracked in the samples repo, not here.
-
-    # Check docs-tab pages for quality issues (independent of product families)
-    for doc_key, doc in existing_docs.items():
-        if doc_key.startswith("api-reference/"):
+        if home == "reference_only":
+            if eps:
+                gaps.append(gap("reference_only_no_guide", "low", family,
+                                desc=f"{family} is reference-only; consider adding a guide (expected once it leaves alpha)"))
             continue
 
-        if not doc["has_code_examples"]:
-            path = doc["path"]
-            if "cookbook" in path or "how-to" in path or "guide" in path:
-                gaps.append({
-                    "type": "missing_code_examples",
-                    "severity": "medium",
-                    "path": path,
-                    "description": f"{path} appears to be a guide but has no code examples",
-                })
+        if home in ("unplaced", None):
+            if eps:
+                gaps.append(gap("narrative_home_unplaced", "high", family,
+                                desc=f"{family} has {len(eps)} endpoints but no decided narrative home — a human must choose own / a parent tab / reference_only"))
+            continue
 
-        if doc["word_count"] < 100:
-            gaps.append({
-                "type": "thin_page",
-                "severity": "medium",
-                "path": doc["path"],
-                "word_count": doc["word_count"],
-                "description": f"{doc['path']} has only {doc['word_count']} words",
-            })
+        # Per-group guide coverage: each endpoint group needs at least one guide
+        # (tutorial OR how-to) declaring it via `covers`. Sections have many guides;
+        # this is the real bar, not "has one tutorial". Applies wherever the family's
+        # guides live (own tab or nested), since `covers` is location-independent.
+        for grp in groups:
+            gname = grp.get("name", "")
+            if gname not in covered and endpoints_for_tags(endpoints, grp.get("tags", [])):
+                gaps.append(gap("missing_group_coverage", "high", family, group=gname,
+                                desc=f"No guide (tutorial or how-to) covers the '{gname}' endpoints"))
 
-        fm = doc.get("frontmatter", {})
-        if not fm.get("description"):
-            gaps.append({
-                "type": "missing_description",
-                "severity": "low",
-                "path": doc["path"],
-                "description": f"{doc['path']} has no frontmatter description",
-            })
+        if home != "own":
+            continue  # nested under another tab: overview/hub are the parent's concern
+
+        # own tab: overview page + a Home hub link.
+        tab_pages = collect_pages_under(docs_json, family)
+        if eps and not tab_pages:
+            gaps.append(gap("missing_product_tab", "high", family,
+                            desc=f"{family} has {len(eps)} endpoints but no '{family}' product tab"))
+            continue
+
+        present = [(p, page_frontmatter(p)[0]) for p in tab_pages]
+        if force or not any(is_overview(p, fm) for p, fm in present):
+            gaps.append(gap("missing_overview", "high", family,
+                            desc=f"{family} tab has no overview/landing page"))
+
+        if home_tab and not any(family.lower() in p.lower() for p in home_pages):
+            gaps.append(gap("missing_hub_entry", "medium", family,
+                            desc=f"Home hub has no page/link surfacing the {family} product"))
+
+    # --- API Reference must be reference-only ----------------------------- #
+    if apiref_tab and not section:
+        for p in apiref_pages:
+            fm, _ = page_frontmatter(p)
+            if fm is None:
+                continue  # file missing; separate concern
+            if not is_openapi_page(fm):
+                gaps.append(gap("apiref_narrative_page", "medium", None, path=p,
+                                desc=f"{p} sits in the API Reference tab but is not an endpoint page (narrative belongs in a product tab or Home)"))
+
+    # --- Ungrouped OpenAPI tags ------------------------------------------- #
+    if not section:
+        for tag in sorted(ungrouped_tags(endpoints, families)):
+            gaps.append(gap("ungrouped_tag", "high", None,
+                            desc=f"OpenAPI tag '{tag}' is not mapped to a family in standards/ia.yaml — a human must place it"))
+
+    # --- Doc-quality checks on non-reference pages ------------------------ #
+    if not section:
+        for p in all_doc_pages(docs_json, apiref_tab):
+            fm, content = page_frontmatter(p)
+            if fm is None:
+                continue
+            if not fm.get("description"):
+                gaps.append(gap("missing_description", "low", None, path=p,
+                                desc=f"{p} has no frontmatter description"))
+            if len(strip_frontmatter(content).split()) < 100:
+                gaps.append(gap("thin_page", "medium", None, path=p,
+                                desc=f"{p} has under 100 words"))
 
     return gaps
 
 
-def get_gap_group(gap):
-    """Get the grouping key for a gap (product family or page path's section)."""
-    if "family" in gap:
-        return gap["family"]
-    path = gap.get("path", "")
+def all_doc_pages(docs_json, apiref_tab):
+    """Every page path in the nav except those under the API Reference tab."""
+    ref = set(collect_pages_under(docs_json, apiref_tab)) if apiref_tab else set()
+    everything = set()
+
+    def rec(node):
+        if isinstance(node, dict):
+            for key in ("tabs", "groups", "pages"):
+                for child in node.get(key, []):
+                    rec(child)
+        elif isinstance(node, list):
+            for child in node:
+                rec(child)
+        elif isinstance(node, str):
+            everything.add(node)
+
+    rec(_nav_root(docs_json))
+    return sorted(everything - ref)
+
+
+def strip_frontmatter(content):
+    if content and content.startswith("---"):
+        end = content.find("---", 3)
+        if end != -1:
+            return content[end + 3:]
+    return content or ""
+
+
+# --------------------------------------------------------------------------- #
+# Reporting                                                                    #
+# --------------------------------------------------------------------------- #
+
+def group_key(g):
+    if "family" in g:
+        return g["family"]
+    path = g.get("path", "")
     parts = path.split("/")
-    if len(parts) >= 2:
-        return parts[1].replace("-", " ").title()
-    return "Other"
+    return parts[1].replace("-", " ").title() if len(parts) >= 2 else "Site-wide"
 
 
-def format_report(gaps, ungrouped_tags, output_format="text"):
+def format_report(gaps, output_format="text"):
     if output_format == "json":
-        return json.dumps({
-            "gaps": gaps,
-            "total": len(gaps),
-            "ungrouped_tags": sorted(ungrouped_tags),
-        }, indent=2)
+        return json.dumps({"gaps": gaps, "total": len(gaps)}, indent=2)
 
-    lines = []
-    lines.append("Documentation Gap Report")
-    lines.append("=" * 50)
-
-    if ungrouped_tags:
-        lines.append("")
-        lines.append("[WARNING] Ungrouped OpenAPI tags (need product family assignment):")
-        for tag in sorted(ungrouped_tags):
-            lines.append(f"  - {tag}")
-
-    lines.append("")
-    lines.append(f"Total gaps: {len(gaps)}")
-
-    by_severity = {"high": [], "medium": [], "low": []}
+    lines = ["Documentation Gap Report", "=" * 50, "", f"Total gaps: {len(gaps)}"]
+    by_sev = {"high": [], "medium": [], "low": []}
     for g in gaps:
-        by_severity.get(g.get("severity", "low"), by_severity["low"]).append(g)
+        by_sev.setdefault(g.get("severity", "low"), []).append(g)
 
-    for severity in ["high", "medium", "low"]:
-        items = by_severity[severity]
+    for sev in ("high", "medium", "low"):
+        items = by_sev.get(sev) or []
         if not items:
             continue
-
-        lines.append("")
-        lines.append(f"[{severity.upper()}] ({len(items)} issues)")
-        lines.append("=" * 50)
-
+        lines += ["", f"[{sev.upper()}] ({len(items)} issues)", "=" * 50]
         grouped = {}
         for g in items:
-            key = get_gap_group(g)
-            grouped.setdefault(key, []).append(g)
-
-        for group_name in sorted(grouped):
-            group_items = grouped[group_name]
-            lines.append("")
-            lines.append(f"  [{group_name}]")
-            for g in group_items:
+            grouped.setdefault(group_key(g), []).append(g)
+        for name in sorted(grouped):
+            lines += ["", f"  [{name}]"]
+            for g in grouped[name]:
                 lines.append(f"    {g['type']}: {g['description']}")
-
     lines.append("")
     return "\n".join(lines)
 
@@ -339,16 +412,16 @@ def main():
     parser = argparse.ArgumentParser(description="Detect documentation gaps")
     parser.add_argument("--section", help="Audit only this product family")
     parser.add_argument("--output", choices=["text", "json"], default="text")
-    parser.add_argument("--force", action="store_true", help="Report gaps even when files exist (for regeneration)")
+    parser.add_argument("--force", action="store_true", help="Report requirement gaps even when satisfied (for regeneration)")
     args = parser.parse_args()
 
-    standards = load_standards()
-    spec = load_openapi()
-    existing_docs = find_existing_docs()
-    families, ungrouped_tags = derive_product_families(spec, standards)
-    gaps = detect_gaps(families, standards, existing_docs, args.section, force=args.force)
+    families = load_yaml(STANDARDS_PATH).get("families", {})
+    spec = load_yaml(OPENAPI_PATH)
+    docs_json = load_docs_json()
+    endpoints = extract_endpoints(spec)
 
-    print(format_report(gaps, ungrouped_tags, args.output))
+    gaps = detect_gaps(docs_json, endpoints, families, section=args.section, force=args.force)
+    print(format_report(gaps, args.output))
     return 1 if gaps else 0
 
 

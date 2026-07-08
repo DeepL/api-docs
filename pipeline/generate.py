@@ -17,6 +17,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -31,16 +32,33 @@ except ImportError:
     sys.exit(1)
 
 
+from util import build_authoring_system_prompt
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OPENAPI_PATH = REPO_ROOT / "api-reference" / "openapi.yaml"
-CLAUDE_MD_PATH = REPO_ROOT / "CLAUDE.md"
-DIATAXIS_PATH = REPO_ROOT / ".claude" / "agents" / "diataxis.md"
-DOCS_WRITER_PATH = REPO_ROOT / ".claude" / "agents" / "docs-writer.md"
 STANDARDS_PATH = REPO_ROOT / "standards" / "ia.yaml"
 DOCS_DIR = REPO_ROOT / "docs"
 
 MODEL = "claude-sonnet-4-6"
 MAX_TOKENS = 8192
+
+# Gap types that aren't "write a new page" tasks — generate skips these. They need a
+# human decision (placement), a nav edit, or a removal, handled elsewhere.
+NON_GENERATIVE = {
+    "narrative_home_unplaced", "missing_hub_entry", "apiref_narrative_page",
+    "ungrouped_tag", "missing_api_reference_group", "reference_only_no_guide",
+}
+OVERVIEW_TYPES = {"missing_overview", "missing_product_tab", "undocumented_product", "missing_orientation"}
+
+
+def slugify(text):
+    s = re.sub(r"[^a-z0-9]+", "-", (text or "").lower()).strip("-")
+    return s or "how-to"
+
+
+def title_from_content(content):
+    m = re.search(r'^title:\s*["\']?(.+?)["\']?\s*$', content or "", re.MULTILINE)
+    return m.group(1).strip() if m else ""
 
 
 def load_file(path):
@@ -50,78 +68,73 @@ def load_file(path):
         return ""
 
 
-def load_openapi_for_family(family_name, overrides):
-    """Extract the relevant portion of the OpenAPI spec for a product family."""
+def load_openapi_for_tags(tags):
+    """Extract the portion of the OpenAPI spec whose endpoints carry any of `tags`."""
     with open(OPENAPI_PATH) as f:
         spec = yaml.safe_load(f)
 
-    family_config = overrides.get(family_name, {})
-    family_tags = set(family_config.get("tags", [family_name]))
-
+    want = set(tags)
     relevant_paths = {}
     for path, methods in (spec.get("paths") or {}).items():
         for method, details in methods.items():
             if method in ("get", "post", "put", "patch", "delete"):
-                endpoint_tags = set(details.get("tags", []))
-                if endpoint_tags & family_tags:
+                if set(details.get("tags", [])) & want:
                     relevant_paths.setdefault(path, {})[method] = details
 
     return yaml.dump({"paths": relevant_paths}, default_flow_style=False)
 
 
-def find_existing_docs_for_family(family_name):
-    """Find existing docs content for a product family (for context)."""
-    from detect_gaps import FAMILY_TO_DOCS_DIRS, find_existing_docs
+def family_all_tags(cfg):
+    return [t for grp in cfg.get("groups", []) for t in grp.get("tags", [])]
 
-    existing = find_existing_docs()
-    prefixes = FAMILY_TO_DOCS_DIRS.get(family_name, [f"docs/{family_name.lower()}"])
+
+def group_tags(cfg, group_name):
+    for grp in cfg.get("groups", []):
+        if grp.get("name") == group_name:
+            return grp.get("tags", [])
+    return family_all_tags(cfg)
+
+
+def find_existing_docs_for_family(family_name):
+    """Load existing docs content for a family (for context/cross-linking).
+
+    Membership comes from docs.json (the live structure), not a hardcoded
+    directory map: gather the pages under the family's product tab and its API
+    Reference group.
+    """
+    from detect_gaps import load_docs_json, collect_pages_under, load_yaml, STANDARDS_PATH as SP
+
+    cfg = load_yaml(SP).get("families", {}).get(family_name, {})
+    docs_json = load_docs_json()
+
+    # Gather context from the family's tab (own tab is named after the family),
+    # its parent tab if it nests, and its API Reference group(s).
+    names = [family_name]
+    home = cfg.get("narrative_home")
+    if home and home not in ("own", "reference_only", "unplaced"):
+        names.append(home)  # parent tab it nests under
+    names += [grp.get("name") for grp in cfg.get("groups", []) if grp.get("name")]
+
+    page_paths = []
+    for name in names:
+        if name:
+            page_paths.extend(collect_pages_under(docs_json, name))
+
     context_docs = {}
-    for doc_key, doc in existing.items():
-        for prefix in prefixes:
-            if doc_key.startswith(prefix) or doc["path"].startswith(prefix):
-                full_path = REPO_ROOT / doc["path"]
-                if full_path.exists():
-                    context_docs[doc["path"]] = load_file(full_path)
+    for pp in dict.fromkeys(page_paths):  # dedupe, preserve order
+        for ext in (".mdx", ".md"):
+            full_path = REPO_ROOT / (pp + ext)
+            if full_path.exists():
+                context_docs[pp + ext] = load_file(full_path)
                 break
     return context_docs
 
 
 def build_system_prompt():
-    """Build the system prompt from CLAUDE.md, docs-writer agent, and Diataxis guidelines."""
-    claude_md = load_file(CLAUDE_MD_PATH)
-    diataxis = load_file(DIATAXIS_PATH)
-    docs_writer = load_file(DOCS_WRITER_PATH)
-    standards = load_file(STANDARDS_PATH)
-
-    return f"""You are a documentation writer for DeepL's developer documentation.
-
-You write .mdx files for a Mintlify-powered docs site. The docs-writer guidelines
-below are your primary instructions. The style guide (CLAUDE.md) provides general
-writing principles. When they conflict, the docs-writer guidelines win.
-
-## Style Guide (CLAUDE.md)
-
-{claude_md}
-
-## Docs Writer Guidelines
-
-{docs_writer}
-
-## Diataxis Framework
-
-{diataxis}
-
-## IA Standards
-
-{standards}
-
-## Output Format
-
-- Output ONLY the .mdx file content. No commentary, no explanation, no markdown fences.
-- Start with frontmatter (---).
-- Follow the Diataxis type specified in the request exactly.
-- Never invent API parameters or behavior. Only document what's in the OpenAPI spec provided.
-"""
+    # All writing rules live in the agent files, assembled in one place.
+    return build_authoring_system_prompt(
+        "You are a documentation writer for DeepL's developer documentation."
+    )
 
 
 def build_generation_prompt(gap, family_name, openapi_context, existing_docs_context):
@@ -140,10 +153,10 @@ def build_generation_prompt(gap, family_name, openapi_context, existing_docs_con
 {openapi_context}
 ```"""
 
-    if gap_type == "undocumented_product":
+    if gap_type in OVERVIEW_TYPES:
         return f"""Write an overview page (Diataxis: explanation/orientation) for the {family_name} product section.
 
-This product has NO documentation pages yet. This will be the landing page for the section.
+This is the landing page for the section: what the product does, who it's for, and links to everything in it.
 
 Target path: docs/{family_name.lower()}/overview.mdx
 
@@ -152,14 +165,25 @@ Follow the docs-writer guidelines exactly — they cover structure, DRY rules, a
 {openapi_section}
 {existing_docs_summary}"""
 
-    elif gap_type == "missing_orientation":
-        return f"""Write an overview page (Diataxis: explanation/orientation) for the {family_name} section.
+    elif gap_type == "missing_group_coverage":
+        group = gap.get("group", family_name)
+        return f"""Write a guide for the "{group}" capability of the {family_name} product.
 
-This section has existing docs but no overview page. This will be the landing page for the section.
+The endpoints below (the {group} group) have no guide yet. Write the single most valuable guide for a developer's first real need with them — a tutorial or a how-to, whichever fits best. Give it a goal-oriented title grounded in these endpoints; don't invent capabilities.
 
-Target path: docs/{family_name.lower()}/overview.mdx
+IMPORTANT: include `covers: [{group}]` in the frontmatter so the pipeline records that this guide covers the {group} group.
 
-Follow the docs-writer guidelines exactly — they cover structure, DRY rules, and what to include/exclude.
+Follow the docs-writer guidelines exactly.
+
+{openapi_section}
+{existing_docs_summary}"""
+
+    elif gap_type == "missing_howto":
+        return f"""Write a how-to guide (Diataxis: how-to) for the {family_name} product.
+
+The section exposes the endpoints below but has no how-to guide. Choose the SINGLE most valuable how-to — a specific, real task a developer needs to accomplish with these endpoints (not an overview, not a tutorial). Give it a goal-oriented title ("Handle ...", "Use ...", "Configure ..."). Ground it in the actual endpoints; don't invent capabilities.
+
+Follow the docs-writer guidelines exactly.
 
 {openapi_section}
 {existing_docs_summary}"""
@@ -247,23 +271,25 @@ def generate_content(client, system_prompt, user_prompt):
     return response.content[0].text
 
 
-def determine_output_path(gap, family_name):
+def determine_output_path(gap, family_name, content=None):
     """Determine where to write the generated content."""
     gap_type = gap["type"]
 
-    if gap_type in ("undocumented_product", "missing_orientation"):
+    if gap_type in OVERVIEW_TYPES:
         return DOCS_DIR / family_name.lower() / "overview.mdx"
 
     elif gap_type == "missing_tutorial":
         return DOCS_DIR / family_name.lower() / "tutorial.mdx"
 
+    elif gap_type in ("missing_howto", "missing_group_coverage"):
+        # The model picks the topic; derive the filename from its title.
+        slug = slugify(title_from_content(content))
+        return DOCS_DIR / family_name.lower() / f"{slug}.mdx"
+
     elif gap_type in ("thin_page", "missing_code_examples"):
         return REPO_ROOT / gap["path"]
 
-    elif gap_type == "missing_description":
-        return None  # handled differently
-
-    return None
+    return None  # missing_description handled inline; non-generative types skipped
 
 
 def apply_description(gap, description):
@@ -325,16 +351,19 @@ def main():
         return 0
 
     standards = yaml.safe_load(open(STANDARDS_PATH))
-    overrides = standards.get("product_family_overrides", {})
+    families = standards.get("families", {})
 
     if args.dry_run:
-        print(f"Would generate content for {len(gaps)} gaps:\n")
+        print(f"Would process {len(gaps)} gaps:\n")
         for g in gaps:
             family = g.get("family", "unknown")
-            out_path = determine_output_path(g, family)
             print(f"  [{g['severity'].upper()}] {g['type']}: {g['description']}")
-            if out_path:
-                print(f"    -> {out_path.relative_to(REPO_ROOT)}")
+            if g["type"] in NON_GENERATIVE:
+                print("    -> skip (needs a human decision or a non-generation step)")
+            else:
+                out_path = determine_output_path(g, family)
+                if out_path:
+                    print(f"    -> {out_path.relative_to(REPO_ROOT)}")
             print()
         return 0
 
@@ -351,10 +380,18 @@ def main():
 
     for i, gap in enumerate(gaps):
         family = gap.get("family", "unknown")
+
+        if gap["type"] in NON_GENERATIVE:
+            print(f"[{i+1}/{len(gaps)}] Skipping {gap['type']} for {family} (needs a human decision or a non-generation step)")
+            continue
+
         print(f"[{i+1}/{len(gaps)}] Generating: {gap['type']} for {family}...")
 
         try:
-            openapi_context = load_openapi_for_family(family, overrides)
+            # Scope the spec to the gap's group when it targets one, else the whole family.
+            cfg = families.get(family, {})
+            tags = group_tags(cfg, gap["group"]) if gap.get("group") else family_all_tags(cfg)
+            openapi_context = load_openapi_for_tags(tags)
             existing_docs = find_existing_docs_for_family(family)
             user_prompt = build_generation_prompt(gap, family, openapi_context, existing_docs)
 
@@ -370,7 +407,7 @@ def main():
                     print(f"  Could not apply description to {page_path}")
                     errors.append({"gap": gap, "error": "Could not insert description"})
             else:
-                out_path = determine_output_path(gap, family)
+                out_path = determine_output_path(gap, family, content)
                 if out_path:
                     rel = out_path.relative_to(REPO_ROOT)
 

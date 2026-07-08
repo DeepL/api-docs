@@ -20,10 +20,38 @@ import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_JSON_PATH = REPO_ROOT / "docs.json"
+STANDARDS_PATH = REPO_ROOT / "standards" / "ia.yaml"
 DRAFTS_DIR = REPO_ROOT / "pipeline" / "drafts"
+
+
+def load_families():
+    try:
+        with open(STANDARDS_PATH) as f:
+            return (yaml.safe_load(f) or {}).get("families", {})
+    except FileNotFoundError:
+        return {}
+
+
+def target_tab_for_family(family_name, families):
+    """Which top-level tab a family's narrative pages belong under (or None)."""
+    home = families.get(family_name, {}).get("narrative_home")
+    if home == "own":
+        return family_name              # tab named after the family
+    if home and home not in ("reference_only", "unplaced"):
+        return home                     # nests under another tab
+    return None
+
+
+def find_tab(tabs, name):
+    for tab in tabs:
+        if name and tab.get("tab", "").lower() == name.lower():
+            return tab
+    return None
 
 
 def find_latest_run():
@@ -140,28 +168,33 @@ def find_going_to_production_index(groups):
     return len(groups)
 
 
-def insert_page_in_group(group, nav_path, gap_type):
-    """Insert a page path into a group's pages array at the appropriate position."""
-    pages = group["pages"]
+OVERVIEW_TYPES = {"missing_overview", "missing_product_tab", "undocumented_product", "missing_orientation"}
 
-    if gap_type in ("undocumented_product", "missing_orientation"):
-        # Overview pages go first
-        pages.insert(0, nav_path)
+
+def insert_page(pages, nav_path, gap_type):
+    """Insert a page path into a pages array at the appropriate position."""
+    if gap_type in OVERVIEW_TYPES:
+        pages.insert(0, nav_path)                       # overview goes first
     elif gap_type == "missing_tutorial":
-        # Tutorials go after overview (position 1), or first if no overview
-        insert_at = 0
+        insert_at = 0                                    # tutorial right after overview
         for i, item in enumerate(pages):
             if isinstance(item, str) and "overview" in item.lower():
                 insert_at = i + 1
                 break
         pages.insert(insert_at, nav_path)
     else:
-        # Everything else appends
         pages.append(nav_path)
 
 
-def update_docs_json(docs_json, nav_path, family_name, gap_type):
-    """Add nav_path to the docs.json navigation under the correct group.
+def tab_contains_page(tab, nav_path):
+    """Whether nav_path already appears anywhere under a tab (its pages or groups)."""
+    if page_in_nav(tab.get("pages", []), nav_path):
+        return True
+    return any(page_in_nav(g.get("pages", []), nav_path) for g in tab.get("groups", []))
+
+
+def update_docs_json(docs_json, nav_path, family_name, gap_type, families):
+    """Add nav_path to docs.json under the family's tab (resolved via narrative_home).
 
     Returns a description of the change made, or None if no change was needed.
     """
@@ -169,31 +202,28 @@ def update_docs_json(docs_json, nav_path, family_name, gap_type):
     if not tabs:
         return None
 
-    # Check if page already exists in ANY tab before adding
-    for tab in tabs:
-        for g in tab.get("groups", []):
-            if page_in_nav(g.get("pages", []), nav_path):
-                return None
+    # Already present anywhere? skip.
+    if any(tab_contains_page(tab, nav_path) for tab in tabs):
+        return None
 
-    # Only add new pages to the Documentation tab (first tab)
+    # Resolve the family's target tab (own tab, or the tab it nests under).
+    tab = find_tab(tabs, target_tab_for_family(family_name, families))
+    if tab is not None:
+        # Place directly under the tab (current policy — no sub-grouping).
+        insert_page(tab.setdefault("pages", []), nav_path, gap_type)
+        return f"Added '{nav_path}' under tab '{tab.get('tab')}'"
+
+    # Fallback: family doesn't resolve to a tab — original group-based placement
+    # on the first tab.
     doc_tab = tabs[0]
-    groups = doc_tab.get("groups", [])
-
-    # Find the matching group by family name (searches nested subgroups too)
-    group = find_group(groups, family_name)
-
-    # Fallback: find a group whose pages share the longest path prefix
-    if not group:
-        group = find_group_by_sibling_path(groups, nav_path)
-
+    groups = doc_tab.setdefault("groups", [])
+    group = find_group(groups, family_name) or find_group_by_sibling_path(groups, nav_path)
     if group:
-        insert_page_in_group(group, nav_path, gap_type)
+        insert_page(group["pages"], nav_path, gap_type)
         return f"Added '{nav_path}' to existing group '{group['group']}'"
-    else:
-        new_group = {"group": family_name, "pages": [nav_path]}
-        insert_idx = find_going_to_production_index(groups)
-        groups.insert(insert_idx, new_group)
-        return f"Created new group '{family_name}' with page '{nav_path}'"
+    new_group = {"group": family_name, "pages": [nav_path]}
+    groups.insert(find_going_to_production_index(groups), new_group)
+    return f"Created new group '{family_name}' with page '{nav_path}'"
 
 
 def remove_from_nav(docs_json, nav_path):
@@ -376,9 +406,10 @@ def main():
     report = load_report(run_dir)
     family_map = build_family_map(report)
 
-    # Load docs.json
+    # Load docs.json + the family map (for narrative-home-based placement)
     with open(DOCS_JSON_PATH) as f:
         docs_json = json.load(f)
+    families = load_families()
 
     nav_changes = []
     promoted = []
@@ -403,7 +434,7 @@ def main():
 
         # Update docs.json navigation (skip api-reference/ — those are auto-discovered from openapi frontmatter)
         if family and not canonical_rel.startswith("api-reference/"):
-            change = update_docs_json(docs_json, nav_path, family, gap_type)
+            change = update_docs_json(docs_json, nav_path, family, gap_type, families)
             if change:
                 nav_changes.append(change)
                 if args.dry_run:

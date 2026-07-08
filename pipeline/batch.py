@@ -45,6 +45,7 @@ from util import (
     check_gh_available,
     stage_and_commit_docs,
     push_and_create_pr,
+    load_planning_context,
 )
 
 MODEL = "claude-sonnet-4-6"
@@ -139,31 +140,25 @@ def get_docs_listing():
     return sorted(result.stdout.strip().splitlines())
 
 
-PLAN_SYSTEM_PROMPT = """\
+PLAN_SYSTEM_PROMPT = f"""\
 You are a planning assistant for a docs pipeline. Given a freeform task \
 description, a list of docs files, and (when provided) the source file content, \
 resolve the task into concrete file paths and content routing instructions.
 
-## Diataxis Framework
+The site's information architecture and the Diataxis content types are defined below.
+Use them to decide where content belongs and what type each target page should be.
 
-Every docs page must serve exactly one Diataxis type:
-- **Tutorial**: learning-oriented, walks through a complete scenario step by step
-- **How-to**: goal-oriented, solves a specific problem ("how to batch-translate texts")
-- **Reference**: information-oriented, describes the machinery (parameters, config, specs)
-- **Explanation**: understanding-oriented, discusses concepts and design decisions
+{load_planning_context()}
 
-## Key Rules
+## Routing procedure (placement rules are in the IA above)
 
-1. NEVER route narrative content (code examples, how-tos, explanations, guidance) to \
-openapi: endpoint pages under api-reference/. Those are auto-rendered API reference stubs \
-and must stay minimal. Supplementary content belongs in docs/ pages.
-2. When retiring an overview or narrative page, audit each section of its content:
-   - Already covered by an existing docs/ page? → Route to that page (update it)
-   - Unique and useful? → Route to an existing docs/ page, or create a new one
-   - Restating what the OpenAPI spec already shows (parameter lists, response schemas)? → Discard
-   - Generic boilerplate ("learn more", "see the API reference")? → Discard
-3. Prefer routing to existing pages over creating new ones.
-4. New pages go under docs/<product-family>/ with a clear Diataxis type in mind.
+When retiring or merging a page, audit each section of its content and route it:
+- Already covered by an existing page? → update that page
+- Unique and useful? → route to an existing page, or a new one placed per the IA above
+- Duplicated by the OpenAPI spec (parameter lists, response schemas)? → discard
+- Generic boilerplate ("learn more", "see the API reference")? → discard
+
+Prefer updating existing pages over creating new ones.
 
 ## Output Format
 
