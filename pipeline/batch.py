@@ -150,15 +150,15 @@ Use them to decide where content belongs and what type each target page should b
 
 {load_planning_context()}
 
-## Routing rules (how to plan a task)
+## Routing procedure (placement rules are in the IA above)
 
-1. When retiring an overview or narrative page, audit each section of its content:
-   - Already covered by an existing docs/ page? → Route to that page (update it)
-   - Unique and useful? → Route to an existing docs/ page, or create a new one
-   - Restating what the OpenAPI spec already shows (parameter lists, response schemas)? → Discard
-   - Generic boilerplate ("learn more", "see the API reference")? → Discard
-2. Prefer routing to existing pages over creating new ones.
-3. New pages go under the product's tab with a clear Diataxis type in mind.
+When retiring or merging a page, audit each section of its content and route it:
+- Already covered by an existing page? → update that page
+- Unique and useful? → route to an existing page, or a new one placed per the IA above
+- Duplicated by the OpenAPI spec (parameter lists, response schemas)? → discard
+- Generic boilerplate ("learn more", "see the API reference")? → discard
+
+Prefer updating existing pages over creating new ones.
 
 ## Output Format
 

@@ -1,51 +1,58 @@
-# Product family map — the ONE thing the pipeline can't infer from prose.
+# Product family map — what the pipeline can't infer from prose.
 #
-# OpenAPI endpoints carry tags, but tags don't say which product family a
-# developer thinks they belong to, which product tab they document, or which
-# API Reference group they live under. This file supplies exactly that mapping
-# and nothing else.
+# OpenAPI tags group the API Reference automatically, but they don't say which
+# product family a developer thinks in terms of, or WHERE that family's narrative
+# docs should live. This file supplies both, and nothing else. All rules live in
+# prose: .claude/agents/docs-ia.md (structure), diataxis.md, docs-writer.md.
+# Live site structure (which page is in which tab) lives in docs.json.
 #
-# Everything evaluative — what each tab must contain, the no-narrative-in-
-# reference rule, Diataxis rules, title conventions — lives in prose:
-#   .claude/agents/docs-ia.md      (structure + requirements)
-#   .claude/agents/diataxis.md     (content-type rules)
-#   .claude/agents/docs-writer.md  (writing rules)
-# The live structure of the site (which page is in which tab) lives in docs.json.
+# Each family has:
+#   tags                 OpenAPI tags that belong to this family
+#   api_reference_group  the group name(s) in the API Reference tab (string or list)
+#   narrative_home       WHERE its tutorials/how-tos/explanations live:
+#       own              its own top-level product tab (tab name == family name)
+#       <TabName>        nests under another tab (e.g. Translate, Home)
+#       reference_only   no narrative, intentionally (rare — early alpha only)
+#       unplaced         not yet decided; the pipeline flags it for a human
 #
-# Keep this map current: when the pipeline finds an OpenAPI tag not listed here,
-# it flags it for a human to place. Don't add rules here — add them to docs-ia.md.
+# API grouping and narrative_home are independent (see docs-ia.md). A family can be
+# its own API Reference group while its narrative nests under another product.
+#
+# When the pipeline finds an OpenAPI tag not listed here, it flags it for placement.
 
 families:
   Translate:
     tags: [TranslateText, TranslateDocuments]
-    product_tab: Translate            # tab name in docs.json
-    api_reference_group: Translate    # group name under the API Reference tab
+    api_reference_group: Translate
+    narrative_home: own
 
   Customize:
     tags: [ManageGlossaries, ManageMultilingualGlossaries, TranslationMemories]
-    product_tab: Customize
     api_reference_group: Customize
+    narrative_home: Translate          # nests as a group inside the Translate tab
     # Style rules live under Customize but have no OpenAPI tag yet.
-
-  Write:
-    tags: [RephraseText, CorrectText]
-    product_tab: Write
-    api_reference_group: Write
 
   Voice:
     tags: [VoiceAPI, VoiceTranslateJob]
-    product_tab: Voice
-    api_reference_group: Voice
+    api_reference_group: [Voice, Translate Audio Files]
+    narrative_home: own
 
   Admin:
     tags: [AdminApi]
-    product_tab: Admin
     api_reference_group: Admin
+    narrative_home: own
+
+  Write:
+    tags: [RephraseText, CorrectText]
+    api_reference_group: Write
+    narrative_home: unplaced           # no product tab today — human decides own/under
 
   Languages:
     tags: [MetaInformation]
-    product_tab: null                 # no standalone product tab; lives in Home
     api_reference_group: Languages
+    narrative_home: Home               # cross-cutting; lives in the Home hub
 
-  # QualityEvaluation has no family yet — the pipeline will flag it for a human
-  # to decide where it belongs.
+  QualityEvaluation:
+    tags: [QualityEvaluation]
+    api_reference_group: Quality Evaluation
+    narrative_home: unplaced           # alpha — human decides (Shir mused: maybe under Translate)

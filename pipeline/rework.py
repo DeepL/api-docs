@@ -115,37 +115,16 @@ def build_rework_prompt(task_type, source_contents, targets, instruction, openap
     if openapi_context:
         openapi_block = f"\n\n## OpenAPI spec (for reference)\n\n```yaml\n{openapi_context}\n```"
 
+    # Mechanical intent per task type only. The quality rules — what to carry vs cut,
+    # content preservation, Diataxis purity — live in docs-writer.md / diataxis.md and
+    # are already in the system prompt. Don't restate them here.
     type_guidance = {
-        "consolidate": (
-            "Consolidate multiple source pages into the target page. "
-            "Carry over content that is UNIQUE and useful (limits, warnings, worked examples, "
-            "behavioral quirks). Cut content that duplicates the OpenAPI spec or exists "
-            "elsewhere. The result should be a focused, high-quality page — not a dump of "
-            "everything from every source, but also not a stub that lost all the detail."
-        ),
-        "merge": (
-            "Merge the source pages into a single new page. "
-            "Combine the best of both, cut duplication, and produce one coherent page."
-        ),
-        "split": (
-            "Split the source page into multiple target pages. "
-            "Each target should serve exactly one Diataxis type. "
-            "Don't duplicate content across targets — cross-link instead."
-        ),
-        "expand": (
-            "Expand this thin page into a complete, useful page. "
-            "Determine the appropriate Diataxis type from the existing content and title, "
-            "then write it properly for that type."
-        ),
-        "retire": (
-            "This page is being retired. Fold its unique, useful content into the target page(s). "
-            "Each target absorbs the content relevant to it. Cut anything duplicated by the "
-            "OpenAPI spec or other docs pages. The source page will be deleted after promotion."
-        ),
-        "rework": (
-            "Rework this page to improve its quality, focus, and Diataxis compliance. "
-            "Follow the instruction for what specifically to change."
-        ),
+        "consolidate": "Consolidate the source pages into the target page.",
+        "merge": "Merge the source pages into a single coherent page at the target path.",
+        "split": "Split the source into the target pages, one Diataxis type each.",
+        "expand": "Expand this thin page into a complete page.",
+        "retire": "Retire this page: fold its content into the target page(s). The source is deleted after promotion.",
+        "rework": "Rework this page per the instruction.",
     }
 
     if len(targets) > 1:

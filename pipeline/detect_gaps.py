@@ -236,40 +236,57 @@ def detect_gaps(docs_json, endpoints, families, section=None, force=False):
             continue
 
         eps = endpoints_for_family(endpoints, cfg.get("tags", []))
-        product_tab = cfg.get("product_tab")
 
-        # API Reference: is the family's group present for its endpoints?
-        ref_group = cfg.get("api_reference_group")
-        if eps and ref_group and apiref_tab and ref_group not in apiref_groups:
+        # API Reference: is the family's group (or groups) present for its endpoints?
+        ref_groups = cfg.get("api_reference_group")
+        ref_groups = [ref_groups] if isinstance(ref_groups, str) else list(ref_groups or [])
+        if eps and apiref_tab and ref_groups and not any(g in apiref_groups for g in ref_groups):
             gaps.append(gap("missing_api_reference_group", "high", family,
-                            desc=f"{family} has {len(eps)} endpoints but no '{ref_group}' group in the API Reference tab"))
+                            desc=f"{family} has {len(eps)} endpoints but none of its API Reference group(s) {ref_groups} exist in the API Reference tab"))
 
-        # Product-tab requirements.
-        if product_tab is None:
-            continue  # family intentionally has no product tab (lives in Home)
+        # Narrative coverage depends on WHERE the family's docs are meant to live.
+        # (API grouping and narrative placement are independent — see docs-ia.md.)
+        home = cfg.get("narrative_home", "unplaced")
 
-        tab_pages = collect_pages_under(docs_json, product_tab)
+        if home == "reference_only":
+            if eps:
+                gaps.append(gap("reference_only_no_guide", "low", family,
+                                desc=f"{family} is reference-only; consider adding a guide (expected once it leaves alpha)"))
+            continue
+
+        if home in ("unplaced", None):
+            if eps:
+                gaps.append(gap("narrative_home_unplaced", "high", family,
+                                desc=f"{family} has {len(eps)} endpoints but no decided narrative home — a human must choose own / a parent tab / reference_only"))
+            continue
+
+        if home != "own":
+            # Nests under another tab (e.g. Customize under Translate). Coverage is the
+            # parent tab's concern; no standalone overview/tutorial requirement.
+            continue
+
+        # home == "own": a top-level product tab named after the family.
+        tab_pages = collect_pages_under(docs_json, family)
         if eps and not tab_pages:
             gaps.append(gap("missing_product_tab", "high", family,
-                            desc=f"{family} has {len(eps)} endpoints in the API Reference but no product tab (needs overview + tutorial + how-tos)"))
+                            desc=f"{family} has {len(eps)} endpoints but no '{family}' product tab (needs overview + tutorial + how-tos)"))
             continue
 
         present = [(p, page_frontmatter(p)[0]) for p in tab_pages]
-
         if force or not any(is_overview(p, fm) for p, fm in present):
             gaps.append(gap("missing_overview", "high", family,
-                            desc=f"{product_tab} tab has no overview/landing page"))
+                            desc=f"{family} tab has no overview/landing page"))
         if force or not any(is_tutorial(p, fm) for p, fm in present):
             gaps.append(gap("missing_tutorial", "high", family,
-                            desc=f"{product_tab} tab has no tutorial"))
+                            desc=f"{family} tab has no tutorial"))
         if eps and (force or not any(is_howto(p, fm) for p, fm in present)):
             gaps.append(gap("missing_howto", "medium", family,
-                            desc=f"{product_tab} tab exposes {len(eps)} endpoints but has no how-to guide"))
+                            desc=f"{family} tab exposes {len(eps)} endpoints but has no how-to guide"))
 
-        # Home hub: is there a link to this product?
-        if home_tab and not any(product_tab.lower() in p.lower() for p in home_pages):
+        # Home hub links every own-tab product.
+        if home_tab and not any(family.lower() in p.lower() for p in home_pages):
             gaps.append(gap("missing_hub_entry", "medium", family,
-                            desc=f"Home hub has no page/link surfacing the {product_tab} product"))
+                            desc=f"Home hub has no page/link surfacing the {family} product"))
 
     # --- API Reference must be reference-only ----------------------------- #
     if apiref_tab and not section:

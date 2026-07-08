@@ -80,8 +80,17 @@ def find_existing_docs_for_family(family_name):
     cfg = load_yaml(SP).get("families", {}).get(family_name, {})
     docs_json = load_docs_json()
 
+    # Gather context from the family's tab (own tab is named after the family),
+    # its parent tab if it nests, and its API Reference group(s).
+    names = [family_name]
+    home = cfg.get("narrative_home")
+    if home and home not in ("own", "reference_only", "unplaced"):
+        names.append(home)  # parent tab it nests under
+    ref = cfg.get("api_reference_group")
+    names += [ref] if isinstance(ref, str) else list(ref or [])
+
     page_paths = []
-    for name in (cfg.get("product_tab"), cfg.get("api_reference_group"), family_name):
+    for name in names:
         if name:
             page_paths.extend(collect_pages_under(docs_json, name))
 
