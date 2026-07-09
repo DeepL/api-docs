@@ -5,7 +5,7 @@ description: "Learn how to translate XML content with the DeepL API while preser
 
 To translate XML content, set the `tag_handling` parameter to `xml`. The API extracts the text from the XML structure, translates it, and places the translation back into the structure. Without `tag_handling`, tags are treated as regular text.
 
-Set `tag_handling_version` to `v2` to use the improved tag handling algorithm. For version details and defaults, see the [`tag_handling_version` parameter](/api-reference/translate).
+Set `tag_handling_version` to `v2` to use the improved tag handling algorithm. For version details and defaults, see the [`tag_handling_version` parameter](/api-reference/translate/request-translation).
 
 ```bash Example request
 curl -X POST https://api.deepl.com/v2/translate \

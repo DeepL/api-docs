@@ -1,0 +1,55 @@
+---
+title: "Understanding Model Types"
+description: "How the model_type parameter chooses between latency-optimized and quality-optimized translation models, and how DeepL selects the model for each request."
+public: true
+---
+
+DeepL hosts many AI models for translation and deploys new ones continuously. Rather than asking you to pick a specific model, and update your integration every time models change, the `model_type` parameter of the [`/v2/translate` endpoint](/api-reference/translate/request-translation) lets you state your goal: the lowest possible latency or the highest possible translation quality. DeepL then chooses the most suitable model for your language pair and request.
+
+## Parameter values
+
+The `model_type` parameter accepts three values:
+
+| Value | Behavior |
+| :---- | :---- |
+| `latency_optimized` | Aims to serve the request as fast as possible (default when `model_type` is omitted) |
+| `quality_optimized` | Aims for the highest translation quality |
+| `prefer_quality_optimized` | Legacy value, currently identical to `quality_optimized` |
+
+All features and language pairs are compatible with all `model_type` values. As of December 2025, all source and target languages are supported by next-gen models.
+
+When you set `model_type`, the response includes a `model_type_used` field indicating which kind of model served the request:
+
+```sh Example request
+curl -X POST https://api.deepl.com/v2/translate \
+  --header "Content-Type: application/json" \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --data '{
+    "text": ["Your order has shipped and will arrive on Tuesday."],
+    "target_lang": "DE",
+    "model_type": "quality_optimized"
+}'
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Ihre Bestellung wurde versandt und kommt am Dienstag an.",
+      "model_type_used": "quality_optimized"
+    }
+  ]
+}
+```
+
+## How DeepL selects the model
+
+The parameter expresses a goal, not a model name. DeepL fulfills it on a best-effort basis: for some language pairs and requests, only one model can be used, and not every pair behaves differently between the two values. DeepL may also change which model serves a given `model_type` when the change is a net benefit, for example a quality increase with no significant latency cost, or a large latency reduction with at most a very slight quality trade-off.
+
+This means you never need to update your code for new model releases or track model names: the API keeps choosing the best available model for your stated goal.
+
+## Notes
+
+- `model_type` applies to text translation only. The [`/v2/document` endpoint](/api-reference/document/upload-and-translate-a-document) accepts the parameter without error but ignores it.
+- The [`/v3/languages` endpoint](/api-reference/languages/retrieve-supported-languages-by-resource) doesn't yet report `model_type` support per language. This information will be added in a future update.

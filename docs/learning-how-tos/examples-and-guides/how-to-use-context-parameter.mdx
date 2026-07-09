@@ -153,7 +153,7 @@ When translating names in headlines or short snippets, the same name might be tr
 
 ### Example
 
-As noted in the [`text` field reference](/api-reference/translate#request-body-descriptions), each text in the array is translated independently and texts do not share context with each other. This results in different transliterations for the name "Sergej".
+As noted in the [`text` field reference](/api-reference/translate/request-translation), each text in the array is translated independently and texts do not share context with each other. This results in different transliterations for the name "Sergej".
 
 ```sh
 curl -X POST 'https://api.deepl.com/v2/translate' \
@@ -253,7 +253,7 @@ There is no size limit for the `context` parameter itself, but the request body 
 
 ### Multi-`text` requests
 
-As noted in the [`text` field reference](/api-reference/translate#request-body-descriptions), each text in the array is translated independently — they do not share context with each other.
+As noted in the [`text` field reference](/api-reference/translate/request-translation), each text in the array is translated independently — they do not share context with each other.
 
 In this example, "Tor" might be translated as "gate" instead of "goal" because the first `text` doesn't have access to the second one's content.
 
@@ -273,7 +273,7 @@ If you send a request with both `context` and multiple `text` parameters, the `c
 
 ### Document translation
 
-When using the [document translation endpoint](/api-reference/document), the engine automatically uses the broader document context. You don't need to provide explicit context for full documents.
+When using the [document translation endpoint](/api-reference/document/upload-and-translate-a-document), the engine automatically uses the broader document context. You don't need to provide explicit context for full documents.
 
 ### Tag handling
 
@@ -285,7 +285,7 @@ When using `tag_handling=xml` or `tag_handling=html`, tags are *not* used as a c
 
 Now that you understand the context parameter:
 
-- **Try it yourself:** Review the [text translation API reference](/api-reference/translate) for complete context parameter specifications
+- **Try it yourself:** Review the [text translation API reference](/api-reference/translate/request-translation) for complete context parameter specifications
 - **Enforce terminology:** Learn how to use [glossaries](/api-reference/multilingual-glossaries) for consistent translations across all content
 - **Control style and tone:** Explore [style rules](/api-reference/style-rules) for formatting and tone instructions
-- **Translate full documents:** Understand how [document translation](/api-reference/document) automatically handles context
+- **Translate full documents:** Understand how [document translation](/api-reference/document/upload-and-translate-a-document) automatically handles context

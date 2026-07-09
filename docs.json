@@ -3,7 +3,7 @@
   "theme": "mint",
   "name": "DeepL Documentation",
   "banner": {
-    "content": "[Join the Developer Community on DeepL Bridges](https://dee.pl/7iwrt)",
+    "content": "[Join the Developer Community on Discord](https://discord.gg/deepl)",
     "dismissible": true
   },
   "colors": {
@@ -116,6 +116,8 @@
             "pages": [
               "docs/translate/translate-text-quickstart",
               "docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter",
+              "docs/translate/translating-large-volumes",
+              "docs/translate/understanding-model-types",
               "docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags",
               "docs/learning-how-tos/examples-and-guides/translating-between-variants",
               "docs/learning-how-tos/examples-and-guides/customizations-for-variants",
@@ -175,7 +177,6 @@
               {
                 "group": "Translate Text",
                 "pages": [
-                  "api-reference/translate",
                   "api-reference/translate/request-translation"
                 ],
                 "drilldown": false
@@ -183,7 +184,6 @@
               {
                 "group": "Translate Documents",
                 "pages": [
-                  "api-reference/document",
                   "api-reference/document/upload-and-translate-a-document",
                   "api-reference/document/check-document-status",
                   "api-reference/document/download-translated-document"
@@ -369,7 +369,7 @@
     "socials": {
       "facebook": "https://www.facebook.com/DeepLcom/",
       "linkedin": "https://www.linkedin.com/company/deepl",
-      "github": "https://github.com/DeepLcom",
+      "github": "https://github.com/DeepL",
       "instagram": "https://www.instagram.com/deeplhq/"
     }
   },
@@ -533,6 +533,14 @@
     {
       "source": "/docs/translate/quickstart",
       "destination": "/docs/translate/translate-text-quickstart"
+    },
+    {
+      "source": "/api-reference/translate",
+      "destination": "/api-reference/translate/request-translation"
+    },
+    {
+      "source": "/api-reference/document",
+      "destination": "/api-reference/document/upload-and-translate-a-document"
     },
     {
       "source": "/docs/resources/examples-and-guides",
