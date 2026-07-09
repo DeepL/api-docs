@@ -13,12 +13,12 @@ rss: true
 ## July 2 - New Voice API Languages: Hindi, Malay, and Tamil
 - The Voice API now supports `hi` (Hindi), `ms` (Malay), and `ta` (Tamil) in beta. Translation is provided by DeepL; transcription and translated speech are provided by external service partners.
 - These languages are marked `"external": true` in the [`GET /v3/languages?resource=voice`](/api-reference/languages/retrieve-supported-languages-by-resource) response. Because they are beta and external, call with `include=beta&include=external` to see them.
-- See the [supported languages table](/api-reference/voice#supported-languages) for the full list.
+- See the [supported languages table](/docs/voice/supported-languages-formats-and-limits#supported-languages) for the full list.
 </Update>
 
 <Update label="June 2026">
 ## June 24 - API Key Permissions General Availability
-- [API key permissions](/docs/getting-started/managing-api-keys#api-key-permissions) are now generally available. Scope a developer API key to specific endpoints so it can perform only the operations you allow.
+- [Understanding API Key Permissions](/docs/admin/api-key-permissions) are now generally available. Scope a developer API key to specific endpoints so it can perform only the operations you allow.
 - Available on the API Pro, API Developer, API Growth, and API Enterprise plans.
 - Assign scopes when [creating or editing a key](https://www.deepl.com/your-account/keys). A scoped key returns `403 Forbidden` on any endpoint its scopes don't cover.
 
@@ -38,7 +38,7 @@ rss: true
 - Previously, combining `model_type=latency_optimized` with these features would return an error. These restrictions have been removed.
 
 ## June 15 - API Key Permissions (Private Beta)
-- Developer API keys can now be scoped to specific endpoints, so a key can be limited to, for example, translating text or reading glossaries. See [API key permissions](/docs/getting-started/managing-api-keys#api-key-permissions).
+- Developer API keys can now be scoped to specific endpoints, so a key can be limited to, for example, translating text or reading glossaries. See [Understanding API Key Permissions](/docs/admin/api-key-permissions).
 - Assign one or more scopes when [creating or editing a key](https://www.deepl.com/your-account/keys). A scoped key returns `403 Forbidden` on any endpoint its scopes don't cover.
 - Currently in private beta for select customers. To request access, contact your customer success manager or [DeepL support](https://support.deepl.com/hc/en-us/requests/new).
 - Not yet supported for the Voice API; Voice scopes will follow in a future update.
@@ -52,7 +52,7 @@ rss: true
 ## June 5 - Voice API Spoken Terms on External-Provider Languages
 - Spoken terms are now supported on languages whose transcription is provided by external service partners, in addition to languages transcribed by DeepL. The feature remains in beta on all supported languages.
 - External-provider languages are marked `"external": true` in the [`GET /v3/languages?resource=voice`](/api-reference/languages/retrieve-supported-languages-by-resource) response. Call with `include=beta&include=external` to see the full list.
-- See [Voice API Customization](/api-reference/voice#customization) for usage details.
+- See [Voice API Customization](/docs/voice/overview#customization) for usage details.
 
 ## June 3 - Docs MCP Server
 - DeepL's developer documentation now exposes an MCP server at `https://developers.deepl.com/mcp`.
@@ -76,7 +76,7 @@ rss: true
 - Source code on GitHub: [`DeepLcom/deepl-api-usage-logger`](https://github.com/DeepLcom/deepl-api-usage-logger).
 
 ## May 20 - Custom Tag Usage Analytics
-- Added [`GET /v2/admin/analytics/custom-tags`](/api-reference/admin-api/organization-usage-analytics) to the Admin API, allowing admins to retrieve usage statistics broken down by custom tags.
+- Added [`GET /v2/admin/analytics/custom-tags`](/api-reference/admin-api/get-custom-tag-usage-analytics) to the Admin API, allowing admins to retrieve usage statistics broken down by custom tags.
 - Supports `aggregate_by=period` (default) to aggregate usage over the full date range, or `aggregate_by=day` for daily breakdowns.
 - Results are paginated; use the `next_page` integer from the response as the `page` parameter in subsequent requests.
 
@@ -84,7 +84,7 @@ rss: true
 - New optional `spoken_terms_id` parameter on [`POST /v3/voice/realtime`](/api-reference/voice/request-session) to improve transcription of frequently used terms like company-specific terminology, acronyms, product names, and team member names.
 - Spoken terms are currently in beta, supported for 18 source languages. Manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms); API management will follow in a future update.
 - The new `spoken_terms` feature and the existing `translated_speech` feature are now exposed as beta in [`GET /v3/languages?resource=voice`](/api-reference/languages/retrieve-supported-languages-by-resource), so clients can discover language support programmatically.
-- Not yet supported for transcription provided by external service partners (languages marked with ⎋). See [Voice API Customization](/api-reference/voice#customization) for details.
+- Not yet supported for transcription provided by external service partners (languages marked with ⎋). See [Voice API Customization](/docs/voice/overview#customization) for details.
 
 ## May 18 - v3/languages General Availability
 - [`GET /v3/languages`](/api-reference/languages/retrieve-supported-languages-by-resource) and [`GET /v3/languages/resources`](/api-reference/languages/retrieve-resources) are now generally available.
@@ -104,7 +104,7 @@ rss: true
 - See [supported languages](../getting-started/supported-languages) for the complete language list.
 
 ## April 15 - Voice API General Availability
-- The [Voice API](/api-reference/voice) is now available to all DeepL customers with a paid API subscription. This API provides real-time speech transcription and translation and can be used with existing DeepL API keys.
+- The [Voice API](/docs/voice/overview) is now available to all DeepL customers with a paid API subscription. This API provides real-time speech transcription and translation and can be used with existing DeepL API keys.
 
 ## April 9 - Translation Memory API
 - Added support for [translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories) in the DeepL API. Translation memories store previously translated segments so the same source text produces consistent output across projects .
@@ -113,7 +113,7 @@ rss: true
 - Support for uploading, modifying, and deleting translation memories via the API will follow.
 
 ## April 2 - Voice API Language Expansion
-- Added 6 new languages to the [Voice API](/api-reference/voice) for transcription: Bengali (`bn`), Croatian (`hr`), Dutch (`nl`), Irish (`ga`), Maltese (`mt`), and Tagalog (`tl`). Five of these are provided by external service partners; Dutch is provided by DeepL.
+- Added 6 new languages to the [Voice API](/docs/voice/overview) for transcription: Bengali (`bn`), Croatian (`hr`), Dutch (`nl`), Irish (`ga`), Maltese (`mt`), and Tagalog (`tl`). Five of these are provided by external service partners; Dutch is provided by DeepL.
 - All supported voice languages can now be used as source languages for transcription. Previously, source language selection was restricted to a subset of the supported languages.
 </Update>
 
@@ -144,7 +144,7 @@ rss: true
 <Update label="January 2026">
 ## January 27 - Voice Usage Limits on Developer Keys
 - Added `speech_to_text_milliseconds` to the `/v2/admin/developer-keys/limits` endpoint and the `ApiKey` response schema, so admins can set and read per-key voice usage limits alongside character limits.
-- See the [Admin API reference](/api-reference/admin-api) for usage.
+- See the [Admin API overview](/docs/admin/overview) for usage.
 
 ## January 20 - Legacy Auth Deprecation
 
@@ -155,7 +155,7 @@ Query parameter and request body authentication methods are now [deprecated](/do
 Use the `DeepL-Auth-Key` header instead.
 
 ## January 19 - Voice API Speech-to-Speech (Closed Beta)
-- New speech-to-speech capability in the [Voice API](/api-reference/voice): synthesize translated audio (TTS output) alongside transcription and text translation in the same WebSocket session.
+- New speech-to-speech capability in the [Voice API](/docs/voice/overview): synthesize translated audio (TTS output) alongside transcription and text translation in the same WebSocket session.
 - New request parameters on [`POST /v3/voice/realtime`](/api-reference/voice/request-session): `target_media_languages` (target languages for synthesized speech), `target_media_content_type` (audio format), and `target_media_voice` (voice selection).
 - Translated speech is in closed beta and not included in standard API subscriptions.
 
@@ -177,7 +177,7 @@ See [here](../getting-started/supported-languages) for the complete language lis
 <Update label="November 2025">
 ## November 10 - Voice API Initial Release
 - Initial release of the Voice API: `/v1/voice/realtime` (REST) and `/v1/voice/realtime/connect` (WebSocket) for real-time speech transcription and translation. The Voice API is generally available as of [April 15, 2026](#april-15---voice-api-general-availability).
-- Published a new AsyncAPI specification (`voice.asyncapi.yaml` / `voice.asyncapi.json`) documenting the WebSocket streaming protocol. See the [Voice API reference](/api-reference/voice).
+- Published a new AsyncAPI specification (`voice.asyncapi.yaml` / `voice.asyncapi.json`) documenting the WebSocket streaming protocol. See the [WebSocket Streaming reference](/api-reference/voice/websocket-streaming).
 
 ## November 6 - HE, TH, and VI in `/v2/languages`
 - Hebrew (`HE`), Thai (`TH`), and Vietnamese (`VI`) now appear in the [`/v2/languages`](/api-reference/languages) response, since they support document translation in addition to text translation.
@@ -198,7 +198,7 @@ See [here](../getting-started/supported-languages) for the complete language lis
 - Added support for JPEG and PNG images in [document translation](/api-reference/document), currently in Beta.
 
 ## Q3 2025
-- Creation of an admin API, making it possible to manage API keys programmatically. See [here](/api-reference/admin-api) for more information
+- Creation of an admin API, making it possible to manage API keys programmatically. See the [Admin API overview](/docs/admin/overview) for more information
 - Added support for new language: ES-419 (Latin American Spanish). For this release, this language will be available for the API in next-gen models only. See [here](../getting-started/supported-languages) for more information.
 - Refreshed our API documentation and added new try-it explorers to support interacting with our APIs. See [here](/api-reference) to try it out!
 
@@ -207,11 +207,11 @@ See [here](../getting-started/supported-languages) for the complete language lis
 - Added support for new languages: HE (Hebrew) and VI (Vietnamese). For this release, these languages will be available for Pro v2 API in next-gen models only. See [here](../getting-started/supported-languages) for more information.
 - Added improvements to API glossaries, including the ability to edit glossaries and create multilingual glossaries. Learn more [here](/api-reference/multilingual-glossaries/).
 - Added new events to audit logs for Pro API customers (API key management, cost control and usage limit changes)
-- Improvements to the `/usage` endpoint for Pro API customers ([API reference](/api-reference/usage-and-quota/))
-- Improvements to key-level usage reporting, making it possible to pull reports with a custom date range and to group data by calendar day. Learn more [here](../getting-started/managing-api-keys#get-api-key-level-usage).
+- Improvements to the `/usage` endpoint for Pro API customers ([API reference](/api-reference/usage-and-quota/check-usage-and-limits))
+- Improvements to key-level usage reporting, making it possible to pull reports with a custom date range and to group data by calendar day. Learn more [here](/docs/admin/retrieving-usage-data#api-key-level-csv-export).
 
 ## Q1 2025
-- Added support for API key-level usage limits, making it possible to set a character limit at the API key-level. Learn more [here](../getting-started/managing-api-keys#set-api-key-level-usage-limits).
+- Added support for API key-level usage limits, making it possible to set a character limit at the API key-level. Learn more [here](/docs/admin/managing-api-keys#set-a-key-level-usage-limit).
 - DeepL API for Write is generally available to Pro API customers, making it possible to improve texts in (at the time of release) 6 different languages. Learn more and get started [here](/api-reference/improve-text/).
 </Update>
 
@@ -266,7 +266,7 @@ See [here](../getting-started/supported-languages) for the complete language lis
 ## Q4 2022
 - Moved [HTML handling](/docs/xml-and-html-handling/html) out of beta after fixing the most commonly reported user issues.
 - Released an official [Java client library](https://github.com/DeepLcom/deepl-java).
-- Added support for JSON-encoded requests for [text translation](/api-reference/translate), [usage](/api-reference/usage-and-quota), and [languages](/api-reference/languages) endpoints.
+- Added support for JSON-encoded requests for [text translation](/api-reference/translate), [usage](/api-reference/usage-and-quota/check-usage-and-limits), and [languages](/api-reference/languages) endpoints.
 
 ## Q3 2022
 - Released an official [PHP client library](https://github.com/DeepLcom/deepl-php).

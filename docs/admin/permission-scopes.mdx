@@ -1,0 +1,98 @@
+---
+title: "Permission Scopes"
+description: "Every permission scope for DeepL developer API keys and the endpoints each scope covers."
+public: true
+---
+
+Each scope grants a [scoped API key](/docs/admin/api-key-permissions) access to the endpoints listed under it. A scoped key can call only endpoints fully covered by its scopes; requests to any other endpoint return `403 Forbidden`.
+
+<AccordionGroup>
+  <Accordion title="Translate text (translate:text)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `POST` | [`/v2/translate`](/api-reference/translate/request-translation) |
+  </Accordion>
+
+  <Accordion title="Translate document (translate:document)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `POST` | [`/v2/document`](/api-reference/document/upload-and-translate-a-document) |
+    | `GET` | [`/v2/document/{document_id}`](/api-reference/document/check-document-status) |
+    | `GET` | [`/v2/document/{document_id}/result`](/api-reference/document/download-translated-document) |
+  </Accordion>
+
+  <Accordion title="Rephrase or correct text (write:improve)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `POST` | [`/v2/write/rephrase`](/api-reference/improve-text/request-text-improvement) |
+    | `POST` | [`/v2/write/correct`](/api-reference/improve-text/correct-text) |
+  </Accordion>
+
+  <Accordion title="View glossaries and their entries (glossaries:read)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `GET` | [`/v3/glossaries`](/api-reference/multilingual-glossaries/list-all-glossaries) |
+    | `GET` | [`/v3/glossaries/{glossary_id}`](/api-reference/multilingual-glossaries/retrieve-glossary-details) |
+    | `GET` | [`/v3/glossaries/{glossary_id}/entries`](/api-reference/multilingual-glossaries/retrieve-glossary-entries) |
+    | `GET` | [`/v2/glossaries`](/api-reference/glossaries/list-all-glossaries) |
+    | `GET` | [`/v2/glossaries/{glossary_id}`](/api-reference/glossaries/retrieve-glossary-details) |
+    | `GET` | [`/v2/glossaries/{glossary_id}/entries`](/api-reference/glossaries/retrieve-glossary-entries) |
+    | `GET` | [`/v2/glossary-language-pairs`](/api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries) |
+  </Accordion>
+
+  <Accordion title="Create, modify, and delete glossaries (glossaries:write)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `POST` | [`/v3/glossaries`](/api-reference/multilingual-glossaries/create-a-glossary) |
+    | `PATCH` | [`/v3/glossaries/{glossary_id}`](/api-reference/multilingual-glossaries/edit-glossary-details) |
+    | `PUT` | [`/v3/glossaries/{glossary_id}/dictionaries`](/api-reference/multilingual-glossaries/replaces-or-creates-a-dictionary-in-the-glossary-with-the-specified-entries) |
+    | `DELETE` | [`/v3/glossaries/{glossary_id}`](/api-reference/multilingual-glossaries/delete-a-glossary) |
+    | `DELETE` | [`/v3/glossaries/{glossary_id}/dictionaries`](/api-reference/multilingual-glossaries/deletes-the-dictionary-associated-with-the-given-language-pair-with-the-given-glossary-id) |
+    | `POST` | [`/v2/glossaries`](/api-reference/glossaries/create-a-glossary) |
+    | `DELETE` | [`/v2/glossaries/{glossary_id}`](/api-reference/glossaries/delete-a-glossary) |
+  </Accordion>
+
+  <Accordion title="View style rules and custom instructions (style_rules:read)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `GET` | [`/v3/style_rules`](/api-reference/style-rules/list-all-style-rules) |
+    | `GET` | [`/v3/style_rules/{style_id}`](/api-reference/style-rules/get-style-rule) |
+    | `GET` | [`/v3/style_rules/{style_id}/custom_instructions/{instruction_id}`](/api-reference/style-rules/get-custom-instruction) |
+  </Accordion>
+
+  <Accordion title="Create, modify, and delete style rules and custom instructions (style_rules:write)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `POST` | [`/v3/style_rules`](/api-reference/style-rules/create-style-rule) |
+    | `PATCH` | [`/v3/style_rules/{style_id}`](/api-reference/style-rules/update-style-rule) |
+    | `PUT` | [`/v3/style_rules/{style_id}/configured_rules`](/api-reference/style-rules/update-configured-rules) |
+    | `DELETE` | [`/v3/style_rules/{style_id}`](/api-reference/style-rules/delete-style-rule) |
+    | `POST` | [`/v3/style_rules/{style_id}/custom_instructions`](/api-reference/style-rules/create-custom-instruction) |
+    | `PUT` | [`/v3/style_rules/{style_id}/custom_instructions/{instruction_id}`](/api-reference/style-rules/update-custom-instruction) |
+    | `DELETE` | [`/v3/style_rules/{style_id}/custom_instructions/{instruction_id}`](/api-reference/style-rules/delete-custom-instruction) |
+  </Accordion>
+
+  <Accordion title="Retrieve translation memories (translation_memories:read)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `GET` | [`/v3/translation_memories`](/api-reference/translation-memory/list-translation-memories) |
+  </Accordion>
+
+  <Accordion title="Retrieve languages and resources (languages:read)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `GET` | [`/v3/languages`](/api-reference/languages/retrieve-languages-by-resource) |
+    | `GET` | [`/v3/languages/resources`](/api-reference/languages/retrieve-resources) |
+    | `GET` | [`/v2/languages`](/api-reference/languages/retrieve-supported-languages) |
+  </Accordion>
+
+  <Accordion title="View subscription usage and limits (usage:read)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `GET` | [`/v2/usage`](/api-reference/usage-and-quota/check-usage-and-limits) |
+  </Accordion>
+</AccordionGroup>
+
+<Info>
+No scope covers the Voice API yet, so Voice endpoints are accessible only with unrestricted keys. Voice scopes will be added in a future update.
+</Info>

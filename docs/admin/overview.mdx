@@ -1,0 +1,41 @@
+---
+title: "Admin"
+sidebarTitle: "Overview"
+description: "Manage API keys, control what each key can access, and monitor usage across your organization, from the account UI or programmatically with the Admin API."
+public: true
+---
+
+You can administer your DeepL API subscription in two ways:
+
+- **Account UI**: the [API Keys & Limits](https://www.deepl.com/your-account/keys) and [API Usage](https://www.deepl.com/your-account/usage) tabs of your DeepL account, available on all plans
+- **Admin API**: programmatic key management and usage analytics, for automating key provisioning, enforcing limits, and feeding usage data into your own dashboards or billing systems (see the [Admin API reference](/api-reference/admin-api/managing-developer-keys/create-key))
+
+## The Admin API
+
+The Admin API is available to all API Growth and API Enterprise subscribers, and to a limited set of Pro API subscribers. To enable access, contact your DeepL customer success manager or DeepL support.
+
+The Admin API uses its own key type: admin keys, which always carry an `:adm` suffix to distinguish them from developer keys. You create admin keys in the ["Admin Keys" tab](https://www.deepl.com/your-account/admin) of your account (see [Managing API Keys in the Account UI](/docs/admin/managing-api-keys#manage-admin-api-keys)) and pass them in the `Authorization` header of each request, just like developer keys:
+
+`Authorization: DeepL-Auth-Key [yourAdminKey]`
+
+Admin API endpoints are available on the Pro endpoint `https://api.deepl.com`. See the [Admin API reference](/api-reference/admin-api/managing-developer-keys/create-key) for request and response schemas.
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Admin API Quickstart" href="/docs/admin/quickstart">
+    Create a developer key, cap its usage, and pull a usage report in four API calls.
+  </Card>
+  <Card title="Managing API Keys in the Account UI" href="/docs/admin/managing-api-keys">
+    Create, rename, deactivate, and set usage limits on developer and admin keys in the account UI.
+  </Card>
+  <Card title="Understanding API Key Permissions" href="/docs/admin/api-key-permissions">
+    Understand how permission scopes restrict what a developer key can do.
+  </Card>
+  <Card title="Retrieving Usage Data" href="/docs/admin/retrieving-usage-data">
+    Pick the right usage data source and pull consumption data for your account, keys, or custom tags.
+  </Card>
+  <Card title="Admin API Reference" href="/api-reference/admin-api/managing-developer-keys/create-key">
+    Endpoint reference for programmatic key management and usage analytics.
+  </Card>
+</CardGroup>

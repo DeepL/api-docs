@@ -33,6 +33,7 @@
     "tabs": [
       {
         "tab": "Home",
+        "icon": "house",
         "groups": [
           {
             "group": "Getting Started",
@@ -107,6 +108,7 @@
       },
       {
         "tab": "Translate",
+        "icon": "language",
         "groups": [
           {
             "group": "Text Translation",
@@ -148,26 +150,30 @@
       },
       {
         "tab": "Voice",
+        "icon": "waveform-lines",
         "pages": [
-          "docs/voice/stream-real-time-voice-translation",
-          "docs/voice/translate-an-audio-file",
-          "api-reference/voice"
+          "docs/voice/overview",
+          "docs/voice/real-time-voice-quickstart",
+          "docs/voice/understanding-voice-sessions",
+          "docs/voice/message-encoding",
+          "docs/voice/supported-languages-formats-and-limits"
         ]
       },
       {
         "tab": "Admin",
+        "icon": "sliders",
         "pages": [
-          "docs/getting-started/managing-api-keys",
-          "docs/retrieving-usage-data",
-          "api-reference/admin-api",
-          "api-reference/admin-api/managing-admin-keys",
-          "api-reference/admin-api/managing-developer-keys",
-          "api-reference/usage-and-quota",
-          "api-reference/admin-api/organization-usage-analytics"
+          "docs/admin/overview",
+          "docs/admin/quickstart",
+          "docs/admin/managing-api-keys",
+          "docs/admin/api-key-permissions",
+          "docs/admin/permission-scopes",
+          "docs/admin/retrieving-usage-data"
         ]
       },
       {
         "tab": "API Reference",
+        "icon": "code",
         "groups": [
           {
             "group": "Translate",
@@ -390,6 +396,38 @@
     }
   },
   "redirects": [
+    {
+      "source": "/api-reference/voice",
+      "destination": "/docs/voice/overview"
+    },
+    {
+      "source": "/docs/getting-started/managing-api-keys",
+      "destination": "/docs/admin/managing-api-keys"
+    },
+    {
+      "source": "/docs/retrieving-usage-data",
+      "destination": "/docs/admin/retrieving-usage-data"
+    },
+    {
+      "source": "/api-reference/admin-api",
+      "destination": "/docs/admin/overview"
+    },
+    {
+      "source": "/api-reference/admin-api/managing-admin-keys",
+      "destination": "/docs/admin/managing-api-keys"
+    },
+    {
+      "source": "/api-reference/admin-api/managing-developer-keys",
+      "destination": "/api-reference/admin-api/managing-developer-keys/create-key"
+    },
+    {
+      "source": "/api-reference/admin-api/organization-usage-analytics",
+      "destination": "/docs/admin/retrieving-usage-data"
+    },
+    {
+      "source": "/api-reference/usage-and-quota",
+      "destination": "/api-reference/usage-and-quota/check-usage-and-limits"
+    },
     {
       "source": "/api-reference/languages/retrieve-supported-languages-by-product",
       "destination": "/api-reference/languages/retrieve-supported-languages-by-resource"

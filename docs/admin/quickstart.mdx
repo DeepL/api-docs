@@ -1,0 +1,189 @@
+---
+title: "Admin API Quickstart"
+description: "Create a developer API key, set a usage limit on it, and pull a per-key usage report in four calls to the Admin API."
+covers: [Admin]
+public: true
+---
+
+In this tutorial, we'll use the Admin API to provision a new developer API key for a team, set a character limit to control costs, and then retrieve a usage report to confirm activity. By the end, you'll have made four API calls that cover the core Admin API workflow.
+
+## What you'll learn
+
+- How to create a developer API key programmatically
+- How to apply a character usage limit to a key
+- How to retrieve an organization-wide usage report broken down by key
+- What the response objects look like at each step
+
+## Prerequisites
+
+- An API Growth or API Enterprise subscription, or a Pro API subscription with [Admin API access](/docs/admin/overview#the-admin-api)
+- An [**admin API key**](/docs/admin/managing-api-keys#manage-admin-api-keys) for your DeepL organization. Regular developer keys cannot access Admin API endpoints.
+- `curl` installed on your machine
+
+<Tip>
+Responses in this tutorial are shown formatted. To pretty-print JSON in your terminal, install [jq](https://jqlang.org/) and pipe curl output through it: `curl ... | jq`
+</Tip>
+
+## Building with an AI coding agent?
+
+Wire it up to the [DeepL Docs MCP Server](/docs/getting-started/docs-mcp-server) so it can search and read this documentation while it writes code. In Claude Code:
+
+```bash
+claude mcp add --transport http deepl-docs https://developers.deepl.com/mcp
+```
+
+Then describe what you want to build. To get the same result as this tutorial, paste:
+
+```text wrap
+Using the DeepL Admin API, write a script that creates a developer API key labeled "Staging Team Key", sets a 500,000 character usage limit on it, and then displays a per-key usage report for the last month.
+```
+
+## Step 1: List existing developer keys
+
+Before creating a new key, let's see what's already in the organization. This gives us a baseline and confirms that authentication is working.
+
+```bash
+curl https://api.deepl.com/v2/admin/developer-keys \
+  -H "Authorization: DeepL-Auth-Key YOUR_ADMIN_KEY"
+```
+
+You'll receive an array with one object per developer key, active and deactivated:
+
+```json
+[
+  {
+    "key_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890:1f2e3d4c-5b6a-7980-dcba-0987654321fe",
+    "label": "Production API Key",
+    "creation_time": "2026-05-12T09:41:03.512Z",
+    "deactivated_time": null,
+    "is_deactivated": false,
+    "usage_limits": {
+      "characters": null,
+      "speech_to_text_milliseconds": null
+    }
+  }
+]
+```
+
+Notice the `key_id` field, composed of two GUIDs separated by a `:` symbol. You'll use it to target specific keys in later steps. `null` usage limits mean no cap is set on that key.
+
+If you get a `403 Forbidden` response here, double-check that you're using an admin key with an `:adm` suffix, not a developer key.
+
+## Step 2: Create a new developer key
+
+Now let's create a key for a new team or service. We'll give it a descriptive label so it's easy to identify later.
+
+```bash
+curl https://api.deepl.com/v2/admin/developer-keys \
+  -H "Authorization: DeepL-Auth-Key YOUR_ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"label": "Staging Team Key"}'
+```
+
+The response returns the newly created key object:
+
+```json
+{
+  "key_id": "f9e8d7c6-b5a4-3210-fedc-ba9876543210:0a1b2c3d-4e5f-6789-abcd-ef0123456789",
+  "label": "Staging Team Key",
+  "creation_time": "2026-07-09T10:02:47.118Z",
+  "deactivated_time": null,
+  "is_deactivated": false,
+  "usage_limits": {
+    "characters": null,
+    "speech_to_text_milliseconds": null
+  }
+}
+```
+
+Copy the `key_id` from this response. You'll need it in the next step.
+
+## Step 3: Set a character usage limit
+
+By default, a new key has no usage cap. Let's set a character limit so the staging key can't consume more quota than intended.
+
+Replace `KEY_ID` with the `key_id` from the previous step.
+
+```bash
+curl https://api.deepl.com/v2/admin/developer-keys/limits \
+  -X PUT \
+  -H "Authorization: DeepL-Auth-Key YOUR_ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key_id": "KEY_ID",
+    "characters": 500000
+  }'
+```
+
+The response returns the updated key object. Confirm that `usage_limits.characters` now shows `500000`:
+
+```json
+{
+  "key_id": "f9e8d7c6-b5a4-3210-fedc-ba9876543210:0a1b2c3d-4e5f-6789-abcd-ef0123456789",
+  "label": "Staging Team Key",
+  "creation_time": "2026-07-09T10:02:47.118Z",
+  "deactivated_time": null,
+  "is_deactivated": false,
+  "usage_limits": {
+    "characters": 500000,
+    "speech_to_text_milliseconds": null
+  }
+}
+```
+
+Once the key reaches its character limit, requests using it return `456 Quota exceeded` errors until the next usage period starts or you raise the limit.
+
+## Step 4: Pull a usage report by key
+
+After the team has started using the key, let's retrieve a usage report to see how much quota each key has consumed. We'll group the results by API key so we can see per-key totals.
+
+Replace the dates with a range that covers the period you want to inspect. Date ranges can span up to 366 days, and data is available up to and including the previous UTC calendar day.
+
+```bash
+curl "https://api.deepl.com/v2/admin/analytics?start_date=2026-06-01&end_date=2026-07-01&group_by=key" \
+  -H "Authorization: DeepL-Auth-Key YOUR_ADMIN_KEY"
+```
+
+The response includes a `usage_report` object with per-key breakdowns and an organization-wide total:
+
+```json
+{
+  "usage_report": {
+    "start_date": "2026-06-01T00:00:00",
+    "end_date": "2026-07-01T00:00:00",
+    "group_by": "key",
+    "key_usages": [
+      {
+        "api_key": "f9e8****6789",
+        "api_key_label": "Staging Team Key",
+        "usage": {
+          "text_translation_characters": 4892,
+          "text_improvement_characters": 4727,
+          "document_translation_characters": 0,
+          "speech_to_text_minutes": 107.46,
+          "total_characters": 9619
+        }
+      }
+    ],
+    "total_usage": {
+      "text_translation_characters": 4892,
+      "text_improvement_characters": 4727,
+      "document_translation_characters": 0,
+      "speech_to_text_minutes": 107.46,
+      "total_characters": 9619
+    }
+  }
+}
+```
+
+Notice that `api_key` values are partially masked in the response for security. You can match keys to their labels using the `api_key_label` field.
+
+You have now created a key, capped its usage, and confirmed activity through the analytics endpoint.
+
+## What's next
+
+- **Rename or reorganize keys**: Use the [rename endpoint](/api-reference/admin-api/managing-developer-keys/rename-key) to update a key's label as teams or services change.
+- **Deactivate a key**: When a key is no longer needed, [deactivate it](/api-reference/admin-api/managing-developer-keys/deactivate-key). Deactivation is permanent, but deactivated keys remain visible in your key list.
+- **Daily usage breakdowns**: Change `group_by` to `key_and_day` to see per-key usage broken down by day, which is useful for spotting spikes.
+- **Custom tag analytics**: If you annotate API requests with custom tags, use the [custom tag analytics endpoint](/api-reference/admin-api/get-custom-tag-usage-analytics) to break down usage by tag.
+- **Other data sources**: See [Retrieving Usage Data](/docs/admin/retrieving-usage-data) for a comparison of all the ways to monitor your DeepL API usage.

@@ -1,0 +1,90 @@
+---
+title: "Supported Languages, Formats, and Limits"
+description: "Reference for DeepL Voice API language availability, supported audio codecs and containers, and session limits."
+---
+
+## Supported languages
+
+Translation is always provided by DeepL. For some languages, transcription and translated speech are provided by external service partners. All source languages can be translated into any target language.
+
+<Card>
+| **Language**                           | **Transcription** | **Translation** | <Badge color="green">closed beta</Badge><br/>Translated Speech |
+| :------------------------------------- | :---------------: | :-------------: | :------------------------------------------------------------: |
+| Arabic                                 |         ⎋         |        ✓        |                               ⎋                                |
+| Bengali                                |         ⎋         |        ✓        |                               —                                |
+| Bulgarian                              |         ⎋         |        ✓        |                               ⎋                                |
+| Chinese (Simplified/Traditional)       |         ✓         |        ✓        |                               ✓                                |
+| Croatian                               |         ⎋         |        ✓        |                               —                                |
+| Czech                                  |         ✓         |        ✓        |                               ⎋                                |
+| Danish                                 |         ⎋         |        ✓        |                               ⎋                                |
+| Dutch                                  |         ✓         |        ✓        |                               ✓                                |
+| English (American/British)             |         ✓         |        ✓        |                               ✓                                |
+| Estonian                               |         ⎋         |        ✓        |                               —                                |
+| Finnish                                |         ⎋         |        ✓        |                               ⎋                                |
+| French                                 |         ✓         |        ✓        |                               ✓                                |
+| German                                 |         ✓         |        ✓        |                               ✓                                |
+| Greek                                  |         ⎋         |        ✓        |                               ⎋                                |
+| Hebrew                                 |         ⎋         |        ✓        |                               —                                |
+| Hindi <Badge color="blue">beta</Badge> |         ⎋         |        ✓        |                               ⎋                                |
+| Hungarian                              |         ⎋         |        ✓        |                               ⎋                                |
+| Indonesian                             |         ✓         |        ✓        |                               ⎋                                |
+| Irish                                  |         ⎋         |        ✓        |                               —                                |
+| Italian                                |         ✓         |        ✓        |                               ✓                                |
+| Japanese                               |         ✓         |        ✓        |                               ✓                                |
+| Korean                                 |         ✓         |        ✓        |                               ✓                                |
+| Latvian                                |         ⎋         |        ✓        |                               —                                |
+| Lithuanian                             |         ⎋         |        ✓        |                               —                                |
+| Malay <Badge color="blue">beta</Badge> |         ⎋         |        ✓        |                               ⎋                                |
+| Maltese                                |         ⎋         |        ✓        |                               —                                |
+| Norwegian Bokmål                       |         ⎋         |        ✓        |                               ⎋                                |
+| Polish                                 |         ✓         |        ✓        |                               ✓                                |
+| Portuguese (Brazil/Portugal)           |         ✓         |        ✓        |                               ✓                                |
+| Romanian                               |         ✓         |        ✓        |                               ⎋                                |
+| Russian                                |         ✓         |        ✓        |                               ✓                                |
+| Slovak                                 |         ⎋         |        ✓        |                               ⎋                                |
+| Slovenian                              |         ⎋         |        ✓        |                               —                                |
+| Spanish                                |         ✓         |        ✓        |                               ✓                                |
+| Swedish                                |         ✓         |        ✓        |                               ✓                                |
+| Thai                                   |         ⎋         |        ✓        |                               —                                |
+| Tagalog                                |         ⎋         |        ✓        |                               —                                |
+| Tamil <Badge color="blue">beta</Badge> |         ⎋         |        ✓        |                               ⎋                                |
+| Turkish                                |         ✓         |        ✓        |                               ✓                                |
+| Ukrainian                              |         ✓         |        ✓        |                               ⎋                                |
+| Vietnamese                             |         ⎋         |        ✓        |                               ⎋                                |
+
+✓ provided by DeepL / ⎋ provided by an external service partner / — not available
+</Card>
+
+<Warning>
+    Transcription provided by external service partners (marked with ⎋) cannot yet auto-detect the source language,
+    which you must therefore specify explicitly.
+</Warning>
+
+To retrieve supported languages and feature availability programmatically, call [`GET /v3/languages?resource=voice`](/api-reference/languages/retrieve-supported-languages-by-resource) and check for the `transcription` and `translated_speech` feature keys. The `external` flag on these features indicates if they are provided by an external service partner.
+
+## Supported audio formats
+
+The API supports common combinations of streaming codecs and containers with a single-channel (mono) audio stream.
+
+| **Audio Codec**              | **Audio Container**                 | **Recommended Bitrate**                              |
+| :--------------------------- | :---------------------------------- | :--------------------------------------------------- |
+| **PCM** <Icon icon="star"/>  | **-**                               | **256 kbps (16kHz), default recommendation**         |
+| **OPUS** <Icon icon="star"/> | **Matroska / MPEG-TS / Ogg / WebM** | **32 kbps, recommended for low bandwidth scenarios** |
+| AAC                          | Matroska / MPEG-TS                  | 96 kbps                                              |
+| FLAC                         | FLAC / Matroska / Ogg               | 256 kbps (16kHz)                                     |
+| MP3                          | MPEG / Matroska                     | 128 kbps                                             |
+
+For the detailed list of supported input audio formats, see [Source Media Content Type](/api-reference/voice/request-session#body-source-media-content-type). For supported output audio formats, see [Target Media Content Type](/api-reference/voice/request-session#body-target-media-content-type).
+
+## Session limits
+
+* Maximum 5 translation targets per session (including translated speech targets)
+* Maximum 1 translated speech target per session
+* Audio chunk size: should not exceed 100 kilobytes or 1 second duration
+* Recommended chunk duration: 50-250 milliseconds for low latency
+* Audio stream speed: maximum 2x real-time
+* Timeout: if no data is received for 30 seconds, the session is terminated
+* Maximum connection duration: after 1 hour, the connection is closed. Establish a new connection by [reconnecting](/api-reference/voice/reconnect-session) to the session
+* Using any given token more than once to establish a WebSocket connection terminates the associated session immediately for security reasons
+
+If you need more translation targets or translated speech targets than these limits allow, open multiple concurrent sessions over the same source audio.

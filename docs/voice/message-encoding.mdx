@@ -1,0 +1,58 @@
+---
+title: "Message Encoding"
+description: "Choose between JSON and MessagePack encoding for DeepL Voice API WebSocket messages, and avoid the frame type and map encoding pitfalls."
+---
+
+WebSocket messages in a Voice API session can be encoded in two formats, chosen with the `message_format` option when you [request the session](/api-reference/voice/request-session). Start with JSON for the best developer experience, and switch to MessagePack if you need better performance.
+
+| **Format** | **Frame type** | **Binary data** | **Trade-off** |
+| :--------- | :------------- | :-------------- | :------------ |
+| JSON (default) | TEXT | base64-encoded strings | Human-readable, easy to debug |
+| [MessagePack](https://msgpack.org/) | BINARY | raw binary | Roughly 25-30% less bandwidth, 2x-4x faster encoding/decoding |
+
+<Warning>
+  Send JSON messages as TEXT frames and MessagePack messages as BINARY frames. Sending the wrong frame type results in connection errors.
+</Warning>
+
+MessagePack messages must be encoded as maps with string keys, not as arrays. The structure must match the JSON schema exactly, with all field names preserved (for example, `{"source_media_chunk": {"data": <binary>}}`). Some MessagePack libraries default to array encoding for performance, so check your library's configuration.
+
+The following example sends the same audio chunk in both encodings:
+
+<CodeGroup>
+
+```javascript JSON
+// Raw binary audio data
+const audioData = getAudioChunk();
+
+// Base64 encode the audio data
+const base64Audio = btoa(audioData);
+
+const message = {
+  source_media_chunk: {
+    data: base64Audio
+  }
+};
+
+// Send as TEXT frame
+websocket.send(JSON.stringify(message));
+```
+
+```javascript MessagePack
+import { pack } from 'msgpackr';
+
+// Raw binary audio data
+const audioData = getAudioChunk();
+
+const message = {
+  source_media_chunk: {
+    data: audioData  // No base64 encoding needed
+  }
+};
+
+// Send as BINARY frame
+websocket.send(pack(message));
+```
+
+</CodeGroup>
+
+For the full list of message types exchanged during a session, see the [WebSocket Streaming reference](/api-reference/voice/websocket-streaming). For how those messages fit into the session lifecycle, see [Understanding Voice Sessions](/docs/voice/understanding-voice-sessions).

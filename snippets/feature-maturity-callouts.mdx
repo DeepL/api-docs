@@ -1,0 +1,38 @@
+{/*
+  Feature maturity callouts — standard boilerplate for alpha/beta/GA labels.
+  Import the one that matches your feature's maturity stage.
+
+  Usage in any .mdx file:
+    import ClosedAlpha from '/snippets/feature-maturity-callouts.mdx#closed-alpha'
+
+  Or copy the relevant <Warning> block directly if Mintlify snippet
+  imports don't support anchors.
+*/}
+
+{/* ===== CLOSED ALPHA ===== */}
+export const ClosedAlpha = () => (
+<Warning>
+  **Closed alpha.** This API may change without notice and is only available to select DeepL customers. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details. To request access, contact your customer success manager.
+</Warning>
+);
+
+{/* ===== OPEN ALPHA ===== */}
+export const OpenAlpha = () => (
+<Warning>
+  **Open alpha.** This API may change without notice. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details. To request access, [submit a support request](https://support.deepl.com/hc/en-us/requests/new).
+</Warning>
+);
+
+{/* ===== CLOSED BETA ===== */}
+export const ClosedBeta = () => (
+<Warning>
+  **Closed beta.** This API is only available to select DeepL customers. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details. To request access, contact your customer success manager.
+</Warning>
+);
+
+{/* ===== OPEN BETA ===== */}
+export const OpenBeta = () => (
+<Note>
+  **Beta.** This feature is available to all API users but may change based on feedback. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details.
+</Note>
+);
