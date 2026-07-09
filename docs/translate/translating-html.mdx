@@ -1,0 +1,62 @@
+---
+title: "Translating HTML"
+description: "Learn how to translate HTML content with the DeepL API and exclude specific elements from translation."
+---
+
+To translate HTML content, set the `tag_handling` parameter to `html`. The API extracts the text from the HTML structure, translates it, and places the translation back into the structure. Without `tag_handling`, tags are treated as regular text.
+
+Set `tag_handling_version` to `v2` to use the improved tag handling algorithm. HTML input is never strictly parsed, so invalid HTML doesn't cause errors in either version. For version details and defaults, see the [`tag_handling_version` parameter](/api-reference/translate).
+
+```bash Example request
+curl -X POST https://api.deepl.com/v2/translate \
+  --header "Content-Type: application/json" \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --data '{
+    "text": ["<p>This is a <strong>premium</strong> feature.</p>"],
+    "target_lang": "DE",
+    "tag_handling": "html",
+    "tag_handling_version": "v2"
+}'
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "<p>Dies ist eine <strong>Premium</strong>-Funktion.</p>",
+      "tag_handling_version": "v2"
+    }
+  ]
+}
+```
+
+You don't need to set `split_sentences` for HTML: with `tag_handling=html` it defaults to `nonewlines`, which splits sentences on punctuation only and gives the best translation quality for HTML. To also split sentences on newlines, set `split_sentences=1`.
+
+To translate non-HTML XML content, see [Translating XML](/docs/translate/translating-xml).
+
+## Exclude elements from translation
+
+To exclude an element from translation, add the `translate="no"` or `class="notranslate"` attribute to it. In the following example, `translate="no"` prevents translation of the paragraph:
+
+<Card title="Disable translation of elements example">
+  ```markup Example request
+  <!DOCTYPE html>
+  <html>
+    <body>
+      <h1>My First Heading</h1>
+      <p translate="no">My first paragraph.</p>
+    </body>
+  </html>
+  ```
+
+  ```markup Example response
+  <!DOCTYPE html>
+  <html>
+    <body>
+      <h1>Meine erste Überschrift</h1>
+      <p translate="no">My first paragraph.</p>
+    </body>
+  </html>
+  ```
+</Card>

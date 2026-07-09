@@ -109,33 +109,27 @@
       {
         "tab": "Translate",
         "icon": "language",
-        "groups": [
+        "pages": [
+          "docs/translate/overview",
           {
             "group": "Text Translation",
             "pages": [
-              "docs/learning-how-tos/examples-and-guides/translation-beginners-guide",
+              "docs/translate/translate-text-quickstart",
               "docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter",
               "docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags",
               "docs/learning-how-tos/examples-and-guides/translating-between-variants",
               "docs/learning-how-tos/examples-and-guides/customizations-for-variants",
               "docs/learning-how-tos/examples-and-guides/placeholder-tags",
+              "docs/translate/translating-xml",
+              "docs/translate/translating-html",
               "docs/best-practices/language-detection"
             ]
           },
           {
             "group": "Document Translation",
             "pages": [
+              "docs/translate/translate-documents-quickstart",
               "docs/best-practices/document-translations"
-            ]
-          },
-          {
-            "group": "XML & HTML",
-            "pages": [
-              "docs/xml-and-html-handling/xml",
-              "docs/xml-and-html-handling/structured-content",
-              "docs/xml-and-html-handling/html",
-              "docs/xml-and-html-handling/customized-xml-outline-detection",
-              "docs/xml-and-html-handling/tag-handling-v2"
             ]
           },
           {
@@ -397,6 +391,26 @@
   },
   "redirects": [
     {
+      "source": "/docs/xml-and-html-handling/xml",
+      "destination": "/docs/translate/translating-xml"
+    },
+    {
+      "source": "/docs/xml-and-html-handling/structured-content",
+      "destination": "/docs/translate/translating-xml"
+    },
+    {
+      "source": "/docs/xml-and-html-handling/customized-xml-outline-detection",
+      "destination": "/docs/translate/translating-xml"
+    },
+    {
+      "source": "/docs/xml-and-html-handling/tag-handling-v2",
+      "destination": "/docs/translate/translating-xml"
+    },
+    {
+      "source": "/docs/xml-and-html-handling/html",
+      "destination": "/docs/translate/translating-html"
+    },
+    {
       "source": "/api-reference/voice",
       "destination": "/docs/voice/overview"
     },
@@ -494,19 +508,31 @@
     },
     {
       "source": "/docs/learning-how-tos/examples-and-guides/deepl-api-101",
-      "destination": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api"
+      "destination": "/docs/translate/translate-text-quickstart"
     },
     {
       "source": "/docs/learning-how-tos/examples-and-guides/deepl-api-101/first-things-to-try-with-the-deepl-api",
-      "destination": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api"
+      "destination": "/docs/translate/translate-text-quickstart"
     },
     {
       "source": "/docs/resources/examples-and-guides/deepl-api-101",
-      "destination": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api"
+      "destination": "/docs/translate/translate-text-quickstart"
     },
     {
       "source": "/docs/resources/examples-and-guides/deepl-api-101/first-things-to-try-with-the-deepl-api",
-      "destination": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api"
+      "destination": "/docs/translate/translate-text-quickstart"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api",
+      "destination": "/docs/translate/translate-text-quickstart"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/translation-beginners-guide",
+      "destination": "/docs/translate/translate-text-quickstart"
+    },
+    {
+      "source": "/docs/translate/quickstart",
+      "destination": "/docs/translate/translate-text-quickstart"
     },
     {
       "source": "/docs/resources/examples-and-guides",

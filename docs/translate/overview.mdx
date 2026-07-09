@@ -1,0 +1,39 @@
+---
+title: "Translate"
+sidebarTitle: "Overview"
+description: "Translate text strings and complete documents with the DeepL API. Find quickstarts, markup handling guides, and customization options."
+public: true
+---
+
+The Translate API converts text between any of the [supported languages](/docs/getting-started/supported-languages) through two endpoints:
+
+- **Text translation** (`/v2/translate`): translate one or many strings per request, with automatic source language detection. Suited for UI strings, messages, and any text your application handles directly.
+- **Document translation** (`/v2/document`): upload complete files, including Word, PowerPoint, PDF, and HTML, and download the translation with the original formatting intact.
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Translate Text Quickstart" icon="language" href="/docs/translate/translate-text-quickstart">
+    Send your first translation request and batch multiple strings into one call.
+  </Card>
+  <Card title="Translate Documents Quickstart" icon="file-lines" href="/docs/translate/translate-documents-quickstart">
+    Upload a Word document, poll its status, and download the translated file.
+  </Card>
+  <Card title="How to Use the Context Parameter" icon="lightbulb" href="/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter">
+    Improve translation quality for short or ambiguous text by passing surrounding context.
+  </Card>
+  <Card title="XML and HTML Handling" icon="code" href="/docs/xml-and-html-handling/xml">
+    Translate markup without breaking it: tag handling for XML, HTML, and structured content.
+  </Card>
+  <Card title="API Reference" icon="book" href="/api-reference/translate/request-translation">
+    Full request and response schemas for the text and document translation endpoints.
+  </Card>
+</CardGroup>
+
+## Customize translations
+
+Beyond per-request parameters, three features let you tailor translations to your domain and keep terminology consistent:
+
+- **[Glossaries](/docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world)**: enforce specific translations for individual terms, like product names or industry vocabulary
+- **[Custom instructions](/docs/best-practices/custom-instructions)**: steer tone, style, and phrasing with natural-language instructions
+- **[Translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories)**: reuse your previously approved translations for matching segments

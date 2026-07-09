@@ -30,7 +30,7 @@ rss: true
 
 ## June 17 - `latency_optimized` Now Supported for All Features
 - The `latency_optimized` model type is now fully compatible with all Translate API features, including:
-  - [Tag handling v2](/docs/xml-and-html-handling/tag-handling-v2) (`tag_handling_version=v2`)
+  - [Tag handling v2](/docs/translate/translating-xml) (`tag_handling_version=v2`)
   - [Style rules](/api-reference/style-rules) (`style_id`)
   - [Custom instructions](/docs/best-practices/custom-instructions) (`custom_instructions`)
   - [Translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories) (`translation_memory_id`)
@@ -188,7 +188,7 @@ See [here](../getting-started/supported-languages) for the complete language lis
 - Added API reference for the Voice API
 - Add contextual menu in the to make it easier to copy any API documentation page as context for AI tools
 - Add support for style rules in the API to programmatically get your created style rules and translate with them.
-- Overhauled the tag-handling algorithm that backs translation of XML and HTML in the DeepL API. To enable it and benefit from all the improvements, set the `tag_handling_version` parameter to `v2` in the text translation API. See [here](../xml-and-html-handling/tag-handling-v2) for more information.
+- Overhauled the tag-handling algorithm that backs translation of XML and HTML in the DeepL API. To enable it and benefit from all the improvements, set the `tag_handling_version` parameter to `v2` in the text translation API. See [Translating XML](/docs/translate/translating-xml) for more information.
 - Added new usage analytics endpoint in the Admin API, including key-level reporting. See [here](/api-reference/admin-api/get-usage-analytics) for more details
 - Enabled support for multiple admins in an API subscription
 - Added support for 75 new languages, initially through the `enable_beta_languages` parameter, for text and document translation. Beta languages are not billed during the beta phase and do not yet support glossaries or formality. See [here](../getting-started/supported-languages) for more information
@@ -264,7 +264,7 @@ See [here](../getting-started/supported-languages) for the complete language lis
 
 <Update label="2022">
 ## Q4 2022
-- Moved [HTML handling](/docs/xml-and-html-handling/html) out of beta after fixing the most commonly reported user issues.
+- Moved [HTML handling](/docs/translate/translating-html) out of beta after fixing the most commonly reported user issues.
 - Released an official [Java client library](https://github.com/DeepLcom/deepl-java).
 - Added support for JSON-encoded requests for [text translation](/api-reference/translate), [usage](/api-reference/usage-and-quota/check-usage-and-limits), and [languages](/api-reference/languages) endpoints.
 

@@ -321,17 +321,23 @@ Note that we do not include examples for our client libraries in every single se
 <ParamField body="tag_handling" type="string">
   Sets which kind of tags should be handled. Options currently available:
   <ul>
-    <li><code>xml</code>: Enable XML tag handling; see <a href="/docs/xml-and-html-handling/xml">XML handling</a>.</li>
-    <li><code>html</code>: Enable HTML tag handling; see <a href="/docs/xml-and-html-handling/html">HTML handling</a>.</li>
+    <li><code>xml</code>: Enable XML tag handling; see <a href="/docs/translate/translating-xml">Translating XML</a>.</li>
+    <li><code>html</code>: Enable HTML tag handling; see <a href="/docs/translate/translating-html">Translating HTML</a>.</li>
   </ul>
   To check tag handling support for a language pair, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=translate_text</code></a> and check the <code>tag_handling</code> feature key is present on both the source and target language.
 </ParamField>
 <ParamField body="tag_handling_version" type="string">
-  Select which version of the tag handling algorithm should be used. See <a href="/docs/xml-and-html-handling/tag-handling-v2">tag handling v2</a>.
+  Select which version of the tag handling algorithm should be used.
   <ul>
-    <li><code>v2</code>: Use the improved v2 algorithm.</li>
+    <li><code>v2</code>: Use the improved v2 algorithm (recommended). Sentences are translated more naturally without being constrained by tag placement in the source text, and edge cases around tag preservation, DOM hierarchy, and character escaping are handled better.</li>
     <li><code>v1</code>: Use the previous v1 algorithm.</li>
   </ul>
+  Default: accounts that first used tag handling after December 1, 2025 default to <code>v2</code>; all other accounts default to <code>v1</code>. Both versions work with all <code>model_type</code>s.
+
+  With <code>v2</code>, XML input is strictly parsed: invalid XML returns an error with the message <code>Tag handling parsing failed, please check input.</code> HTML input is not strictly parsed in either version.
+
+  Results differ between v1 and v2, so test representative samples of your content (deep tag hierarchies, inline markup, attributes, special characters, empty and self-closing tags) before switching versions in production.
+
   When `tag_handling` is set, the response includes a `tag_handling_version` field showing which version was applied, including the default when you don't specify one.
 </ParamField>
 <ParamField body="outline_detection" type="boolean">
@@ -370,13 +376,13 @@ Note that we do not include examples for our client libraries in every single se
   </Info>
 </ParamField>
 <ParamField body="non_splitting_tags" type="array[string]">
-  Comma-separated list of XML tags which never split sentences. <a href="/docs/xml-and-html-handling/structured-content">Learn more</a>
+  Comma-separated list of XML tags which never split sentences. <a href="/docs/translate/translating-xml#keep-sentences-together-across-tags">Learn more</a>
 </ParamField>
 <ParamField body="splitting_tags" type="array[string]">
-  Comma-separated list of XML tags which always cause splits. <a href="/docs/xml-and-html-handling/customized-xml-outline-detection">Learn more</a>
+  Comma-separated list of XML tags which always cause splits. <a href="/docs/translate/translating-xml#control-sentence-splitting-manually">Learn more</a>
 </ParamField>
 <ParamField body="ignore_tags" type="array[string]">
-  Comma-separated list of XML tags that indicate text not to be translated. <a href="/docs/xml-and-html-handling/xml">Learn more</a>
+  Comma-separated list of XML tags that indicate text not to be translated. <a href="/docs/translate/translating-xml#exclude-content-from-translation">Learn more</a>
 </ParamField>
 
 
@@ -534,4 +540,4 @@ Content-Type: application/json
 
 ### In-Text Markup
 
-You should take precaution with uncommon characters you may have embedded in your texts. Uncommon character sequences, which may be recognized markers within your system, might get translated or removed, resulting in a corrupted structure. In this case, it is advisable to either split the text so that there is no need to send markers, or to convert your markers to XML tags and enable [XML handling](/docs/xml-and-html-handling/xml) or [HTML handling](/docs/xml-and-html-handling/html).
+You should take precaution with uncommon characters you may have embedded in your texts. Uncommon character sequences, which may be recognized markers within your system, might get translated or removed, resulting in a corrupted structure. In this case, it is advisable to either split the text so that there is no need to send markers, or to convert your markers to XML tags and enable [XML handling](/docs/translate/translating-xml) or [HTML handling](/docs/translate/translating-html).
