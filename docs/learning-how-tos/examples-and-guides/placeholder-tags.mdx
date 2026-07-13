@@ -10,11 +10,11 @@ Mustache is a template system that provides “logic-less templates”. [From th
 
 Using the DeepL API to translate text that includes Mustache tags can present a challenge. In most if not all cases, users would *not* want to translate the tag key inside a Mustache tag, as the tag key is used to reference values in a hash or object. However, the DeepL API does not recognize Mustache tags and does not have a built-in parameter that can be used to exclude them from translation.
 
-It is possible, however, to pre- and post-process text containing Mustache tags in order to preserve the Mustache tag key during translation. In the Python client library, [we include an example](https://github.com/DeepLcom/deepl-python/tree/main/examples/mustache) showing how this can be done.
+It is possible, however, to pre- and post-process text containing Mustache tags in order to preserve the Mustache tag key during translation. In the Python client library, [we include an example](https://github.com/DeepL/deepl-python/tree/main/examples/mustache) showing how this can be done.
 
 A similar approach could be used for other types of placeholder tags that are not recognized by the DeepL API when users do not want to translate the content inside the tags.
 
-Below is a summary of the Mustache example, and for more detail, you can refer to the [example's README](https://github.com/DeepLcom/deepl-python/blob/main/examples/mustache/README.md).
+Below is a summary of the Mustache example, and for more detail, you can refer to the [example's README](https://github.com/DeepL/deepl-python/blob/main/examples/mustache/README.md).
 
 * The input Mustache template is parsed to separate the literal text from the Mustache tags.
 * The template is modified to replace all Mustache tags with placeholder XML tags. Unique IDs are attached to each placeholder tag to identify them in the translated XML.

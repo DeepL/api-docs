@@ -1,20 +1,21 @@
 ---
-title: 'Retrieve supported languages by resource'
-sidebarTitle: 'Overview'
-description: "Learn how to retrieve supported language and feature data across all DeepL API resources"
+title: "Using the Languages API"
+description: "Retrieve supported language and feature data across all DeepL API resources with the v3/languages endpoints, with pseudocode examples for common lookup patterns."
 ---
+
+The `/v3/languages` endpoints tell you which languages each DeepL API resource supports and which optional features (formality, glossaries, tag handling, and more) are available per language. Use them to drive language dropdowns, feature toggles, and validation in your integration instead of hardcoding language lists.
 
 <Info>
     The `/v3/languages` endpoints replace the deprecated `/v2/languages` and `/v2/glossary-language-pairs` endpoints.
-    If you're currently using either, see the [migration guide](/api-reference/languages/migrate-from-v2-languages) for
+    If you're currently using either, see the [migration guide](/docs/languages/migrating-from-v2-languages) for
     differences and code examples.
 </Info>
 
-We also provide auto-generated API specs from DeepL's OpenAPI file, for use with API clients and code generation tools:
+For the auto-generated API specs, for use with API clients and code generation tools, see:
 - [Retrieve languages](/api-reference/languages/retrieve-languages-by-resource)
 - [Retrieve resources](/api-reference/languages/retrieve-resources)
 
-To understand how we'll update these endpoints when we add translation support for a new language or language variant, please see [this article](/docs/resources/language-release-process).
+To understand how these endpoints are updated when DeepL adds translation support for a new language or language variant, see [the language release process](/docs/resources/language-release-process).
 
 ## Resources list
 
@@ -217,6 +218,139 @@ curl -X GET 'https://api.deepl.com/v3/languages/resources' \
     ]
   }
 ]
+```
+
+## Common use cases
+
+The examples below show how to use the `/v3/languages` endpoints for common integration tasks. They are written
+as pseudocode and are resource-agnostic unless otherwise noted.
+
+### Populate source and target language dropdowns
+
+A single call to `GET /v3/languages` returns all languages for a resource. Filter by `usable_as_source` and
+`usable_as_target` to populate each dropdown separately.
+
+```
+GET /v3/languages?resource=translate_text
+
+languages = response
+
+source_options = languages.filter(l => l.usable_as_source)
+target_options = languages.filter(l => l.usable_as_target)
+
+render source_dropdown(source_options)
+render target_dropdown(target_options)
+```
+
+### Show formality options only when supported
+
+`formality` only needs to be supported by the target language. Check the selected target language's `features`
+object — no need to look at the source language.
+
+```
+GET /v3/languages?resource=translate_text
+
+languages = response
+target = languages.find(l => l.lang == selected_target_lang)
+
+if "formality" in target.features:
+    show formality_selector  // e.g. ["default", "more", "less"]
+else:
+    hide formality_selector
+```
+
+### Check if a glossary can be used for a given language pair
+
+`glossary` must be supported by both languages.
+
+```
+GET /v3/languages?resource=translate_text
+
+languages = response
+
+source = languages.find(l => l.lang == source_lang)
+target = languages.find(l => l.lang == target_lang)
+
+glossary_allowed = "glossary" in source.features
+               and "glossary" in target.features
+```
+
+### List target languages that accept glossaries from a given source language
+
+Filter to targets where both the source and target support the `glossary` feature.
+
+```
+GET /v3/languages?resource=translate_text
+
+languages = response
+source_lang = "en"
+
+source = languages.find(l => l.lang == source_lang)
+
+if "glossary" not in source.features:
+    return []  // source doesn't support glossary at all
+
+targets_with_glossary = languages
+    .filter(l => l.usable_as_target)
+    .filter(l => "glossary" in l.features)
+```
+
+### Show writing style options for the Write resource
+
+`writing_style` is a target-only feature on the `write` resource. Check the target language's `features` object.
+
+```
+GET /v3/languages?resource=write
+
+languages = response
+target = languages.find(l => l.lang == selected_target_lang)
+
+if "writing_style" in target.features:
+    show writing_style_selector
+else:
+    hide writing_style_selector
+```
+
+### Check if style rules are available for a target language
+
+Use `resource=style_rules` to query which languages support style rules. Style rules are target-language only — check
+that the target language is listed in the response. The `style_rules` resource has no additional features, so only
+the language availability needs to be checked.
+
+```
+GET /v3/languages?resource=style_rules
+
+languages = response
+target = languages.find(l => l.lang == selected_target_lang)
+
+if target and target.usable_as_target:
+    show style_rules_selector
+else:
+    hide style_rules_selector
+```
+
+### Determine feature support programmatically
+
+Use `/v3/languages/resources` to drive feature checks at runtime — without hardcoding which features need
+target-only or both-language support into your client.
+
+```
+GET /v3/languages/resources
+GET /v3/languages?resource=translate_text
+
+resources = first response
+languages = second response
+
+resource = resources.find(r => r.name == "translate_text")
+source = languages.find(l => l.lang == source_lang)
+target = languages.find(l => l.lang == target_lang)
+
+for feature in resource.features:
+    supported = true
+    if feature.needs_source_support and feature.name not in source.features:
+        supported = false
+    if feature.needs_target_support and feature.name not in target.features:
+        supported = false
 ```
 
 ## API stability

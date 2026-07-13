@@ -3078,7 +3078,7 @@
           "MetaInformation"
         ],
         "summary": "Retrieve Supported Languages",
-        "description": "**Deprecated.** Use `GET /v3/languages?resource=translate_text` (or the appropriate resource)\ninstead. See the [migration guide](https://developers.deepl.com/api-reference/languages/migrate-from-v2-languages)\nfor details.",
+        "description": "**Deprecated.** Use `GET /v3/languages?resource=translate_text` (or the appropriate resource)\ninstead. See the [migration guide](https://developers.deepl.com/docs/languages/migrating-from-v2-languages)\nfor details.",
         "operationId": "getLanguagesV2",
         "parameters": [
           {
@@ -7695,7 +7695,7 @@
       },
       "SourceLanguage": {
         "type": "string",
-        "description": "Language of the text to be translated. If this parameter is omitted, the API will attempt to\ndetect the language of the text and translate it.\n\nFor the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-resource).",
+        "description": "Language of the text to be translated. If this parameter is omitted, the API will attempt to\ndetect the language of the text and translate it.\n\nFor the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/docs/languages/using-the-languages-api).",
         "example": "EN"
       },
       "TranslationMemory": {
@@ -7869,7 +7869,7 @@
       },
       "TargetLanguage": {
         "type": "string",
-        "description": "The language into which the text should be translated.\n\nFor the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/api-reference/languages/retrieve-supported-languages-by-resource).",
+        "description": "The language into which the text should be translated.\n\nFor the full list of supported target languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/docs/languages/using-the-languages-api).",
         "example": "DE"
       },
       "TargetLanguageWrite": {

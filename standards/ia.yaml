@@ -47,7 +47,7 @@ families:
       - {name: Admin, tags: [AdminApi]}
 
   Write:
-    narrative_home: unplaced           # no product tab today — human decides own/under
+    narrative_home: Translate          # nests inside the Translate tab
     groups:
       - {name: Write, tags: [RephraseText, CorrectText]}
 

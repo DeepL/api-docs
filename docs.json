@@ -2,10 +2,6 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "DeepL Documentation",
-  "banner": {
-    "content": "[Join the Developer Community on Discord](https://discord.gg/deepl)",
-    "dismissible": true
-  },
   "colors": {
     "primary": "#0f2b46",
     "light": "#ffffff",
@@ -47,6 +43,8 @@
             "group": "Languages",
             "pages": [
               "docs/getting-started/supported-languages",
+              "docs/languages/using-the-languages-api",
+              "docs/languages/migrating-from-v2-languages",
               "docs/resources/language-release-process"
             ]
           },
@@ -132,7 +130,8 @@
               "docs/translate/translate-documents-quickstart",
               "docs/best-practices/document-translations"
             ]
-          }
+          },
+          "docs/translate/write-api"
         ]
       },
       {
@@ -210,6 +209,14 @@
                 ],
                 "drilldown": false
               },
+              {
+                "group": "Write",
+                "pages": [
+                  "api-reference/improve-text/request-text-improvement",
+                  "api-reference/improve-text/correct-text"
+                ],
+                "drilldown": false
+              },
               "api-reference/detect-language/detect-language-beta"
             ]
           },
@@ -271,9 +278,15 @@
           {
             "group": "Voice",
             "pages": [
-              "api-reference/voice/request-session",
-              "api-reference/voice/websocket-streaming",
-              "api-reference/voice/reconnect-session"
+              {
+                "group": "Real-Time",
+                "pages": [
+                  "api-reference/voice/request-session",
+                  "api-reference/voice/websocket-streaming",
+                  "api-reference/voice/reconnect-session"
+                ],
+                "drilldown": false
+              }
             ]
           },
           {
@@ -287,27 +300,20 @@
             ]
           },
           {
-            "group": "Write",
-            "pages": [
-              "api-reference/improve-text",
-              "api-reference/improve-text/request-text-improvement",
-              "api-reference/improve-text/correct-text"
-            ]
-          },
-          {
             "group": "Languages",
             "pages": [
-              "api-reference/languages/retrieve-supported-languages-by-resource",
-              "api-reference/languages/language-feature-use-cases",
-              "api-reference/languages/retrieve-languages-by-resource",
-              "api-reference/languages/retrieve-resources",
-              "api-reference/languages/migrate-from-v2-languages",
-              "api-reference/languages/v3-languages-changelog",
               {
-                "group": "v2 Languages",
+                "group": "Languages v3",
+                "pages": [
+                  "api-reference/languages/retrieve-languages-by-resource",
+                  "api-reference/languages/retrieve-resources"
+                ],
+                "drilldown": false
+              },
+              {
+                "group": "Languages v2",
                 "tag": "DEPRECATED",
                 "pages": [
-                  "api-reference/languages",
                   "api-reference/languages/retrieve-supported-languages"
                 ],
                 "drilldown": false
@@ -573,6 +579,30 @@
     {
       "source": "/api-reference/style-rules",
       "destination": "/api-reference/style-rules/list-all-style-rules"
+    },
+    {
+      "source": "/api-reference/languages/retrieve-supported-languages-by-resource",
+      "destination": "/docs/languages/using-the-languages-api"
+    },
+    {
+      "source": "/api-reference/languages/language-feature-use-cases",
+      "destination": "/docs/languages/using-the-languages-api"
+    },
+    {
+      "source": "/api-reference/languages/migrate-from-v2-languages",
+      "destination": "/docs/languages/migrating-from-v2-languages"
+    },
+    {
+      "source": "/api-reference/languages/v3-languages-changelog",
+      "destination": "/docs/resources/roadmap-and-release-notes"
+    },
+    {
+      "source": "/api-reference/languages",
+      "destination": "/api-reference/languages/retrieve-supported-languages"
+    },
+    {
+      "source": "/api-reference/improve-text",
+      "destination": "/docs/translate/write-api"
     },
     {
       "source": "/docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world",

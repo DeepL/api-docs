@@ -1,18 +1,14 @@
 ---
-title: "Improve text"
+title: "Write API"
+description: "Improve text with the DeepL Write API: fix spelling and grammar, rewrite for clarity, and control writing style and tone."
+covers: [Write]
 public: true
-sidebarTitle: "Overview"
 ---
 <Info>
-  **Introducing DeepL API for Write**
+  DeepL API for Write is generally available via the v2 API endpoint for customers with a DeepL API Pro subscription.
 
-  DeepL API for Write is now generally available via the v2 API endpoint for customers with a DeepL API Pro subscription.
-
-  The supported scope of DeepL API for Write functionality is covered in this documentation page. Please note that the existing provisions applying to customers' DeepL API Pro subscription also apply to DeepL API for Write with [the following additions to the Service Specification](/api-reference/improve-text/deepl-write-api-service-specification-updates).
-
-  [An FAQ](/api-reference/improve-text#frequently-asked-questions) is included at the bottom of this page.
+  The existing provisions applying to customers' DeepL API Pro subscription also apply to DeepL API for Write with [the following additions to the Service Specification](/api-reference/improve-text/deepl-write-api-service-specification-updates). [An FAQ](#frequently-asked-questions) is included at the bottom of this page.
 </Info>
-### DeepL API for Write overview
 
 DeepL API for Write is accessible through an HTTP interface and consists of two endpoints:
 
@@ -26,7 +22,7 @@ Both endpoints:
 
 The client libraries support all features of the text improvement endpoint. The text improvement feature is currently only available to DeepL API Pro customers and is not yet available in DeepL API Free.
 
-For more detail about request body parameters, see the [Request body descriptions](/api-reference/improve-text#request-body-descriptions) section further down the page.
+For more detail about request body parameters, see the [Request body descriptions](#request-body-descriptions) section further down the page.
 
 <Info>
   The total request body size for text improvement requests must not exceed 10 KiB (10 · 1024 bytes). Please split up your text into multiple calls if it exceeds this limit.
@@ -81,7 +77,7 @@ curl -X POST 'https://api.deepl.com/v2/write/rephrase' \
   * `pt-PT` (Portuguese)
   * `zh`/`zh-Hans` (simplified Chinese)
 
-  You can also retrieve supported languages programmatically via <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=write</code></a>.
+  You can also retrieve supported languages programmatically via <a href="/docs/languages/using-the-languages-api"><code>GET /v3/languages?resource=write</code></a>.
 
   The language of the source texts sent in the `text` parameter must match the target language (translating and improving text simultaneously is not yet supported).
 
@@ -119,7 +115,7 @@ curl -X POST 'https://api.deepl.com/v2/write/rephrase' \
 
   It’s not possible to include both `writing_style` and `tone` in a request; only one or the other can be included.
 
-  To check writing style support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=write</code></a> and look for the <code>writing_style</code> feature key on the target language.
+  To check writing style support dynamically, call <a href="/docs/languages/using-the-languages-api"><code>GET /v3/languages?resource=write</code></a> and look for the <code>writing_style</code> feature key on the target language.
 </ParamField>
 <ParamField body="tone" type="enum">
   Changes the tone of your improvements.
@@ -151,7 +147,7 @@ curl -X POST 'https://api.deepl.com/v2/write/rephrase' \
 
   Tones prefixed with `prefer_` will fall back to the `default` tone when used with a language that does not support tones (this is recommended for cases where no `target_lang` is set), the non-prefixed tones (except `default`) will return a HTTP 400 error in that case.
 
-  It’s not possible to include both `writing_style` and `tone` in a request; only one or the other can be included. To check tone support dynamically, call <a href="/api-reference/languages/retrieve-supported-languages-by-resource"><code>GET /v3/languages?resource=write</code></a> and look for the <code>tone</code> feature key on the target language.
+  It’s not possible to include both `writing_style` and `tone` in a request; only one or the other can be included. To check tone support dynamically, call <a href="/docs/languages/using-the-languages-api"><code>GET /v3/languages?resource=write</code></a> and look for the <code>tone</code> feature key on the target language.
 </ParamField>
 
 ### Response body descriptions

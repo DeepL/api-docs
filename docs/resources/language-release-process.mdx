@@ -27,7 +27,7 @@ to handle codes of this form if they are added in the future.
 <Warning>
 **Do not hardcode assumptions about the format of language codes.** For example, do not assume that language
 codes will always be exactly two letters, or that a hyphenated code will always be in the format `xx-YY`.
-Instead, always treat the `lang` codes returned by the [/languages endpoint](/api-reference/languages) as
+Instead, always treat the `lang` codes returned by the [/languages endpoint](/api-reference/languages/retrieve-supported-languages) as
 opaque identifiers. If you need to parse language codes, use a BCP 47-compliant library rather than writing
 custom parsing logic -- the full spec includes subtags for script, region, variant, extensions, and private
 use, and partial implementations are a common source of bugs.
@@ -53,7 +53,7 @@ You should build your integration to use `/v3/languages` instead.
   [Supported languages](/docs/getting-started/supported-languages) page in the API documentation. The list
   shows support for text and document translation.
 * If a newly added language or variant supports both text and document translation, we will add the language
-  or variant to the [`/v2/languages`](/api-reference/languages) endpoint response. The variant code used
+  or variant to the [`/v2/languages`](/api-reference/languages/retrieve-supported-languages) endpoint response. The variant code used
   depends on the characteristics of the variant:
   * In some cases, a variant is primarily used in a specific region, and so a region subtag is the best way
     to identify it (e.g. `EN-US`, `PT-BR`).
@@ -63,9 +63,9 @@ You should build your integration to use `/v3/languages` instead.
 * In cases where a new language code with a variant duplicates the behavior of an existing language code
   without a variant (e.g. `ZH-HANS` was recently added as a language code for translating into simplified
   Chinese, along with `ZH`):
-  * In the [`/v2/languages`](/api-reference/languages) endpoint response, we will continue to return both
+  * In the [`/v2/languages`](/api-reference/languages/retrieve-supported-languages) endpoint response, we will continue to return both
     language codes in two separate dicts with the same value in the `"name"` field.
   * For backwards compatibility, we will continue to support the original language code (in this example,
     `ZH`) for text and document translation.
 * We will add the language code for the newly supported language or variant to our
-  [OpenAPI spec](https://github.com/DeepLcom/openapi/).
+  [OpenAPI spec](https://github.com/DeepL/openapi/).
