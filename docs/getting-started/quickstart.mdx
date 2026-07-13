@@ -12,24 +12,16 @@ New user? Follow these quick steps to get started with the DeepL API.
   <Step title="Sign up for the API" titleSize="h3">
     Visit [our plans page](https://www.deepl.com/pro-api#api-pricing), choose a plan, and sign up.
 
-    <Tip>
-      If you already have a DeepL Translator account, you will need to log out and [create a new account for the DeepL API](https://support.deepl.com/hc/articles/360019358999-Change-plan).
-    </Tip>
+      If you already have a DeepL Translator account, you will need to log out and [create a new account](https://support.deepl.com/hc/articles/360019358999-Change-plan).
   </Step>
-  <Step title="Step 2: Test your API key with a request" titleSize="h3">
+  <Step title="Test your API key with a request" titleSize="h3">
     Find your API key [here](https://www.deepl.com/your-account/keys).
-     Then try making a simple translation request in one of these ways:
-    * cURL or an HTTP request
-    * with [our client libraries](/docs/getting-started/client-libraries) for [Python](https://www.github.com/deeplcom/deepl-python), [JavaScript](https://www.github.com/deeplcom/deepl-node), [PHP](https://www.github.com/deeplcom/deepl-php), [.NET](https://www.github.com/deeplcom/deepl-dotnet), [Java](https://www.github.com/deeplcom/deepl-java), or [Ruby](https://www.github.com/deeplcom/deepl-rb)
-    * [in our playground](https://developers.deepl.com/api-reference/translate/request-translation?playground=open)
-    * [in Postman](/docs/getting-started/test-your-api-requests-with-postman)
-
-    If you use the sample code below, be sure to replace `{YOUR_API_KEY}` with your own API key.
+     Then try making a simple translation request.
 
     <Tabs>
       <Tab title="HTTP Request">
         <Tip>
-          If you chose a free API plan and you are writing cURL or HTTP requests, replace `https://api.deepl.com` with `https://api-free.deepl.com`.
+          If you chose a free API plan, replace `https://api.deepl.com` with `https://api-free.deepl.com`.
         </Tip>
            
         ```http Sample request
@@ -56,7 +48,7 @@ New user? Follow these quick steps to get started with the DeepL API.
       </Tab>
       <Tab title="cURL">
         <Tip>
-          If you chose a free API plan and you are writing cURL or HTTP requests, replace `https://api.deepl.com` with `https://api-free.deepl.com`.
+          If you chose a free API plan, replace `https://api.deepl.com` with `https://api-free.deepl.com`.
         </Tip>
 
         ```sh Set the API key
@@ -126,7 +118,6 @@ New user? Follow these quick steps to get started with the DeepL API.
 
         ```text Sample output
         Hallo, Welt!
-
         ```
         <Tip>
           In production code, it's safer to store your API key in an environment variable.
@@ -184,7 +175,7 @@ New user? Follow these quick steps to get started with the DeepL API.
       <Tab title="Java">
         ```java Install client library
         // For instructions on installing the DeepL Java library,
-        // see https://github.com/DeepLcom/deepl-java?tab=readme-ov-file#installation
+        // see https://github.com/DeepL/deepl-java?tab=readme-ov-file#installation
         ```
 
         ```java Sample request
@@ -235,17 +226,33 @@ New user? Follow these quick steps to get started with the DeepL API.
       </Tab>                      
     </Tabs>
   </Step>
-  <Step title="Step 3: Keep building with our client libraries and how-to guides" titleSize="h3">
-    [Our official client libraries](/docs/getting-started/client-libraries) let you use the API with six popular programming languages - [Python](https://www.github.com/deeplcom/deepl-python), [JavaScript](https://www.github.com/deeplcom/deepl-node), [PHP](https://www.github.com/deeplcom/deepl-php), [.NET](https://www.github.com/deeplcom/deepl-dotnet), [Java](https://www.github.com/deeplcom/deepl-java), or [Ruby](https://www.github.com/deeplcom/deepl-rb). The DeepL community has [contributed client libraries](https://github.com/DeepLcom/awesome-deepl?tab=readme-ov-file#community-libraries--sdks) for other languages, including [Dart](https://github.com/komape/deepl_dart), [Go](https://github.com/candy12t/go-deepl), and [Rust](https://github.com/Avimitin/deepl-rs). You may also wish to check out [these examples and guides](/docs/learning-how-tos/examples-and-guides).
+  <Step title="Keep building" titleSize="h3">
+    Pick the product you want to integrate:
+
+    <CardGroup cols={2}>
+      <Card title="Translate" icon="language" href="/docs/translate/overview">
+        Translate text strings and complete documents, with quickstarts for both.
+      </Card>
+      <Card title="Customize" icon="wand-magic-sparkles" href="/docs/customize/overview">
+        Tailor translations to your domain with glossaries, style rules, and translation memories.
+      </Card>
+      <Card title="Voice" icon="waveform-lines" href="/docs/voice/overview">
+        Transcribe and translate spoken audio in real time, starting with the Real-Time Voice Quickstart.
+      </Card>
+      <Card title="Admin" icon="sliders" href="/docs/admin/overview">
+        Manage API keys, permissions, and usage across your organization, in the account UI or via the Admin API.
+      </Card>
+    </CardGroup>
+
+    [Our official client libraries](/docs/getting-started/client-libraries) wrap the API for Python, JavaScript, PHP, .NET, Java, and Ruby, and the community maintains [libraries for more languages](https://github.com/DeepL/awesome-deepl?tab=readme-ov-file#community-libraries--sdks), including Dart, Go, and Rust.
   </Step>
 </Steps>
 
 ## Keep exploring
 
-- [**DeepL 101**](/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api) - A quick guide to text and document translation, using Postman to play with the API, client libraries for your favorite programming language, and joining our developer community
-- [Translation: a beginner's guide](/docs/learning-how-tos/examples-and-guides/translation-beginners-guide) - A detailed guide to fundamental translation features
-- [Cookbook](/docs/learning-how-tos/cookbook) - Explore short tutorials, examples, projects, and use cases
-- [Guides](/docs/learning-how-tos/examples-and-guides) - Discover in-depth explanations for API features and real-world applications
+- [**Cookbook**](/docs/learning-how-tos/cookbook) - Short tutorials, examples, projects, and use cases
+- [**Guides**](/docs/learning-how-tos/examples-and-guides) - In-depth explanations for API features and real-world applications
+- [**Docs MCP Server**](/docs/getting-started/docs-mcp-server) - Connect your AI tools to this documentation for source-grounded answers
 
 ## Community and Support
 
@@ -253,8 +260,8 @@ New user? Follow these quick steps to get started with the DeepL API.
   <Card icon="circle-question" horizontal href="https://support.deepl.com/">
     Support Center
   </Card>
-  <Card icon="bridge" horizontal href="https://www.deepl-bridges.com/">
-    DeepL Bridges - Developer Community
+  <Card icon="discord" horizontal href="https://discord.gg/deepl">
+    Discord Community
   </Card>
   <Card icon="signal-stream" horizontal href="https://api-status.deepl.com/">
     API Status Page
@@ -262,7 +269,7 @@ New user? Follow these quick steps to get started with the DeepL API.
   <Card icon="tower-broadcast" horizontal href="https://www.deeplstatus.com/">
     DeepL Status Page (all services)
   </Card>
-  <Card icon="notes" horizontal href="/docs/resources/release-notes">
+  <Card icon="notes" horizontal href="/docs/resources/roadmap-and-release-notes">
     Release Notes
   </Card>
 </CardGroup>

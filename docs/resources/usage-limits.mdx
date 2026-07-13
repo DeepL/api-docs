@@ -36,6 +36,6 @@ title: "Usage and limits"
 
 Retrieve usage information within the current billing period together with the corresponding account limits.
 
-Usage is returned and tracked for translated characters. Note that for [text translation](/api-reference/translate), characters are still counted toward billing when the source and target languages are equal.
+Usage is returned and tracked for translated characters. Note that for [text translation](/api-reference/translate/request-translation), characters are still counted toward billing when the source and target languages are equal.
 
-Character usage includes both text and document translations, and is measured by the source text length in Unicode code points. For example, "A", "Δ", "あ", and "深" are each counted as a single character.
+Character usage includes both text and document translations, and is measured by the source text length in Unicode code points. For example, "A", "Δ", "あ", and "深" are each counted as a single character. The `character_count` field returned by the [`/usage` endpoint](/api-reference/usage-and-quota/check-usage-and-limits) is a sum of Translate API and Write API characters.

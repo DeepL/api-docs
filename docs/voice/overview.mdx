@@ -1,0 +1,49 @@
+---
+title: "DeepL Voice API"
+sidebarTitle: "Overview"
+description: "Transcribe and translate spoken audio in real time with the DeepL Voice API. Find the streaming guide, core concepts, and language and format reference."
+---
+
+The DeepL Voice API transcribes and translates spoken audio in real time over a WebSocket connection. Within a single streaming session, you can:
+
+* Send one audio stream
+* Receive transcripts in the source language
+* Receive translations in multiple target languages
+* <Badge color="green">closed beta</Badge> Receive translated speech
+
+<Info>
+    **Speech-to-text** (real-time transcription and text translation) is available to all customers with a paid DeepL API subscription. **Speech-to-speech** (translated TTS output) is a separate capability in closed beta and not included in standard API subscriptions.
+
+    The provisions applying to DeepL API Enterprise subscriptions also apply to Voice API speech-to-text, with [additions to the Terms and Conditions, Service Specification, and Data Processing Agreement](/api-reference/voice/deepl-voice-api-service-specification-updates) (new sub-processors have been added to serve specific languages).
+</Info>
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Voice Quickstart" icon="waveform-lines" href="/docs/voice/real-time-voice-quickstart">
+    Create a session, stream audio over WebSocket, and handle reconnections, with a complete Python example.
+  </Card>
+  <Card title="Understanding Voice Sessions" icon="lightbulb" href="/docs/voice/understanding-voice-sessions">
+    Understand the session flow, token lifecycle, and how audio and results are delivered.
+  </Card>
+  <Card title="Message Encoding" icon="binary" href="/docs/voice/message-encoding">
+    Choose between JSON and MessagePack for WebSocket messages.
+  </Card>
+  <Card title="Supported Languages, Formats, and Limits" icon="table-list" href="/docs/voice/supported-languages-formats-and-limits">
+    Check language availability, supported audio codecs and containers, and session limits.
+  </Card>
+  <Card title="API reference" icon="code" href="/api-reference/voice/request-session">
+    Full request, message, and response schemas for the Voice API endpoints.
+  </Card>
+</CardGroup>
+
+## Customization
+
+Two optional features let you tailor transcription and translation to your domain:
+
+* <Badge color="blue">beta</Badge> **Spoken terms**: improve transcription of frequently used terms such as company-specific terminology, acronyms, product names, and team member names. Manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms); management via API is coming soon.
+* **Glossaries**: enforce specific translations for terms in the target language. Manage them in [DeepL Home](https://www.deepl.com/en/glossary) or programmatically with the [Glossaries API](/docs/customize/managing-glossaries).
+
+## Code examples
+
+A reference implementation in Python is available in the [DeepL Python library repository](https://github.com/DeepL/deepl-python/tree/main/examples/voice/cli). The official DeepL SDKs don't integrate the Voice API yet, but you can use any WebSocket client library to interact with it.

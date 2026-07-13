@@ -15,7 +15,7 @@ The Voice Translate Job API translates pre-recorded audio files into any combina
 - **SRT subtitles** (`application/x-subrip`) — preserves the original timecodes
 - **Translated speech audio** — speech-to-speech in a range of audio and video container formats (see the [Reference](/api-reference/jobs-voice-translate/reference#supported-output-formats) for the full list)
 
-The API processes entire audio files asynchronously. This makes it suitable for pre-recorded content such as podcasts, meeting recordings, or other media files. For live audio, see the [real-time Voice API](/api-reference/voice).
+The API processes entire audio files asynchronously. This makes it suitable for pre-recorded content such as podcasts, meeting recordings, or other media files. For live audio, see the [real-time Voice API](/docs/voice/overview).
 
 Each job can produce multiple outputs from a single source. For example, one English podcast can be translated into German plain text, French SRT subtitles, and Spanish audio in a single job.
 
@@ -366,4 +366,4 @@ Now that you understand how to translate audio files asynchronously:
 - **Create a job:** Review the [Create Job endpoint reference](/api-reference/jobs-voice-translate/create-voice-translate-job) for the full request and response schema
 - **Poll job status:** Review the [Get Job Status endpoint reference](/api-reference/jobs-voice-translate/get-voice-translate-job-status) for the full response schema
 - **Look up limits and formats:** See the [Reference](/api-reference/jobs-voice-translate/reference) for status values, limits, supported audio formats, languages, and output formats
-- **Try realtime translation:** Use the [Voice API](/api-reference/voice) for streaming audio translation over WebSocket instead of batch processing
+- **Try realtime translation:** Use the [Voice API](/docs/voice/overview) for streaming audio translation over WebSocket instead of batch processing

@@ -30,7 +30,7 @@ families:
       - {name: Translate, tags: [TranslateText, TranslateDocuments]}
 
   Customize:
-    narrative_home: Translate          # nests as a group inside the Translate tab
+    narrative_home: own
     groups:
       - {name: Customize, tags: [ManageGlossaries, ManageMultilingualGlossaries, TranslationMemories]}
     # Style rules live under Customize but have no OpenAPI tag yet.
@@ -47,7 +47,7 @@ families:
       - {name: Admin, tags: [AdminApi]}
 
   Write:
-    narrative_home: unplaced           # no product tab today — human decides own/under
+    narrative_home: Translate          # nests inside the Translate tab
     groups:
       - {name: Write, tags: [RephraseText, CorrectText]}
 

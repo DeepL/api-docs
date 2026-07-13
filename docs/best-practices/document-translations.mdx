@@ -12,6 +12,9 @@ For DOCX and PPTX, our .NET, PHP and NodeJS client libraries offer functionality
 
 This allows users to translate files that might hit the size limit.
 
+### Billing minimums
+Every submitted document of type `.pptx`, `.docx`, `.doc`, `.xlsx`, or `.pdf` is billed a minimum of 50,000 characters on DeepL API plans, no matter how many characters the document contains.
+
 ### One source/target language pair per upload
 The `source_lang` and `target_lang` values on the request apply to the entire uploaded file. For most formats, keep each upload to a single source language for consistent results — behavior on content that isn't in the selected source language is not guaranteed.
 
@@ -67,6 +70,18 @@ Each supported format has behaviors and constraints worth knowing before you upl
 - Some valid FrameMaker 10 MIF files may fail with HTTP 500 — try re-saving from a newer FrameMaker version.
 - MIF does not use `translate="no"`. Protect content via FrameMaker conditional text or character formatting.
 
+### Polling and translation time
+Translation time depends on document size and server load: small documents typically finish in seconds, larger ones in 1-2 minutes once translation has started. Poll the [status endpoint](/api-reference/document/check-document-status) at regular intervals or with exponential backoff. Treat the `seconds_remaining` field as a rough estimate only; it can be unreliable and occasionally returns implausible values (e.g. 2^27).
+
+### Using glossaries with documents
+You can apply a glossary to a document translation with the `glossary_id` parameter (or up to 5 glossaries with `glossary_ids`). This requires the `source_lang` parameter to be set, and the glossary's language pair has to match the language pair of the request.
+
+### Document format conversions
+By default, the translated document comes back in the same format as the input. Two conversions differ:
+
+- Translating a `.doc` file returns a `.docx` file.
+- With the `output_format` parameter on upload, you can translate a PDF and receive an editable Microsoft Word document (`output_format=docx`). No other input formats support alternative output formats.
+
 ### Error 429: Too Many Requests
 This error may occur when: 
 
@@ -85,5 +100,5 @@ This error indicates that your latest document translation request has exceeded 
 Further document translation requests will not be processed.
 
 <Tip>
-  Check out our [code example](https://github.com/DeepLcom/deepl-node/tree/main/examples/bulk-translation) on how to implement bulk document translations.
+  Check out our [code example](https://github.com/DeepL/deepl-node/tree/main/examples/bulk-translation) on how to implement bulk document translations.
 </Tip>

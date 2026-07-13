@@ -1,0 +1,261 @@
+---
+title: "Translate Text Quickstart"
+description: "Send your first text translation request to the DeepL API and batch multiple strings into a single call."
+covers: [Translate]
+public: true
+---
+
+In this tutorial, you'll translate your first text with the DeepL API, then batch several strings into a single request. By the end, you'll have made the two most common types of text translation request, using curl or the official client library for your language.
+
+## Prerequisites
+
+- A DeepL API account. Visit [our plans page](https://www.deepl.com/pro-api#api-pricing), choose a plan, and sign up. If you already have a DeepL Translator account, you need to log out and [create a separate account](https://support.deepl.com/hc/articles/360019358999-Change-plan) for the API.
+- Your API key, which you can find in [your account settings](https://www.deepl.com/your-account/keys). To learn more about keys, see [Authentication](/docs/getting-started/auth).
+- `curl`, or one of the [official client libraries](/docs/getting-started/client-libraries) for Python, JavaScript, PHP, C#, Java, or Ruby.
+
+<Tip>
+If you're on a free API plan, replace `https://api.deepl.com` with `https://api-free.deepl.com` in curl examples. Client libraries detect your account type and pick the correct URL automatically.
+</Tip>
+
+## Building with an AI coding agent?
+
+Wire it up to the [DeepL Docs MCP Server](/docs/getting-started/docs-mcp-server) so it can search and read this documentation while it writes code. In Claude Code:
+
+```bash
+claude mcp add --transport http deepl-docs https://developers.deepl.com/mcp
+```
+
+Then describe what you want to build. To get the same result as this tutorial, paste:
+
+```text wrap
+Using the DeepL API, write a script that translates a list of English strings to German and prints the results.
+```
+
+Setup instructions for Claude Desktop, Cursor, VS Code, and other MCP clients are on the [Docs MCP Server page](/docs/getting-started/docs-mcp-server).
+
+## Step 1: Send your first translation request
+
+A translation request needs only two parameters: `text`, the text to translate, and `target_lang`, the language you're translating to. You don't need to specify the source language. DeepL detects it and returns it in the response as `detected_source_language`. If your text is very short or mixes languages, you can pin the source with the optional `source_lang` parameter.
+
+Language codes follow ISO 639, like `DE` for German or `JA` for Japanese, and are case-insensitive. Some target languages support regional variants, like `en-US` or `pt-BR`. See the full list of [supported languages](/docs/getting-started/supported-languages).
+
+<Tabs>
+  <Tab title="cURL">
+    ```sh Set the API key
+    export API_KEY={YOUR_API_KEY}
+    ```
+
+    ```sh Sample request
+    curl -X POST https://api.deepl.com/v2/translate \
+      --header "Content-Type: application/json" \
+      --header "Authorization: DeepL-Auth-Key $API_KEY" \
+      --data '{
+        "text": ["Your order has shipped and will arrive on Tuesday."],
+        "target_lang": "DE"
+    }'
+    ```
+
+    ```json Sample response
+    {
+      "translations": [
+        {
+          "detected_source_language": "EN",
+          "text": "Ihre Bestellung wurde versandt und kommt am Dienstag an."
+        }
+      ]
+    }
+    ```
+  </Tab>
+  <Tab title="Python">
+    ```sh Install client library
+    pip install deepl
+    ```
+
+    ```py Sample request
+    import deepl
+
+    auth_key = "{YOUR_API_KEY}"  # replace with your key
+    deepl_client = deepl.DeepLClient(auth_key)
+
+    result = deepl_client.translate_text(
+        "Your order has shipped and will arrive on Tuesday.",
+        target_lang="DE",
+    )
+    print(result.text)
+    ```
+
+    ```text Sample output
+    Ihre Bestellung wurde versandt und kommt am Dienstag an.
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```sh Install client library
+    npm install deepl-node
+    ```
+
+    ```javascript Sample request
+    import * as deepl from 'deepl-node';
+
+    const authKey = "{YOUR_API_KEY}"; // replace with your key
+    const deeplClient = new deepl.DeepLClient(authKey);
+
+    (async () => {
+        const result = await deeplClient.translateText(
+            'Your order has shipped and will arrive on Tuesday.',
+            null,
+            'de'
+        );
+        console.log(result.text);
+    })();
+    ```
+
+    ```text Sample output
+    Ihre Bestellung wurde versandt und kommt am Dienstag an.
+    ```
+  </Tab>
+  <Tab title="PHP">
+    ```sh Install client library
+    composer require deeplcom/deepl-php
+    ```
+
+    ```php Sample request
+    require_once 'vendor/autoload.php';
+    use DeepL\Client;
+
+    $authKey = "{YOUR_API_KEY}"; // replace with your key
+    $deeplClient = new DeepL\DeepLClient($authKey);
+
+    $result = $deeplClient->translateText(
+        'Your order has shipped and will arrive on Tuesday.',
+        null,
+        'de'
+    );
+    echo $result->text;
+    ```
+
+    ```text Sample output
+    Ihre Bestellung wurde versandt und kommt am Dienstag an.
+    ```
+  </Tab>
+  <Tab title="C#">
+    ```sh Install client library
+    dotnet add package DeepL.net
+    ```
+
+    ```csharp Sample request
+    using DeepL; // this imports the DeepL namespace. Use the code below in your main program.
+
+    var authKey = "{YOUR_API_KEY}"; // replace with your key
+    var client = new DeepLClient(authKey);
+
+    var translatedText = await client.TranslateTextAsync(
+        "Your order has shipped and will arrive on Tuesday.",
+        null,
+        LanguageCode.German);
+    Console.WriteLine(translatedText);
+    ```
+
+    ```text Sample output
+    Ihre Bestellung wurde versandt und kommt am Dienstag an.
+    ```
+  </Tab>
+  <Tab title="Java">
+    ```java Install client library
+    // For instructions on installing the DeepL Java library,
+    // see https://github.com/DeepL/deepl-java?tab=readme-ov-file#installation
+    ```
+
+    ```java Sample request
+    import com.deepl.api.*;
+
+    public class Main {
+        public static void main(String[] args) throws DeepLException, InterruptedException {
+            String authKey = "{YOUR_API_KEY}"; // replace with your key
+            DeepLClient client = new DeepLClient(authKey);
+
+            TextResult result = client.translateText(
+                "Your order has shipped and will arrive on Tuesday.", null, "de");
+            System.out.println(result.getText());
+        }
+    }
+    ```
+
+    ```text Sample output
+    Ihre Bestellung wurde versandt und kommt am Dienstag an.
+    ```
+  </Tab>
+  <Tab title="Ruby">
+    ```sh Install client library
+    gem install deepl-rb
+    ```
+
+    ```ruby Sample request
+    require 'deepl'
+
+    DeepL.configure do |config|
+        config.auth_key = '{YOUR_API_KEY}' # replace with your key
+    end
+
+    translation = DeepL.translate 'Your order has shipped and will arrive on Tuesday.', nil, 'DE'
+    puts translation.text
+    ```
+
+    ```text Sample output
+    Ihre Bestellung wurde versandt und kommt am Dienstag an.
+    ```
+  </Tab>
+</Tabs>
+
+The examples hardcode the key to keep them short. In production code, store your API key in an environment variable instead.
+
+<Warning>
+For security reasons, you can't call the DeepL API directly from client-side JavaScript. During testing or prototyping, route requests through [a simple proxy](/docs/learning-how-tos/cookbook/nodejs-proxy) instead.
+</Warning>
+
+## Step 2: Translate multiple strings in one call
+
+The `text` parameter is an array, so one request can carry many strings, like every notification in a template file. Each string is translated separately and the response preserves their order. If you don't set `source_lang`, DeepL detects the language of each string individually.
+
+```sh Sample request
+curl -X POST https://api.deepl.com/v2/translate \
+  --header "Content-Type: application/json" \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --data '{
+    "text": [
+      "Your order has shipped.",
+      "Estimated delivery: Tuesday, July 14."
+    ],
+    "target_lang": "DE"
+}'
+```
+
+```json Sample response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Ihre Bestellung wurde versandt."
+    },
+    {
+      "detected_source_language": "EN",
+      "text": "Voraussichtliche Lieferung: Dienstag, 14. Juli."
+    }
+  ]
+}
+```
+
+The client libraries accept a list of strings in the same `translate_text` methods you used in step 1.
+
+The total request body is limited to 128 KiB. For anything larger, or for files whose formatting should be preserved, translate a document instead.
+
+## Next steps
+
+You've now covered the core text translation workflow: single strings and batches. To keep going:
+
+- Translate entire files, formatting included, with the [Translate Documents Quickstart](/docs/translate/translate-documents-quickstart)
+- Try requests with more parameters in [our playground](https://developers.deepl.com/api-reference/translate/request-translation?playground=open) or [Postman](/docs/getting-started/test-your-api-requests-with-postman)
+- Improve translation quality for short or ambiguous text with the [context parameter](/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter)
+- Choose between speed- and quality-optimized models with the `model_type` parameter, documented in the [`/translate` reference](/api-reference/translate/request-translation)
+- Translate into regional variants like `pt-BR` with the [language variants guide](/docs/learning-how-tos/examples-and-guides/translating-between-variants)
+- Enforce your terminology with [glossaries](/docs/customize/glossaries-in-the-real-world)
+- Check [usage and limits](/docs/resources/usage-limits) before going to production

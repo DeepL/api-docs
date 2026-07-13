@@ -10,7 +10,7 @@ This guide walks through techniques for counting characters in different content
 
 ## Before you start
 
-DeepL bills by source-text length in Unicode code points. Characters in the [`context` parameter](/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter) and HTML/XML tags (when [tag handling](/docs/xml-and-html-handling/xml) is enabled) do not count. For the full billing rules and per-document character minimums, see [Usage and limits](/docs/resources/usage-limits#your-usage).
+DeepL bills by source-text length in Unicode code points. Characters in the [`context` parameter](/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter) and HTML/XML tags (when [tag handling](/docs/translate/translating-xml) is enabled) do not count. For the full billing rules and per-document character minimums, see [Usage and limits](/docs/resources/usage-limits#your-usage).
 
 ## Estimate website content
 
@@ -94,7 +94,7 @@ For a Drupal site specifically, the `node_field_data` and `node__body` tables co
 
 ## Estimate document content
 
-For documents you plan to translate via the [Document Translation API](/api-reference/document), you can extract text locally to get a rough character count.
+For documents you plan to translate via the [Document Translation API](/api-reference/document/upload-and-translate-a-document), you can extract text locally to get a rough character count.
 
 ```python
 import zipfile
@@ -140,7 +140,7 @@ If you're translating the same content into multiple languages, each language co
 
 ## Validate your estimate
 
-Once you've estimated your characters, you can [sign up for a DeepL API plan for free](https://www.deepl.com/en/pro#api) and test a small sample against the live API. Use the [`show_billed_characters`](/api-reference/translate#request-body-descriptions) parameter to compare actual billed characters against your local count.
+Once you've estimated your characters, you can [sign up for a DeepL API plan for free](https://www.deepl.com/en/pro#api) and test a small sample against the live API. Use the [`show_billed_characters`](/api-reference/translate/request-translation) parameter to compare actual billed characters against your local count. DeepL intends to include `billed_characters` in responses by default in the future, with advance notice to API users before the change.
 
 ```bash
 curl -X POST https://api.deepl.com/v2/translate \
@@ -171,7 +171,7 @@ Run this on 5-10 representative pages or documents and compare the `billed_chara
 
 After you start translating, monitor actual usage against your estimates:
 
-- **[`/v2/usage` endpoint](/api-reference/usage-and-quota)** - programmatic access to your current billing period consumption
+- **[`/v2/usage` endpoint](/api-reference/usage-and-quota/check-usage-and-limits)** - programmatic access to your current billing period consumption
 - **[Usage Analytics Dashboard](/docs/learning-how-tos/cookbook/usage-analytics-dashboard)** - visualize usage across API keys with the open-source demo dashboard
 - **[API Usage Logger](/docs/learning-how-tos/cookbook/api-usage-logger)** - per-request logging with billed characters, language pairs, and reporting tags
 - **[Cost Control](/docs/best-practices/cost-control)** - set a monthly character limit on your Pro API subscription to cap spend

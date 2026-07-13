@@ -1,0 +1,259 @@
+---
+title: "Real-Time Voice Quickstart"
+description: "Stream microphone audio to the DeepL Voice API from Python and print live translations to your terminal as the speaker talks."
+covers: [Voice]
+---
+
+In this tutorial you'll run a small Python program that captures audio from your microphone, streams it to the DeepL Voice API, and prints the transcript plus German and French translations to your terminal, sentence by sentence, while you speak. The same pattern works for any live audio source: a meeting bot, a phone bridge, or a broadcast feed.
+
+## Prerequisites
+
+- A DeepL API account with Voice API access
+- Python 3.10 or later
+- A microphone (no microphone? see [Simulate a live stream from a file](#simulate-a-live-stream-from-a-file))
+
+## Building with an AI coding agent?
+
+Wire it up to the [DeepL Docs MCP Server](/docs/getting-started/docs-mcp-server) so it can search and read this documentation while it writes code. In Claude Code:
+
+```bash
+claude mcp add --transport http deepl-docs https://developers.deepl.com/mcp
+```
+
+Then describe what you want to build. To get the same result as this tutorial, paste:
+
+```text wrap
+Write a script to stream my microphone to the DeepL Voice API and print the transcript and translations as each sentence concludes.
+```
+
+Setup instructions for Claude Desktop, Cursor, VS Code, and other MCP clients are on the [Docs MCP Server page](/docs/getting-started/docs-mcp-server).
+
+## Run the complete example
+
+Install the dependencies:
+
+```bash
+pip install requests sounddevice websockets
+```
+
+Then save this as `live_translation.py` and replace `YOUR_AUTH_KEY` with your DeepL API key:
+
+```python live_translation.py [expandable]
+import asyncio
+import base64
+import json
+import signal
+
+import requests
+import sounddevice
+import websockets
+
+AUTH_KEY = "YOUR_AUTH_KEY"
+SESSION_ENDPOINT = "https://api.deepl.com/v3/voice/realtime"
+TARGET_LANGUAGES = ["de", "fr"]
+SAMPLE_RATE = 16000  # Must match the rate declared in source_media_content_type
+CHUNK_FRAMES = 3200  # 200 ms per chunk at 16 kHz
+RECORD_SECONDS = 30  # Safety cap; Ctrl+C stops recording earlier
+
+
+def create_session() -> dict:
+    response = requests.post(
+        SESSION_ENDPOINT,
+        headers={"Authorization": f"DeepL-Auth-Key {AUTH_KEY}"},
+        json={
+            "source_media_content_type": "audio/pcm;encoding=s16le;rate=16000",
+            "target_languages": TARGET_LANGUAGES,
+        },
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+async def send_microphone_audio(ws, stop: asyncio.Event) -> None:
+    stream = sounddevice.RawInputStream(
+        samplerate=SAMPLE_RATE, channels=1, dtype="int16"
+    )
+    stream.start()
+    try:
+        for _ in range(RECORD_SECONDS * SAMPLE_RATE // CHUNK_FRAMES):
+            if stop.is_set():
+                break
+            # Read in a worker thread so receiving continues while we block
+            data, _overflowed = await asyncio.to_thread(stream.read, CHUNK_FRAMES)
+            encoded = base64.b64encode(bytes(data)).decode("ascii")
+            await ws.send(json.dumps({"source_media_chunk": {"data": encoded}}))
+    finally:
+        stream.stop()
+        stream.close()
+    print("Finalizing transcripts...")
+    await ws.send(json.dumps({"end_of_source_media": {}}))
+
+
+async def receive_results(ws) -> None:
+    pending = {}  # Concluded text per language, buffered until a sentence ends
+
+    def handle_update(label: str, segments: list) -> None:
+        text = pending.get(label, "") + "".join(s["text"] for s in segments)
+        if text.rstrip().endswith((".", "!", "?")):
+            print(f"[{label}] {text.strip()}")
+            text = ""
+        pending[label] = text
+
+    async for message in ws:
+        data = json.loads(message)
+        if "source_transcript_update" in data:
+            handle_update("source", data["source_transcript_update"]["concluded"])
+        elif "target_transcript_update" in data:
+            update = data["target_transcript_update"]
+            handle_update(update["language"], update["concluded"])
+        elif "end_of_stream" in data:
+            # The very last message: flush any unfinished sentences and exit
+            for label, text in pending.items():
+                if text.strip():
+                    print(f"[{label}] {text.strip()}")
+            return
+        elif "error" in data:
+            raise RuntimeError(f"Voice API error: {data['error']['error_message']}")
+
+
+async def main() -> None:
+    stop = asyncio.Event()
+    try:
+        asyncio.get_running_loop().add_signal_handler(signal.SIGINT, stop.set)
+    except NotImplementedError:
+        pass  # Windows: Ctrl+C raises KeyboardInterrupt instead
+
+    session = create_session()
+    url = f"{session['streaming_url']}?token={session['token']}"
+    async with websockets.connect(url) as ws:
+        print("Connected. Speak now (Ctrl+C to stop)...")
+        await asyncio.gather(send_microphone_audio(ws, stop), receive_results(ws))
+    print("Done. All transcripts are final.")
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
+```
+
+Run it and speak in any [supported source language](/docs/voice/supported-languages-formats-and-limits#supported-languages). Each sentence prints once it's final, first the transcript, then each translation. Press Ctrl+C when you're done: the script stops recording, waits for the remaining results, and exits cleanly.
+
+```text
+❯ python live_translation.py
+Connected. Speak now (Ctrl+C to stop)...
+[source] Hello everyone, welcome to today's demo.
+[de] Hallo zusammen, willkommen zur heutigen Demo.
+[fr] Bonjour à tous, bienvenue à la démonstration d'aujourd'hui.
+^CFinalizing transcripts...
+[source] We are testing real-time voice translation.
+[de] Wir testen die Sprachübersetzung in Echtzeit.
+[fr] Nous testons la traduction vocale en temps réel.
+Done. All transcripts are final.
+```
+
+## How it works
+
+The program does three things: it creates a session over HTTPS, streams audio to the WebSocket URL it gets back, and handles result messages until the server confirms everything is final.
+
+### The session request
+
+`create_session` sends a POST request with the audio format and target languages. The only required field is `source_media_content_type`; for raw microphone audio, that's PCM at 16 kHz. The response contains the WebSocket URL and a one-time token, and the program connects to `{streaming_url}?token={token}`:
+
+```json
+{
+  "session_id": "4f911080-cfe2-41d4-8269-0e6ec15a0354",
+  "streaming_url": "wss://api.deepl.com/v3/voice/realtime/connect",
+  "token": "VGhpcyBpcyBhIGZha2UgdG9rZW4K"
+}
+```
+
+If you know the speaker's language in advance, add `"source_language": "en"` and `"source_language_mode": "fixed"` to the request body. This skips language detection and reduces latency. Without them, the language is detected automatically. See the [Request Session reference](/api-reference/voice/request-session) for all parameters, including glossary and formality options.
+
+### Sending audio
+
+`send_microphone_audio` sends each 200-millisecond microphone chunk as a JSON text message with the raw audio base64-encoded:
+
+```json
+{"source_media_chunk": {"data": "<base64-encoded audio>"}}
+```
+
+Keep chunks between 50 and 250 milliseconds for the best latency. When the audio ends (Ctrl+C or the safety cap), the function sends one final message that tells the API to finalize all pending results:
+
+```json
+{"end_of_source_media": {}}
+```
+
+### Receiving transcripts and translations
+
+While audio is being sent, the server pushes `source_transcript_update` and `target_transcript_update` messages on the same connection:
+
+```json
+{
+  "target_transcript_update": {
+    "language": "de",
+    "concluded": [
+      {"text": " Hallo zusammen,", "start_time": 0, "end_time": 1500}
+    ],
+    "tentative": [
+      {"text": " willkommen zur heutigen Demo", "start_time": 1500, "end_time": 2000}
+    ]
+  }
+}
+```
+
+**Concluded** segments are final and sent only once; **tentative** segments are provisional and refined by later updates. `receive_results` appends concluded text to a per-language buffer and prints the buffer whenever a sentence completes, which keeps the terminal readable. A UI would also render the tentative text as a live preview that updates in place; see [Understanding Voice Sessions](/docs/voice/understanding-voice-sessions) for this delivery model.
+
+After `end_of_source_media`, the server sends the remaining updates, then `end_of_stream` as the very last message, at which point it's safe to close the connection. See the [WebSocket Streaming reference](/api-reference/voice/websocket-streaming) for the full message schema.
+
+### Reconnecting after a drop
+
+Networks drop, and the Voice API lets you resume a session instead of starting over. If the WebSocket closes unexpectedly, exchange your token for a fresh streaming URL and token, then reconnect. Session state, including configuration and translation context, is preserved.
+
+```python
+def reconnect(token: str) -> dict:
+    response = requests.get(
+        SESSION_ENDPOINT,
+        headers={"Authorization": f"DeepL-Auth-Key {AUTH_KEY}"},
+        params={"token": token},
+    )
+    response.raise_for_status()
+    return response.json()
+```
+
+The response has the same shape as the session response above. Always pass the token from your most recent session or reconnection response: each token is single-use, and presenting an outdated one invalidates the session (a 400-level error). In that case, create a new session with `create_session()`.
+
+To add this to the example, wrap the `websockets.connect` block in a `try`/`except websockets.exceptions.ConnectionClosed` loop that calls `reconnect()` and connects again with the new URL and token.
+
+## Simulate a live stream from a file
+
+If you don't have a microphone, or you want reproducible input while developing, stream a pre-recorded file at real-time pace instead. Set `"source_media_content_type": "audio/auto"` in the session request so the format is detected, and swap `send_microphone_audio` for a reader that paces itself:
+
+```python
+async def send_file_audio(ws, path: str, stop: asyncio.Event) -> None:
+    with open(path, "rb") as audio_file:
+        while chunk := audio_file.read(6400):
+            if stop.is_set():
+                break
+            encoded = base64.b64encode(chunk).decode("ascii")
+            await ws.send(json.dumps({"source_media_chunk": {"data": encoded}}))
+            # Pace the upload to simulate live audio
+            await asyncio.sleep(0.2)
+    print("Finalizing transcripts...")
+    await ws.send(json.dumps({"end_of_source_media": {}}))
+```
+
+Any recording of speech in a [supported format](/docs/voice/supported-languages-formats-and-limits#supported-audio-formats) works, for example an MP3 of a podcast episode.
+
+<Warning>
+  Don't send audio faster than 2x real-time. Uploading a file as fast as the network allows triggers rate limits and terminates the session.
+</Warning>
+
+## Next steps
+
+- See the [WebSocket Streaming reference](/api-reference/voice/websocket-streaming) for the complete message schema and all event types.
+- To understand the session flow and token lifecycle in depth, see [Understanding Voice Sessions](/docs/voice/understanding-voice-sessions).
+- To reduce bandwidth with MessagePack instead of JSON, see [Message Encoding](/docs/voice/message-encoding).
+- For a fuller command-line version of this program, including glossary and formality options, see the [DeepL Voice CLI example](https://github.com/DeepL/deepl-python/tree/main/examples/voice/cli).
+- To apply a custom glossary to your translations, see the [Glossaries API](/docs/customize/managing-glossaries).

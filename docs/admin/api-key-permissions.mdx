@@ -1,0 +1,43 @@
+---
+title: "Understanding API Key Permissions"
+description: "Why scoped API keys exist, how DeepL enforces permission scopes, and when to choose a scoped key over an unrestricted one."
+public: true
+---
+
+API key permissions let you limit what a developer API key can do. Instead of one key with full access to every endpoint, you can issue keys that are scoped to specific operations, for example a key that can only translate text or a key that can only read glossaries. Permissions are available on the API Pro, API Developer, API Growth, and API Enterprise plans, and currently apply only to developer keys; [admin keys](/docs/admin/managing-api-keys#manage-admin-api-keys) can't be scoped.
+
+This page explains how the permissions model works. For the UI steps, see [Set key permissions](/docs/admin/managing-api-keys#set-key-permissions); for the full list of scopes, see [Permission Scopes](/docs/admin/permission-scopes).
+
+## Permissions and scopes
+
+Permissions are implemented as scopes. Each scope groups a set of related operations into a single capability you can grant to a key: `translate:text` covers text translation, `glossaries:read` covers reading glossaries, and so on. "Permissions" is the user-facing feature; "scopes" is the technical mechanism behind it.
+
+## Why scoped keys
+
+Before permissions were introduced in June 2026, every DeepL API key had full access to every endpoint. That's convenient, but it means a key embedded in a translation widget could also delete your glossaries, and a leaked key exposes your entire API surface.
+
+Scoped keys apply the principle of least privilege: each key gets exactly the access its workload needs. A scoped key that leaks, or a service with a bug, can only do what its scopes allow.
+
+| **Key type** | **Choose when** |
+| --- | --- |
+| Unrestricted | The key needs access to any endpoint and doesn't need to be limited |
+| Scoped | The key should reach only specific endpoints, for example to prevent glossaries from being modified inadvertently |
+
+## How enforcement works
+
+A developer key becomes scoped the moment you assign it one or more scopes. Once scoped:
+
+- The key can call only the endpoints fully covered by its scopes.
+- Every other endpoint returns `403 Forbidden`, including endpoints that have no scope requirement of their own (currently the case for Voice API endpoints).
+- Some endpoints require more than one scope. The key must hold all of them; if any is missing, the request is denied.
+
+When a scoped key calls an endpoint outside its scopes, the `detail` field of the response lists what's missing:
+
+```json
+{
+  "message": "Forbidden",
+  "detail": "Missing required scope(s): glossaries:write"
+}
+```
+
+Enforcement applies only to scoped keys. Unrestricted keys retain full access to every endpoint, and existing keys remain unrestricted until you assign them scopes. An account can hold any mix of scoped and unrestricted keys.

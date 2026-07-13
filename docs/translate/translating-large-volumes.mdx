@@ -1,0 +1,100 @@
+---
+title: "Translating Large Volumes of Text"
+description: "Batch texts, control sentence splitting, and parallelize requests to translate high volumes efficiently with the text translation endpoint."
+covers: [Translate]
+public: true
+---
+
+The [`/v2/translate` endpoint](/api-reference/translate/request-translation) accepts up to 50 texts per request and request bodies up to 128 KiB. This guide shows how to make the most of each request when you have a lot of text to translate: sending whole paragraphs, batching texts, running requests in parallel, and protecting content that shouldn't be translated.
+
+## Send whole paragraphs as one text
+
+If your text is contiguous, submit entire paragraphs in a single `text` value. Before translating, the engine splits the text into sentences, normally on punctuation marks and newlines, and returns the whole translated paragraph. Don't assume every period acts as a sentence separator; the engine handles abbreviations and similar cases.
+
+```sh Example request
+curl -X POST https://api.deepl.com/v2/translate \
+  --header "Content-Type: application/json" \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --data '{
+    "text": ["The table is green. The chair is black."],
+    "target_lang": "DE"
+}'
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Der Tisch ist grün. Der Stuhl ist schwarz."
+    }
+  ]
+}
+```
+
+## Control sentence splitting
+
+Automatic splitting can occasionally divide what is really a single sentence, especially in text with uncommon character sequences that contain punctuation. The `split_sentences` parameter controls this behavior:
+
+| Value | Behavior |
+| :---- | :---- |
+| `1` | Split on punctuation and newlines (default) |
+| `nonewlines` | Split on punctuation only (default when `tag_handling=html`) |
+| `0` | No splitting; the whole input is treated as one sentence |
+
+If your application already sends exactly one sentence per `text` value, set `split_sentences` to `0` to prevent unintended splits. With splitting disabled, overlong inputs are cut off rather than translated, so split long text into sentences yourself before submitting.
+
+Newlines split sentences under the default setting. If your text contains line breaks mid-sentence, either clean them up before sending or use `split_sentences=nonewlines`.
+
+## Batch up to 50 texts per request
+
+The `text` array can carry up to 50 entries per request. Translations come back in the same order:
+
+```sh Example request
+curl -X POST https://api.deepl.com/v2/translate \
+  --header "Content-Type: application/json" \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --data '{
+    "text": [
+      "This is the first sentence.",
+      "This is the second sentence.",
+      "This is the third sentence."
+    ],
+    "target_lang": "DE"
+}'
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Das ist der erste Satz."
+    },
+    {
+      "detected_source_language": "EN",
+      "text": "Das ist der zweite Satz."
+    },
+    {
+      "detected_source_language": "EN",
+      "text": "Dies ist der dritte Satz."
+    }
+  ]
+}
+```
+
+<Warning>
+Each text in the array is translated independently; texts don't share context with each other. If one text would help translate another, like a headline and its article body, combine them into one text or pass the shared information through the [`context` parameter](/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter), which applies to every text in the request.
+</Warning>
+
+## Run requests in parallel
+
+For volumes beyond what batching covers, send multiple requests concurrently from several threads or processes. Watch for HTTP 429 responses and back off accordingly; see [error handling best practices](/docs/best-practices/error-handling) for retry strategies.
+
+## Protect embedded markers
+
+Uncommon character sequences that act as markers in your system, like placeholders or template syntax, might get translated or removed, corrupting your structure. Either split your text so markers don't need to be sent, or convert markers to XML tags and enable [XML handling](/docs/translate/translating-xml) or [HTML handling](/docs/translate/translating-html).
+
+## When to switch to document translation
+
+The total request body is limited to 128 KiB, and a `text` array is capped at 50 entries. For complete files, or text that exceeds these limits, use [document translation](/docs/translate/translate-documents-quickstart) instead: upload limits are far higher and formatting is preserved. See [usage and limits](/docs/resources/usage-limits) for the exact caps per plan.

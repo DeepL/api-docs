@@ -2,10 +2,6 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "DeepL Documentation",
-  "banner": {
-    "content": "[Join the Developer Community on DeepL Bridges](https://dee.pl/7iwrt)",
-    "dismissible": true
-  },
   "colors": {
     "primary": "#0f2b46",
     "light": "#ffffff",
@@ -32,7 +28,8 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Home",
+        "icon": "house",
         "groups": [
           {
             "group": "Getting Started",
@@ -46,52 +43,9 @@
             "group": "Languages",
             "pages": [
               "docs/getting-started/supported-languages",
+              "docs/languages/using-the-languages-api",
+              "docs/languages/migrating-from-v2-languages",
               "docs/resources/language-release-process"
-            ]
-          },
-          {
-            "group": "Translate",
-            "pages": [
-              {
-                "group": "Text Translation",
-                "pages": [
-                  "docs/learning-how-tos/examples-and-guides/translation-beginners-guide",
-                  "docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter",
-                  "docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags",
-                  "docs/learning-how-tos/examples-and-guides/translating-between-variants",
-                  "docs/learning-how-tos/examples-and-guides/customizations-for-variants",
-                  "docs/learning-how-tos/examples-and-guides/placeholder-tags",
-                  "docs/best-practices/language-detection"
-                ],
-                "drilldown": false
-              },
-              "docs/best-practices/document-translations",
-              {
-                "group": "XML & HTML",
-                "pages": [
-                  "docs/xml-and-html-handling/xml",
-                  "docs/xml-and-html-handling/structured-content",
-                  "docs/xml-and-html-handling/html",
-                  "docs/xml-and-html-handling/customized-xml-outline-detection",
-                  "docs/xml-and-html-handling/tag-handling-v2"
-                ],
-                "drilldown": false
-              }
-            ]
-          },
-          {
-            "group": "Customize",
-            "pages": [
-              "docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world",
-              "docs/best-practices/custom-instructions",
-              "docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories"
-            ]
-          },
-          {
-            "group": "Admin",
-            "pages": [
-              "docs/getting-started/managing-api-keys",
-              "docs/retrieving-usage-data"
             ]
           },
           {
@@ -151,7 +105,96 @@
         ]
       },
       {
+        "tab": "Translate",
+        "icon": "language",
+        "pages": [
+          "docs/translate/overview",
+          {
+            "group": "Text Translation",
+            "pages": [
+              "docs/translate/translate-text-quickstart",
+              "docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter",
+              "docs/translate/translating-large-volumes",
+              "docs/translate/understanding-model-types",
+              "docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags",
+              "docs/learning-how-tos/examples-and-guides/translating-between-variants",
+              "docs/learning-how-tos/examples-and-guides/placeholder-tags",
+              "docs/translate/translating-xml",
+              "docs/translate/translating-html",
+              "docs/best-practices/language-detection"
+            ]
+          },
+          {
+            "group": "Document Translation",
+            "pages": [
+              "docs/translate/translate-documents-quickstart",
+              "docs/best-practices/document-translations"
+            ]
+          },
+          {
+            "group": "Write",
+            "pages": [
+              "docs/translate/write-quickstart",
+              "docs/translate/controlling-writing-style-and-tone"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Voice",
+        "icon": "waveform-lines",
+        "pages": [
+          "docs/voice/overview",
+          "docs/voice/real-time-voice-quickstart",
+          "docs/voice/understanding-voice-sessions",
+          "docs/voice/message-encoding",
+          "docs/voice/supported-languages-formats-and-limits"
+        ]
+      },
+      {
+        "tab": "Customize",
+        "icon": "wand-magic-sparkles",
+        "pages": [
+          "docs/customize/overview",
+          "docs/customize/customizations-for-variants",
+          {
+            "group": "Glossaries",
+            "pages": [
+              "docs/customize/glossaries-in-the-real-world",
+              "docs/customize/managing-glossaries",
+              "docs/customize/glossary-v2-vs-v3-endpoints"
+            ]
+          },
+          {
+            "group": "Style Rules",
+            "pages": [
+              "docs/customize/using-style-rules",
+              "docs/customize/custom-instructions"
+            ]
+          },
+          {
+            "group": "Translation Memories",
+            "pages": [
+              "docs/customize/using-translation-memories"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Admin",
+        "icon": "sliders",
+        "pages": [
+          "docs/admin/overview",
+          "docs/admin/quickstart",
+          "docs/admin/managing-api-keys",
+          "docs/admin/api-key-permissions",
+          "docs/admin/permission-scopes",
+          "docs/admin/retrieving-usage-data"
+        ]
+      },
+      {
         "tab": "API Reference",
+        "icon": "code",
         "groups": [
           {
             "group": "Translate",
@@ -159,7 +202,6 @@
               {
                 "group": "Translate Text",
                 "pages": [
-                  "api-reference/translate",
                   "api-reference/translate/request-translation"
                 ],
                 "drilldown": false
@@ -167,10 +209,17 @@
               {
                 "group": "Translate Documents",
                 "pages": [
-                  "api-reference/document",
                   "api-reference/document/upload-and-translate-a-document",
                   "api-reference/document/check-document-status",
                   "api-reference/document/download-translated-document"
+                ],
+                "drilldown": false
+              },
+              {
+                "group": "Write",
+                "pages": [
+                  "api-reference/improve-text/request-text-improvement",
+                  "api-reference/improve-text/correct-text"
                 ],
                 "drilldown": false
               },
@@ -183,8 +232,6 @@
               {
                 "group": "Glossaries",
                 "pages": [
-                  "api-reference/multilingual-glossaries",
-                  "api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries",
                   "api-reference/multilingual-glossaries/create-a-glossary",
                   "api-reference/multilingual-glossaries/list-all-glossaries",
                   "api-reference/multilingual-glossaries/retrieve-glossary-details",
@@ -197,8 +244,7 @@
                     "group": "Glossaries v2",
                     "tag": "DEPRECATED",
                     "pages": [
-                      "api-reference/glossaries",
-                      "api-reference/glossaries/v2-vs-v3-endpoints",
+                      "api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries",
                       "api-reference/glossaries/create-a-glossary",
                       "api-reference/glossaries/list-all-glossaries",
                       "api-reference/glossaries/retrieve-glossary-details",
@@ -213,7 +259,6 @@
               {
                 "group": "Style Rules",
                 "pages": [
-                  "api-reference/style-rules",
                   "api-reference/style-rules/list-all-style-rules",
                   "api-reference/style-rules/create-style-rule",
                   "api-reference/style-rules/get-style-rule",
@@ -239,10 +284,15 @@
           {
             "group": "Voice",
             "pages": [
-              "api-reference/voice",
-              "api-reference/voice/request-session",
-              "api-reference/voice/websocket-streaming",
-              "api-reference/voice/reconnect-session"
+              {
+                "group": "Real-Time",
+                "pages": [
+                  "api-reference/voice/request-session",
+                  "api-reference/voice/websocket-streaming",
+                  "api-reference/voice/reconnect-session"
+                ],
+                "drilldown": false
+              }
             ]
           },
           {
@@ -256,27 +306,20 @@
             ]
           },
           {
-            "group": "Write",
-            "pages": [
-              "api-reference/improve-text",
-              "api-reference/improve-text/request-text-improvement",
-              "api-reference/improve-text/correct-text"
-            ]
-          },
-          {
             "group": "Languages",
             "pages": [
-              "api-reference/languages/retrieve-supported-languages-by-resource",
-              "api-reference/languages/language-feature-use-cases",
-              "api-reference/languages/retrieve-languages-by-resource",
-              "api-reference/languages/retrieve-resources",
-              "api-reference/languages/migrate-from-v2-languages",
-              "api-reference/languages/v3-languages-changelog",
               {
-                "group": "v2 Languages",
+                "group": "Languages v3",
+                "pages": [
+                  "api-reference/languages/retrieve-languages-by-resource",
+                  "api-reference/languages/retrieve-resources"
+                ],
+                "drilldown": false
+              },
+              {
+                "group": "Languages v2",
                 "tag": "DEPRECATED",
                 "pages": [
-                  "api-reference/languages",
                   "api-reference/languages/retrieve-supported-languages"
                 ],
                 "drilldown": false
@@ -286,12 +329,9 @@
           {
             "group": "Admin",
             "pages": [
-              "api-reference/admin-api",
-              "api-reference/admin-api/managing-admin-keys",
               {
                 "group": "Managing Developer Keys",
                 "pages": [
-                  "api-reference/admin-api/managing-developer-keys",
                   "api-reference/admin-api/managing-developer-keys/create-key",
                   "api-reference/admin-api/managing-developer-keys/get-keys",
                   "api-reference/admin-api/managing-developer-keys/deactivate-key",
@@ -303,7 +343,6 @@
               {
                 "group": "Usage & Quota",
                 "pages": [
-                  "api-reference/usage-and-quota",
                   "api-reference/usage-and-quota/check-usage-and-limits"
                 ],
                 "drilldown": false
@@ -311,7 +350,6 @@
               {
                 "group": "Organization Usage Analytics",
                 "pages": [
-                  "api-reference/admin-api/organization-usage-analytics",
                   "api-reference/admin-api/get-usage-analytics",
                   "api-reference/admin-api/get-custom-tag-usage-analytics"
                 ],
@@ -345,21 +383,29 @@
       {
         "title": "Resources",
         "items": [
-          { "label": "API Status", "href": "https://api-status.deepl.com" },
-          { "label": "DeepL Status", "href": "https://www.deeplstatus.com" }
+          {
+            "label": "API Status",
+            "href": "https://api-status.deepl.com"
+          },
+          {
+            "label": "DeepL Status",
+            "href": "https://www.deeplstatus.com"
+          }
         ]
       }
     ],
     "socials": {
       "facebook": "https://www.facebook.com/DeepLcom/",
       "linkedin": "https://www.linkedin.com/company/deepl",
-      "github": "https://github.com/DeepLcom",
+      "github": "https://github.com/DeepL",
       "instagram": "https://www.instagram.com/deeplhq/"
     }
   },
   "api": {
     "examples": {
-      "languages": ["curl"],
+      "languages": [
+        "curl"
+      ],
       "defaults": "required"
     },
     "playground": {
@@ -372,6 +418,58 @@
     }
   },
   "redirects": [
+    {
+      "source": "/docs/xml-and-html-handling/xml",
+      "destination": "/docs/translate/translating-xml"
+    },
+    {
+      "source": "/docs/xml-and-html-handling/structured-content",
+      "destination": "/docs/translate/translating-xml"
+    },
+    {
+      "source": "/docs/xml-and-html-handling/customized-xml-outline-detection",
+      "destination": "/docs/translate/translating-xml"
+    },
+    {
+      "source": "/docs/xml-and-html-handling/tag-handling-v2",
+      "destination": "/docs/translate/translating-xml"
+    },
+    {
+      "source": "/docs/xml-and-html-handling/html",
+      "destination": "/docs/translate/translating-html"
+    },
+    {
+      "source": "/api-reference/voice",
+      "destination": "/docs/voice/overview"
+    },
+    {
+      "source": "/docs/getting-started/managing-api-keys",
+      "destination": "/docs/admin/managing-api-keys"
+    },
+    {
+      "source": "/docs/retrieving-usage-data",
+      "destination": "/docs/admin/retrieving-usage-data"
+    },
+    {
+      "source": "/api-reference/admin-api",
+      "destination": "/docs/admin/overview"
+    },
+    {
+      "source": "/api-reference/admin-api/managing-admin-keys",
+      "destination": "/docs/admin/managing-api-keys"
+    },
+    {
+      "source": "/api-reference/admin-api/managing-developer-keys",
+      "destination": "/api-reference/admin-api/managing-developer-keys/create-key"
+    },
+    {
+      "source": "/api-reference/admin-api/organization-usage-analytics",
+      "destination": "/docs/admin/retrieving-usage-data"
+    },
+    {
+      "source": "/api-reference/usage-and-quota",
+      "destination": "/api-reference/usage-and-quota/check-usage-and-limits"
+    },
     {
       "source": "/api-reference/languages/retrieve-supported-languages-by-product",
       "destination": "/api-reference/languages/retrieve-supported-languages-by-resource"
@@ -438,19 +536,99 @@
     },
     {
       "source": "/docs/learning-how-tos/examples-and-guides/deepl-api-101",
-      "destination": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api"
+      "destination": "/docs/translate/translate-text-quickstart"
     },
     {
       "source": "/docs/learning-how-tos/examples-and-guides/deepl-api-101/first-things-to-try-with-the-deepl-api",
-      "destination": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api"
+      "destination": "/docs/translate/translate-text-quickstart"
     },
     {
       "source": "/docs/resources/examples-and-guides/deepl-api-101",
-      "destination": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api"
+      "destination": "/docs/translate/translate-text-quickstart"
     },
     {
       "source": "/docs/resources/examples-and-guides/deepl-api-101/first-things-to-try-with-the-deepl-api",
-      "destination": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api"
+      "destination": "/docs/translate/translate-text-quickstart"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/first-things-to-try-with-the-deepl-api",
+      "destination": "/docs/translate/translate-text-quickstart"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/translation-beginners-guide",
+      "destination": "/docs/translate/translate-text-quickstart"
+    },
+    {
+      "source": "/docs/translate/quickstart",
+      "destination": "/docs/translate/translate-text-quickstart"
+    },
+    {
+      "source": "/api-reference/translate",
+      "destination": "/api-reference/translate/request-translation"
+    },
+    {
+      "source": "/api-reference/document",
+      "destination": "/api-reference/document/upload-and-translate-a-document"
+    },
+    {
+      "source": "/api-reference/multilingual-glossaries",
+      "destination": "/api-reference/multilingual-glossaries/create-a-glossary"
+    },
+    {
+      "source": "/api-reference/glossaries",
+      "destination": "/api-reference/glossaries/create-a-glossary"
+    },
+    {
+      "source": "/api-reference/glossaries/v2-vs-v3-endpoints",
+      "destination": "/docs/customize/glossary-v2-vs-v3-endpoints"
+    },
+    {
+      "source": "/api-reference/style-rules",
+      "destination": "/api-reference/style-rules/list-all-style-rules"
+    },
+    {
+      "source": "/api-reference/languages/retrieve-supported-languages-by-resource",
+      "destination": "/docs/languages/using-the-languages-api"
+    },
+    {
+      "source": "/api-reference/languages/language-feature-use-cases",
+      "destination": "/docs/languages/using-the-languages-api"
+    },
+    {
+      "source": "/api-reference/languages/migrate-from-v2-languages",
+      "destination": "/docs/languages/migrating-from-v2-languages"
+    },
+    {
+      "source": "/api-reference/languages/v3-languages-changelog",
+      "destination": "/docs/resources/roadmap-and-release-notes"
+    },
+    {
+      "source": "/api-reference/languages",
+      "destination": "/api-reference/languages/retrieve-supported-languages"
+    },
+    {
+      "source": "/api-reference/improve-text",
+      "destination": "/docs/translate/write-quickstart"
+    },
+    {
+      "source": "/docs/translate/write-api",
+      "destination": "/docs/translate/write-quickstart"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world",
+      "destination": "/docs/customize/glossaries-in-the-real-world"
+    },
+    {
+      "source": "/docs/best-practices/custom-instructions",
+      "destination": "/docs/customize/custom-instructions"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories",
+      "destination": "/docs/customize/using-translation-memories"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/customizations-for-variants",
+      "destination": "/docs/customize/customizations-for-variants"
     },
     {
       "source": "/docs/resources/examples-and-guides",
@@ -526,7 +704,7 @@
     },
     {
       "source": "/api-reference/translation-memory",
-      "destination": "/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories"
+      "destination": "/docs/customize/using-translation-memories"
     },
     {
       "source": "/docs/best-practices/working-with-context",

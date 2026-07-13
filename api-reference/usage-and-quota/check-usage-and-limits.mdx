@@ -1,4 +1,15 @@
 ---
 openapi: get /v2/usage
 title: "Check usage and limits"
+description: "Retrieve near-real-time character usage and account limits for the current billing period."
 ---
+
+Returns usage within the current billing period together with the corresponding limits. Data is near-real-time: typically up to date within a few minutes of the usage being generated.
+
+Response behavior the schema alone doesn't convey:
+
+- For Pro API accounts, the response breaks usage down by product (`translate`, `write`) and reports both account totals and counts for the API key used to make the request. Responses for Free API and Pro Classic accounts contain only `character_count` and `character_limit`.
+- `character_count` sums text translation, document translation, and text improvement characters. Characters are counted from the source text length in Unicode code points, so "A", "Δ", "あ", and "深" each count as one character.
+- `character_limit` reflects a [Cost Control](/docs/best-practices/cost-control) limit if one is set; `api_key_character_limit` reflects a [key-level usage limit](/docs/admin/managing-api-keys#set-a-key-level-usage-limit) if one is set. Both fields return `1000000000000` when no limit is configured.
+
+For usage data beyond the current billing period, or broken down by key or custom tag, see [Retrieving Usage Data](/docs/admin/retrieving-usage-data). For general API limitations, see [Usage limits](/docs/resources/usage-limits).

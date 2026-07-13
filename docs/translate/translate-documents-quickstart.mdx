@@ -1,0 +1,166 @@
+---
+title: "Translate Documents Quickstart"
+description: "Upload a Word document to the DeepL API, poll its translation status, and download the translated file, in three curl calls or one client library call."
+covers: [Translate]
+public: true
+---
+
+In this tutorial, you'll translate a complete document with the DeepL API: upload a file, poll until the translation is done, and download the result. By the end, you'll have run the full asynchronous flow with curl and seen how the client libraries collapse it into a single call.
+
+Document translation preserves the file's formatting and supports Word, PowerPoint, Excel, PDF, HTML, XLIFF, SRT subtitles, and more. See the [full list of supported formats](/api-reference/document/upload-and-translate-a-document).
+
+## Prerequisites
+
+- A DeepL API account and your API key from [your account settings](https://www.deepl.com/your-account/keys). New to the API? Start with the [Translate Text Quickstart](/docs/translate/translate-text-quickstart), which covers signup in more detail.
+- `curl` installed on your machine
+- A document to translate. The examples use a Word file named `order-confirmation.docx`; any supported format works.
+
+<Tip>
+If you're on a free API plan, replace `https://api.deepl.com` with `https://api-free.deepl.com` in curl examples. Client libraries detect your account type and pick the correct URL automatically.
+</Tip>
+
+## Building with an AI coding agent?
+
+Wire it up to the [DeepL Docs MCP Server](/docs/getting-started/docs-mcp-server) so it can search and read this documentation while it writes code. In Claude Code:
+
+```bash
+claude mcp add --transport http deepl-docs https://developers.deepl.com/mcp
+```
+
+Then describe what you want to build. To get the same result as this tutorial, paste:
+
+```text wrap
+Using the DeepL API, write a script that uploads order-confirmation.docx for translation to German, polls the status until it's done, and downloads the translated file.
+```
+
+Setup instructions for Claude Desktop, Cursor, VS Code, and other MCP clients are on the [Docs MCP Server page](/docs/getting-started/docs-mcp-server).
+
+## Step 1: Upload the document
+
+Document translation runs asynchronously, so the flow has three calls: upload the file, check the status, and download the result. Start by uploading the file as `multipart/form-data` with a `target_lang`:
+
+```sh Sample request
+export API_KEY={YOUR_API_KEY}
+
+curl -X POST https://api.deepl.com/v2/document \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --form 'target_lang=DE' \
+  --form 'file=@order-confirmation.docx'
+```
+
+```json Sample response
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "document_key": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"
+}
+```
+
+The response returns as soon as the upload completes, while the translation continues in the background. Store both values: the `document_id` identifies the translation, and the `document_key` authorizes the status and download calls in the next steps.
+
+As with text translation, the source language is detected automatically, or you can pin it with an optional `source_lang` form field.
+
+## Step 2: Poll the translation status
+
+Check the status by sending the `document_key` to the `/v2/document/{document_id}` endpoint:
+
+```sh Sample request
+curl -X POST https://api.deepl.com/v2/document/04DE5AD98A02647D83285A36021911C6 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "document_key": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"
+}'
+```
+
+While the document is being translated, the `status` field is `queued` or `translating`:
+
+```json Sample response: still translating
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "translating",
+  "seconds_remaining": 20
+}
+```
+
+Repeat the call at regular intervals or with exponential backoff until the status is `done`. Small documents typically finish in seconds; larger ones can take a minute or two. Treat `seconds_remaining` as a rough estimate only.
+
+```json Sample response: done
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "done",
+  "billed_characters": 1337
+}
+```
+
+A status of `error` comes with a `message` field explaining what went wrong, for example when the source and target language are the same.
+
+## Step 3: Download the translated file
+
+Once the status is `done`, download the result from the `/result` endpoint and save it to a file:
+
+```sh Sample request
+curl -X POST https://api.deepl.com/v2/document/04DE5AD98A02647D83285A36021911C6/result \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "document_key": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"
+}' \
+  --output order-confirmation-de.docx
+```
+
+Open `order-confirmation-de.docx` and you'll find the German translation with the original layout intact.
+
+For privacy reasons, the document is removed from DeepL's servers once you download it, so it can't be downloaded twice. To translate the same file again, start over from step 1. Download promptly: leaving too many finished translations unretrieved can cause new upload requests to fail with HTTP 429.
+
+<Warning>
+Every submitted `docx`, `doc`, `pptx`, `xlsx`, or `pdf` file is billed a minimum of 50,000 characters, regardless of how much text it contains.
+</Warning>
+
+## Or: one call with a client library
+
+The [official client libraries](/docs/getting-started/client-libraries) wrap all three steps, upload, polling, and download, in a single method call:
+
+<Tabs>
+  <Tab title="Python">
+    ```py Sample request
+    import deepl
+
+    auth_key = "{YOUR_API_KEY}"  # replace with your key
+    deepl_client = deepl.DeepLClient(auth_key)
+
+    deepl_client.translate_document_from_filepath(
+        "order-confirmation.docx",
+        "order-confirmation-de.docx",
+        target_lang="DE",
+    )
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript Sample request
+    import * as deepl from 'deepl-node';
+
+    const authKey = "{YOUR_API_KEY}"; // replace with your key
+    const deeplClient = new deepl.DeepLClient(authKey);
+
+    (async () => {
+        await deeplClient.translateDocument(
+            'order-confirmation.docx',
+            'order-confirmation-de.docx',
+            null,
+            'de'
+        );
+    })();
+    ```
+  </Tab>
+</Tabs>
+
+The PHP, C#, Java, and Ruby libraries offer the same convenience method; see each [library's documentation](/docs/getting-started/client-libraries) for details.
+
+## Next steps
+
+You've now run the complete document translation flow. To keep going:
+
+- Read the [document translation guide](/docs/best-practices/document-translations) for format-specific behavior (XML, XLIFF, JSON, IDML) and error handling
+- Convert formats on the way through, like PDF in and editable Word out, with the `output_format` parameter in the [`/document` reference](/api-reference/document/upload-and-translate-a-document)
+- Enforce your terminology with [glossaries](/docs/customize/glossaries-in-the-real-world)
+- Check the [upload size limits per format](/docs/resources/usage-limits#maximum-upload-limits-per-document-format) before going to production

@@ -1,0 +1,95 @@
+---
+title: "Custom instructions"
+description: "Learn how to create effective custom instructions to customize your translation behavior"
+public: true
+---
+
+The `custom_instructions` parameter allows you to provide natural language instructions that customize how the DeepL API translates text. This guide provides best practices for creating effective custom instructions that produce consistent, high-quality results.
+
+## What are custom instructions?
+
+Custom instructions enable you to guide the translation engine with specific requirements for your use case. You can use custom instructions to:
+
+- Control tone and style (e.g., "Use a friendly, diplomatic tone")
+- Specify domain-specific terminology preferences
+- Define formatting conventions
+- Adjust formality levels beyond the standard `formality` parameter
+- Provide context-specific guidance for specialized content
+
+Custom instructions can also be used in conjunction with other features, such as glossaries, style rules, and the `context` parameter.
+
+## Best practices
+
+### 1. Write rules in English or the target language
+
+Custom instructions should be written in either English or the target language. This ensures the translation engine can properly interpret and apply your instructions.
+
+**English instruction** (works for all target languages) — "Use informal language appropriate for a mobile app"
+
+**Target language instruction** (French) — "Utiliser un langage informel adapté à une application mobile"
+
+### 2. Formulate rules positively
+
+State what the translation should do, rather than what it should not do. Positive formulations are clearer and more effective.
+
+❌ **INCORRECT: Negative formulation** — "Don't use overly formal language or avoid casual expressions"
+
+✅ **CORRECT: Positive formulation** — "Use a conversational, friendly tone"
+
+### 3. One instruction per rule
+
+Each custom instruction should contain a single, focused directive. This makes your instructions clearer and more predictable.
+
+❌ **INCORRECT: Multiple instructions combined** — "Use technical terminology, maintain formal tone, and convert measurements to metric"
+
+✅ **CORRECT: Separate instructions**
+- "Use technical terminology appropriate for engineers"
+- "Maintain a formal, professional tone"
+- "Convert imperial measurements to metric units"
+
+### 4. Provide details on when and how to apply the rule
+
+Include context about when the rule should be applied and specific guidance on how to apply it.
+
+❌ **INCORRECT: Vague instruction** — "Handle gender appropriately"
+
+✅ **CORRECT: Specific instruction with context** — "When translating role titles, use gender-neutral forms where available in the target language"
+
+**Elements of a detailed instruction:**
+- **When**: Conditions that trigger the rule
+- **What**: Specific elements to modify
+- **How**: Desired behavior or format
+
+### 5. Avoid too many conditions per rule
+
+Keep conditions simple and focused. Complex conditional logic reduces effectiveness.
+
+❌ **INCORRECT: Too many conditions** — "If the text contains product names or brand terms, unless they appear in headings or quotes, and the context is marketing material rather than technical documentation, then capitalize all words except articles"
+
+✅ **CORRECT: Simplified conditions**
+- "Capitalize product names and brand terms in marketing content"
+- "Preserve original capitalization in technical documentation"
+
+### 6. Write instructions as translation directives, not chatbot prompts
+
+Custom instructions guide translation behavior. They should be concise directives, not conversational prompts.
+
+❌ **INCORRECT: Chatbot-style prompt** — "Please translate this text in a way that would be appropriate for a luxury fashion brand. Make sure to sound elegant and sophisticated, like you're speaking to a high-end clientele."
+
+✅ **CORRECT: Clear translation directive** — "Use elegant, sophisticated language appropriate for luxury fashion"
+
+## Technical constraints
+
+When using custom instructions, keep these constraints in mind:
+
+- **Maximum instructions**: Up to 10 custom instructions per request
+- **Character limit**: Each instruction can contain a maximum of 300 characters
+- **Supported target languages**: `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, `zh`, or any variants of these languages
+- **Model compatibility**: Custom instructions are compatible with all `model_type` values.
+
+## Related documentation
+
+- [Text translation API reference](/api-reference/translate/request-translation)
+- [Working with context](/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter)
+- [Style rules API](/docs/customize/using-style-rules)
+- [Multilingual glossaries](/docs/customize/managing-glossaries)
