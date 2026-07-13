@@ -1,0 +1,64 @@
+---
+title: "Controlling Writing Style and Tone"
+description: "Steer Write API output with the writing_style and tone parameters: available values, per-language support, and prefer_ fallback behavior."
+public: true
+---
+
+The [`/v2/write/rephrase` endpoint](/api-reference/improve-text/request-text-improvement) accepts two parameters that steer how your text is rewritten: `writing_style` changes the register of the text, and `tone` changes how it sounds. A request can include one or the other, but not both.
+
+## Writing styles
+
+| Value | Fallback variant |
+| :---- | :---- |
+| `simple` | `prefer_simple` |
+| `business` | `prefer_business` |
+| `academic` | `prefer_academic` |
+| `casual` | `prefer_casual` |
+| `default` | (same as omitting `writing_style`) |
+
+## Tones
+
+| Value | Fallback variant |
+| :---- | :---- |
+| `enthusiastic` | `prefer_enthusiastic` |
+| `friendly` | `prefer_friendly` |
+| `confident` | `prefer_confident` |
+| `diplomatic` | `prefer_diplomatic` |
+| `default` | (same as omitting `tone`) |
+
+## Language support and fallback behavior
+
+Styles and tones are currently supported for the target languages `de`, `en-GB`, `en-US`, `es`, `fr`, `it`, `pt-BR`, and `pt-PT`. To check support dynamically, call [`GET /v3/languages?resource=write`](/docs/languages/using-the-languages-api) and look for the `writing_style` or `tone` feature key on the target language.
+
+The `prefer_` variants fall back to `default` when the target language doesn't support styles or tones; the non-prefixed values return an HTTP 400 error in that case. Use the `prefer_` variants when you don't set a `target_lang` explicitly, since the detected language may not support styles or tones.
+
+## Example
+
+This request rewrites the same text in a diplomatic tone:
+
+```sh Sample request
+curl -X POST https://api.deepl.com/v2/write/rephrase \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "text": [
+      "Your proposal misses the point entirely."
+    ],
+    "target_lang": "en-US",
+    "tone": "prefer_diplomatic"
+}'
+```
+
+```json Sample response
+{
+  "improvements": [
+    {
+      "text": "It seems that your proposal may not fully capture the essence of the issue at hand.",
+      "detected_source_language": "en",
+      "target_language": "en-US"
+    }
+  ]
+}
+```
+
+New to the Write API? Start with the [Write Quickstart](/docs/translate/write-quickstart).

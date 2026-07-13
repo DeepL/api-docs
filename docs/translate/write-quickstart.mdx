@@ -1,0 +1,140 @@
+---
+title: "Write Quickstart"
+description: "Improve your first text with the DeepL Write API: rephrase for clarity, apply corrections-only mode, and change the writing style."
+covers: [Write]
+public: true
+---
+
+In this tutorial, you'll improve text with DeepL API for Write: rephrase a text for clarity, run a corrections-only pass that keeps the author's voice intact, and change the writing style. By the end, you'll have used both Write endpoints and know when to pick which.
+
+Unlike translation, Write improves text **within** a language: the source text and `target_lang` must be the same language (improving and translating in one request is not yet supported).
+
+## Prerequisites
+
+- A DeepL API Pro subscription. Write is not yet available on API Free plans, and its use is covered by [these additions to the Service Specification](/api-reference/improve-text/deepl-write-api-service-specification-updates).
+- Your API key from [your account settings](https://www.deepl.com/your-account/keys). The same keys work for all DeepL API endpoints, Write included.
+- `curl`, or one of the [official client libraries](/docs/getting-started/client-libraries), which support all Write features.
+
+## Building with an AI coding agent?
+
+Wire it up to the [DeepL Docs MCP Server](/docs/getting-started/docs-mcp-server) so it can search and read this documentation while it writes code. In Claude Code:
+
+```bash
+claude mcp add --transport http deepl-docs https://developers.deepl.com/mcp
+```
+
+Then describe what you want to build. To get the same result as this tutorial, paste:
+
+```text wrap
+Using the DeepL Write API, write a script that rephrases an English text, then runs the same text through corrections-only mode, and prints both results.
+```
+
+Setup instructions for Claude Desktop, Cursor, VS Code, and other MCP clients are on the [Docs MCP Server page](/docs/getting-started/docs-mcp-server).
+
+## Step 1: Rephrase a text
+
+The [`/v2/write/rephrase` endpoint](/api-reference/improve-text/request-text-improvement) is Write's broad improvement mode: it fixes spelling and grammar, and may also rewrite sentences for clarity, style, or tone.
+
+```sh Sample request
+export API_KEY={YOUR_API_KEY}
+
+curl -X POST https://api.deepl.com/v2/write/rephrase \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "text": [
+      "I could relly use sum help with edits on thiss text !"
+    ],
+    "target_lang": "en-US"
+}'
+```
+
+```json Sample response
+{
+  "improvements": [
+    {
+      "text": "I could really use some help editing this text!",
+      "detected_source_language": "en",
+      "target_language": "en-US"
+    }
+  ]
+}
+```
+
+The `text` parameter is an array, so you can improve multiple texts in one request; improvements come back in the same order. The total request body is limited to 10 KiB, so split larger workloads across multiple calls.
+
+`target_lang` currently supports `de`, `en-GB`, `en-US`, `es`, `fr`, `it`, `ja`, `ko`, `pt-BR`, `pt-PT`, and `zh`/`zh-Hans`. To check programmatically, call [`GET /v3/languages?resource=write`](/docs/languages/using-the-languages-api).
+
+<Tip>
+You can convert between variants of the same language: sending American English text with `target_lang` set to `en-GB` improves the text and converts it to British English.
+</Tip>
+
+## Step 2: Fix errors only, keeping the author's voice
+
+When you want corrections without rewrites, use the [`/v2/write/correct` endpoint](/api-reference/improve-text/correct-text) instead. It fixes spelling and grammar with minimal changes to wording, matching the "Corrections Only" mode in the DeepL Translator UI.
+
+```sh Sample request
+curl -X POST https://api.deepl.com/v2/write/correct \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "text": [
+      "I could relly use sum help with edits on thiss text !"
+    ],
+    "target_lang": "en-US"
+}'
+```
+
+```json Sample response
+{
+  "improvements": [
+    {
+      "text": "I could really use some help with edits on this text!",
+      "detected_source_language": "en",
+      "target_language": "en-US"
+    }
+  ]
+}
+```
+
+Compare the two results: `/write/correct` fixed the errors but kept the original phrasing ("edits on this text"), while `/write/rephrase` also reworded the sentence.
+
+## Step 3: Change the writing style
+
+On `/write/rephrase`, the `writing_style` parameter steers how the text is rewritten:
+
+```sh Sample request
+curl -X POST https://api.deepl.com/v2/write/rephrase \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "text": [
+      "I could relly use sum help with edits on thiss text !"
+    ],
+    "target_lang": "en-US",
+    "writing_style": "business"
+}'
+```
+
+```json Sample response
+{
+  "improvements": [
+    {
+      "text": "I would appreciate some assistance with editing this text.",
+      "detected_source_language": "en",
+      "target_language": "en-US"
+    }
+  ]
+}
+```
+
+Alternatively, the `tone` parameter adjusts how the text sounds (friendly, confident, diplomatic, and more). A request can include `writing_style` or `tone`, but not both. For all available values, per-language support, and the `prefer_` fallback behavior, see [Controlling Writing Style and Tone](/docs/translate/controlling-writing-style-and-tone).
+
+## Next steps
+
+You've now used both Write endpoints and steered the output style. To keep going:
+
+- Explore all style and tone options in [Controlling Writing Style and Tone](/docs/translate/controlling-writing-style-and-tone)
+- See the full request and response schemas in the [`/write/rephrase`](/api-reference/improve-text/request-text-improvement) and [`/write/correct`](/api-reference/improve-text/correct-text) references
+- Rephrase between language variants with the [language variants guide](/docs/learning-how-tos/examples-and-guides/translating-between-variants)
+- Note that Write characters count toward the same [usage quota and cost control limits](/docs/resources/usage-limits) as translation characters

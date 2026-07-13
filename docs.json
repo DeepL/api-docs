@@ -131,7 +131,13 @@
               "docs/best-practices/document-translations"
             ]
           },
-          "docs/translate/write-api"
+          {
+            "group": "Write",
+            "pages": [
+              "docs/translate/write-quickstart",
+              "docs/translate/controlling-writing-style-and-tone"
+            ]
+          }
         ]
       },
       {
@@ -602,7 +608,11 @@
     },
     {
       "source": "/api-reference/improve-text",
-      "destination": "/docs/translate/write-api"
+      "destination": "/docs/translate/write-quickstart"
+    },
+    {
+      "source": "/docs/translate/write-api",
+      "destination": "/docs/translate/write-quickstart"
     },
     {
       "source": "/docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world",
