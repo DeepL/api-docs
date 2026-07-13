@@ -120,7 +120,6 @@
               "docs/translate/understanding-model-types",
               "docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags",
               "docs/learning-how-tos/examples-and-guides/translating-between-variants",
-              "docs/learning-how-tos/examples-and-guides/customizations-for-variants",
               "docs/learning-how-tos/examples-and-guides/placeholder-tags",
               "docs/translate/translating-xml",
               "docs/translate/translating-html",
@@ -132,14 +131,6 @@
             "pages": [
               "docs/translate/translate-documents-quickstart",
               "docs/best-practices/document-translations"
-            ]
-          },
-          {
-            "group": "Customize",
-            "pages": [
-              "docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world",
-              "docs/best-practices/custom-instructions",
-              "docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories"
             ]
           }
         ]
@@ -153,6 +144,35 @@
           "docs/voice/understanding-voice-sessions",
           "docs/voice/message-encoding",
           "docs/voice/supported-languages-formats-and-limits"
+        ]
+      },
+      {
+        "tab": "Customize",
+        "icon": "wand-magic-sparkles",
+        "pages": [
+          "docs/customize/overview",
+          "docs/customize/customizations-for-variants",
+          {
+            "group": "Glossaries",
+            "pages": [
+              "docs/customize/glossaries-in-the-real-world",
+              "docs/customize/managing-glossaries",
+              "docs/customize/glossary-v2-vs-v3-endpoints"
+            ]
+          },
+          {
+            "group": "Style Rules",
+            "pages": [
+              "docs/customize/using-style-rules",
+              "docs/customize/custom-instructions"
+            ]
+          },
+          {
+            "group": "Translation Memories",
+            "pages": [
+              "docs/customize/using-translation-memories"
+            ]
+          }
         ]
       },
       {
@@ -199,8 +219,6 @@
               {
                 "group": "Glossaries",
                 "pages": [
-                  "api-reference/multilingual-glossaries",
-                  "api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries",
                   "api-reference/multilingual-glossaries/create-a-glossary",
                   "api-reference/multilingual-glossaries/list-all-glossaries",
                   "api-reference/multilingual-glossaries/retrieve-glossary-details",
@@ -213,8 +231,7 @@
                     "group": "Glossaries v2",
                     "tag": "DEPRECATED",
                     "pages": [
-                      "api-reference/glossaries",
-                      "api-reference/glossaries/v2-vs-v3-endpoints",
+                      "api-reference/multilingual-glossaries/list-language-pairs-supported-by-glossaries",
                       "api-reference/glossaries/create-a-glossary",
                       "api-reference/glossaries/list-all-glossaries",
                       "api-reference/glossaries/retrieve-glossary-details",
@@ -229,7 +246,6 @@
               {
                 "group": "Style Rules",
                 "pages": [
-                  "api-reference/style-rules",
                   "api-reference/style-rules/list-all-style-rules",
                   "api-reference/style-rules/create-style-rule",
                   "api-reference/style-rules/get-style-rule",
@@ -543,6 +559,38 @@
       "destination": "/api-reference/document/upload-and-translate-a-document"
     },
     {
+      "source": "/api-reference/multilingual-glossaries",
+      "destination": "/api-reference/multilingual-glossaries/create-a-glossary"
+    },
+    {
+      "source": "/api-reference/glossaries",
+      "destination": "/api-reference/glossaries/create-a-glossary"
+    },
+    {
+      "source": "/api-reference/glossaries/v2-vs-v3-endpoints",
+      "destination": "/docs/customize/glossary-v2-vs-v3-endpoints"
+    },
+    {
+      "source": "/api-reference/style-rules",
+      "destination": "/api-reference/style-rules/list-all-style-rules"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/glossaries-in-the-real-world",
+      "destination": "/docs/customize/glossaries-in-the-real-world"
+    },
+    {
+      "source": "/docs/best-practices/custom-instructions",
+      "destination": "/docs/customize/custom-instructions"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories",
+      "destination": "/docs/customize/using-translation-memories"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/customizations-for-variants",
+      "destination": "/docs/customize/customizations-for-variants"
+    },
+    {
       "source": "/docs/resources/examples-and-guides",
       "destination": "/docs/learning-how-tos/examples-and-guides"
     },
@@ -616,7 +664,7 @@
     },
     {
       "source": "/api-reference/translation-memory",
-      "destination": "/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories"
+      "destination": "/docs/customize/using-translation-memories"
     },
     {
       "source": "/docs/best-practices/working-with-context",

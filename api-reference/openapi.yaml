@@ -601,7 +601,7 @@ paths:
                     example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                 style_id:
                   description: |-
-                    Specify the [style rule list](/api-reference/style-rules) to use for the translation.
+                    Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.
 
                     **Important:**  The target language has to match the language of the style rule list.
 
@@ -916,7 +916,7 @@ paths:
                     example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                 style_id:
                   description: |-
-                    Specify the [style rule list](/api-reference/style-rules) to use for the translation.
+                    Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.
 
                     **Important:** The target language has to match the language of the style rule list.
                   type: string
@@ -5136,7 +5136,7 @@ components:
             - `tsv` (default) - tab-separated values
             - `csv` - comma-separated values
 
-            See [Supported Glossary Formats](/api-reference/multilingual-glossaries#formats) for details about each format.
+            See [Supported Glossary Formats](/docs/customize/managing-glossaries#entry-formats) for details about each format.
           type: string
           enum:
           - tsv
@@ -5299,7 +5299,7 @@ components:
         - `tsv` (default) - tab-separated values
         - `csv` - comma-separated values
 
-        See [Supported Glossary Formats](/api-reference/multilingual-glossaries#formats) for details about each format.
+        See [Supported Glossary Formats](/docs/customize/managing-glossaries#entry-formats) for details about each format.
       type: string
       enum:
       - tsv

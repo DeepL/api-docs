@@ -797,7 +797,7 @@
                     }
                   },
                   "style_id": {
-                    "description": "Specify the [style rule list](/api-reference/style-rules) to use for the translation.\n\n**Important:**  The target language has to match the language of the style rule list.\n\nAll `model_type` values are supported.",
+                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:**  The target language has to match the language of the style rule list.\n\nAll `model_type` values are supported.",
                     "type": "string",
                     "example": "7ff9bfd6-cd85-4190-8503-d6215a321519"
                   },
@@ -1159,7 +1159,7 @@
                     }
                   },
                   "style_id": {
-                    "description": "Specify the [style rule list](/api-reference/style-rules) to use for the translation.\n\n**Important:** The target language has to match the language of the style rule list.",
+                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:** The target language has to match the language of the style rule list.",
                     "type": "string",
                     "example": "7ff9bfd6-cd85-4190-8503-d6215a321519"
                   },
@@ -7210,7 +7210,7 @@
             "example": "Hello\tGuten Tag"
           },
           "entries_format": {
-            "description": "The format in which the glossary entries are provided. Formats currently available:\n- `tsv` (default) - tab-separated values\n- `csv` - comma-separated values\n\nSee [Supported Glossary Formats](/api-reference/multilingual-glossaries#formats) for details about each format.",
+            "description": "The format in which the glossary entries are provided. Formats currently available:\n- `tsv` (default) - tab-separated values\n- `csv` - comma-separated values\n\nSee [Supported Glossary Formats](/docs/customize/managing-glossaries#entry-formats) for details about each format.",
             "type": "string",
             "enum": [
               "tsv",
@@ -7402,7 +7402,7 @@
         "example": "Hello\tGuten Tag"
       },
       "GlossaryEntriesFormat": {
-        "description": "The format in which the glossary entries are provided. Formats currently available:\n- `tsv` (default) - tab-separated values\n- `csv` - comma-separated values\n\nSee [Supported Glossary Formats](/api-reference/multilingual-glossaries#formats) for details about each format.",
+        "description": "The format in which the glossary entries are provided. Formats currently available:\n- `tsv` (default) - tab-separated values\n- `csv` - comma-separated values\n\nSee [Supported Glossary Formats](/docs/customize/managing-glossaries#entry-formats) for details about each format.",
         "type": "string",
         "enum": [
           "tsv",

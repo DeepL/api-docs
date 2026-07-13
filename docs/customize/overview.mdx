@@ -1,0 +1,48 @@
+---
+title: "Customize"
+sidebarTitle: "Overview"
+description: "Tailor DeepL translations to your domain with glossaries, style rules, custom instructions, and translation memories."
+public: true
+---
+
+DeepL's customization features let you control terminology, style, and consistency across your translations. They complement each other, and you can combine them in a single request:
+
+| Feature | What it controls | How it's applied |
+| :---- | :---- | :---- |
+| [Glossaries](/docs/customize/managing-glossaries) | Exact translations for specific terms, like product names or industry vocabulary | Stored on your account; passed per request via `glossary_id` |
+| [Style rules](/docs/customize/using-style-rules) | Formatting conventions (dates, numbers, punctuation) plus stored custom instructions | Stored on your account; passed per request via `style_id` |
+| [Custom instructions](/docs/customize/custom-instructions) | Tone, phrasing, and domain-specific behavior via natural-language directives | Inline per request via `custom_instructions`, or stored in a style rule list |
+| [Translation memories](/docs/customize/using-translation-memories) | Reuse of your previously approved translations for matching segments | Stored on your account; passed per request via `translation_memory_id` |
+
+All of these work with both [text translation](/docs/translate/translate-text-quickstart) and [document translation](/docs/translate/translate-documents-quickstart), and with all `model_type` values.
+
+<Warning>
+Glossaries and style rules are unique to each of DeepL's global data centers and are not shared between them. Clients using [regional endpoints](/docs/getting-started/regional-endpoints) can't access glossaries or style rules created in the UI at this time.
+</Warning>
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Glossaries in the Real World" icon="book-open" href="/docs/customize/glossaries-in-the-real-world">
+    A hands-on tutorial: build a glossary and apply it to keep customer-facing terminology consistent.
+  </Card>
+  <Card title="Managing Glossaries" icon="list-check" href="/docs/customize/managing-glossaries">
+    Create, edit, retrieve, and delete glossaries with the v3 endpoints, and use them in translations.
+  </Card>
+  <Card title="Using Style Rules" icon="pen-ruler" href="/docs/customize/using-style-rules">
+    Build style rule lists with configured rules and custom instructions, and apply them via style_id.
+  </Card>
+  <Card title="Custom Instructions" icon="wand-magic-sparkles" href="/docs/customize/custom-instructions">
+    Best practices for writing natural-language instructions that produce consistent results.
+  </Card>
+  <Card title="Using Translation Memories" icon="database" href="/docs/customize/using-translation-memories">
+    Retrieve your translation memories and control the matching threshold in translation requests.
+  </Card>
+  <Card title="Customizations for Language Variants" icon="globe" href="/docs/customize/customizations-for-variants">
+    Create customizations with root language codes and apply them to variants like pt-BR or fr-CA.
+  </Card>
+</CardGroup>
+
+## API reference
+
+Glossaries, style rules, and translation memories each have management endpoints under the [API Reference](/api-reference/multilingual-glossaries/create-a-glossary). If you're still on the deprecated v2 glossary endpoints, see [Glossary v2 vs v3 Endpoints](/docs/customize/glossary-v2-vs-v3-endpoints) for the differences and migration considerations.

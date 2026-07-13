@@ -1,0 +1,83 @@
+---
+title: "Glossary v2 vs v3 Endpoints"
+description: "How the v3 glossary endpoints differ from the deprecated v2 endpoints, what to watch out for when mixing them, and how to work with v2's immutability."
+public: true
+---
+
+DeepL's API has two generations of glossary endpoints. The [v2 endpoints](/api-reference/glossaries/create-a-glossary) create, delete, and retrieve **monolingual** glossaries: glossaries that map one language to another. The [v3 endpoints](/api-reference/multilingual-glossaries/create-a-glossary) include all v2 functionality, plus:
+
+- v3 lets you **edit** glossaries
+- v3 supports **multilingual** glossaries: a collection of dictionaries covering multiple language pairs
+
+We recommend using v3 for all glossary work; v2 is kept for backward compatibility. There is no need to migrate your existing glossaries: you can use v3 endpoints with any glossary, whichever version created it. Glossaries from either version work in all translation endpoints, both [`/translate`](/api-reference/translate/request-translation) and [`/document`](/api-reference/document/upload-and-translate-a-document).
+
+## Differences between v2 and v3
+
+A v2 glossary is a single list of mappings with one source and one target language:
+
+```json
+{
+  "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "name": "My Glossary",
+  "source_lang": "en",
+  "target_lang": "de",
+  "entries": {
+    "Hello": "Hallo"
+  },
+  "creation_time": "2025-08-03T14:16:18.329Z"
+}
+```
+
+A v3 glossary holds a collection of **dictionaries**, each with its own language pair. The same glossary can carry the reverse mapping too:
+
+```json
+{
+  "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "name": "My Glossary",
+  "dictionaries": [
+    {
+      "source_lang": "en",
+      "target_lang": "de",
+      "entries": {
+        "Hello": "Hallo"
+      }
+    },
+    {
+      "source_lang": "de",
+      "target_lang": "en",
+      "entries": {
+        "Hallo": "Hello"
+      }
+    }
+  ],
+  "creation_time": "2025-08-03T14:16:18.329Z"
+}
+```
+
+The v3 endpoints handle glossary management only; use v2 for everything else, including translation itself. The deprecated `/v2/glossary-language-pairs` endpoint is also superseded: use [`GET /v3/languages?resource=glossary`](/api-reference/languages/retrieve-supported-languages-by-resource) instead.
+
+## Can I keep using v2?
+
+You can, but we recommend switching: new features land on v3, and the v2 glossary endpoints may be deprecated or removed at some point. If an immediate switch isn't possible, keep these implications in mind:
+
+- Once a glossary has been edited via v3, v2 endpoints can no longer query it correctly (for example, the "get entries" call). To avoid data loss, deleting such a glossary through v2 is disabled; use the v3 deletion endpoint.
+- Avoid mixing versions across a team or codebase. Glossaries created via v3 are still queryable via v2, where they can't be displayed correctly, which causes confusion.
+
+<Warning>
+Don't use both v2 and v3 glossary endpoints in the same integration. Editing a glossary via v3 changes how it behaves on v2 endpoints.
+</Warning>
+
+## Editing under v2: the workaround
+
+v2 glossaries are immutable: once created, the entries for a given glossary ID cannot be modified. If you stay on v2, identify glossaries by **name** instead of ID in your application, and modify them with this procedure:
+
+1. [Retrieve](/api-reference/glossaries/retrieve-glossary-entries) and store the current glossary's entries
+2. Modify the entries locally
+3. [Delete](/api-reference/glossaries/delete-a-glossary) the existing glossary
+4. [Create a new glossary](/api-reference/glossaries/create-a-glossary) with the same name
+
+On v3, none of this is necessary; edit dictionaries directly as shown in [Managing Glossaries](/docs/customize/managing-glossaries).
+
+## Client libraries
+
+Each of our [client libraries](/docs/getting-started/client-libraries) provides a guide explaining how to migrate its glossary support to v3.

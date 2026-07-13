@@ -30,7 +30,7 @@ families:
       - {name: Translate, tags: [TranslateText, TranslateDocuments]}
 
   Customize:
-    narrative_home: Translate          # nests as a group inside the Translate tab
+    narrative_home: own
     groups:
       - {name: Customize, tags: [ManageGlossaries, ManageMultilingualGlossaries, TranslationMemories]}
     # Style rules live under Customize but have no OpenAPI tag yet.

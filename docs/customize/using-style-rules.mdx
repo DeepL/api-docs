@@ -1,0 +1,115 @@
+---
+title: "Using Style Rules"
+description: "Create style rule lists with configured rules and custom instructions, and apply them to translations with the style_id parameter."
+covers: [Customize]
+public: true
+---
+
+Style rules apply a reusable set of formatting and style conventions to your translations. A **style rule list** combines two types of rules:
+
+- **Configured rules**: predefined options for formatting conventions, like time format, number formatting, and punctuation
+- **Custom instructions**: your own natural-language instructions for requirements the predefined rules don't cover
+
+Both are applied together during translation. You can build style rule lists in the UI at [deepl.com/custom-rules](https://deepl.com/custom-rules) or manage them programmatically with the [style rules endpoints](/api-reference/style-rules/list-all-style-rules), as shown below.
+
+<Info>
+The Style Rules API is currently available only to Pro API subscribers.
+</Info>
+
+## Create a style rule list
+
+Send `POST /v3/style_rules` a name, the target `language` the rules apply to, and the rules themselves:
+
+```sh Example request
+curl -X POST https://api.deepl.com/v3/style_rules \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Technical Documentation Rules",
+    "language": "en",
+    "configured_rules": {
+      "dates_and_times": {
+        "calendar_era": "use_bc_and_ad"
+      },
+      "punctuation": {
+        "periods_in_academic_degrees": "do_not_use"
+      }
+    },
+    "custom_instructions": [
+      {
+        "label": "Tone instruction",
+        "prompt": "Use a friendly, diplomatic tone",
+        "source_language": "en"
+      }
+    ]
+}'
+```
+
+```json Example response
+{
+  "style_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "name": "Technical Documentation Rules",
+  "creation_time": "2024-10-01T12:34:56Z",
+  "updated_time": "2024-10-01T12:34:56Z",
+  "language": "en",
+  "version": 1,
+  "configured_rules": {
+    "dates_and_times": {
+      "calendar_era": "use_bc_and_ad"
+    },
+    "punctuation": {
+      "periods_in_academic_degrees": "do_not_use"
+    }
+  },
+  "custom_instructions": [
+    {
+      "id": "68fdb803-c013-4e67-b62e-1aad0ab519cd",
+      "label": "Tone instruction",
+      "prompt": "Use a friendly, diplomatic tone",
+      "source_language": "en"
+    }
+  ]
+}
+```
+
+The `version` field increments each time the list is modified, so you can track changes to your style rules. See the [endpoint reference](/api-reference/style-rules/create-style-rule) for all available configured rule categories and options, and the [custom instructions guide](/docs/customize/custom-instructions) for how to write instructions that work well.
+
+## Apply style rules to a translation
+
+Pass the list's `style_id` in a [`/v2/translate`](/api-reference/translate/request-translation) or [`/v2/document`](/api-reference/document/upload-and-translate-a-document) request. The target language of the request has to match the style rule list's `language`:
+
+```sh Example request
+curl -X POST https://api.deepl.com/v2/translate \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "text": ["Das Treffen ist um 15:00 Uhr"],
+    "source_lang": "DE",
+    "target_lang": "EN",
+    "style_id": "a74d88fb-ed2a-4943-a664-a4512398b994"
+}'
+```
+
+All `model_type` values are supported with style rules. Style rules apply to root languages, so a list with `language: "en"` works for `EN-US` and `EN-GB` targets alike; see [How to Apply Customizations to Language Variants](/docs/customize/customizations-for-variants).
+
+## Update a style rule list
+
+As with glossaries, the update methods have different scopes:
+
+- [`PATCH /v3/style_rules/{style_id}`](/api-reference/style-rules/update-style-rule) updates the list's name
+- [`PUT /v3/style_rules/{style_id}/configured_rules`](/api-reference/style-rules/update-configured-rules) **replaces all** configured rules; custom instructions are not affected
+
+Custom instructions are managed individually within a list:
+
+- [`POST /v3/style_rules/{style_id}/custom_instructions`](/api-reference/style-rules/create-custom-instruction) adds an instruction
+- [`PUT .../custom_instructions/{instruction_id}`](/api-reference/style-rules/update-custom-instruction) replaces one (all fields required)
+- [`DELETE .../custom_instructions/{instruction_id}`](/api-reference/style-rules/delete-custom-instruction) removes one
+
+To list or inspect rule lists, use [`GET /v3/style_rules`](/api-reference/style-rules/list-all-style-rules) (add `detailed=true` to include each list's rules and instructions) or [`GET /v3/style_rules/{style_id}`](/api-reference/style-rules/get-style-rule). Deleting a list with [`DELETE /v3/style_rules/{style_id}`](/api-reference/style-rules/delete-style-rule) cannot be undone.
+
+## Limits
+
+- Style rule lists support target languages `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, and `zh`
+- There is no limit on the number of configured rules per list
+- A list can hold up to 200 custom instructions (this cap may be adjusted per plan tier in the future); each instruction prompt is limited to 300 characters
+- If you need more than 200 custom instructions, split your rules across multiple style rule lists for different content types

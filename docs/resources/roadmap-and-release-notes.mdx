@@ -5,7 +5,7 @@ rss: true
 ---
 
 <Update label="In active development">
-- Support for uploading, modifying, and deleting [translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories) via API
+- Support for uploading, modifying, and deleting [translation memories](/docs/customize/using-translation-memories) via API
 - Usage reporting by language pair
 </Update>
 
@@ -31,9 +31,9 @@ rss: true
 ## June 17 - `latency_optimized` Now Supported for All Features
 - The `latency_optimized` model type is now fully compatible with all Translate API features, including:
   - [Tag handling v2](/docs/translate/translating-xml) (`tag_handling_version=v2`)
-  - [Style rules](/api-reference/style-rules) (`style_id`)
-  - [Custom instructions](/docs/best-practices/custom-instructions) (`custom_instructions`)
-  - [Translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories) (`translation_memory_id`)
+  - [Style rules](/docs/customize/using-style-rules) (`style_id`)
+  - [Custom instructions](/docs/customize/custom-instructions) (`custom_instructions`)
+  - [Translation memories](/docs/customize/using-translation-memories) (`translation_memory_id`)
   - All language pairs, including languages previously restricted to `quality_optimized`
 - Previously, combining `model_type=latency_optimized` with these features would return an error. These restrictions have been removed.
 
@@ -46,8 +46,8 @@ rss: true
 
 ## June 8 - Style Rules and Translation Memories for Document Translation
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accepts `style_id`, `translation_memory_id`, and `translation_memory_threshold`, bringing document translation in line with the parameters already available on text translation.
-- `style_id` applies a configured [style rule list](/api-reference/style-rules) to the document translation.
-- `translation_memory_id` and `translation_memory_threshold` work as on text translation: pass a translation memory ID to apply stored translations, and set a threshold (0-100) to control how closely source text must match a stored segment. See the [translation memories guide](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories).
+- `style_id` applies a configured [style rule list](/docs/customize/using-style-rules) to the document translation.
+- `translation_memory_id` and `translation_memory_threshold` work as on text translation: pass a translation memory ID to apply stored translations, and set a threshold (0-100) to control how closely source text must match a stored segment. See the [translation memories guide](/docs/customize/using-translation-memories).
 
 ## June 5 - Voice API Spoken Terms on External-Provider Languages
 - Spoken terms are now supported on languages whose transcription is provided by external service partners, in addition to languages transcribed by DeepL. The feature remains in beta on all supported languages.
@@ -107,7 +107,7 @@ rss: true
 - The [Voice API](/docs/voice/overview) is now available to all DeepL customers with a paid API subscription. This API provides real-time speech transcription and translation and can be used with existing DeepL API keys.
 
 ## April 9 - Translation Memory API
-- Added support for [translation memories](/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories) in the DeepL API. Translation memories store previously translated segments so the same source text produces consistent output across projects .
+- Added support for [translation memories](/docs/customize/using-translation-memories) in the DeepL API. Translation memories store previously translated segments so the same source text produces consistent output across projects .
 - New `translation_memory_id` and `translation_memory_threshold` parameters on the [text translation endpoint](/api-reference/translate/request-translation) — pass a translation memory ID to apply stored translations, and set a threshold (0-100) to control how closely source text must match a stored segment.
 - New [`GET /v3/translation_memories`](/api-reference/translation-memory/list-translation-memories) endpoint to retrieve translation memories associated with your account.
 - Support for uploading, modifying, and deleting translation memories via the API will follow.
@@ -127,7 +127,7 @@ rss: true
 ## March 26 - Expanded Style Rules API
 - Added 5 new endpoints for style rule list operations: `POST /v3/style_rules`, `GET /v3/style_rules/{style_id}`, `PATCH /v3/style_rules/{style_id}`, `DELETE /v3/style_rules/{style_id}`, and `PUT /v3/style_rules/{style_id}/configured_rules`.
 - Added 4 new endpoints for managing custom instructions within style rule lists: `POST /v3/style_rules/{style_id}/custom_instructions`, `GET /v3/style_rules/{style_id}/custom_instructions/{instruction_id}`, `PUT /v3/style_rules/{style_id}/custom_instructions/{instruction_id}`, and `DELETE /v3/style_rules/{style_id}/custom_instructions/{instruction_id}`.
-- See the full API reference [here](/api-reference/style-rules).
+- See the full API reference [here](/docs/customize/using-style-rules).
 
 ## March 24 - Write API Character Count Fix
 - Fixed an issue where some [DeepL API for Write](/api-reference/improve-text/) requests under-counted usage.
@@ -223,7 +223,7 @@ See [here](../getting-started/supported-languages) for the complete language lis
 - Added the `show_billed_characters` parameter for text translation, allowing users to optionally include the number of billed characters in the API response. [Learn more here](/api-reference/translate/request-translation).
 - Added support for a new language for text translation: ZH-HANT (Traditional Chinese). As of this initial release, document translation is not supported for Traditional Chinese. More information is available [here](/docs/getting-started/supported-languages).
 - An official Ruby client library, evolved from a community-written library by Daniel Herzog. You can download it [here](https://rubygems.org/gems/deepl-rb) or find the source code on our [GitHub page](https://github.com/DeepLcom/deepl-rb).
-- Added Romanian (`RO`) as a supported [glossary](/api-reference/multilingual-glossaries) language.
+- Added Romanian (`RO`) as a supported [glossary](/docs/customize/managing-glossaries) language.
 
 ## Q2 2024
 - Added support for DOCX and PPTX document minification to the PHP client library, making it possible for users to translate documents that exceed DeepL's file size limit due to embedded media. [Learn more here](https://github.com/DeepLcom/deepl-php?tab=readme-ov-file#document-minification).
@@ -236,7 +236,7 @@ See [here](../getting-started/supported-languages) for the complete language lis
 ## Q1 2024
 - Added support for multiple API keys in a single account for Pro API and Free API users. More information is available in the [multiple API keys guide](https://developers.deepl.com/multiple-api-keys).
 - Added support for a new language for text translation: AR (Arabic). As of this initial release, document translation is not supported for Arabic. More information is available [here](/docs/getting-started/supported-languages).
-- Added support for Korean (KO) as a [glossary](/api-reference/multilingual-glossaries) language, increasing the number of supported glossary language pairs from 55 to 66.
+- Added support for Korean (KO) as a [glossary](/docs/customize/managing-glossaries) language, increasing the number of supported glossary language pairs from 55 to 66.
 </Update>
 
 <Update label="2023">
@@ -246,7 +246,7 @@ See [here](../getting-started/supported-languages) for the complete language lis
 
 ## Q3 2023
 - Launched DeepL Pro in South Korea ([blog post here](https://www.deepl.com/en/blog/deepl-pro-available-in-south-korea)). This means users with billing addresses in South Korea can [create DeepL Pro API and Free API subscriptions](https://www.deepl.com/ko/pro#developer).
-- Added support for Portuguese (PT), Russian (RU), and Chinese (ZH) as [glossary](/api-reference/multilingual-glossaries) languages, increasing the number of supported glossary language pairs from 28 to 55.
+- Added support for Portuguese (PT), Russian (RU), and Chinese (ZH) as [glossary](/docs/customize/managing-glossaries) languages, increasing the number of supported glossary language pairs from 28 to 55.
 - Added support for JSON-encoded requests for all remaining endpoints (*note that document upload for document translation still requires*`multipart/form-data`).
 
 ## Q2 2023
@@ -277,10 +277,10 @@ See [here](../getting-started/supported-languages) for the complete language lis
 - Released an official [NodeJS client library](https://github.com/DeepLcom/deepl-node).
 - Released an official [.NET client library](https://github.com/DeepLcom/deepl-dotnet).
 - Released an official [Python client library](https://github.com/DeepLcom/deepl-python).
-- Added support for [glossaries](/api-reference/multilingual-glossaries) in the DeepL API.
+- Added support for [glossaries](/docs/customize/managing-glossaries) in the DeepL API.
 - Released an open-source sample project for [translating with DeepL in Google Sheets](https://github.com/DeepLcom/google-sheets-example).
 - Added the `prefer_less` and `prefer_more` formality options on [text translation](/api-reference/translate/request-translation), giving more graceful fallback than the strict `more` and `less` values for languages without full formality support.
-- Added CSV as an entries format for creating [glossaries](/api-reference/multilingual-glossaries), alongside the existing tab-separated format.
+- Added CSV as an entries format for creating [glossaries](/docs/customize/managing-glossaries), alongside the existing tab-separated format.
 - Removed the previous limit of 50 `text` parameters per [text translation](/api-reference/translate/request-translation) request.
 - ...and much more :)
 </Update>

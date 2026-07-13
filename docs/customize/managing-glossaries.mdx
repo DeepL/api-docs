@@ -1,0 +1,176 @@
+---
+title: "Managing Glossaries"
+description: "Create, edit, retrieve, and delete DeepL glossaries with the v3 endpoints, and apply them in translation requests."
+covers: [Customize]
+public: true
+---
+
+Glossaries let you specify exact translations for words and short phrases. During translation, DeepL intelligently flexes entries to account for case, gender, tense, and other grammar features when the target language has flexion. This guide shows how to manage glossaries programmatically with the [v3 glossary endpoints](/api-reference/multilingual-glossaries/create-a-glossary) and apply them in translations.
+
+A **glossary** contains one or more **dictionaries**. A dictionary maps source phrases to target phrases for a single language pair, in one direction:
+
+| **French →** | **Spanish** |
+| :--------- | :--------- |
+| belle | hermosa |
+| delicieux | exquisito |
+
+To apply the same terminology in both directions, add a second dictionary with the reverse mapping (Spanish → French). You can create dictionaries for [any language that supports glossaries](/docs/getting-started/supported-languages); to check programmatically, call [`GET /v3/languages?resource=glossary`](/api-reference/languages/retrieve-supported-languages-by-resource).
+
+<Tip>
+If you're new to glossaries, start with [Glossaries in the Real World](/docs/customize/glossaries-in-the-real-world), a hands-on tutorial that builds one from scratch.
+</Tip>
+
+## Entry formats
+
+Glossary entries are formatted as CSV (comma-separated values) or TSV (tab-separated values), one entry per line, source phrase first:
+
+```csv CSV entries
+hermosa,belle
+exquisito,delicieux
+```
+
+You can also enclose each phrase in quotation marks. CSV entries follow standard CSV conventions:
+
+- Fields containing double quotes or commas must be enclosed in double quotes
+- A double quote inside a quoted field is escaped by doubling it (`""`)
+
+TSV is identical except that a tab separates the source and target phrases. In CSV, you can optionally append the source and target language after the phrases; entries whose languages don't match the dictionary's language pair are ignored.
+
+## Create a glossary
+
+Send `POST /v3/glossaries` an array of one or more dictionaries. This example creates a glossary with an English → German dictionary and its reverse:
+
+```sh Example request
+curl -X POST https://api.deepl.com/v3/glossaries \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "My Glossary",
+    "dictionaries": [
+      {
+        "source_lang": "en",
+        "target_lang": "de",
+        "entries": "Hello\tGuten Tag",
+        "entries_format": "tsv"
+      },
+      {
+        "source_lang": "de",
+        "target_lang": "en",
+        "entries": "Guten Tag\tHello",
+        "entries_format": "tsv"
+      }
+    ]
+}'
+```
+
+```json Example response
+{
+  "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "ready": true,
+  "name": "My Glossary",
+  "dictionaries": [
+    { "source_lang": "en", "target_lang": "de", "entry_count": 1 },
+    { "source_lang": "de", "target_lang": "en", "entry_count": 1 }
+  ],
+  "creation_time": "2025-08-03T14:16:18.329Z"
+}
+```
+
+To create a glossary from an existing CSV file on the command line, use [`jq`](https://jqlang.github.io/jq/) to embed the file contents in the request body:
+
+```sh Create a glossary from a CSV file
+curl -X POST https://api.deepl.com/v3/glossaries \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data "$(jq -Rs '{
+    "name": "My Glossary",
+    "dictionaries": [
+      {
+        "source_lang": "en",
+        "target_lang": "de",
+        "entries": .,
+        "entries_format": "csv"
+      }
+    ]
+  }' glossary.csv)"
+```
+
+## Use a glossary in a translation
+
+Include the `glossary_id` in a [`/v2/translate`](/api-reference/translate/request-translation) or [`/v2/document`](/api-reference/document/upload-and-translate-a-document) request. You must also set `source_lang`: glossaries can't yet be used with automatic source language detection.
+
+```sh Example request
+curl -X POST https://api.deepl.com/v2/translate \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "text": ["Hello"],
+    "source_lang": "EN",
+    "target_lang": "DE",
+    "glossary_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+}'
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "detected_source_language": "EN",
+      "text": "Guten Tag"
+    }
+  ]
+}
+```
+
+Glossaries apply to root languages, not specific variants: a glossary with target language `EN` applies when translating into `EN-US` and `EN-GB` alike, and must be created with the root code. See [How to Apply Customizations to Language Variants](/docs/customize/customizations-for-variants).
+
+The `v3` endpoints handle glossary management only; translation itself stays on the `v2` endpoints.
+
+## Edit a glossary
+
+Two methods change an existing glossary, with different semantics:
+
+| Method | Scope | Behavior |
+| :---- | :---- | :---- |
+| [`PUT /v3/glossaries/{id}/dictionaries`](/api-reference/multilingual-glossaries/replaces-or-creates-a-dictionary-in-the-glossary-with-the-specified-entries) | One dictionary | Creates the dictionary for the given language pair, or **replaces** it entirely if it exists |
+| [`PATCH /v3/glossaries/{id}`](/api-reference/multilingual-glossaries/edit-glossary-details) | Whole glossary | Updates metadata like the name; entries passed for a language pair are **merged** into the existing dictionary |
+
+For example, this `PATCH` renames a glossary and adds one entry to its English → German dictionary, keeping existing entries:
+
+```sh Example request
+curl -X PATCH https://api.deepl.com/v3/glossaries/def3a26b-3e84-45b3-84ae-0c0aaf3525f7 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Gertrude the glossary",
+    "dictionaries": [{
+      "source_lang": "en",
+      "target_lang": "de",
+      "entries": "Goodbye\tTschüß",
+      "entries_format": "tsv"
+    }]
+}'
+```
+
+A single `PUT` or `PATCH` can change one dictionary. To change the same source phrase across multiple language pairs, make one call per dictionary.
+
+## Retrieve glossaries
+
+- [`GET /v3/glossaries`](/api-reference/multilingual-glossaries/list-all-glossaries) lists all your glossaries with per-dictionary metadata (no entries)
+- [`GET /v3/glossaries/{id}`](/api-reference/multilingual-glossaries/retrieve-glossary-details) returns one glossary's metadata
+- [`GET /v3/glossaries/{id}/entries`](/api-reference/multilingual-glossaries/retrieve-glossary-entries) returns the entries of a single dictionary, selected via `source_lang` and `target_lang` query parameters. Entries are currently returned in TSV format only.
+
+To retrieve the contents of an entire glossary, iterate over its dictionaries and fetch each one's entries.
+
+## Delete glossaries
+
+- [`DELETE /v3/glossaries/{id}`](/api-reference/multilingual-glossaries/delete-a-glossary) deletes the whole glossary
+- [`DELETE /v3/glossaries/{id}/dictionaries?source_lang=...&target_lang=...`](/api-reference/multilingual-glossaries/deletes-the-dictionary-associated-with-the-given-language-pair-with-the-given-glossary-id) deletes a single dictionary
+
+## Limits and restrictions
+
+- Each dictionary can contain up to 10 MB of entries; a glossary with five dictionaries can hold up to 50 MB in total
+- The glossary name, each source phrase, and each target phrase can contain up to 1024 UTF-8 bytes
+- Duplicate source entries are not allowed, and neither source nor target may be empty
+- Entries must not contain control characters (such as `\t` or `\n` inside a phrase), Unicode newlines, or leading/trailing whitespace
+- The number of glossaries per account is [limited by your plan](https://www.deepl.com/en/pro-api)
