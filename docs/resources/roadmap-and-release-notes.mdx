@@ -10,6 +10,11 @@ rss: true
 </Update>
 
 <Update label="July 2026">
+## July 14 - Watermarking for Document Translation
+- [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accepts an `enable_watermark` parameter. When set to `true`, a "Translated by DeepL" watermark is applied to the translated document.
+- Supported for `docx` and `pdf` output only; the parameter is ignored for all other formats.
+- See the [document translation](/api-reference/document#request-body-descriptions) overview page for parameter details.
+
 ## July 2 - New Voice API Languages: Hindi, Malay, and Tamil
 - The Voice API now supports `hi` (Hindi), `ms` (Malay), and `ta` (Tamil) in beta. Translation is provided by DeepL; transcription and translated speech are provided by external service partners.
 - These languages are marked `"external": true` in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response. Because they are beta and external, call with `include=beta&include=external` to see them.
