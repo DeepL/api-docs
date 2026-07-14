@@ -1,0 +1,547 @@
+---
+title: "Spoken Terms"
+public: true
+sidebarTitle: "Overview"
+description: "Manage and use DeepL Spoken Terms"
+---
+
+<Info>
+  Spoken Terms are available for Voice API and select API Pro plans. Check your [plan limits](https://www.deepl.com/en/pro#api) to see if Spoken Terms are included.
+</Info>
+
+## Overview
+
+The `spoken-terms` endpoints let you manage [DeepL Spoken Terms](https://support.deepl.com/hc/en-us/articles/27381969228956-About-spoken-terms) for voice translation. Spoken Terms are monolingual collections that ensure specific words or phrases are recognized correctly within a single language during speech recognition. A Spoken Terms collection contains one or more term lists, with each term list containing terms for a single language.
+
+## Creating Spoken Terms
+
+### Format
+
+Spoken Terms use a simple newline-separated format. Each line contains one term:
+
+```
+DeepL
+API
+webhook
+```
+
+Terms are case-sensitive and should not contain tabs or other control characters.
+
+### Create Spoken Terms collection
+
+`POST /v3/spoken-terms`
+
+To create a Spoken Terms collection, each request can optionally contain one or more term lists. Each term list contains terms for a single language.
+
+This example creates a Spoken Terms collection with English technical terms:
+
+<Tabs>
+  <Tab title="cURL">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```sh Example request: create spoken terms
+    curl -X POST 'https://api.deepl.com/v3/spoken-terms' \
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+    --header 'Content-Type: application/json' \
+    --data '{
+      "name": "Technical Terms",
+      "term_lists": [
+        {
+          "lang": "en",
+          "entries": "DeepL\nAPI\nwebhook"
+        }
+      ]
+    }'
+    ```
+
+    ```json Example response
+    {
+      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+      "name": "Technical Terms",
+      "term_lists": [
+        {
+          "lang": "en",
+          "entry_count": 3
+        }
+      ],
+      "creation_time": "2025-08-03T14:16:18.329Z"
+    }
+    ```
+  </Tab>
+  <Tab title="HTTP Request">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```http Example request: create spoken terms
+    POST /v3/spoken-terms HTTP/2
+    Host: api.deepl.com
+    Authorization: DeepL-Auth-Key [yourAuthKey]
+    User-Agent: YourApp/1.2.3
+    Content-Length: 1234
+    Content-Type: application/json
+
+    {
+      "name": "Technical Terms",
+      "term_lists": [
+        {
+          "lang": "en",
+          "entries": "DeepL\nAPI\nwebhook"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Using Spoken Terms
+
+To use Spoken Terms with the [Voice API](/api-reference/voice#customization), include the `spoken_terms_id` parameter in your voice session request. The specified terms will be recognized correctly during speech recognition for the specified language.
+
+## Retrieving Spoken Terms
+
+### List all Spoken Terms collections
+
+`GET /v3/spoken-terms`
+
+Use this endpoint to list all your Spoken Terms collections, basic information about each collection's term lists, and each collection's name and creation time. The response will not include the actual terms.
+
+<Tabs>
+  <Tab title="cURL">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```sh Example request: list spoken terms
+    curl -X GET 'https://api.deepl.com/v3/spoken-terms' \
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+    ```
+
+    ```json Example response
+    {
+      "spoken_terms": [
+        {
+          "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+          "name": "Technical Terms",
+          "term_lists": [
+            {
+              "lang": "en",
+              "entry_count": 3
+            }
+          ],
+          "creation_time": "2025-08-03T14:16:18.329Z"
+        }
+      ]
+    }
+    ```
+  </Tab>
+  <Tab title="HTTP Request">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```http Example request: list all spoken terms
+    GET /v3/spoken-terms HTTP/2
+    Host: api.deepl.com
+    Authorization: DeepL-Auth-Key [yourAuthKey]
+    User-Agent: YourApp/1.2.3
+    ```
+
+    ```json Example response
+    {
+      "spoken_terms": [
+        {
+          "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+          "name": "Technical Terms",
+          "term_lists": [
+            {
+              "lang": "en",
+              "entry_count": 3
+            }
+          ],
+          "creation_time": "2025-08-03T14:16:18.329Z"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Get Spoken Terms collection metadata
+
+`GET /v3/spoken-terms/{spoken_terms_id}`
+
+Use this endpoint to retrieve basic information about a Spoken Terms collection's term lists, plus the collection's name and creation time.
+
+<Tabs>
+  <Tab title="cURL">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```sh Example request: retrieve spoken terms details
+    curl -X GET 'https://api.deepl.com/v3/spoken-terms/{spoken_terms_id}' \
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+    ```
+
+    ```json Example response
+    {
+      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+      "name": "Technical Terms",
+      "term_lists": [
+        {
+          "lang": "en",
+          "entry_count": 3
+        }
+      ],
+      "creation_time": "2025-08-03T14:16:18.329Z"
+    }
+    ```
+  </Tab>
+  <Tab title="HTTP Request">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```http Example request: retrieve spoken terms details
+    GET /v3/spoken-terms/{spoken_terms_id} HTTP/2
+    Host: api.deepl.com
+    Authorization: DeepL-Auth-Key [yourAuthKey]
+    User-Agent: YourApp/1.2.3
+    ```
+
+    ```json Example response
+    {
+      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+      "name": "Technical Terms",
+      "term_lists": [
+        {
+          "lang": "en",
+          "entry_count": 3
+        }
+      ],
+      "creation_time": "2025-08-03T14:16:18.329Z"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Get Spoken Terms entries
+
+`GET /v3/spoken-terms/{spoken_terms_id}/entries?lang={language}`
+
+Use this endpoint to retrieve the terms for a specific language from a Spoken Terms collection.
+
+<Tabs>
+  <Tab title="cURL">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```sh Example request: get spoken terms entries
+    curl -X GET 'https://api.deepl.com/v3/spoken-terms/{spoken_terms_id}/entries?lang=en' \
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+    ```
+
+    ```json Example response
+    {
+      "lang": "en",
+      "entries": "DeepL\nAPI\nwebhook"
+    }
+    ```
+  </Tab>
+  <Tab title="HTTP Request">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```http Example request: get spoken terms entries
+    GET /v3/spoken-terms/{spoken_terms_id}/entries?lang=en HTTP/2
+    Host: api.deepl.com
+    Authorization: DeepL-Auth-Key [yourAuthKey]
+    User-Agent: YourApp/1.2.3
+    ```
+
+    ```json Example response
+    {
+      "lang": "en",
+      "entries": "DeepL\nAPI\nwebhook"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Editing Spoken Terms
+
+### Replace or create a term list
+
+`PUT /v3/spoken-terms/{spoken_terms_id}/term-lists`
+
+The `PUT` method creates a new term list in the collection, or replaces an existing one for the specified language. If the collection has no term list for the given language, add it with the entries provided. If a term list already exists for that language, replace it.
+
+Use this method to add a new language to your Spoken Terms collection or to completely replace the terms for an existing language. To merge terms with an existing list, use the `PATCH` method.
+
+<Tabs>
+  <Tab title="cURL">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```sh Example request: replace a term list
+    curl -X PUT 'https://api.deepl.com/v3/spoken-terms/{spoken_terms_id}/term-lists' \
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+    --header 'Content-Type: application/json' \
+    --data '{
+      "lang": "en",
+      "entries": "DeepL\nAPI\nwebhook\nintegration"
+    }'
+    ```
+
+    ```json Example response
+    {
+      "lang": "en",
+      "entry_count": 4
+    }
+    ```
+  </Tab>
+  <Tab title="HTTP Request">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```http Example request: replace a term list
+    PUT /v3/spoken-terms/{spoken_terms_id}/term-lists HTTP/2
+    Host: api.deepl.com
+    Authorization: DeepL-Auth-Key [yourAuthKey]
+    User-Agent: YourApp/1.2.3
+    Content-Length: 210
+    Content-Type: application/json
+
+    {"lang": "en","entries": "DeepL\nAPI\nwebhook\nintegration"}
+    ```
+
+    ```json Example response
+    {
+      "lang": "en",
+      "entry_count": 4
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Update metadata or merge entries
+
+`PATCH /v3/spoken-terms/{spoken_terms_id}`
+
+While the `PUT` method operates on a single term list, `PATCH` affects an element of the entire Spoken Terms collection. This could be metadata like the collection's name, or a term list for a particular language.
+
+This method returns the collection's name and metadata about each of its term lists.
+
+This example changes a Spoken Terms collection's name:
+
+<Tabs>
+  <Tab title="cURL">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```sh Example request: update collection name
+    curl -X PATCH 'https://api.deepl.com/v3/spoken-terms/{spoken_terms_id}' \
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+    --header 'Content-Type: application/json' \
+    --data '{
+      "name": "Updated Technical Terms"
+    }'
+    ```
+
+    ```json Example response
+    {
+      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+      "name": "Updated Technical Terms",
+      "term_lists": [
+        {
+          "lang": "en",
+          "entry_count": 3
+        }
+      ],
+      "creation_time": "2025-08-03T14:16:18.329Z"
+    }
+    ```
+  </Tab>
+  <Tab title="HTTP Request">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```http Example request: update collection name
+    PATCH /v3/spoken-terms/{spoken_terms_id} HTTP/2
+    Host: api.deepl.com
+    Authorization: DeepL-Auth-Key [yourAuthKey]
+    User-Agent: YourApp/1.2.3
+    Content-Length: 147
+    Content-Type: application/json
+
+    {"name": "Updated Technical Terms"}
+    ```
+
+    ```json Example response
+    {
+      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+      "name": "Updated Technical Terms",
+      "term_lists": [
+        {
+          "lang": "en",
+          "entry_count": 3
+        }
+      ],
+      "creation_time": "2025-08-03T14:16:18.329Z"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+You can also use `PATCH` to merge new terms into an existing term list. If the collection already has a term list for the specified language, the new entries will be merged with the existing list.
+
+This example adds new terms to the English term list:
+
+<Tabs>
+  <Tab title="cURL">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```sh Example request: merge terms
+    curl -X PATCH 'https://api.deepl.com/v3/spoken-terms/{spoken_terms_id}' \
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+    --header 'Content-Type: application/json' \
+    --data '{
+      "term_lists": [
+        {
+          "lang": "en",
+          "entries": "authentication\nendpoint"
+        }
+      ]
+    }'
+    ```
+
+    ```json Example response
+    {
+      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+      "name": "Technical Terms",
+      "term_lists": [
+        {
+          "lang": "en",
+          "entry_count": 5
+        }
+      ],
+      "creation_time": "2025-08-03T14:16:18.329Z"
+    }
+    ```
+  </Tab>
+  <Tab title="HTTP Request">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```http Example request: merge terms
+    PATCH /v3/spoken-terms/{spoken_terms_id} HTTP/2
+    Host: api.deepl.com
+    Authorization: DeepL-Auth-Key [yourAuthKey]
+    User-Agent: YourApp/1.2.3
+    Content-Length: 147
+    Content-Type: application/json
+
+    {"term_lists": [{"lang": "en","entries": "authentication\nendpoint"}]}
+    ```
+
+    ```json Example response
+    {
+      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+      "name": "Technical Terms",
+      "term_lists": [
+        {
+          "lang": "en",
+          "entry_count": 5
+        }
+      ],
+      "creation_time": "2025-08-03T14:16:18.329Z"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Deleting Spoken Terms
+
+### Delete a Spoken Terms collection
+
+`DELETE /v3/spoken-terms/{spoken_terms_id}`
+
+This method deletes the specified Spoken Terms collection in its entirety.
+
+<Tabs>
+  <Tab title="cURL">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```sh Example request: delete spoken terms
+    curl -X DELETE 'https://api.deepl.com/v3/spoken-terms/{spoken_terms_id}' \
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+    ```
+
+    ```text Example response
+    204 No Content
+    ```
+  </Tab>
+  <Tab title="HTTP Request">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```http Example request: delete spoken terms
+    DELETE /v3/spoken-terms/{spoken_terms_id} HTTP/2
+    Host: api.deepl.com
+    Authorization: DeepL-Auth-Key [yourAuthKey]
+    User-Agent: YourApp/1.2.3
+    ```
+
+    ```text Example response
+    204 No Content
+    ```
+  </Tab>
+</Tabs>
+
+### Delete a term list
+
+`DELETE /v3/spoken-terms/{spoken_terms_id}/term-lists?lang={language}`
+
+Use this method to delete a term list for a specific language from the Spoken Terms collection.
+
+<Tabs>
+  <Tab title="cURL">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```sh Example request: delete a term list
+    curl -X DELETE 'https://api.deepl.com/v3/spoken-terms/{spoken_terms_id}/term-lists?lang=en' \
+    --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+    ```
+
+    ```text Example response
+    204 No Content
+    ```
+  </Tab>
+  <Tab title="HTTP Request">
+    The example below uses our API Pro endpoint `https://api.deepl.com`. If you're an API Free user, remember to update your requests to use `https://api-free.deepl.com` instead.
+
+    ```http Example request: delete a term list
+    DELETE /v3/spoken-terms/{spoken_terms_id}/term-lists?lang=en HTTP/2
+    Host: api.deepl.com
+    Authorization: DeepL-Auth-Key [yourAuthKey]
+    User-Agent: YourApp/1.2.3
+    ```
+
+    ```text Example response
+    204 No Content
+    ```
+  </Tab>
+</Tabs>
+
+## Notes on usage
+
+### Languages supported
+
+Spoken Terms are available for all [DeepL Voice languages](https://support.deepl.com/hc/en-us/articles/26625846174364-DeepL-Voice-languages). Visit the Voice languages page for the complete list of supported languages and their availability.
+
+### Comparison with glossaries
+
+| Feature | Glossaries | Spoken Terms |
+| ------- | ---------- | ------------ |
+| **Purpose** | Translate specific terms between languages | Ensure recognition of specific terms within a language |
+| **Direction** | Bidirectional (en→de, de→en) | Monolingual (en→en) |
+| **Format** | TSV with source and target columns | Single-column, newline-separated |
+| **Entry structure** | `source_term\ttarget_term` | `term` |
+
+## Restrictions
+
+### Size
+
+Each term list has a limit of 300 characters per language. The total number of Spoken Terms collections you can create is limited by your plan.
+
+The name of the collection can contain up to 1024 UTF-8 bytes. Names using only ASCII characters can be up to 1024 characters long; names with multi-byte characters hold fewer.
+
+### Content
+
+- Duplicate terms within a list are not allowed (case-sensitive).
+- Terms must not be empty.
+- Terms must not contain C0 or C1 control characters (including tabs `\t` or newlines `\n`).
+- Terms must not contain leading or trailing whitespace.

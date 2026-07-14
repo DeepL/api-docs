@@ -17,6 +17,18 @@ rss: true
 </Update>
 
 <Update label="June 2026">
+## June 29 - Spoken Terms API Management
+- New [`/v3/spoken-terms`](/api-reference/spoken-terms) endpoints provide full API management for Spoken Terms collections, which improve transcription accuracy for company-specific terminology, acronyms, and proper names in the Voice API.
+- Create, list, retrieve, update, and delete Spoken Terms collections programmatically. Each collection contains one or more term lists, with each term list holding terms for a single language.
+- Key endpoints:
+  - [`POST /v3/spoken-terms`](/api-reference/spoken-terms/create-spoken-terms-collection) - Create a new collection with term lists
+  - [`GET /v3/spoken-terms`](/api-reference/spoken-terms/list-all-spoken-terms) - List all collections
+  - [`GET /v3/spoken-terms/{spoken_terms_id}/entries`](/api-reference/spoken-terms/retrieve-spoken-terms-entries) - Retrieve terms for a specific language
+  - [`PATCH /v3/spoken-terms/{spoken_terms_id}`](/api-reference/spoken-terms/edit-spoken-terms-details) - Update collection name or merge new terms
+  - [`PUT /v3/spoken-terms/{spoken_terms_id}/term-lists`](/api-reference/spoken-terms/replace-or-create-term-list) - Replace or create a term list for a language
+  - [`DELETE /v3/spoken-terms/{spoken_terms_id}`](/api-reference/spoken-terms/delete-spoken-terms) - Delete a collection
+- This completes the API management capabilities announced in the May 19 Voice API Spoken Terms release. Previously, Spoken Terms could only be managed through [DeepL Home](https://www.deepl.com/en/voice/spoken-terms).
+
 ## June 24 - API Key Permissions General Availability
 - [Understanding API Key Permissions](/docs/admin/api-key-permissions) are now generally available. Scope a developer API key to specific endpoints so it can perform only the operations you allow.
 - Available on the API Pro, API Developer, API Growth, and API Enterprise plans.
