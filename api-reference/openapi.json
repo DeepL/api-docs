@@ -1078,10 +1078,10 @@
                   }
                 },
                 "Watermark": {
-                  "summary": "Adding a \"Translated by DeepL\" watermark",
+                  "summary": "Adding a \"Translated by DeepL\" watermark (docx/pdf only)",
                   "value": {
                     "target_lang": "DE",
-                    "file": "@document.docx",
+                    "file": "@document.pdf",
                     "enable_watermark": true
                   }
                 },
