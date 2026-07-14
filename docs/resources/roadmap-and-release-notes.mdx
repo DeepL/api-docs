@@ -10,6 +10,12 @@ rss: true
 </Update>
 
 <Update label="July 2026">
+## July 7 - New Document Formats and Higher File Size Limits
+- [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now supports five additional file formats: `idml` (Adobe InDesign), `xml`, `json`, `dita` (DITA topics), and `mif` (Adobe FrameMaker).
+- XLIFF support has been expanded to versions 1.2, 2.0, and 2.1 (previously 2.1 only).
+- File size limits on DeepL API Pro have increased to 100 MB for Word (`.docx`), PowerPoint (`.pptx`), and PDF (`.pdf`). See [Usage and limits](/docs/resources/usage-limits) for the full per-format table.
+- See [document translation best practices](/docs/best-practices/document-translations) for format-specific guidance and known constraints.
+
 ## July 2 - New Voice API Languages: Hindi, Malay, and Tamil
 - The Voice API now supports `hi` (Hindi), `ms` (Malay), and `ta` (Tamil) in beta. Translation is provided by DeepL; transcription and translated speech are provided by external service partners.
 - These languages are marked `"external": true` in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response. Because they are beta and external, call with `include=beta&include=external` to see them.
