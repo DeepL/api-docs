@@ -400,7 +400,7 @@
         "items": [
           {
             "label": "API Status",
-            "href": "https://api-status.deepl.com"
+            "href": "https://www.deeplstatus.com/?tab=api"
           },
           {
             "label": "DeepL Status",
