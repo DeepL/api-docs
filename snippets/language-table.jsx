@@ -218,13 +218,22 @@ export const LanguageTable = () => {
     }
 
     const FeatureBadges = ({ lang }) => {
+        // Orange badges flag things specific to translating *into* a variant.
+        // Green badges are features the language supports natively.
+        const variantBadgeClass = "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200"
+        const badgeClass = "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200"
+
+        // appliesViaRoot: glossaries and style rules are created for the root
+        // language (e.g. EN) and applied when translating into the variant; they
+        // can't be created for a variant code. On variant rows we surface that
+        // with a "Translation: ..." badge instead of the plain green one.
         const features = [
-            { key: 'translation', label: 'Translation', variant: lang.isVariant },
-            { key: 'glossaries', label: 'Glossaries' },
+            { key: 'translation', label: 'Translation' },
+            { key: 'glossaries', label: 'Glossaries', appliesViaRoot: true },
             { key: 'tagHandling', label: 'Tag Handling' },
             { key: 'textImprovement', label: 'Text Improvement' },
             { key: 'translationMemory', label: 'Translation Memory' },
-            { key: 'styleRules', label: 'Style Rules' },
+            { key: 'styleRules', label: 'Style Rules', appliesViaRoot: true },
         ]
         return (
             <div className="flex flex-wrap gap-1.5">
@@ -237,25 +246,36 @@ export const LanguageTable = () => {
                     </span>
                 )}
                 {features.map(f => {
-                    if (f.variant) {
+                    if (f.key === 'translation' && lang.isVariant) {
                         return (
                             <span
                                 key={f.key}
-                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200"
+                                className={variantBadgeClass}
                                 title="This language variant can only be used as a target language, not as a source. For example, use EN as the source and EN-GB as the target."
                             >
                                 Translation: Target Only
                             </span>
                         )
                     }
-                    if (lang[f.key]) {
+                    if (!lang[f.key]) {
+                        return null
+                    }
+                    if (f.appliesViaRoot && lang.isVariant) {
                         return (
-                            <span key={f.key} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200">
-                                {f.label}
+                            <span
+                                key={f.key}
+                                className={variantBadgeClass}
+                                title={`${f.label} are created for the root language (for example, EN) and apply when translating into this variant. You can't create ${f.label.toLowerCase()} for a variant code.`}
+                            >
+                                Translation: {f.label}
                             </span>
                         )
                     }
-                    return null
+                    return (
+                        <span key={f.key} className={badgeClass}>
+                            {f.label}
+                        </span>
+                    )
                 })}
             </div>
         )
