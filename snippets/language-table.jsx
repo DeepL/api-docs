@@ -46,10 +46,10 @@ export const LanguageTable = () => {
         { code: 'ZH', name: 'Chinese (unspecified variant)', translation: true, isVariant: false, glossaries: true, tagHandling: true, textImprovement: false, translationMemory: true, styleRules: true },
 
         // Target-only language variants (cannot be used as source)
-        { code: 'DE-CH', name: 'German (Swiss)', translation: true, isVariant: true, isBeta: true, glossaries: true, tagHandling: false, textImprovement: false, translationMemory: false, styleRules: true },
+        { code: 'DE-CH', name: 'German (Swiss)', translation: true, isVariant: true, glossaries: true, tagHandling: false, textImprovement: false, translationMemory: false, styleRules: true },
         { code: 'EN-GB', name: 'English (British)', translation: true, isVariant: true, glossaries: true, tagHandling: true, textImprovement: true, translationMemory: true, styleRules: false },
         { code: 'EN-US', name: 'English (American)', translation: true, isVariant: true, glossaries: true, tagHandling: true, textImprovement: true, translationMemory: true, styleRules: false },
-        { code: 'FR-CA', name: 'French (Canadian)', translation: true, isVariant: true, isBeta: true, glossaries: true, tagHandling: false, textImprovement: false, translationMemory: false, styleRules: true },
+        { code: 'FR-CA', name: 'French (Canadian)', translation: true, isVariant: true, glossaries: true, tagHandling: false, textImprovement: false, translationMemory: false, styleRules: true },
         { code: 'PT-BR', name: 'Portuguese (Brazilian)', translation: true, isVariant: true, glossaries: true, tagHandling: true, textImprovement: true, translationMemory: false, styleRules: false },
         { code: 'PT-PT', name: 'Portuguese (European)', translation: true, isVariant: true, glossaries: true, tagHandling: true, textImprovement: false, translationMemory: false, styleRules: false },
         { code: 'ZH-HANS', name: 'Chinese (simplified)', translation: true, isVariant: true, glossaries: true, tagHandling: true, textImprovement: true, translationMemory: true, styleRules: false },
