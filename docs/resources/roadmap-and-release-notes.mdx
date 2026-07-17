@@ -13,6 +13,11 @@ rss: true
 ## July 16 - Combined Status Page
 - DeepL now publishes a single [status page](https://www.deeplstatus.com) covering all services, with a dedicated [API view](https://www.deeplstatus.com/?tab=api) for real-time API status and incidents.
 
+## July 14 - Watermarking for Document Translation
+- [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accepts an `enable_watermark` parameter. When set to `true`, a "Translated by DeepL" watermark is applied to the translated document.
+- Supported for `docx` and `pdf` output only; the parameter is ignored for all other formats.
+- See the [document translation](/api-reference/document#request-body-descriptions) overview page for parameter details.
+
 ## July 7 - New Document Formats and Higher File Size Limits
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now supports five additional file formats: `idml` (Adobe InDesign), `xml`, `json`, `dita` (DITA topics), and `mif` (Adobe FrameMaker).
 - XLIFF support has been expanded to versions 1.2, 2.0, and 2.1 (previously 2.1 only).
