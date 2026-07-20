@@ -1,0 +1,36 @@
+name: Sync language docs
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-language-docs
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Regenerate language docs from /v3/languages
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+        # stderr goes to a file first (a `>(tee ...)` child is not awaited, the
+        # next step could read a partial file), then back into the step log
+        run: |
+          node scripts/update-language-docs.mjs "$DEEPL_API_KEY" 2> "$RUNNER_TEMP/warnings.txt" || { cat "$RUNNER_TEMP/warnings.txt" >&2; exit 1; }
+          cat "$RUNNER_TEMP/warnings.txt" >&2
+      - name: Open or update the sync PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WARNINGS_FILE: ${{ runner.temp }}/warnings.txt
+        run: scripts/open-sync-pr.sh

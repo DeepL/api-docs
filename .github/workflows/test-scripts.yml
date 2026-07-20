@@ -1,0 +1,21 @@
+name: Test scripts
+
+on:
+  pull_request:
+    paths:
+      - "scripts/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: node --test scripts/*.test.mjs
