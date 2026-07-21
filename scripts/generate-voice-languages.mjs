@@ -39,7 +39,7 @@ export async function update({ authKey, dryRun = false }) {
       return `| ${name} | ${mark(l.features.transcription)} | ✓ | ${mark(l.features.translated_speech)} |`;
     });
   const matrix = [
-    '| **Language** | **Transcription** | **Translation** | <Badge color="green">closed beta</Badge><br/>Translated Speech |',
+    '| **Language** | **Transcription** | **Translation** | Translated Speech |',
     '| :--- | :---: | :---: | :---: |',
     ...rows,
   ].join('\n');
