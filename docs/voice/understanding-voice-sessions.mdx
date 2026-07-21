@@ -61,7 +61,7 @@ As audio is processed, transcripts and translations arrive incrementally via [so
 
 Applications typically append concluded segments to the running transcript and display tentative segments as provisional text that gets replaced by later updates.
 
-### Translated speech (closed beta)
+### Translated speech
 
 When a translated speech target is configured, synthesized audio arrives incrementally as [target media chunks](/api-reference/voice/websocket-streaming). To save bandwidth, the stream contains only speech, without silence or padding, so there are gaps with no data whenever the speaker pauses. Each chunk carries text and audio duration information, which you can use to highlight the currently spoken text or to subtitle the audio output.
 
