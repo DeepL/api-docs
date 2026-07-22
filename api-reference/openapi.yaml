@@ -9,7 +9,7 @@ info:
   contact:
     name: DeepL - Contact us
     url: https://www.deepl.com/contact-us
-  version: 3.12.0
+  version: 3.13.0
 externalDocs:
   description: DeepL Pro - Plans and pricing
   url: https://www.deepl.com/pro#developer
@@ -164,6 +164,7 @@ paths:
                         document_translation_characters: 0
                         text_improvement_characters: 4727
                         speech_to_text_minutes: 107.46
+                        speech_to_speech_minutes: 42.11
                       group_by: "key_and_day"
                       start_date: "2025-09-29T00:00:00"
                       end_date: "2025-10-01T00:00:00"
@@ -177,6 +178,7 @@ paths:
                           document_translation_characters: 0
                           text_improvement_characters: 156
                           speech_to_text_minutes: 11.94
+                          speech_to_speech_minutes: 3.72
                 withoutGrouping:
                   summary: Usage report without grouping
                   value:
@@ -187,6 +189,7 @@ paths:
                         document_translation_characters: 0
                         text_improvement_characters: 4727
                         speech_to_text_minutes: 107.46
+                        speech_to_speech_minutes: 42.11
                       start_date: "2025-09-29T00:00:00"
                       end_date: "2025-10-01T00:00:00"
         400:
@@ -6830,6 +6833,10 @@ components:
           type: number
           description: Duration of speech-to-text usage in minutes.
           example: 107.46
+        speech_to_speech_minutes:
+          type: number
+          description: Duration of speech-to-speech usage in minutes.
+          example: 42.11
     KeyAndDayUsageItem:
       type: object
       description: Usage statistics for a specific API key and optionally a specific date.
