@@ -23,6 +23,20 @@ Glossaries, style rules, custom instructions, and translation memories work with
 Glossaries and style rules are unique to each of DeepL's global data centers and are not shared between them. Clients using [regional endpoints](/docs/getting-started/regional-endpoints) can't access glossaries or style rules created in the UI at this time.
 </Warning>
 
+## Choosing the right feature
+
+Each feature solves a different problem, and the [`context` parameter](/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter) overlaps with them: it isn't a stored customization, but it's often the right tool for ambiguous or short text. Use this table to decide which feature fits your use case.
+
+| Use case | Context parameter | Glossaries | Style rules | Custom instructions | Translation memories |
+| :---- | :----: | :----: | :----: | :----: | :----: |
+| **Ambiguous words or short snippets** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Consistent gender or name spelling** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Consistent domain-specific terminology** | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **Brand and product names** | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **Formatting conventions (dates, numbers, punctuation)** | ❌ | ❌ | ✅ | ❌ | ❌ |
+| **Tone and phrasing** | ❌ | ❌ | ❌ | ✅ | ❌ |
+| **Reusing previously approved translations** | ❌ | ❌ | ❌ | ❌ | ✅ |
+
 ## Feature guides
 
 <CardGroup cols={2}>

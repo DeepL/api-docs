@@ -7,7 +7,7 @@ public: true
 **This guide shows you:**
 - When to use `context` (and when not to)
 - How to use `context` to resolve ambiguous words, genders, or transliterations
-- How to choose between `context`, Glossaries, and Style Rules
+- Where to find a comparison of `context` with DeepL's customization features
 
 ---
 
@@ -225,19 +225,9 @@ curl -X POST 'https://api.deepl.com/v2/translate' \
 
 ---
 
-## Choosing the right feature for your needs
+## Choosing the right feature
 
-Different DeepL features solve different problems. Use this table to decide which best suits your use case.
-
-| Use Case | Context Parameter | Glossaries | Style Rules |
-|----------|:----------------:|:----------:|:-----------:|
-| **Ambiguous words** | ✅ | ❌ | ❌ |
-| **Consistent gender or spelling** | ✅ | ❌ | ❌ |
-| **Consistent domain-specific terminology** | ❌ | ✅ | ❌ |
-| **Brand names** | ❌ | ✅ | ❌ |
-| **Tone and style** | ❌ | ❌ | ✅ |
-| **Formatting rules** | ❌ | ❌ | ✅ |
-| **Translation instructions** | ❌ | ❌ | ✅ |
+The `context` parameter is one of several ways to influence translation output. For a comparison of `context` with glossaries, style rules, custom instructions, and translation memories, see [Choosing the right feature](/docs/customize/overview#choosing-the-right-feature) on the Customize overview.
 
 ---
 
