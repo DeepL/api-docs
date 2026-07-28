@@ -18,6 +18,22 @@ Custom instructions enable you to guide the translation engine with specific req
 
 Custom instructions can also be used in conjunction with other features, such as glossaries, style rules, and the `context` parameter.
 
+## How instructions are applied
+
+Custom instructions are applied while the text is translated, sentence by sentence and passage by passage. They are not applied as an editing pass over the finished document. This makes them effective for local changes, such as word choice, tone, and the structure of individual sentences, and unreliable for changes that depend on seeing the whole text at once.
+
+An instruction that describes the shape of the entire text, such as reordering an argument, converting lists into running text, or adding a summary, is applied to each passage individually. Instead of restructuring the document once, it restructures every passage, which typically lowers translation quality.
+
+<Warning>
+Write instructions that apply to the structure of one or more sentences, not to the structure of the entire text.
+</Warning>
+
+❌ **INCORRECT: Whole-text restructuring** — "Structure the text as a continuous chain: observation, problem framing, definition, implications"
+
+✅ **CORRECT: Sentence-level structure** — "Split sentences longer than 25 words into two shorter sentences"
+
+If you need the translated document restructured, translate it with local instructions only, then restructure the result in a separate step.
+
 ## Best practices
 
 ### 1. Write rules in English or the target language
@@ -77,6 +93,16 @@ Custom instructions guide translation behavior. They should be concise directive
 ❌ **INCORRECT: Chatbot-style prompt** — "Please translate this text in a way that would be appropriate for a luxury fashion brand. Make sure to sound elegant and sophisticated, like you're speaking to a high-end clientele."
 
 ✅ **CORRECT: Clear translation directive** — "Use elegant, sophisticated language appropriate for luxury fashion"
+
+## Combining multiple instructions
+
+All active instructions apply to every translation together; there is no priority order among them. However, the broader and more transformative an instruction is, the more strongly it shapes the output. A single instruction that rewrites heavily can drown out the effect of your more specific instructions.
+
+To keep a set of instructions predictable:
+
+- Add instructions one at a time, and test each against representative source texts before adding the next
+- Keep each instruction local and specific, following the best practices above
+- If translation quality drops after a change, remove the broadest instruction first and retest
 
 ## Technical constraints
 
