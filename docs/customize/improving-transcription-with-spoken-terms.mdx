@@ -5,9 +5,9 @@ covers: [Spoken Terms]
 public: true
 ---
 
-Spoken Terms ensure that the vocabulary that matters to you, such as company names, acronyms, product names, and people's names, is transcribed exactly as you spell it in Voice API sessions. You provide the exact words, and speech recognition uses your spelling whenever they're spoken. Unlike [glossaries](/docs/customize/managing-glossaries), Spoken Terms are monolingual: they affect how speech is recognized, not how the recognized text is translated.
+In Voice API sessions, Spoken Terms ensure that the vocabulary that matters to you, such as company names, acronyms, product names, and people's names, is transcribed with the exact spelling you choose. You provide the words, and speech recognition uses your spelling whenever they're spoken. Unlike [glossaries](/docs/customize/managing-glossaries), Spoken Terms are monolingual. They affect how speech is recognized, not how the recognized text is translated.
 
-This guide shows how to set up Spoken Terms via the API and keep them current as your vocabulary grows. You can also manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms).
+This guide shows you how to set up Spoken Terms via the API and keep them current as your vocabulary grows. You can also manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms).
 
 <Info>
 Spoken Terms are available on all plans that include the DeepL Voice API. The number of collections you can create depends on your [plan](https://www.deepl.com/en/pro#api).
@@ -15,7 +15,7 @@ Spoken Terms are available on all plans that include the DeepL Voice API. The nu
 
 ## Collect domain-specific terms
 
-Review your calls for domain- and company-specific words you want transcribed with complete accuracy, and write each one exactly as it should appear in the transcript (terms are case-sensitive):
+Review your calls for domain- and company-specific words you want transcribed with complete accuracy. Collect them in a **term list**: the terms, written exactly as you want them to appear in your transcripts (terms are case-sensitive). In the next step, you'll send this list to the DeepL API.
 
 ```text
 DeepL
@@ -27,7 +27,7 @@ Each term list holds at most 300 characters in total (see [Spoken Terms Requirem
 
 ## Create a collection
 
-A **Spoken Terms collection** groups your terms into one term list per language. Create one with [`POST /v3/spoken-terms`](/api-reference/spoken-terms/create-spoken-terms-collection):
+Term lists are stored in a **Spoken Terms collection**, which can hold one term list for each language. Create a collection with [`POST /v3/spoken-terms`](/api-reference/spoken-terms/create-spoken-terms-collection):
 
 ```sh Example request
 curl -X POST https://api.deepl.com/v3/spoken-terms \
@@ -62,7 +62,7 @@ Store the `spoken_terms_id`; every voice session that should use these terms pas
 
 ## Start a voice session with your terms
 
-Include the `spoken_terms_id` when you [request a voice session](/api-reference/voice/request-session). The terms for the session's source language are then recognized correctly in the transcription:
+Include the `spoken_terms_id` when you [create a voice session](/api-reference/voice/request-session). The terms for the session's source language are then recognized correctly in the transcription:
 
 ```sh Example request
 curl -X POST https://api.deepl.com/v3/voice/realtime \
@@ -76,9 +76,9 @@ curl -X POST https://api.deepl.com/v3/voice/realtime \
 }'
 ```
 
-See the [Real-Time Voice Quickstart](/docs/voice/real-time-voice-quickstart) for the full session flow, from this request through streaming audio and receiving translations.
+See the [Real-Time Voice Quickstart](/docs/voice/real-time-voice-quickstart) for an example of the full Voice API session flow.
 
-To also control how your terms are **translated**, pass a `glossary_id` in the same session: Spoken Terms fix recognition, glossaries fix translation, and the two work together.
+To also control how your terms are **translated**, pass a `glossary_id` in the same session. Spoken Terms control how speech is recognized, and glossaries control how it's translated.
 
 Spoken Terms are available for all [DeepL Voice languages](https://support.deepl.com/hc/en-us/articles/26625846174364-DeepL-Voice-languages). To check a language programmatically, call [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) and look for the `spoken_terms` feature key on the source language.
 
@@ -116,7 +116,7 @@ curl -X PATCH https://api.deepl.com/v3/spoken-terms/def3a26b-3e84-45b3-84ae-0c0a
 
 Running sessions aren't affected; the updated terms apply to sessions started after the change.
 
-## Replace a language's terms wholesale
+## Replace a language's terms
 
 To rebuild a language's term list from scratch, for example from an updated product catalog, [`PUT` the term list](/api-reference/spoken-terms/replace-or-create-term-list) with the new entries. Unlike `PATCH`, which adds to the existing list, `PUT` replaces the list entirely (or creates it, if the language is new to the collection):
 
@@ -137,4 +137,4 @@ curl -X PUT https://api.deepl.com/v3/spoken-terms/def3a26b-3e84-45b3-84ae-0c0aaf
 }
 ```
 
-For everything else, listing your collections, reading terms back, renaming, and deleting, see the [Spoken Terms reference](/api-reference/spoken-terms/create-spoken-terms-collection). Size and content rules are collected in [Spoken Terms Requirements](/docs/customize/spoken-terms-requirements).
+See the [Spoken Terms reference](/api-reference/spoken-terms/create-spoken-terms-collection) for full details on managing collections. Size and content rules are collected in [Spoken Terms Requirements](/docs/customize/spoken-terms-requirements).
