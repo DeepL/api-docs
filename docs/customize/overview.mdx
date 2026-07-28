@@ -13,8 +13,9 @@ DeepL's customization features let you control terminology, style, and consisten
 | [Style rules](/docs/customize/using-style-rules) | Formatting conventions (dates, numbers, punctuation) plus stored custom instructions | Stored on your account; passed per request via `style_id` |
 | [Custom instructions](/docs/customize/custom-instructions) | Tone, phrasing, and domain-specific behavior via natural-language directives | Inline per request via `custom_instructions`, or stored in a style rule list |
 | [Translation memories](/docs/customize/using-translation-memories) | Reuse of your previously approved translations for matching segments | Stored on your account; passed per request via `translation_memory_id` |
+| [Spoken terms](/docs/customize/improving-transcription-with-spoken-terms) | Recognition of specific terms during Voice API speech transcription | Stored on your account; passed per voice session via `spoken_terms_id` |
 
-All of these work with both [text translation](/docs/translate/translate-text-quickstart) and [document translation](/docs/translate/translate-documents-quickstart), and with all `model_type` values.
+Glossaries, style rules, custom instructions, and translation memories work with both [text translation](/docs/translate/translate-text-quickstart) and [document translation](/docs/translate/translate-documents-quickstart), and with all `model_type` values. Spoken terms apply to [Voice API](/docs/voice/overview) sessions.
 
 <Warning>
 Glossaries and style rules are unique to each of DeepL's global data centers and are not shared between them. Clients using [regional endpoints](/docs/getting-started/regional-endpoints) can't access glossaries or style rules created in the UI at this time.
@@ -37,6 +38,9 @@ Glossaries and style rules are unique to each of DeepL's global data centers and
   </Card>
   <Card title="Using Translation Memories" icon="database" href="/docs/customize/using-translation-memories">
     Retrieve your translation memories and control the matching threshold in translation requests.
+  </Card>
+  <Card title="Improving Transcription with Spoken Terms" icon="microphone" href="/docs/customize/improving-transcription-with-spoken-terms">
+    Keep company terms, acronyms, and names transcribed correctly in Voice API sessions.
   </Card>
   <Card title="Customizations for Language Variants" icon="globe" href="/docs/customize/customizations-for-variants">
     Create customizations with root language codes and apply them to variants like pt-BR or fr-CA.

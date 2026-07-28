@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Regenerates the Voice API language tables from GET /v3/languages?resource=voice:
-// the support matrix in docs/voice/supported-languages-formats-and-limits.mdx and
+// the support matrix in docs/voice/supported-voice-languages.mdx and
 // the input/target lists in api-reference/voice/deepl-voice-api-service-specification-updates.mdx.
 //
 // Usage: node scripts/generate-voice-languages.mjs <api-key> [--dry-run]
@@ -39,11 +39,11 @@ export async function update({ authKey, dryRun = false }) {
       return `| ${name} | ${mark(l.features.transcription)} | ✓ | ${mark(l.features.translated_speech)} |`;
     });
   const matrix = [
-    '| **Language** | **Transcription** | **Translation** | Translated Speech |',
+    '| **Language** | **Transcription** | **Translation** | **Translated Speech** |',
     '| :--- | :---: | :---: | :---: |',
     ...rows,
   ].join('\n');
-  await replaceBlock('docs/voice/supported-languages-formats-and-limits.mdx', 'voice-language-matrix', matrix, { dryRun });
+  await replaceBlock('docs/voice/supported-voice-languages.mdx', 'voice-language-matrix', matrix, { dryRun });
 
   const item = (l) => `                <li>\`${l.lang}\` (${l.name})</li>`;
   await replaceBlock(

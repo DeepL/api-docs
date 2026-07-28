@@ -138,7 +138,7 @@ if __name__ == "__main__":
         pass
 ```
 
-Run it and speak in any [supported source language](/docs/voice/supported-languages-formats-and-limits#supported-languages). Each sentence prints once it's final, first the transcript, then each translation. Press Ctrl+C when you're done: the script stops recording, waits for the remaining results, and exits cleanly.
+Run it and speak in any [supported source language](/docs/voice/supported-voice-languages). Each sentence prints once it's final, first the transcript, then each translation. Press Ctrl+C when you're done: the script stops recording, waits for the remaining results, and exits cleanly.
 
 ```text
 ❯ python live_translation.py
@@ -244,7 +244,7 @@ async def send_file_audio(ws, path: str, stop: asyncio.Event) -> None:
     await ws.send(json.dumps({"end_of_source_media": {}}))
 ```
 
-Any recording of speech in a [supported format](/docs/voice/supported-languages-formats-and-limits#supported-audio-formats) works, for example an MP3 of a podcast episode.
+Any recording of speech in a [supported format](/docs/voice/voice-api-requirements#supported-audio-formats) works, for example an MP3 of a podcast episode.
 
 <Warning>
   Don't send audio faster than 2x real-time. Uploading a file as fast as the network allows triggers rate limits and terminates the session.

@@ -33,6 +33,7 @@ families:
     narrative_home: own
     groups:
       - {name: Customize, tags: [ManageGlossaries, ManageMultilingualGlossaries, TranslationMemories]}
+      - {name: Spoken Terms, tags: [ManageSpokenTerms]}
     # Style rules live under Customize but have no OpenAPI tag yet.
 
   Voice:

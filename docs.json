@@ -148,7 +148,8 @@
           "docs/voice/real-time-voice-quickstart",
           "docs/voice/understanding-voice-sessions",
           "docs/voice/message-encoding",
-          "docs/voice/supported-languages-formats-and-limits"
+          "docs/voice/supported-voice-languages",
+          "docs/voice/voice-api-requirements"
         ]
       },
       {
@@ -170,6 +171,13 @@
             "pages": [
               "docs/customize/using-style-rules",
               "docs/customize/custom-instructions"
+            ]
+          },
+          {
+            "group": "Spoken Terms",
+            "pages": [
+              "docs/customize/improving-transcription-with-spoken-terms",
+              "docs/customize/spoken-terms-requirements"
             ]
           },
           {
@@ -259,7 +267,6 @@
               {
                 "group": "Spoken Terms",
                 "pages": [
-                  "api-reference/spoken-terms",
                   "api-reference/spoken-terms/create-spoken-terms-collection",
                   "api-reference/spoken-terms/list-all-spoken-terms",
                   "api-reference/spoken-terms/retrieve-spoken-terms-details",
@@ -720,6 +727,14 @@
     {
       "source": "/api-reference/translation-memory",
       "destination": "/docs/customize/using-translation-memories"
+    },
+    {
+      "source": "/api-reference/spoken-terms",
+      "destination": "/api-reference/spoken-terms/create-spoken-terms-collection"
+    },
+    {
+      "source": "/docs/voice/supported-languages-formats-and-limits",
+      "destination": "/docs/voice/supported-voice-languages"
     },
     {
       "source": "/docs/best-practices/working-with-context",

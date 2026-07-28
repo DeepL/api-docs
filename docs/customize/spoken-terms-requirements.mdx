@@ -1,0 +1,27 @@
+---
+title: "Spoken Terms Requirements"
+description: "Size limits and content rules for Spoken Terms collections and term lists."
+public: true
+---
+
+## Size limits
+
+| Item | Limit |
+| :---- | :---- |
+| Characters per term list | 300 total |
+| Collection name | 1024 UTF-8 bytes |
+| Collections per account | Limited by your [plan](https://www.deepl.com/en/pro#api) |
+
+Names using only ASCII characters can be up to 1024 characters long; names with multi-byte characters hold fewer.
+
+## Content rules
+
+- Terms are case-sensitive
+- Duplicate terms within a list are not allowed (comparison is case-sensitive)
+- Terms must not be empty
+- Terms must not contain C0 or C1 control characters (including tabs `\t` or newlines `\n` within a term)
+- Terms must not contain leading or trailing whitespace
+
+## Availability
+
+Spoken Terms are available for Voice API and select API Pro plans, for all [DeepL Voice languages](https://support.deepl.com/hc/en-us/articles/26625846174364-DeepL-Voice-languages). To check a language programmatically, call [`GET /v3/languages?resource=voice`](/api-reference/languages/retrieve-languages-by-resource) and look for the `spoken_terms` feature key on the source language.

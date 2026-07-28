@@ -48,7 +48,7 @@ Two security properties follow from the token design:
 * Each token and streaming URL is valid for one-time use. Using a token more than once to open a WebSocket connection terminates the session immediately.
 * Only the latest token can request a reconnection. Presenting an outdated token invalidates the session.
 
-Requesting a reconnection token while a connection is still active disconnects that connection, so only reconnect after the existing connection has closed. Connections also have a maximum duration; when it's reached, reconnect the same way to continue the session. See [session limits](/docs/voice/supported-languages-formats-and-limits#session-limits) for the exact values.
+Requesting a reconnection token while a connection is still active disconnects that connection, so only reconnect after the existing connection has closed. Connections also have a maximum duration; when it's reached, reconnect the same way to continue the session. See [session limits](/docs/voice/voice-api-requirements#session-limits) for the exact values.
 
 ## How audio and results flow
 

@@ -1,0 +1,140 @@
+---
+title: "Improving Transcription with Spoken Terms"
+description: "Keep company names, acronyms, and product terminology transcribed correctly in Voice API sessions by creating and maintaining a Spoken Terms collection."
+covers: [Spoken Terms]
+public: true
+---
+
+When the Voice API transcribes speech, uncommon words are easy to get wrong: company names, acronyms, product names, and people's names. Spoken Terms fix this. You provide the exact words, and speech recognition transcribes them correctly whenever they're spoken. Unlike [glossaries](/docs/customize/managing-glossaries), Spoken Terms are monolingual: they affect how speech is recognized, not how the recognized text is translated.
+
+This guide shows how to set up Spoken Terms via the API and keep them current as your vocabulary grows. You can also manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms).
+
+<Info>
+Spoken Terms are available for Voice API and select API Pro plans. Check your [plan limits](https://www.deepl.com/en/pro#api) to see if Spoken Terms are included.
+</Info>
+
+## Collect the terms that get mistranscribed
+
+Review your transcripts for words that come out wrong and list them one per line, written exactly as they should appear (terms are case-sensitive):
+
+```text
+DeepL
+API
+webhook
+```
+
+Each term list holds at most 300 characters in total (see [Spoken Terms Requirements](/docs/customize/spoken-terms-requirements) for all size and content rules), so spend the budget on the terms that actually get mistranscribed rather than your full vocabulary.
+
+## Create a collection
+
+A **Spoken Terms collection** groups your terms into one term list per language. Create one with [`POST /v3/spoken-terms`](/api-reference/spoken-terms/create-spoken-terms-collection):
+
+```sh Example request
+curl -X POST https://api.deepl.com/v3/spoken-terms \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Technical Terms",
+    "term_lists": [
+      {
+        "lang": "en",
+        "entries": "DeepL\nAPI\nwebhook"
+      }
+    ]
+}'
+```
+
+```json Example response
+{
+  "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "name": "Technical Terms",
+  "term_lists": [
+    {
+      "lang": "en",
+      "entry_count": 3
+    }
+  ],
+  "creation_time": "2025-08-03T14:16:18.329Z"
+}
+```
+
+Store the `spoken_terms_id`; every voice session that should use these terms passes it.
+
+## Start a voice session with your terms
+
+Include the `spoken_terms_id` when you [request a voice session](/api-reference/voice/request-session). The terms for the session's source language are then recognized correctly in the transcription:
+
+```sh Example request
+curl -X POST https://api.deepl.com/v3/voice/realtime \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "source_media_content_type": "audio/pcm; encoding=s16le; rate=16000",
+    "source_language": "en",
+    "target_languages": ["de"],
+    "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+}'
+```
+
+See the [Real-Time Voice Quickstart](/docs/voice/real-time-voice-quickstart) for the full session flow, from this request through streaming audio and receiving translations.
+
+To also control how your terms are **translated**, pass a `glossary_id` in the same session: Spoken Terms fix recognition, glossaries fix translation, and the two work together.
+
+Spoken Terms are available for all [DeepL Voice languages](https://support.deepl.com/hc/en-us/articles/26625846174364-DeepL-Voice-languages). To check a language programmatically, call [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) and look for the `spoken_terms` feature key on the source language.
+
+## Add terms as new misrecognitions turn up
+
+Your vocabulary grows over time. To add terms without resending the existing ones, [`PATCH` the collection](/api-reference/spoken-terms/edit-spoken-terms-details); entries you pass for a language are merged into its existing term list:
+
+```sh Example request
+curl -X PATCH https://api.deepl.com/v3/spoken-terms/def3a26b-3e84-45b3-84ae-0c0aaf3525f7 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "term_lists": [
+      {
+        "lang": "en",
+        "entries": "authentication\nendpoint"
+      }
+    ]
+}'
+```
+
+```json Example response
+{
+  "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
+  "name": "Technical Terms",
+  "term_lists": [
+    {
+      "lang": "en",
+      "entry_count": 5
+    }
+  ],
+  "creation_time": "2025-08-03T14:16:18.329Z"
+}
+```
+
+Running sessions aren't affected; the updated terms apply to sessions started after the change.
+
+## Replace a language's terms wholesale
+
+When you regenerate your term list from scratch, for example from an updated product catalog, don't merge; replace. [`PUT` the term list](/api-reference/spoken-terms/replace-or-create-term-list) with the new entries, and the existing list for that language is replaced entirely (or created, if the language is new to the collection):
+
+```sh Example request
+curl -X PUT https://api.deepl.com/v3/spoken-terms/def3a26b-3e84-45b3-84ae-0c0aaf3525f7/term-lists \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "lang": "en",
+    "entries": "DeepL\nAPI\nwebhook\nintegration"
+}'
+```
+
+```json Example response
+{
+  "lang": "en",
+  "entry_count": 4
+}
+```
+
+For everything else, listing your collections, reading terms back, renaming, and deleting, see the [Spoken Terms reference](/api-reference/spoken-terms/create-spoken-terms-collection). Size and content rules are collected in [Spoken Terms Requirements](/docs/customize/spoken-terms-requirements).

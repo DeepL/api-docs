@@ -29,8 +29,11 @@ The DeepL Voice API transcribes and translates spoken audio in real time over a 
   <Card title="Message Encoding" icon="binary" href="/docs/voice/message-encoding">
     Choose between JSON and MessagePack for WebSocket messages.
   </Card>
-  <Card title="Supported Languages, Formats, and Limits" icon="table-list" href="/docs/voice/supported-languages-formats-and-limits">
-    Check language availability, supported audio codecs and containers, and session limits.
+  <Card title="Supported Voice Languages" icon="table-list" href="/docs/voice/supported-voice-languages">
+    Check transcription, translation, and translated speech availability per language.
+  </Card>
+  <Card title="Voice API Requirements" icon="list-check" href="/docs/voice/voice-api-requirements">
+    Check supported audio codecs and containers, chunk sizes, and session limits.
   </Card>
   <Card title="API reference" icon="code" href="/api-reference/voice/request-session">
     Full request, message, and response schemas for the Voice API endpoints.
@@ -41,7 +44,7 @@ The DeepL Voice API transcribes and translates spoken audio in real time over a 
 
 Two optional features let you tailor transcription and translation to your domain:
 
-* <Badge color="blue">beta</Badge> **Spoken terms**: improve transcription of frequently used terms such as company-specific terminology, acronyms, product names, and team member names. Manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms); management via API is coming soon.
+* <Badge color="blue">beta</Badge> **Spoken terms**: improve transcription of frequently used terms such as company-specific terminology, acronyms, product names, and team member names. Manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms) or via the API; see [Improving Transcription with Spoken Terms](/docs/customize/improving-transcription-with-spoken-terms).
 * **Glossaries**: enforce specific translations for terms in the target language. Manage them in [DeepL Home](https://www.deepl.com/en/glossary) or programmatically with the [Glossaries API](/docs/customize/managing-glossaries).
 
 ## Code examples

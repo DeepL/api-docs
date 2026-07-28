@@ -22,7 +22,7 @@ rss: true
 
 ## July 17 - Voice API Speech Output Generally Available
 - **Speech-to-speech** (translated speech output) moves out of closed beta and is now **generally available**.
-- See [understanding voice sessions](/docs/voice/understanding-voice-sessions#translated-speech) for how translated speech works and the [supported languages table](/docs/voice/supported-languages-formats-and-limits#supported-languages) for language availability.
+- See [understanding voice sessions](/docs/voice/understanding-voice-sessions#translated-speech) for how translated speech works and the [supported languages table](/docs/voice/supported-voice-languages) for language availability.
 
 ## July 16 - Combined Status Page
 - DeepL now publishes a single [status page](https://status.deepl.com) covering all services, with a dedicated [API view](https://status.deepl.com/?tab=api) for real-time API status and incidents.
@@ -41,12 +41,12 @@ rss: true
 ## July 2 - New Voice API Languages: Hindi, Malay, and Tamil
 - The Voice API now supports `hi` (Hindi), `ms` (Malay), and `ta` (Tamil) in beta. Translation is provided by DeepL; transcription and translated speech are provided by external service partners.
 - These languages are marked `"external": true` in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response. Because they are beta and external, call with `include=beta&include=external` to see them.
-- See the [supported languages table](/docs/voice/supported-languages-formats-and-limits#supported-languages) for the full list.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full list.
 </Update>
 
 <Update label="June 2026">
 ## June 29 - Spoken Terms API Management
-- New [`/v3/spoken-terms`](/api-reference/spoken-terms) endpoints provide full API management for Spoken Terms collections, which improve transcription accuracy for company-specific terminology, acronyms, and proper names in the Voice API.
+- New [`/v3/spoken-terms`](/docs/customize/improving-transcription-with-spoken-terms) endpoints provide full API management for Spoken Terms collections, which improve transcription accuracy for company-specific terminology, acronyms, and proper names in the Voice API.
 - Create, list, retrieve, update, and delete Spoken Terms collections programmatically. Each collection contains one or more term lists, with each term list holding terms for a single language.
 - Key endpoints:
   - [`POST /v3/spoken-terms`](/api-reference/spoken-terms/create-spoken-terms-collection) - Create a new collection with term lists
