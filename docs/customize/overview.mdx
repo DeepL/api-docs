@@ -5,7 +5,9 @@ description: "Tailor DeepL translations to your domain with glossaries, style ru
 public: true
 ---
 
-DeepL's customization features let you control terminology, style, and consistency across your translations. They complement each other, and you can combine them in a single request:
+DeepL's customization features let you control terminology, style, and consistency across your translations.
+
+## What each feature does
 
 | Feature | What it controls | How it's applied |
 | :---- | :---- | :---- |
@@ -15,18 +17,15 @@ DeepL's customization features let you control terminology, style, and consisten
 | [Translation memories](/docs/customize/using-translation-memories) | Reuse of your previously approved translations for matching segments | Stored on your account; passed per request via `translation_memory_id` |
 | [Spoken terms](/docs/customize/improving-transcription-with-spoken-terms) | Recognition of specific terms during Voice API speech transcription | Stored on your account; passed per voice session via `spoken_terms_id` |
 
-Glossaries, style rules, custom instructions, and translation memories work with both [text translation](/docs/translate/translate-text-quickstart) and [document translation](/docs/translate/translate-documents-quickstart), and with all `model_type` values. Spoken terms apply to [Voice API](/docs/voice/overview) sessions.
+Glossaries, style rules, custom instructions, and translation memories work with both [text translation](/docs/translate/translate-text-quickstart) and [document translation](/docs/translate/translate-documents-quickstart), support all `model_type` values, and can be combined in a single request. Spoken terms apply to [Voice API](/docs/voice/overview) sessions, where they can be combined with glossaries.
 
 <Warning>
 Glossaries and style rules are unique to each of DeepL's global data centers and are not shared between them. Clients using [regional endpoints](/docs/getting-started/regional-endpoints) can't access glossaries or style rules created in the UI at this time.
 </Warning>
 
-## Start here
+## Feature guides
 
 <CardGroup cols={2}>
-  <Card title="Glossaries in the Real World" icon="book-open" href="/docs/customize/glossaries-in-the-real-world">
-    A hands-on tutorial: build a glossary and apply it to keep customer-facing terminology consistent.
-  </Card>
   <Card title="Managing Glossaries" icon="list-check" href="/docs/customize/managing-glossaries">
     Create, edit, retrieve, and delete glossaries with the v3 endpoints, and use them in translations.
   </Card>
@@ -41,9 +40,6 @@ Glossaries and style rules are unique to each of DeepL's global data centers and
   </Card>
   <Card title="Improving Transcription with Spoken Terms" icon="microphone" href="/docs/customize/improving-transcription-with-spoken-terms">
     Keep company terms, acronyms, and names transcribed correctly in Voice API sessions.
-  </Card>
-  <Card title="Customizations for Language Variants" icon="globe" href="/docs/customize/customizations-for-variants">
-    Create customizations with root language codes and apply them to variants like pt-BR or fr-CA.
   </Card>
 </CardGroup>
 
