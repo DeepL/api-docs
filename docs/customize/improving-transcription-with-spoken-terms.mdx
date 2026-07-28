@@ -5,17 +5,17 @@ covers: [Spoken Terms]
 public: true
 ---
 
-When the Voice API transcribes speech, uncommon words are easy to get wrong: company names, acronyms, product names, and people's names. Spoken Terms fix this. You provide the exact words, and speech recognition transcribes them correctly whenever they're spoken. Unlike [glossaries](/docs/customize/managing-glossaries), Spoken Terms are monolingual: they affect how speech is recognized, not how the recognized text is translated.
+Spoken Terms ensure that the vocabulary that matters to you, such as company names, acronyms, product names, and people's names, is transcribed exactly as you spell it in Voice API sessions. You provide the exact words, and speech recognition uses your spelling whenever they're spoken. Unlike [glossaries](/docs/customize/managing-glossaries), Spoken Terms are monolingual: they affect how speech is recognized, not how the recognized text is translated.
 
 This guide shows how to set up Spoken Terms via the API and keep them current as your vocabulary grows. You can also manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms).
 
 <Info>
-Spoken Terms are available for Voice API and select API Pro plans. Check your [plan limits](https://www.deepl.com/en/pro#api) to see if Spoken Terms are included.
+Spoken Terms are available on all plans that include the DeepL Voice API. The number of collections you can create depends on your [plan](https://www.deepl.com/en/pro#api).
 </Info>
 
-## Collect the terms that get mistranscribed
+## Collect domain-specific terms
 
-Review your transcripts for words that come out wrong and list them one per line, written exactly as they should appear (terms are case-sensitive):
+Review your calls for domain- and company-specific words you want transcribed with complete accuracy, and write each one exactly as it should appear in the transcript (terms are case-sensitive):
 
 ```text
 DeepL
@@ -23,7 +23,7 @@ API
 webhook
 ```
 
-Each term list holds at most 300 characters in total (see [Spoken Terms Requirements](/docs/customize/spoken-terms-requirements) for all size and content rules), so spend the budget on the terms that actually get mistranscribed rather than your full vocabulary.
+Each term list holds at most 300 characters in total (see [Spoken Terms Requirements](/docs/customize/spoken-terms-requirements) for all size and content rules), so spend the budget on the terms that matter most rather than your full vocabulary.
 
 ## Create a collection
 
@@ -82,9 +82,9 @@ To also control how your terms are **translated**, pass a `glossary_id` in the s
 
 Spoken Terms are available for all [DeepL Voice languages](https://support.deepl.com/hc/en-us/articles/26625846174364-DeepL-Voice-languages). To check a language programmatically, call [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) and look for the `spoken_terms` feature key on the source language.
 
-## Add terms as new misrecognitions turn up
+## Add terms as your vocabulary grows
 
-Your vocabulary grows over time. To add terms without resending the existing ones, [`PATCH` the collection](/api-reference/spoken-terms/edit-spoken-terms-details); entries you pass for a language are merged into its existing term list:
+To add terms without resending the existing ones, [`PATCH` the collection](/api-reference/spoken-terms/edit-spoken-terms-details); entries you pass for a language are merged into its existing term list:
 
 ```sh Example request
 curl -X PATCH https://api.deepl.com/v3/spoken-terms/def3a26b-3e84-45b3-84ae-0c0aaf3525f7 \
@@ -118,7 +118,7 @@ Running sessions aren't affected; the updated terms apply to sessions started af
 
 ## Replace a language's terms wholesale
 
-When you regenerate your term list from scratch, for example from an updated product catalog, don't merge; replace. [`PUT` the term list](/api-reference/spoken-terms/replace-or-create-term-list) with the new entries, and the existing list for that language is replaced entirely (or created, if the language is new to the collection):
+To rebuild a language's term list from scratch, for example from an updated product catalog, [`PUT` the term list](/api-reference/spoken-terms/replace-or-create-term-list) with the new entries. Unlike `PATCH`, which adds to the existing list, `PUT` replaces the list entirely (or creates it, if the language is new to the collection):
 
 ```sh Example request
 curl -X PUT https://api.deepl.com/v3/spoken-terms/def3a26b-3e84-45b3-84ae-0c0aaf3525f7/term-lists \
