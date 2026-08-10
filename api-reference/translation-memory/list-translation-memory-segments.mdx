@@ -1,0 +1,29 @@
+---
+openapi: get /v3/translation_memories/{translation_memory_id}/segments
+title: "List translation memory segments"
+description: "Learn how to page through the source segments and translations stored in a translation memory using cursor-based pagination."
+---
+
+## Paginating with cursors
+
+This endpoint pages with an opaque cursor, unlike [List translation memories](/api-reference/translation-memory/list-translation-memories), which uses numbered `page` values. Omit `page_cursor` on the first request, then pass each response's `next_page_cursor` to get the following page. A response with no `next_page_cursor` is the last page.
+
+```bash
+# First page
+curl -X GET "https://api.deepl.com/v3/translation_memories/a74d88fb-ed2a-4943-a664-a4512398b994/segments?page_size=50" \
+  -H "Authorization: DeepL-Auth-Key <yourAuthKey>"
+
+# Next page, using next_page_cursor from the response above
+curl -X GET "https://api.deepl.com/v3/translation_memories/a74d88fb-ed2a-4943-a664-a4512398b994/segments?page_size=50&page_cursor=eyJvZmZzZXQiOjUwfQ" \
+  -H "Authorization: DeepL-Auth-Key <yourAuthKey>"
+```
+
+Treat the cursor as opaque. Its format is not part of the API contract, so do not construct, decode, or increment it yourself. Cursors also encode the filter they were issued under: if you change `filter_text` or `filter_case_sensitive`, start again without a cursor.
+
+<Warning>
+  `segment_count` is the total for the whole translation memory and is not reduced by `filter_text`. A filtered request still reports the full count, so do not use it to decide how many pages of filtered results to expect. Stop paginating when `next_page_cursor` is absent.
+</Warning>
+
+## Filtering
+
+`filter_text` matches against both source text and every target translation, and must be at least 2 characters. Matching is case-insensitive unless you set `filter_case_sensitive=true`.

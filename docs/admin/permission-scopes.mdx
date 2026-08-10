@@ -72,10 +72,23 @@ Each scope grants a [scoped API key](/docs/admin/api-key-permissions) access to 
     | `DELETE` | [`/v3/style_rules/{style_id}/custom_instructions/{instruction_id}`](/api-reference/style-rules/delete-custom-instruction) |
   </Accordion>
 
-  <Accordion title="Retrieve translation memories (translation_memories:read)">
+  <Accordion title="Retrieve and export translation memories (translation_memories:read)">
     | **Method** | **Endpoint** |
     | --- | --- |
     | `GET` | [`/v3/translation_memories`](/api-reference/translation-memory/list-translation-memories) |
+    | `GET` | [`/v3/translation_memories/{translation_memory_id}`](/api-reference/translation-memory/retrieve-a-translation-memory) |
+    | `GET` | [`/v3/translation_memories/{translation_memory_id}/segments`](/api-reference/translation-memory/list-translation-memory-segments) |
+    | `POST` | [`/v3/translation_memories/{translation_memory_id}/export`](/api-reference/translation-memory/export-a-translation-memory) |
+    | `GET` | [`/v3/translation_memories/jobs/{job_id}`](/api-reference/translation-memory/retrieve-a-translation-memory-job) |
+
+    Exporting is a read operation, so it needs `translation_memories:read` rather than `translation_memories:write`, even though it uses `POST`.
+  </Accordion>
+
+  <Accordion title="Import and delete translation memories (translation_memories:write)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `POST` | [`/v3/translation_memories/import`](/api-reference/translation-memory/import-a-translation-memory) |
+    | `DELETE` | [`/v3/translation_memories/{translation_memory_id}`](/api-reference/translation-memory/delete-a-translation-memory) |
   </Accordion>
 
   <Accordion title="Retrieve languages and resources (languages:read)">

@@ -1,0 +1,9 @@
+---
+openapi: get /v3/translation_memories/{translation_memory_id}
+title: "Retrieve a translation memory"
+description: "Learn how to fetch a single translation memory's languages, segment count, and timestamps by its ID."
+---
+
+This returns the translation memory's metadata, not its contents. To read the stored segments, use [List translation memory segments](/api-reference/translation-memory/list-translation-memory-segments).
+
+A translation memory that belongs to another account returns `404 Not Found` rather than `403 Forbidden`, so a 404 does not confirm that the ID is unused.

@@ -1,0 +1,13 @@
+---
+openapi: delete /v3/translation_memories/{translation_memory_id}
+title: "Delete a translation memory"
+description: "Learn how to permanently delete a translation memory and all of its segments."
+---
+
+Deletion is permanent and removes every segment in the translation memory. There is no recovery step and no trash to restore from. [Export the translation memory](/api-reference/translation-memory/export-a-translation-memory) first if you need a copy.
+
+<Warning>
+  Translation requests that pass a deleted `translation_memory_id` fail. Update your integration to stop referencing the ID before you delete it, not after.
+</Warning>
+
+A successful delete returns `204 No Content` with an empty body, so check the status code rather than trying to parse a response.

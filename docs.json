@@ -297,7 +297,13 @@
               {
                 "group": "Translation Memory",
                 "pages": [
-                  "api-reference/translation-memory/list-translation-memories"
+                  "api-reference/translation-memory/list-translation-memories",
+                  "api-reference/translation-memory/retrieve-a-translation-memory",
+                  "api-reference/translation-memory/list-translation-memory-segments",
+                  "api-reference/translation-memory/import-a-translation-memory",
+                  "api-reference/translation-memory/export-a-translation-memory",
+                  "api-reference/translation-memory/retrieve-a-translation-memory-job",
+                  "api-reference/translation-memory/delete-a-translation-memory"
                 ],
                 "drilldown": false
               }

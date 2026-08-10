@@ -1,0 +1,102 @@
+---
+openapi: post /v3/translation_memories/import
+title: "Import a translation memory"
+description: "Learn how to create a translation memory by declaring a TMX file, uploading it to a signed URL, and polling the import job."
+---
+
+This is how you create a translation memory: there is no endpoint that creates an empty one. Importing a TMX file creates the translation memory and fills it in a single job.
+
+The request body describes the file you intend to upload; it does not carry the file. DeepL returns a signed `upload_url`, you upload the file to that URL, and processing starts automatically once the upload finishes.
+
+## Importing a file
+
+<Steps>
+  <Step title="Create the import job">
+    Send the file's name and size in bytes. The response returns the `job_id`, the `upload_url`, and the `expires_at` deadline for the upload.
+
+    ```bash
+    curl -X POST "https://api.deepl.com/v3/translation_memories/import" \
+      -H "Authorization: DeepL-Auth-Key <yourAuthKey>" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "source_file": {
+          "file_name": "legal.tmx",
+          "content_type": "application/xml",
+          "content_length": 1024
+        },
+        "parameters": {
+          "display_name": "Legal"
+        }
+      }'
+    ```
+
+    ```json
+    {
+      "job_id": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+      "upload_url": "https://assets.deepl.com/upload/0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+      "expires_at": "2026-08-06T15:34:25.223Z"
+    }
+    ```
+  </Step>
+
+  <Step title="Upload the TMX file">
+    `PUT` the file to `upload_url` before `expires_at`. The URL is already signed, so this request carries no DeepL credentials.
+
+    ```bash
+    curl -X PUT "https://assets.deepl.com/upload/0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40" \
+      -H "Content-Type: application/xml" \
+      --data-binary @legal.tmx
+    ```
+
+    A successful upload returns no DeepL response body. Processing begins on its own, so there is no call to confirm the upload.
+  </Step>
+
+  <Step title="Poll the job">
+    Check [the job](/api-reference/translation-memory/retrieve-a-translation-memory-job) until `status` is `completed` or `failed`.
+
+    ```bash
+    curl -X GET "https://api.deepl.com/v3/translation_memories/jobs/0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40" \
+      -H "Authorization: DeepL-Auth-Key <yourAuthKey>"
+    ```
+
+    On completion, the job result carries the `translation_memory_id` of the new translation memory.
+
+    ```json
+    {
+      "job_id": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+      "product": "translation_memory",
+      "operation": "import",
+      "created_at": "2026-08-06T15:04:25.223Z",
+      "updated_at": "2026-08-06T15:06:11.418Z",
+      "source_file": {
+        "content_type": "application/xml",
+        "content_length": 1024
+      },
+      "parameters": {
+        "display_name": "Legal"
+      },
+      "results": [
+        {
+          "status": "completed",
+          "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+          "skipped_segment_count": 12
+        }
+      ]
+    }
+    ```
+  </Step>
+</Steps>
+
+## Common mistakes
+
+`content_length` must be greater than 0 and within DeepL's size limit for TMX imports. An oversize value is rejected as `400 Bad Request` with a message pointing at `source_file.content_length`.
+
+`file_name` accepts at most 100 characters and `content_type` at most 127, both rejected as `400 Bad Request` if longer. TMX is the only supported format, so leave `content_type` unset or set it to `application/xml`.
+
+A `202 Accepted` means the job exists, not that a translation memory does. Until the upload completes and the job reports `completed`, no translation memory has been created and there is no ID to reference.
+
+If `expires_at` passes before you upload, the signed URL stops working. Create a new import job to get a fresh URL rather than retrying the old one.
+
+A non-zero `skipped_segment_count` on a completed import is not a failure. Some segments were not stored, for example because they were malformed or duplicated an existing segment, but the rest imported normally. Check the value if you are reconciling segment counts against your source file.
+
+If your account has reached its translation memory limit, the request returns `456`. Delete a translation memory before importing another.

@@ -1,0 +1,33 @@
+---
+openapi: get /v3/translation_memories/jobs/{job_id}
+title: "Retrieve an import or export job"
+description: "Learn how to poll a translation memory import or export job and read its status values and results."
+---
+
+One endpoint covers both [import](/api-reference/translation-memory/import-a-translation-memory) and [export](/api-reference/translation-memory/export-a-translation-memory) jobs. Read `operation` to tell them apart, then read `results[0]` for the status and, once the job finishes, its output.
+
+`results` always holds exactly one entry. It is an array so that jobs producing multiple outputs can be added later without a breaking change, so index into it rather than assuming a single object.
+
+## Status values
+
+| **Status** | **Applies to** | **Meaning** |
+|---|---|---|
+| `awaiting_input` | Import | The job exists but the file has not been uploaded yet. `status_metadata.required_action` says what is missing. |
+| `processing` | Import, export | The file was received and is being processed. |
+| `completed` | Import, export | The job succeeded. Read `translation_memory_id` (import) or `download_url` (export). |
+| `downloaded` | Export | The exported file has been fetched at least once. |
+| `failed` | Import, export | The job did not finish. `error.message` says why. |
+| `expired` | Import, export | The job is too old to act on. Create a new one. |
+
+Poll until the status is `completed`, `downloaded`, `failed`, or `expired`. The other states are transient and will change on their own.
+
+## Which fields to expect
+
+Fields that do not apply to a job's `operation` are omitted rather than returned as `null`, so check for a field's presence before reading it:
+
+- **Import jobs** include `source_file` and `parameters.display_name`. On completion, the result adds `translation_memory_id` and may add `skipped_segment_count`.
+- **Export jobs** include `parameters.translation_memory_id`. On completion, the result adds `download_url` and `expires_at`.
+
+<Note>
+  An import that sits at `awaiting_input` means DeepL is still waiting for the file. Upload it to the `upload_url` from the import response; the status will not advance on its own.
+</Note>

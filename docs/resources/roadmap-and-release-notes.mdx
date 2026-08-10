@@ -5,11 +5,21 @@ rss: true
 ---
 
 <Update label="In active development">
-- Support for uploading, modifying, and deleting [translation memories](/docs/customize/using-translation-memories) via API
+- Editing the contents of an existing [translation memory](/docs/customize/using-translation-memories) via API
 - Usage reporting by language pair
 </Update>
 
 <Update label="August 2026">
+## August 11 - Translation Memory Management API
+- You can now create, inspect, export, and delete [translation memories](/docs/customize/using-translation-memories) through the API. Translation memories store previously translated segments so the same source text produces consistent output across projects. Previously, the API could only list the translation memories on your account, and everything else had to be done in the DeepL UI.
+- [`POST /v3/translation_memories/import`](/api-reference/translation-memory/import-a-translation-memory) creates a translation memory from a TMX file. The request declares the file and returns a signed upload URL plus a `job_id`; you upload the file to that URL and poll the job for the new `translation_memory_id`.
+- [`POST /v3/translation_memories/{translation_memory_id}/export`](/api-reference/translation-memory/export-a-translation-memory) exports a translation memory as TMX, also as a background job.
+- [`GET /v3/translation_memories/jobs/{job_id}`](/api-reference/translation-memory/retrieve-a-translation-memory-job) reports the status of both import and export jobs.
+- [`GET /v3/translation_memories/{translation_memory_id}`](/api-reference/translation-memory/retrieve-a-translation-memory) retrieves a single translation memory, and [`GET /v3/translation_memories/{translation_memory_id}/segments`](/api-reference/translation-memory/list-translation-memory-segments) pages through its stored segments with cursor-based pagination.
+- [`DELETE /v3/translation_memories/{translation_memory_id}`](/api-reference/translation-memory/delete-a-translation-memory) permanently deletes a translation memory and all of its segments.
+- Reading requires an API key with the `translation_memories:read` scope; importing and deleting require `translation_memories:write`. See [permission scopes](/docs/admin/permission-scopes).
+- Editing the contents of an existing translation memory is not yet supported. To change what a translation memory contains, import a new one.
+
 ## August 5 - Custom Tag-Level CSV Export
 - Usage broken down by [custom reporting tag](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags) can now be exported as a CSV report from the account UI, in addition to being available through the [custom tag usage analytics endpoint](/api-reference/admin-api/get-custom-tag-usage-analytics) in the Admin API. Custom tags attribute API usage to a team, project, or other category via the `X-DeepL-Reporting-Tag` request header.
 - The "Download CSV usage report" button on the [API Keys & Limits tab](https://www.deepl.com/your-account/keys) and the [API Usage tab](https://www.deepl.com/your-account/usage) is now a dropdown: select "Custom tag-level report" or "API key-level report".

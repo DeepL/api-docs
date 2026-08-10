@@ -1,0 +1,74 @@
+---
+openapi: post /v3/translation_memories/{translation_memory_id}/export
+title: "Export a translation memory"
+description: "Learn how to export a translation memory as a TMX file, including how DeepL reuses recent exports and when it returns 409."
+---
+
+Exporting runs as a background job. This request starts the job and returns a `job_id`; the TMX file is downloaded separately once the job completes. TMX is currently the only export format, so there is no format parameter.
+
+## Exporting a translation memory
+
+<Steps>
+  <Step title="Start the export">
+    ```bash
+    curl -X POST "https://api.deepl.com/v3/translation_memories/a74d88fb-ed2a-4943-a664-a4512398b994/export" \
+      -H "Authorization: DeepL-Auth-Key <yourAuthKey>"
+    ```
+
+    ```json
+    {
+      "job_id": "7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+      "parameters": {
+        "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994"
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Poll the job and download the file">
+    Check [the job](/api-reference/translation-memory/retrieve-a-translation-memory-job) until `status` is `completed`, then download the file from `download_url` on the job result.
+
+    ```bash
+    curl -X GET "https://api.deepl.com/v3/translation_memories/jobs/7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13" \
+      -H "Authorization: DeepL-Auth-Key <yourAuthKey>"
+    ```
+
+    ```json
+    {
+      "job_id": "7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+      "product": "translation_memory",
+      "operation": "export",
+      "created_at": "2026-08-06T15:04:25.223Z",
+      "updated_at": "2026-08-06T15:05:02.771Z",
+      "parameters": {
+        "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994"
+      },
+      "results": [
+        {
+          "status": "completed",
+          "download_url": "https://assets.deepl.com/download/7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+          "expires_at": "2026-08-06T16:05:02.771Z"
+        }
+      ]
+    }
+    ```
+  </Step>
+</Steps>
+
+## Handling 200, 202, and 409
+
+The status code tells you whether a new job was started:
+
+| **Status** | **Meaning** | **What to do** |
+|---|---|---|
+| `202 Accepted` | A new export job was started | Poll `job_id` |
+| `200 OK` | A recent export was still available and was reused | Poll `job_id` |
+| `409 Conflict` | An export of this translation memory is already running | Poll the job you already have; do not retry the export |
+
+Treat `200` and `202` the same way. Both return a usable `job_id`, and the only difference is whether DeepL did the work again.
+
+<Warning>
+  Do not retry on `409`. Retrying will keep conflicting with the in-progress export. Poll the `job_id` from your earlier request instead, and hold onto that ID so you can recover without a retry loop.
+</Warning>
+
+`download_url` is short-lived and stops working at `expires_at`. Download the file when the job completes rather than storing the URL for later. Once the file has been fetched, the job status becomes `downloaded`. If the URL has expired, start a new export.
