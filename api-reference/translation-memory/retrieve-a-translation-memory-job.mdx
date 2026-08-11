@@ -15,11 +15,10 @@ One endpoint covers both [import](/api-reference/translation-memory/import-a-tra
 | `awaiting_input` | Import | The job exists but the file has not been uploaded yet. `status_metadata.required_action` says what is missing. |
 | `processing` | Import, export | The file was received and is being processed. |
 | `completed` | Import, export | The job succeeded. Read `translation_memory_id` (import) or `download_url` (export). |
-| `downloaded` | Export | The exported file has been fetched at least once. |
 | `failed` | Import, export | The job did not finish. `error.message` says why. |
 | `expired` | Import, export | The job is too old to act on. Create a new one. |
 
-Poll until the status is `completed`, `downloaded`, `failed`, or `expired`. The other states are transient and will change on their own.
+Poll until the status is `completed`, `failed`, or `expired`. The other states are transient and will change on their own.
 
 ## Which fields to expect
 

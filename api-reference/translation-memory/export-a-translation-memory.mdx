@@ -38,8 +38,8 @@ Exporting runs as a background job. This request starts the job and returns a `j
       "job_id": "7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
       "product": "translation_memory",
       "operation": "export",
-      "created_at": "2026-08-06T15:04:25.223Z",
-      "updated_at": "2026-08-06T15:05:02.771Z",
+      "creation_time": "2026-08-06T15:04:25.223Z",
+      "updated_time": "2026-08-06T15:05:02.771Z",
       "parameters": {
         "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994"
       },
@@ -71,4 +71,4 @@ Treat `200` and `202` the same way. Both return a usable `job_id`, and the only 
   Do not retry on `409`. Retrying will keep conflicting with the in-progress export. Poll the `job_id` from your earlier request instead, and hold onto that ID so you can recover without a retry loop.
 </Warning>
 
-`download_url` is short-lived and stops working at `expires_at`. Download the file when the job completes rather than storing the URL for later. Once the file has been fetched, the job status becomes `downloaded`. If the URL has expired, start a new export.
+`download_url` is short-lived and stops working at `expires_at`. Download the file when the job completes rather than storing the URL for later. If the URL has expired, start a new export.

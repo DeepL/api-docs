@@ -3145,6 +3145,7 @@ paths:
                   job_id:
                     description: The identifier of the import job. Use it to poll the job's status.
                     type: string
+                    format: uuid
                     example: 0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40
                   upload_url:
                     description: |-
@@ -3208,6 +3209,7 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
           description: The identifier of the job, returned when you created the import or export.
           example: 0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40
       responses:
@@ -3226,8 +3228,8 @@ paths:
                     job_id: 0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40
                     product: translation_memory
                     operation: import
-                    created_at: '2026-08-06T15:04:25.223Z'
-                    updated_at: '2026-08-06T15:04:25.223Z'
+                    creation_time: '2026-08-06T15:04:25.223Z'
+                    updated_time: '2026-08-06T15:04:25.223Z'
                     source_file:
                       content_type: application/xml
                       content_length: 1024
@@ -3242,8 +3244,8 @@ paths:
                     job_id: 0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40
                     product: translation_memory
                     operation: import
-                    created_at: '2026-08-06T15:04:25.223Z'
-                    updated_at: '2026-08-06T15:06:11.418Z'
+                    creation_time: '2026-08-06T15:04:25.223Z'
+                    updated_time: '2026-08-06T15:06:11.418Z'
                     source_file:
                       content_type: application/xml
                       content_length: 1024
@@ -3258,8 +3260,8 @@ paths:
                     job_id: 7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13
                     product: translation_memory
                     operation: export
-                    created_at: '2026-08-06T15:04:25.223Z'
-                    updated_at: '2026-08-06T15:05:02.771Z'
+                    creation_time: '2026-08-06T15:04:25.223Z'
+                    updated_time: '2026-08-06T15:05:02.771Z'
                     parameters:
                       translation_memory_id: a74d88fb-ed2a-4943-a664-a4512398b994
                     results:
@@ -3271,8 +3273,8 @@ paths:
                     job_id: 0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40
                     product: translation_memory
                     operation: import
-                    created_at: '2026-08-06T15:04:25.223Z'
-                    updated_at: '2026-08-06T15:04:58.102Z'
+                    creation_time: '2026-08-06T15:04:25.223Z'
+                    updated_time: '2026-08-06T15:04:58.102Z'
                     source_file:
                       content_type: application/xml
                       content_length: 1024
@@ -3504,20 +3506,20 @@ paths:
                     segments:
                     - source_segment_id: 4f1c2d3e-8a9b-4c5d-9e6f-7a8b9c0d1e2f
                       source_text: This agreement is governed by the laws of Germany.
-                      created_time: '2026-04-01T16:34:25.223Z'
+                      creation_time: '2026-04-01T16:34:25.223Z'
                       updated_time: '2026-04-01T16:34:25.223Z'
                       last_used_time: '2026-08-05T11:02:18.771Z'
                       targets:
                       - target_segment_id: 9b8a7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d
                         target_language: de
                         target_text: Dieser Vertrag unterliegt dem Recht der Bundesrepublik Deutschland.
-                        created_time: '2026-04-01T16:34:25.223Z'
+                        creation_time: '2026-04-01T16:34:25.223Z'
                         updated_time: '2026-04-01T16:34:25.223Z'
                         last_used_time: '2026-08-05T11:02:18.771Z'
                       - target_segment_id: 2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f
                         target_language: es
                         target_text: Este contrato se rige por las leyes de Alemania.
-                        created_time: '2026-04-01T16:34:25.223Z'
+                        creation_time: '2026-04-01T16:34:25.223Z'
                         updated_time: '2026-04-01T16:34:25.223Z'
                         last_used_time: '2026-07-22T08:41:05.330Z'
                     segment_count: 3542
@@ -3527,14 +3529,14 @@ paths:
                     segments:
                     - source_segment_id: 7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d
                       source_text: Termination requires 30 days written notice.
-                      created_time: '2026-04-01T16:34:25.223Z'
+                      creation_time: '2026-04-01T16:34:25.223Z'
                       updated_time: '2026-04-01T16:34:25.223Z'
                       last_used_time: '2026-08-01T14:20:09.512Z'
                       targets:
                       - target_segment_id: 0d1e2f3a-4b5c-4d6e-8f7a-8b9c0d1e2f3a
                         target_language: de
                         target_text: Die Kündigung erfordert eine schriftliche Frist von 30 Tagen.
-                        created_time: '2026-04-01T16:34:25.223Z'
+                        creation_time: '2026-04-01T16:34:25.223Z'
                         updated_time: '2026-04-01T16:34:25.223Z'
                         last_used_time: '2026-08-01T14:20:09.512Z'
                     segment_count: 3542
@@ -6779,7 +6781,7 @@ components:
           description: The source text of the segment.
           type: string
           example: This agreement is governed by the laws of Germany.
-        created_time:
+        creation_time:
           description: The time the segment was added, in the ISO 8601-1:2019 format.
           type: string
           format: date-time
@@ -6819,7 +6821,7 @@ components:
           description: The translated text.
           type: string
           example: Dieser Vertrag unterliegt dem Recht der Bundesrepublik Deutschland.
-        created_time:
+        creation_time:
           description: The time the translation was added, in the ISO 8601-1:2019 format.
           type: string
           format: date-time
@@ -6846,6 +6848,7 @@ components:
         job_id:
           description: The identifier of the export job. Use it to poll the job's status.
           type: string
+          format: uuid
           example: 7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13
         parameters:
           type: object
@@ -6861,14 +6864,15 @@ components:
       - job_id
       - product
       - operation
-      - created_at
-      - updated_at
+      - creation_time
+      - updated_time
       - parameters
       - results
       properties:
         job_id:
           description: The identifier of the job.
           type: string
+          format: uuid
           example: 0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40
         product:
           description: The DeepL product the job belongs to. Always `translation_memory`.
@@ -6880,14 +6884,13 @@ components:
           enum:
           - import
           - export
-          - unspecified
           example: import
-        created_at:
+        creation_time:
           description: The time the job was created, in the ISO 8601-1:2019 format.
           type: string
           format: date-time
           example: '2026-08-06T15:04:25.223Z'
-        updated_at:
+        updated_time:
           description: The time the job last changed state, in the ISO 8601-1:2019 format.
           type: string
           format: date-time
@@ -6936,7 +6939,6 @@ components:
              * `awaiting_input` - the job exists but the file has not been uploaded yet (import only)
              * `processing` - the file was received and is being processed
              * `completed` - the job finished successfully
-             * `downloaded` - the exported file has been downloaded at least once
              * `failed` - the job did not finish; see `error`
              * `expired` - the job is too old to act on; create a new one
           type: string
@@ -6944,10 +6946,8 @@ components:
           - awaiting_input
           - processing
           - completed
-          - downloaded
           - failed
           - expired
-          - unspecified
           example: completed
         status_metadata:
           description: |-
