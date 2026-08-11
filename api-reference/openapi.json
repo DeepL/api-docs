@@ -4407,7 +4407,7 @@
                         "example": "application/xml"
                       },
                       "content_length": {
-                        "description": "The size of the file in bytes. Must be greater than 0 and within DeepL's size limit for\nTMX imports. An oversize value is rejected with `400 Bad Request`.",
+                        "description": "The size of the file in bytes. Must be greater than 0 and at most 1 GB. An oversize\nvalue is rejected with `400 Bad Request`.",
                         "type": "integer",
                         "format": "int64",
                         "minimum": 1,

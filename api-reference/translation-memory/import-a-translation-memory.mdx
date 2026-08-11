@@ -89,7 +89,7 @@ The request body describes the file you intend to upload; it does not carry the 
 
 ## Common mistakes
 
-`content_length` must be greater than 0 and within DeepL's size limit for TMX imports. An oversize value is rejected as `400 Bad Request` with a message pointing at `source_file.content_length`.
+`content_length` must be greater than 0 and at most 1 GB. An oversize value is rejected as `400 Bad Request` with a message pointing at `source_file.content_length`.
 
 `file_name` accepts at most 100 characters and `content_type` at most 127, both rejected as `400 Bad Request` if longer. TMX is the only supported format, so leave `content_type` unset or set it to `application/xml`.
 
