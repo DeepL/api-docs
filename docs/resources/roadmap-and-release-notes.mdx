@@ -9,6 +9,13 @@ rss: true
 </Update>
 
 <Update label="October 2026">
+## October 28 - Glossaries Without an Explicit Source Language
+- [`POST /v2/translate`](/api-reference/translate/request-translation) now accepts `glossary_id` or `glossary_ids` without `source_lang`. Glossaries apply terminology you define to a translation. When you omit `source_lang`, DeepL detects the source language for you, so you don't need to detect it before calling the API.
+- When `source_lang` is omitted, DeepL detects the source language and applies the glossary's dictionary for the detected language pair. The `detected_source_language` field in the response reports which language was used.
+- The request returns a `400` if the glossary has no dictionary for the detected language pair. With `glossary_ids`, every listed glossary must contain a dictionary for that pair. A multilingual glossary with a dictionary per language pair is the simplest way to cover several source languages.
+- Detection is less reliable on very short text, so set `source_lang` explicitly where input can be a few characters long.
+- Document translation requires `source_lang` with a glossary. The DeepL client libraries currently require it too, so call the REST API directly to omit it. See [use a glossary without a source language](/docs/customize/managing-glossaries#use-a-glossary-without-a-source-language).
+
 ## October 20 - Style Profiles
 - A [style profile](/docs/customize/using-style-profiles) bundles the glossaries, style rule lists, and translation memories you use together under a single ID. Pass one `style_profile_id` in [`/v2/translate`](/api-reference/translate/request-translation) or [`/v2/document`](/api-reference/document/upload-and-translate-a-document) requests instead of the individual customization parameters, and update the profile when the bundle changes instead of your integration.
 - DeepL applies the components that fit each request: the glossaries for the language pair, the style rule list for the target language, and the translation memory for the source language. A profile can't be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`, `translation_memory_threshold`, or `custom_instructions` in the same request.
