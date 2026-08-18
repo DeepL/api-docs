@@ -1,0 +1,320 @@
+---
+title: "Translate a Pre-Recorded Audio File"
+description: "Submit an audio file for async translation, poll for results, and download transcripts or translated audio using the Voice Translate Job API."
+covers: [Translate Audio Files]
+---
+
+In this guide, you'll translate a pre-recorded audio file into multiple languages using the Voice Translate Job API. You'll create a job, upload the source file, poll for results, and download each completed output. The example translates an English podcast episode into a German plain-text transcript and a Spanish PCM audio file.
+
+<Warning>
+  The Voice Translate Job API is in closed alpha. It is only available to select DeepL customers and may change without notice. Contact your customer success manager to request access.
+</Warning>
+
+For live audio, use the [real-time Voice API](/docs/voice/overview) instead.
+
+## Prerequisites
+
+- A DeepL API key with Voice Translate Job API access
+- An audio file in a [supported source format](/api-reference/jobs-voice-translate/reference#supported-source-audio-formats)
+- `curl` and `jq` (for the shell examples below)
+
+## The four-step workflow
+
+Every translation follows the same pattern: create a job, upload the file, poll for status, then download results.
+
+```
+Create job → Upload file → Poll status → Download results
+```
+
+The API processes jobs asynchronously, so polling is required. Results for each target are produced independently: a target can complete or fail while others are still processing.
+
+## Step 1: Create the job
+
+Send a POST request with your file metadata and translation targets. The response gives you an `upload_url` to put your file and a `job_id` to track progress.
+
+```bash
+curl -X POST "https://api.deepl.com/v1/jobs/voice/translate" \
+  -H "Authorization: DeepL-Auth-Key YOUR_AUTH_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source_file": {
+      "name": "podcast-episode-42.mp3",
+      "content_type": "audio/mpeg",
+      "content_length": 15728640
+    },
+    "parameters": {
+      "source_language": "en"
+    },
+    "targets": [
+      { "language": "de", "type": "text/plain" },
+      { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+    ]
+  }'
+```
+
+<Note>
+  If you are using a DeepL API Free account, replace `https://api.deepl.com` with `https://api-free.deepl.com` in all requests.
+</Note>
+
+A successful response returns HTTP 201:
+
+```json
+{
+  "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "upload_url": "https://assets.deepl.com/collections/a74d88fb-ed2a-4943-a664-a4512398b994/assets/b1c2d3e4-f5a6-7890-abcd-ef1234567890",
+  "signature": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+
+Save the `job_id` and `upload_url` — you need both in the next step. You have 5 minutes to upload the file after creating the job; if you miss the window, the job expires and you must create a new one.
+
+The `content_length` in the request must match the actual file size in bytes. A mismatch causes the upload to fail.
+
+<Note>
+  The curl snippets in Steps 1–4 are illustrative. They show each API call in isolation and do not automatically pass values (such as `job_id` or `upload_url`) between steps. For a fully runnable end-to-end example that captures and threads these values automatically, see the [complete shell script](#complete-shell-script) below.
+</Note>
+
+## Step 2: Upload the source file
+
+PUT your audio file directly to the `upload_url` from step 1. Set `Content-Type` to match the `content_type` you declared when creating the job.
+
+```bash
+# Replace <upload_url> with the upload_url value from the Step 1 response
+UPLOAD_URL='<upload_url from Step 1 response>'
+
+curl -X PUT "$UPLOAD_URL" \
+  -H "Content-Type: audio/mpeg" \
+  --data-binary @podcast-episode-42.mp3
+```
+
+A successful upload returns HTTP 200 with no body. The job transitions from `pending` to `uploaded`, and processing begins automatically.
+
+The upload URL is pre-signed and single-use. Do not add the `Authorization` header to this request — it goes directly to object storage.
+
+## Step 3: Poll for job status
+
+Check the job status by sending a GET request with your `job_id`. Each target in the `results` array has its own `status` field.
+
+```bash
+# Replace <job_id> with the job_id value from the Step 1 response
+JOB_ID='<job_id from Step 1 response>'
+
+STATUS=$(curl "https://api.deepl.com/v1/jobs/voice/translate/$JOB_ID" \
+  -H "Authorization: DeepL-Auth-Key YOUR_AUTH_KEY")
+echo "$STATUS" | jq .
+```
+
+While processing, the response looks like this:
+
+```json
+{
+  "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "operation": "translate",
+  "product": "voice",
+  "parameters": { "source_language": "en" },
+  "source_file": {
+    "name": "podcast-episode-42.mp3",
+    "content_type": "audio/mpeg",
+    "content_length": 15728640
+  },
+  "targets": [
+    { "language": "de", "type": "text/plain" },
+    { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+  ],
+  "results": [
+    { "status": "processing" },
+    { "status": "processing" }
+  ],
+  "created_at": "2026-10-01T01:03:03.444Z",
+  "updated_at": "2026-10-01T04:03:03.333Z"
+}
+```
+
+Results are returned in the same order as the targets in your create request. Poll every 5–10 seconds. Non-terminal statuses include `pending`, `uploaded`, and `processing`. Terminal statuses are `complete`, `failed`, and `downloaded`.
+
+When a target completes, its result includes a `download_url`:
+
+```json
+{
+  "results": [
+    {
+      "status": "complete",
+      "download_url": "https://assets.deepl.com/collections/a74d88fb/assets/c3d4e5f6",
+      "signature": "eyJhbGciOiJIUzI1NiIs..."
+    },
+    {
+      "status": "failed",
+      "error": { "message": "processing failed" }
+    }
+  ]
+}
+```
+
+Targets can complete or fail independently. Download completed targets as they finish rather than waiting for all targets to complete.
+
+## Step 4: Download the results
+
+Fetch each completed target using its `download_url`. Save the output with an appropriate file extension for the content type.
+
+Capture the poll response and extract each URL, then download each file separately:
+
+```bash
+# Capture the Step 3 poll response into $STATUS
+# Replace <job_id> with your actual job_id from Step 1
+JOB_ID='<job_id from Step 1 response>'
+STATUS=$(curl "https://api.deepl.com/v1/jobs/voice/translate/$JOB_ID" \
+  -H "Authorization: DeepL-Auth-Key YOUR_AUTH_KEY")
+
+# Extract download URLs from the poll response
+DE_DOWNLOAD_URL=$(echo "$STATUS" | jq -r '.results[0].download_url')
+ES_DOWNLOAD_URL=$(echo "$STATUS" | jq -r '.results[1].download_url')
+
+# Download the German plain-text transcript
+curl -o transcript-de.txt "$DE_DOWNLOAD_URL"
+
+# Download the Spanish PCM audio
+curl -o audio-es.pcm "$ES_DOWNLOAD_URL"
+```
+
+A successful download returns HTTP 200 with the file content as the response body. No JSON envelope is returned.
+
+Download URLs are also single-use and don't require an `Authorization` header.
+
+Once you download a result, the target transitions to `downloaded`. Results are deleted after download, or after 1 hour from when they became available — whichever comes first. After all targets are terminal, the job is deleted and returns `404` on subsequent status checks.
+
+## Verify the output
+
+After the script completes, confirm the following:
+
+- **`transcript-de.txt`** contains readable German text — open the file and check that the transcript reflects the spoken content of your source audio.
+- **`audio-es.pcm`** is a valid audio file — play it with a tool that accepts raw PCM (for example, `ffplay -f s16le -ar 16000 -ac 1 audio-es.pcm`) and confirm you hear Spanish speech.
+
+If either file is empty or unreadable, the download URL may have expired or been consumed by a previous request. Re-run the polling step to check the target status before attempting another download.
+
+## Handling failures
+
+A target's `error.message` describes what went wrong, but won't always be specific enough to act on directly. Common causes:
+
+- **Audio quality**: very low bitrate or heavily distorted audio can cause processing to fail for a specific target
+- **Format mismatch**: the declared `content_type` doesn't match the actual file encoding
+- **Quota**: check your concurrent job limits if failures correlate with high submission volume
+
+When some targets fail and others complete, download the successful results before investigating failures. A single-target failure does not affect other targets in the same job.
+
+## Complete shell script
+
+This script ties all four steps together and polls until every target reaches a terminal state.
+
+```bash translate_audio.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+AUTH_KEY="YOUR_AUTH_KEY"
+FILE="podcast-episode-42.mp3"
+FILE_SIZE=$(wc -c < "$FILE")
+API_BASE="https://api.deepl.com"  # DeepL API Free users: use https://api-free.deepl.com
+
+# Step 1: Create the job
+# curl uses -sf so that any non-2xx HTTP response is treated as an error and
+# causes the script to exit immediately via set -e. If the job creation fails
+# (e.g. invalid auth key or malformed request), the script stops here and
+# curl prints the HTTP status to stderr.
+echo "Creating job..."
+RESPONSE=$(curl -sf -X POST "$API_BASE/v1/jobs/voice/translate" \
+  -H "Authorization: DeepL-Auth-Key $AUTH_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"source_file\": {
+      \"name\": \"$FILE\",
+      \"content_type\": \"audio/mpeg\",
+      \"content_length\": $FILE_SIZE
+    },
+    \"parameters\": { \"source_language\": \"en\" },
+    \"targets\": [
+      { \"language\": \"de\", \"type\": \"text/plain\" },
+      { \"language\": \"es\", \"type\": \"audio/pcm;encoding=s16le;rate=16000\" }
+    ]
+  }")
+
+JOB_ID=$(echo "$RESPONSE" | jq -r '.job_id')
+UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.upload_url')
+echo "Job ID: $JOB_ID"
+
+# Step 2: Upload the file
+# Same -sf behaviour as above: a non-2xx response from the storage endpoint
+# (e.g. expired upload URL or size mismatch) exits the script immediately.
+echo "Uploading $FILE..."
+curl -sf -X PUT "$UPLOAD_URL" \
+  -H "Content-Type: audio/mpeg" \
+  --data-binary @"$FILE"
+echo "Upload complete."
+
+# Step 3: Poll for status
+# Note: -f is intentionally omitted from the polling curl. Transient errors
+# such as 429 (rate limit) or 503 (service unavailable) are realistic during
+# polling. Without -f, curl returns the response body so the script can log
+# the error and retry on the next loop iteration rather than exiting silently.
+echo "Polling for results..."
+while true; do
+  STATUS=$(curl -s "$API_BASE/v1/jobs/voice/translate/$JOB_ID" \
+    -H "Authorization: DeepL-Auth-Key $AUTH_KEY") || { echo "Poll failed — check your auth key and job ID"; exit 1; }
+
+  RESULTS=$(echo "$STATUS" | jq '.results')
+  ALL_DONE=true
+
+  for i in $(echo "$RESULTS" | jq 'keys[]'); do
+    TARGET_STATUS=$(echo "$RESULTS" | jq -r ".[$i].status")
+    if [[ "$TARGET_STATUS" == "processing" || "$TARGET_STATUS" == "pending" || "$TARGET_STATUS" == "uploaded" ]]; then
+      ALL_DONE=false
+    fi
+  done
+
+  echo "$STATUS" | jq '.results | map({status, error: .error.message})'
+
+  if $ALL_DONE; then
+    break
+  fi
+
+  sleep 5
+done
+
+# Step 4: Download completed results
+# Derive language and extension from the job status response so that this loop
+# stays correct even if the targets array order changes or additional targets
+# are added in Step 1.
+NUM_TARGETS=$(echo "$STATUS" | jq '.results | length')
+
+for i in $(seq 0 $((NUM_TARGETS - 1))); do
+  TARGET_STATUS=$(echo "$STATUS" | jq -r ".results[$i].status")
+
+  # Read language and type from the targets array in the status response
+  LANG=$(echo "$STATUS" | jq -r ".targets[$i].language")
+  CONTENT_TYPE=$(echo "$STATUS" | jq -r ".targets[$i].type")
+
+  # Derive a file extension from the declared content type
+  if [[ "$CONTENT_TYPE" == text/* ]]; then
+    EXT="txt"
+  elif [[ "$CONTENT_TYPE" == audio/pcm* ]]; then
+    EXT="pcm"
+  else
+    # Fallback: use the subtype portion of the content type
+    EXT=$(echo "$CONTENT_TYPE" | cut -d'/' -f2 | cut -d';' -f1)
+  fi
+
+  if [[ "$TARGET_STATUS" == "complete" ]]; then
+    DOWNLOAD_URL=$(echo "$STATUS" | jq -r ".results[$i].download_url")
+    OUTPUT="output-$LANG.$EXT"
+    echo "Downloading $LANG result to $OUTPUT..."
+    curl -sf -o "$OUTPUT" "$DOWNLOAD_URL"
+    echo "Saved $OUTPUT."
+  else
+    echo "Target $LANG finished with status: $TARGET_STATUS"
+  fi
+done
+```
+
+## Next steps
+
+- Check [supported source audio formats, output formats, and limits](/api-reference/jobs-voice-translate/reference) before integrating into production
+- See [supported Voice languages](/docs/voice/supported-voice-languages) for transcription and translation availability per language
+- For live audio with low latency, see the [Real-Time Voice Quickstart](/docs/voice/real-time-voice-quickstart)
