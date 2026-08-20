@@ -17,6 +17,11 @@ rss: true
 </Update>
 
 <Update label="August 2026">
+## August 20 - Voice API French Variants: French (France) and French (Canadian)
+- The Voice API now supports `fr-FR` (French, France) and `fr-CA` (French, Canadian) as target language variants for translation. `fr-FR` is generally available; `fr-CA` is in beta for the Voice API (for text and document translation it has been generally available since July 17).
+- Because `fr-CA` is beta, include `include=beta` when calling [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) to see it.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full Voice API language list.
+
 ## August 18 - Custom Reporting Tags for the Voice API
 - [Custom reporting tags](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags), which attribute API usage to a team, project, or other category via the `X-DeepL-Reporting-Tag` request header, now work for the [Voice API](/docs/voice/overview) in addition to text translation. Send the header on the [session request](/api-reference/voice/request-session) and the whole session's usage is attributed to that tag.
 - The [custom tag usage analytics endpoint](/api-reference/admin-api/get-custom-tag-usage-analytics) reports voice usage as `speech_to_text_minutes` and `speech_to_speech_minutes` alongside the existing character fields. Voice minutes are not included in `total_characters`.
