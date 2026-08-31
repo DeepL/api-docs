@@ -154,7 +154,8 @@
                           "text_translation_characters": 4892,
                           "document_translation_characters": 0,
                           "text_improvement_characters": 4727,
-                          "speech_to_text_minutes": 107.46
+                          "speech_to_text_minutes": 107.46,
+                          "speech_to_speech_minutes": 42.11
                         },
                         "group_by": "key_and_day",
                         "start_date": "2025-09-29T00:00:00",
@@ -169,7 +170,8 @@
                               "text_translation_characters": 159,
                               "document_translation_characters": 0,
                               "text_improvement_characters": 156,
-                              "speech_to_text_minutes": 11.94
+                              "speech_to_text_minutes": 11.94,
+                              "speech_to_speech_minutes": 3.72
                             }
                           }
                         ]
@@ -185,7 +187,8 @@
                           "text_translation_characters": 4892,
                           "document_translation_characters": 0,
                           "text_improvement_characters": 4727,
-                          "speech_to_text_minutes": 107.46
+                          "speech_to_text_minutes": 107.46,
+                          "speech_to_speech_minutes": 42.11
                         },
                         "start_date": "2025-09-29T00:00:00",
                         "end_date": "2025-10-01T00:00:00"
@@ -680,6 +683,7 @@
         ],
         "summary": "Set developer key usage limits as an admin",
         "operationId": "adminSetDeveloperKeyUsageLimits",
+        "description": "Sets the usage limits for a developer key. This replaces all limits for the key: any\nlimit omitted from the request is reset to `null` (disabled). To change one limit while\nkeeping the others, include their current values in the request.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -698,6 +702,9 @@
                   },
                   "speech_to_text_milliseconds": {
                     "$ref": "#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds"
+                  },
+                  "speech_to_speech_milliseconds": {
+                    "$ref": "#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds"
                   }
                 }
               }
@@ -7102,6 +7109,11 @@
         "type": "number",
         "example": 3600000
       },
+      "ApiKeyUsageSpeechToSpeechMilliseconds": {
+        "description": "Restricts the number of milliseconds of speech-to-speech that can be consumed by an API key in a one-month usage period.\nSetting the limit to `0` means the API key will not be able to consume speech-to-speech milliseconds.\nSetting the limit to `null` disables the limit, effectively allowing unlimited usage.\n",
+        "type": "number",
+        "example": 3600000
+      },
       "ApiKey": {
         "description": "The API key.",
         "type": "object",
@@ -7136,6 +7148,9 @@
               },
               "speech_to_text_milliseconds": {
                 "$ref": "#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds"
+              },
+              "speech_to_speech_milliseconds": {
+                "$ref": "#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds"
               }
             }
           }
@@ -10322,6 +10337,11 @@
             "type": "number",
             "description": "Duration of speech-to-text usage in minutes.",
             "example": 107.46
+          },
+          "speech_to_speech_minutes": {
+            "type": "number",
+            "description": "Duration of speech-to-speech usage in minutes.",
+            "example": 42.11
           }
         }
       },
