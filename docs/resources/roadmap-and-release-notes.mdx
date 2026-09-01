@@ -9,6 +9,13 @@ rss: true
 - Usage reporting by language pair
 </Update>
 
+<Update label="September 2026">
+## September 1 - Croatian and Tagalog Translated Speech in the Voice API
+- The [Voice API](/docs/voice/overview) now generates translated speech (voice output) for `hr` (Croatian) and `tl` (Tagalog), in beta. Transcription and translation for these languages were already supported; this adds synthesized audio.
+- Translated speech for both languages is provided by external service partners. In the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response, `translated_speech` is reported with `"external": true` and beta status — call with `include=beta&include=external` to see it.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full list.
+</Update>
+
 <Update label="August 2026">
 ## August 18 - Custom Reporting Tags for the Voice API
 - [Custom reporting tags](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags), which attribute API usage to a team, project, or other category via the `X-DeepL-Reporting-Tag` request header, now work for the [Voice API](/docs/voice/overview) in addition to text translation. Send the header on the [session request](/api-reference/voice/request-session) and the whole session's usage is attributed to that tag.
