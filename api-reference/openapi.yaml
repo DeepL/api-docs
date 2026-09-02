@@ -380,6 +380,9 @@ paths:
         - AdminApi
       summary: Create a developer key as an admin
       operationId: adminCreateDeveloperKey
+      description: |-
+        Create a developer key in your organization with the given label and return its
+        metadata, including the `key_id`. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -414,6 +417,9 @@ paths:
         - AdminApi
       summary: Get all developer keys as an admin
       operationId: adminGetDeveloperKeys
+      description: |-
+        List every developer key in your organization, including labels, creation and
+        deactivation timestamps, and any configured usage limits. Requires an Admin API key.
       responses:
         200:
           description: The get function returns a JSON representation of all developer API keys in the organization.
@@ -442,6 +448,9 @@ paths:
         - AdminApi
       summary: Deactivate a developer key as an admin
       operationId: adminDeactivateDeveloperKey
+      description: |-
+        Deactivate a developer key so it can no longer authenticate API requests.
+        Deactivation is permanent: create a new key to restore access. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -479,6 +488,9 @@ paths:
         - AdminApi
       summary: Rename a developer key as an admin
       operationId: adminRenameDeveloperKey
+      description: |-
+        Change the label of a developer key. Labels are for your own bookkeeping and do not
+        affect the key's permissions. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -521,6 +533,9 @@ paths:
         - AdminApi
       summary: Set developer key usage limits as an admin
       operationId: adminSetDeveloperKeyUsageLimits
+      description: |-
+        Set per-key usage limits for characters and speech-to-text milliseconds. Requests made
+        with the key fail with HTTP 456 once a limit is reached. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -562,6 +577,10 @@ paths:
         - TranslateText
       summary: Request Translation
       operationId: translateText
+      description: |-
+        Translate one or more text strings into a target language. Send multiple strings in a
+        single request, within the request size limit, and specify formatting, tag handling,
+        and customization options such as glossaries, style rules, and translation memories.
       parameters:
         - $ref: '#/components/parameters/CustomReportingTag'
       requestBody:
@@ -842,6 +861,10 @@ paths:
         - TranslateDocuments
       summary: Upload and Translate a Document
       operationId: translateDocument
+      description: |-
+        Upload a document for translation and receive a `document_id` and `document_key`. Use
+        them to poll the document status and download the translated file. Translation is
+        asynchronous: the upload response confirms the request, not a finished translation.
       requestBody:
         required: true
         content:
@@ -1027,6 +1050,10 @@ paths:
         - TranslateDocuments
       summary: Check Document Status
       operationId: getDocumentStatus
+      description: |-
+        Retrieve the translation status of an uploaded document. Poll this endpoint until the
+        status is `done`, then download the result. The response includes an estimated
+        remaining time while the document is still translating.
       parameters:
         - $ref: '#/components/parameters/DocumentID'
       requestBody:
@@ -1149,6 +1176,10 @@ paths:
         - TranslateDocuments
       summary: Download Translated Document
       operationId: downloadDocument
+      description: |-
+        Download a translated document. The document must have a status of `done`. Each
+        document can be downloaded only once: after a successful download DeepL deletes the
+        file and invalidates the `document_id`.
       parameters:
         - $ref: '#/components/parameters/DocumentID'
       requestBody:
@@ -1283,6 +1314,10 @@ paths:
         - ManageMultilingualGlossaries
       summary: Create a Glossary
       operationId: createMultilingualGlossary
+      description: |-
+        Create a glossary containing one or more dictionaries, each holding entries for a
+        single source and target language pair. Use the returned `glossary_id` with the
+        translation endpoints to apply your own preferred translations.
       requestBody:
         required: true
         content:
@@ -1626,6 +1661,9 @@ paths:
         - ManageMultilingualGlossaries
       summary: Deletes the dictionary associated with the given language pair with the given glossary ID.
       operationId: deleteDictionary
+      description: |-
+        Delete the dictionary for a single source and target language pair from a glossary,
+        leaving the glossary and its other dictionaries in place.
       parameters:
         - $ref: '#/components/parameters/GlossaryID'
         - name: source_lang
@@ -1670,6 +1708,9 @@ paths:
         - ManageMultilingualGlossaries
       summary: "Replaces or creates a dictionary in the glossary with the specified entries."
       operationId: replaceDictionary
+      description: |-
+        Replace all entries in the dictionary for a source and target language pair, or create
+        the dictionary if it does not exist yet. Entries not included in the request are removed.
       parameters:
         - $ref: '#/components/parameters/GlossaryID'
       requestBody:
@@ -1722,6 +1763,11 @@ paths:
         - ManageGlossaries
       summary: Create a Glossary
       operationId: createGlossary
+      description: |-
+        **For new integrations we recommend `POST /v3/glossaries`**, which supports multiple
+        language pairs in a single glossary.
+
+        Create a glossary for one source and target language pair and return its `glossary_id`.
       requestBody:
         required: true
         content:
@@ -1979,6 +2025,10 @@ paths:
         - RephraseText
       summary: Improve text
       operationId: rephraseText
+      description: |-
+        Rewrite one or more texts to improve fluency and readability, optionally targeting a
+        specific writing style or tone. Use the `correct` endpoint instead when you want a
+        minimal spelling and grammar pass rather than broader rewriting.
       requestBody:
         required: true
         content:
@@ -2060,7 +2110,7 @@ paths:
         413:
           $ref: '#/components/responses/PayloadTooLarge'
         415:
-          description: Unsupported Content-Type. Use `application/json` or `application/x-www-form-urlencoded`.
+          $ref: '#/components/responses/UnsupportedMediaType'
         429:
           $ref: '#/components/responses/TooManyRequests'
         456:
@@ -2153,7 +2203,7 @@ paths:
         413:
           $ref: '#/components/responses/PayloadTooLarge'
         415:
-          description: Unsupported Content-Type. Use `application/json` or `application/x-www-form-urlencoded`.
+          $ref: '#/components/responses/UnsupportedMediaType'
         429:
           $ref: '#/components/responses/TooManyRequests'
         456:
@@ -2170,6 +2220,10 @@ paths:
         - MetaInformation
       summary: Check Usage and Limits
       operationId: getUsage
+      description: |-
+        Retrieve character and minute usage for the current billing period together with the
+        corresponding account limits. Poll this endpoint to track consumption and detect when
+        an account is approaching its quota.
       responses:
         200:
           description: The account's usage and limits.
@@ -3664,6 +3718,9 @@ paths:
     get:
       summary: Retrieve style rule lists
       operationId: getStyleRuleLists
+      description: |-
+        List the style rule lists in your account. Results are paginated. Set `detailed` to
+        include each list's configured rules and custom instructions.
       parameters:
         - name: page
           in: query
@@ -3717,6 +3774,10 @@ paths:
     post:
       summary: Create a style rule list
       operationId: createStyleRuleList
+      description: |-
+        Create a style rule list for a single language, optionally with its configured rules
+        and custom instructions. Use the returned `style_id` with the translation and Write
+        endpoints to apply the list.
       requestBody:
         required: true
         content:
@@ -3798,6 +3859,8 @@ paths:
     get:
       summary: Get a style rule list
       operationId: getStyleRuleList
+      description: |-
+        Retrieve a single style rule list, including its configured rules and custom instructions.
       parameters:
         - name: style_id
           in: path
@@ -3834,6 +3897,8 @@ paths:
     patch:
       summary: Update a style rule list's name
       operationId: updateStyleRuleList
+      description: |-
+        Rename a style rule list. This does not change its configured rules or custom instructions.
       parameters:
         - name: style_id
           in: path
@@ -3881,6 +3946,9 @@ paths:
     delete:
       summary: Delete a style rule list
       operationId: deleteStyleRuleList
+      description: |-
+        Delete a style rule list and its custom instructions. Requests that reference the
+        deleted `style_id` fail afterwards.
       parameters:
         - name: style_id
           in: path
@@ -3914,6 +3982,9 @@ paths:
     put:
       summary: Replace configured rules for a style rule list
       operationId: updateStyleRuleConfiguredRules
+      description: |-
+        Replace the full set of configured rules on a style rule list. Rules not included in
+        the request are removed, so send the complete set you want to keep.
       parameters:
         - name: style_id
           in: path
@@ -3962,6 +4033,9 @@ paths:
     post:
       summary: Create a custom instruction
       operationId: createCustomInstruction
+      description: |-
+        Add a custom instruction to a style rule list to express a style preference that the
+        predefined rules do not cover. Instructions apply to text in the given source language.
       parameters:
         - name: style_id
           in: path
@@ -4027,6 +4101,8 @@ paths:
     get:
       summary: Get a custom instruction
       operationId: getCustomInstruction
+      description: |-
+        Retrieve a single custom instruction from a style rule list.
       parameters:
         - name: style_id
           in: path
@@ -4069,6 +4145,9 @@ paths:
     put:
       summary: Replace a custom instruction
       operationId: updateCustomInstruction
+      description: |-
+        Replace a custom instruction. Send every field you want to keep, because omitted
+        fields are overwritten.
       parameters:
         - name: style_id
           in: path
@@ -4132,6 +4211,8 @@ paths:
     delete:
       summary: Delete a custom instruction
       operationId: deleteCustomInstruction
+      description: |-
+        Delete a custom instruction from a style rule list. The rest of the list is unchanged.
       parameters:
         - name: style_id
           in: path
@@ -4176,6 +4257,11 @@ paths:
         - VoiceAPI
       summary: Get Streaming URL
       operationId: getVoiceStreamingUrl
+      description: |-
+        Create a real-time voice session and return the WebSocket URL and ephemeral token used
+        to stream audio. Session options such as languages, message format, and media types are
+        fixed at creation time. Invalid options are rejected with HTTP 400 before a session is
+        created.
       parameters:
         - $ref: '#/components/parameters/CustomReportingTag'
       requestBody:
@@ -4339,6 +4425,10 @@ paths:
         - VoiceAPI
       summary: Request Reconnection
       operationId: requestReconnection
+      description: |-
+        Exchange a session token for a fresh WebSocket URL and token so a client can rejoin a
+        voice session after the connection drops. Session options are carried over from the
+        original session.
       parameters:
         - name: token
           in: query
@@ -4821,6 +4911,10 @@ components:
       description: Forbidden. The access to the requested resource is denied, because
         of insufficient access rights. This error is also returned when the API key
         is scoped but does not include the scope required for this endpoint.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     NotFound:
       description: The requested resource could not be found.
       content:
@@ -4851,9 +4945,19 @@ components:
       description: The request URL is too long. You can avoid this error by using
         a POST request instead of a GET request, and sending the parameters in the
         HTTP body.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - $ref: '#/components/schemas/InfrastructureErrorResponse'
     UnsupportedMediaTypeGlossaries:
       description: The requested entries format specified in the `Accept` header is
         not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     TooManyRequests:
       description: Too many requests. Please wait and resend your request.
       content:
@@ -4868,6 +4972,10 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
     QuotaExceededGlossaries:
       description: Quota exceeded. Too many requests were made to the glossary endpoints recently.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     BadRequestSpokenTerms:
       description: Bad request. Please check error message and your parameters.
       content:
@@ -4902,8 +5010,20 @@ components:
             message: "Unsupported Content-Type"
     InternalServerError:
       description: Internal error.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - $ref: '#/components/schemas/InfrastructureErrorResponse'
     ServiceUnavailable:
       description: Resource currently unavailable. Try again later.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - $ref: '#/components/schemas/InfrastructureErrorResponse'
     ServiceUnavailable503DocTransDownload:
       description: |-
         A 503 result will be returned if the user tries to download a translated document that is currently being processed and is not yet ready for download.
@@ -7840,6 +7960,20 @@ components:
           type: number
           description: Duration of speech-to-speech usage in minutes.
           example: 4.2
+    InfrastructureErrorResponse:
+      description: >
+        Error body returned by DeepL's edge infrastructure for failures that occur before a
+        request reaches the API itself. The message is nested under `error`, unlike the
+        application-level `ErrorResponse`. Clients that parse error bodies should handle both shapes.
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              description: A human-readable description of the error.
+              example: Bad Gateway.
     ErrorResponse:
       type: object
       required:
