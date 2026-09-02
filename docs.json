@@ -2,6 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "DeepL Documentation",
+  "description": "Developer documentation for the DeepL API: translate text and documents, transcribe and translate speech in real time, improve text, and customize output with glossaries, style rules, and translation memories.",
   "colors": {
     "primary": "#0f2b46",
     "light": "#ffffff",
@@ -100,6 +101,13 @@
                 ],
                 "drilldown": false
               }
+            ]
+          },
+          {
+            "group": "Support",
+            "pages": [
+              "docs/resources/contact",
+              "docs/resources/privacy"
             ]
           }
         ]
@@ -418,6 +426,10 @@
           {
             "label": "DeepL Status",
             "href": "https://status.deepl.com"
+          },
+          {
+            "label": "Contact",
+            "href": "/docs/resources/contact"
           }
         ]
       }
@@ -430,6 +442,8 @@
     }
   },
   "api": {
+    "openapi": "api-reference/openapi.yaml",
+    "asyncapi": "api-reference/voice/voice.asyncapi.yaml",
     "examples": {
       "languages": [
         "curl"
@@ -442,7 +456,9 @@
   },
   "errors": {
     "404": {
-      "redirect": false
+      "redirect": false,
+      "title": "Page not found",
+      "description": "This page does not exist. Humans: check out the [Quickstart](/docs/getting-started/quickstart) or the [API reference](/api-reference/translate/request-translation). Machines: try [/llms.txt](/llms.txt), [the docs MCP server](https://developers.deepl.com/mcp), or OpenAPI specs for [Text](/api-reference/openapi.yaml) and [Voice](/api-reference/voice/voice.asyncapi.yaml)."
     }
   },
   "redirects": [
@@ -749,6 +765,50 @@
     {
       "source": "/docs/learning-how-tos/cookbook/context-parameter-examples",
       "destination": "/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter"
+    },
+    {
+      "source": "/about",
+      "destination": "/docs/getting-started/about"
+    },
+    {
+      "source": "/contact",
+      "destination": "/docs/resources/contact-and-support"
+    },
+    {
+      "source": "/contact-us",
+      "destination": "/docs/resources/contact-and-support"
+    },
+    {
+      "source": "/support",
+      "destination": "/docs/resources/contact-and-support"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/docs/resources/privacy-and-data-security"
+    },
+    {
+      "source": "/openapi.yaml",
+      "destination": "/api-reference/openapi.yaml"
+    },
+    {
+      "source": "/openapi.json",
+      "destination": "/api-reference/openapi.json"
+    },
+    {
+      "source": "/api/openapi.yaml",
+      "destination": "/api-reference/openapi.yaml"
+    },
+    {
+      "source": "/api/openapi.json",
+      "destination": "/api-reference/openapi.json"
+    },
+    {
+      "source": "/asyncapi.yaml",
+      "destination": "/api-reference/voice/voice.asyncapi.yaml"
+    },
+    {
+      "source": "/asyncapi.json",
+      "destination": "/api-reference/voice/voice.asyncapi.json"
     }
   ],
   "integrations": {
@@ -788,6 +848,38 @@
         "src": "/user-data.js",
         "defer": true
       }
+    },
+    {
+      "tag": "script",
+      "attrs": {
+        "type": "application/ld+json"
+      },
+      "children": "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.deepl.com/#organization\",\"name\":\"DeepL\",\"legalName\":\"DeepL SE\",\"alternateName\":\"DeepL SE\",\"description\":\"DeepL SE is a Language AI company. Its developer products include the DeepL API for text, document, and real-time voice translation, and the DeepL Write API for text improvement.\",\"url\":\"https://www.deepl.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://static.deepl.com/img/logo/deepl-logo-blue.svg\"},\"email\":\"info@deepl.com\",\"faxNumber\":\"+49 221 95018653\",\"vatID\":\"DE349242045\",\"foundingDate\":\"2017\",\"address\":{\"@type\":\"PostalAddress\",\"streetAddress\":\"Maarweg 165\",\"postalCode\":\"50825\",\"addressLocality\":\"Cologne\",\"addressCountry\":\"DE\"},\"contactPoint\":[{\"@type\":\"ContactPoint\",\"contactType\":\"technical support\",\"url\":\"https://developers.deepl.com/docs/resources/contact-and-support\",\"areaServed\":\"Worldwide\",\"availableLanguage\":[\"en\"]},{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"url\":\"https://support.deepl.com/hc/en-us/requests/new\",\"areaServed\":\"Worldwide\"},{\"@type\":\"ContactPoint\",\"contactType\":\"sales\",\"url\":\"https://www.deepl.com/en/contact-us\",\"areaServed\":\"Worldwide\"},{\"@type\":\"ContactPoint\",\"contactType\":\"security\",\"email\":\"security@deepl.com\",\"areaServed\":\"Worldwide\",\"availableLanguage\":[\"en\"]}],\"sameAs\":[\"https://github.com/DeepL\",\"https://www.linkedin.com/company/deepl\",\"https://x.com/DeepLcom\",\"https://www.youtube.com/@DeepLcom\",\"https://en.wikipedia.org/wiki/DeepL_Translator\"]},{\"@type\":[\"SoftwareApplication\",\"WebAPI\"],\"@id\":\"https://developers.deepl.com/#deepl-api\",\"name\":\"DeepL API\",\"description\":\"REST and WebSocket APIs for translating text and documents, transcribing and translating speech in real time, improving text, and customizing output with glossaries, style rules, and translation memories.\",\"url\":\"https://developers.deepl.com\",\"applicationCategory\":\"DeveloperApplication\",\"operatingSystem\":\"Any\",\"provider\":{\"@id\":\"https://www.deepl.com/#organization\"},\"documentation\":\"https://developers.deepl.com/docs/getting-started/quickstart\",\"termsOfService\":\"https://www.deepl.com/pro-license\",\"privacyPolicy\":\"https://www.deepl.com/en/privacy\",\"offers\":[{\"@type\":\"Offer\",\"name\":\"DeepL API Free\",\"url\":\"https://www.deepl.com/en/pro#api\",\"price\":\"0\",\"priceCurrency\":\"EUR\",\"category\":\"free\"},{\"@type\":\"Offer\",\"name\":\"DeepL API Pro\",\"url\":\"https://www.deepl.com/en/pro#api\",\"category\":\"subscription\"}]}]}"
     }
-  ]
+  ],
+  "markdown": {
+    "instructions": [
+      "Use the DeepL API when a task needs machine translation or text improvement, including translating text strings, whole documents with formatting preservation, or transcribing and translating live speech. Preferred terminology and phrasing may be enforced using customizations (glossaries, style rules, and translation memories). Retrieve supported languages for each product from the `/v3/languages` endpoints.",
+      "Read the machine-readable API surface instead of inferring request shapes from prose: the REST spec is at https://developers.deepl.com/api-reference/openapi.yaml (also served as openapi.json) and the Voice WebSocket protocol is at https://developers.deepl.com/api-reference/voice/voice.asyncapi.yaml. These docs also expose an MCP server at https://developers.deepl.com/mcp (Streamable HTTP, no authentication).",
+      "Use https://api.deepl.com for Pro plans and https://api-free.deepl.com for the Free plan. Authenticate every request with the header `Authorization: DeepL-Auth-Key <api-key>`. Never fabricate an API key: ask the user for one, or point them at https://developers.deepl.com/docs/getting-started/quickstart.",
+      "Errors use standard HTTP status codes with a JSON body containing a `message` field, plus a `code` field where available, and an `X-Trace-ID` response header that identifies the request in DeepL's logs. Log `X-Trace-ID` by default. Retry 429 and 5xx with exponential backoff. Do not retry 456, which means the account quota is exhausted, or 400, which means the request itself is invalid."
+    ]
+  },
+  "seo": {
+    "indexing": "navigable",
+    "organization": {
+      "id": "https://www.deepl.com/",
+      "name": "DeepL",
+      "legalName": "DeepL SE",
+      "url": "https://www.deepl.com",
+      "logo": "https://static.deepl.com/img/logo/deepl-logo-blue.svg",
+      "sameAs": [
+        "https://github.com/DeepL",
+        "https://www.linkedin.com/company/deepl",
+        "https://x.com/DeepLcom",
+        "https://www.instagram.com/deeplhq/",
+        "https://www.youtube.com/@DeepLcom"
+      ]
+    }
+  }
 }
