@@ -45,7 +45,17 @@ The DeepL Voice API transcribes and translates spoken audio in real time over a 
 Two optional features let you tailor transcription and translation to your domain:
 
 * **Spoken terms**: improve transcription of frequently used terms such as company-specific terminology, acronyms, product names, and team member names. Manage them in [DeepL Home](https://www.deepl.com/en/voice/spoken-terms) or via the API; see [Improving Transcription with Spoken Terms](/docs/customize/improving-transcription-with-spoken-terms).
-* **Glossaries**: enforce specific translations for terms in the target language. A session can apply several glossaries in priority order; see the [Request Session reference](/api-reference/voice/request-session). Manage glossaries in [DeepL Home](https://www.deepl.com/en/glossary) or programmatically with the [Glossaries API](/docs/customize/managing-glossaries).
+* **Glossaries**: enforce specific translations for terms in the target language. A session can apply several glossaries in priority order; see [Glossaries in realtime Voice](#glossaries-in-realtime-voice) below and the [Request Session reference](/api-reference/voice/request-session). Manage glossaries in [DeepL Home](https://www.deepl.com/en/glossary) or programmatically with the [Glossaries API](/docs/customize/managing-glossaries).
+
+### Glossaries in realtime Voice
+
+Because Voice translates in real time, glossary terms are matched against the source transcription as it's produced, not against a complete text as in batch text translation. The transcription arrives incrementally, so a glossary term is applied only when its full source term appears in the streamed transcription.
+
+This matters most for multi-word glossary terms. Since the source is transcribed piece by piece, a multi-word term is matched only when its words are transcribed together. In most cases they are, and the term is applied, but a term whose words are concluded across separate transcription segments can occasionally be missed, and the longer the term, the higher that chance. Single-word terms aren't affected in the same way. This is inherent to streaming transcription, not a temporary limitation.
+
+For languages written without spaces between words, such as Japanese, Chinese, and Thai, the transcription also determines where each term begins and ends, so a glossary's source term must correspond to what the transcription produces.
+
+Each glossary must contain a dictionary for the session's source and target language pair. If the source language is detected rather than fixed, and it resolves to a language a glossary has no dictionary for, that glossary isn't applied.
 
 ## Code examples
 
