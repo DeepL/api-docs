@@ -1,0 +1,246 @@
+---
+title: "Query language and feature availability dynamically"
+description: "Use GET /v3/languages and GET /v3/languages/resources to build language selectors and feature toggles that stay accurate as DeepL adds new languages."
+covers: [Languages]
+---
+
+The `/v3/languages` endpoint returns which languages each DeepL API resource supports, along with which optional features (formality, glossaries, tag handling, and more) are available per language. Rather than hardcoding a language list that goes stale, you can query it at startup or on a schedule and use the result to drive dropdowns, feature toggles, and validation in your integration.
+
+This guide walks through the two endpoints you need, shows you how to combine them, and covers the practical patterns you'll use most.
+
+<Info>
+  If you're currently using the deprecated `GET /v2/languages` endpoint, see the [migration guide](/docs/languages/migrating-from-v2-languages) for the differences and how to update your code.
+</Info>
+
+## What you'll build
+
+By the end of this guide, you'll know how to:
+
+- Fetch the languages available for a specific DeepL resource
+- Read per-language feature availability (e.g. formality, glossary support)
+- Use `GET /v3/languages/resources` to understand which language in a pair must support a feature
+- Filter languages by `usable_as_source` and `usable_as_target` to populate language selectors correctly
+
+## Prerequisites
+
+- A DeepL API key. Find yours at [deepl.com/your-account/keys](https://www.deepl.com/your-account/keys).
+- A way to make HTTP requests (curl, an HTTP client, or one of the [DeepL SDKs](/docs/getting-started/client-libraries)).
+
+<Tip>
+  If you're on a Free API plan, replace `https://api.deepl.com` with `https://api-free.deepl.com` in every request below.
+</Tip>
+
+## Step 1: Fetch languages for a resource
+
+Call `GET /v3/languages` with the `resource` query parameter set to the DeepL API resource you're building for.
+
+The supported resource values are: `translate_text`, `translate_document`, `glossary`, `voice`, `write`, `style_rules`, and `translation_memory`.
+
+The following example fetches languages for text translation:
+
+```bash
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text' \
+  --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+```json
+// Example response (truncated)
+[
+  {
+    "lang": "de",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "formality": { "status": "stable" },
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en",
+    "name": "English",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": false,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en-US",
+    "name": "English (American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  }
+]
+```
+
+Each object in the array represents one language (or language variant). Notice that `en` and `en-US` are separate entries: `en` is only usable as a source language, while `en-US` is only usable as a target. Use `usable_as_source` and `usable_as_target` to filter the list correctly when populating your language selectors.
+
+The `features` object lists which optional capabilities that language supports for the given resource. A feature key present in the object means the language supports that capability. The `status` field indicates whether that support is `stable`, `beta`, or `early_access`.
+
+## Step 2: Split source and target languages
+
+Filter the response by `usable_as_source` and `usable_as_target` to build separate lists:
+
+```python
+import httpx
+
+response = httpx.get(
+    "https://api.deepl.com/v3/languages",
+    params={"resource": "translate_text"},
+    headers={"Authorization": "DeepL-Auth-Key [yourAuthKey]"},
+)
+response.raise_for_status()
+languages = response.json()
+
+source_languages = [lang for lang in languages if lang["usable_as_source"]]
+target_languages = [lang for lang in languages if lang["usable_as_target"]]
+
+print("Source languages:", [lang["lang"] for lang in source_languages])
+print("Target languages:", [lang["lang"] for lang in target_languages])
+```
+
+```text Example output
+Source languages: ['ar', 'bg', 'cs', 'da', 'de', 'el', 'en', ...]
+Target languages: ['ar', 'bg', 'cs', 'da', 'de', 'el', 'en-GB', 'en-US', ...]
+```
+
+Both lists can include the same base language (like `de`), but only the target list will include regional variants like `en-US` and `en-GB` that aren't usable as source languages.
+
+<Warning>
+  Do not hardcode assumptions about language code format. Codes follow BCP 47 and may include region, script, or variant subtags (e.g. `zh-Hans`, `sr-Cyrl-RS`). Always treat them as opaque identifiers. See the [language release process](/docs/resources/language-release-process) for more detail.
+</Warning>
+
+## Step 3: Check feature availability for a language pair
+
+The `features` object on each language tells you what that language supports. But some features (like glossaries) require both the source and target language to support them. To understand which side of the pair must support a feature, call `GET /v3/languages/resources`.
+
+```bash
+curl -X GET 'https://api.deepl.com/v3/languages/resources' \
+  --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+```json
+// Example response (truncated)
+[
+  {
+    "name": "translate_text",
+    "features": [
+      { "name": "formality", "needs_target_support": true },
+      { "name": "tag_handling", "needs_source_support": true, "needs_target_support": true },
+      { "name": "glossary", "needs_source_support": true, "needs_target_support": true },
+      { "name": "auto_detection", "needs_source_support": true }
+    ]
+  }
+]
+```
+
+Each feature entry tells you whether `needs_source_support`, `needs_target_support`, or both must be true. If a field is absent, it defaults to `false`.
+
+Combine this with the per-language `features` objects from Step 1 to determine whether a feature is available for a given language pair:
+
+```python
+import httpx
+
+# Fetch languages for translate_text (from Step 1)
+languages_response = httpx.get(
+    "https://api.deepl.com/v3/languages",
+    params={"resource": "translate_text"},
+    headers={"Authorization": "DeepL-Auth-Key [yourAuthKey]"},
+)
+languages = languages_response.json()
+
+# Build a lookup dict from lang code -> language object
+languages_by_code = {lang["lang"]: lang for lang in languages}
+
+# Fetch resource feature definitions (from GET /v3/languages/resources)
+resources_response = httpx.get(
+    "https://api.deepl.com/v3/languages/resources",
+    headers={"Authorization": "DeepL-Auth-Key [yourAuthKey]"},
+)
+resources = resources_response.json()
+
+# Extract the feature definitions for translate_text
+translate_text_resource = next(r for r in resources if r["name"] == "translate_text")
+translate_text_features = translate_text_resource["features"]
+
+
+def feature_available(feature_name, source_lang, target_lang, resource_features, languages_by_code):
+    """
+    Returns True if the feature is available for the given source/target pair.
+    resource_features: the features list for the resource from GET /v3/languages/resources
+    languages_by_code: dict mapping lang code -> language object from GET /v3/languages
+    """
+    # Find the feature definition for this resource
+    feature_def = next(
+        (f for f in resource_features if f["name"] == feature_name), None
+    )
+    if feature_def is None:
+        return False  # Feature not supported by this resource at all
+
+    needs_source = feature_def.get("needs_source_support", False)
+    needs_target = feature_def.get("needs_target_support", False)
+
+    source = languages_by_code.get(source_lang, {})
+    target = languages_by_code.get(target_lang, {})
+
+    if needs_source and feature_name not in source.get("features", {}):
+        return False
+    if needs_target and feature_name not in target.get("features", {}):
+        return False
+
+    return True
+
+# Example: is a glossary available for DE -> EN-US?
+available = feature_available(
+    "glossary",
+    source_lang="de",
+    target_lang="en-US",
+    resource_features=translate_text_features,
+    languages_by_code=languages_by_code,
+)
+print(f"Glossary available for DE→EN-US: {available}")
+```
+
+## Step 4: Include beta languages (optional)
+
+By default, the endpoint returns only `stable` languages and features. To include beta languages and features, add `include=beta` to the query string:
+
+```bash
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text&include=beta' \
+  --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+You can combine values with repeated parameters:
+
+```bash
+curl -X GET 'https://api.deepl.com/v3/languages?resource=voice&include=beta&include=external' \
+  --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+`include=external` adds features provided by third-party service partners (relevant for the `voice` resource). Beta languages and features are subject to change; see [Alpha and beta features](/docs/resources/alpha-and-beta-features) before using them in production.
+
+## Caching the response
+
+The supported language list changes infrequently. Fetching it on every translation request adds unnecessary latency. A practical approach:
+
+- Fetch both endpoints at application startup
+- Cache the results in memory
+- Refresh on a schedule (daily is usually sufficient) or when you receive an unexpected `400` for a language code
+
+The responses are the same for all users of a given API key, so a single cached copy is shared across your application.
+
+## Next steps
+
+- See the [supported languages table](/docs/getting-started/supported-languages) for a reference view of all currently stable languages
+- Read the [language release process](/docs/resources/language-release-process) to understand how DeepL codes new languages and what to expect when support is added
+- If you use glossaries, check which language pairs support them using the pattern in Step 3, or see [Glossaries](/docs/customize/glossaries) for the full workflow

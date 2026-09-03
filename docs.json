@@ -102,6 +102,9 @@
               }
             ]
           }
+        ],
+        "pages": [
+          "docs/languages/query-language-and-feature-availability-dynamically"
         ]
       },
       {
@@ -149,7 +152,8 @@
           "docs/voice/understanding-voice-sessions",
           "docs/voice/message-encoding",
           "docs/voice/supported-voice-languages",
-          "docs/voice/voice-api-requirements"
+          "docs/voice/voice-api-requirements",
+          "docs/voice/translate-a-pre-recorded-audio-file"
         ]
       },
       {
