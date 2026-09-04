@@ -3745,7 +3745,6 @@ paths:
                       - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                       spoken_terms_id: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                       glossary_priority_enabled: true
-                      adaptive_translation_enabled: true
                       creation_time: '2026-04-01T16:34:25.223Z'
                       updated_time: '2026-08-06T09:12:44.108Z'
                     - style_profile_id: c58e2a71-90b4-4d6f-a2e3-71d5c8b4f902
@@ -3755,7 +3754,6 @@ paths:
                       translation_memory_ids: []
                       example_document_ids: []
                       glossary_priority_enabled: false
-                      adaptive_translation_enabled: false
                       creation_time: '2026-07-14T11:02:09.640Z'
                       updated_time: '2026-07-14T11:02:09.640Z'
                     total_count: 2
@@ -3875,13 +3873,6 @@ paths:
                   type: boolean
                   default: false
                   example: true
-                adaptive_translation_enabled:
-                  description: |-
-                    Whether adaptive translation is applied when this style profile is used. Defaults to
-                    `false`.
-                  type: boolean
-                  default: false
-                  example: true
             examples:
               MetadataOnly:
                 summary: Metadata only
@@ -3903,7 +3894,6 @@ paths:
                   - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                   spoken_terms_id: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                   glossary_priority_enabled: true
-                  adaptive_translation_enabled: true
       responses:
         201:
           description: Returns the created style profile.
@@ -3931,7 +3921,6 @@ paths:
                     - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                     spoken_terms_id: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                     glossary_priority_enabled: true
-                    adaptive_translation_enabled: true
                     creation_time: '2026-04-01T16:34:25.223Z'
                     updated_time: '2026-04-01T16:34:25.223Z'
         400:
@@ -4026,7 +4015,6 @@ paths:
                     - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                     spoken_terms_id: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                     glossary_priority_enabled: true
-                    adaptive_translation_enabled: true
                     creation_time: '2026-04-01T16:34:25.223Z'
                     updated_time: '2026-08-06T09:12:44.108Z'
         400:
@@ -4160,10 +4148,6 @@ paths:
                     components.
                   type: boolean
                   example: true
-                adaptive_translation_enabled:
-                  description: Whether adaptive translation is applied when this style profile is used.
-                  type: boolean
-                  example: true
             examples:
               RenameOnly:
                 summary: Rename only
@@ -4214,7 +4198,6 @@ paths:
                     example_document_ids: []
                     spoken_terms_id: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                     glossary_priority_enabled: true
-                    adaptive_translation_enabled: true
                     creation_time: '2026-04-01T16:34:25.223Z'
                     updated_time: '2026-08-20T13:47:51.902Z'
         400:
@@ -6922,7 +6905,6 @@ components:
         - translation_memory_ids
         - example_document_ids
         - glossary_priority_enabled
-        - adaptive_translation_enabled
         - creation_time
         - updated_time
       properties:
@@ -6995,10 +6977,6 @@ components:
         glossary_priority_enabled:
           description: |-
             Whether the glossaries linked to the style profile take priority over its other components.
-          type: boolean
-          example: true
-        adaptive_translation_enabled:
-          description: Whether adaptive translation is applied when the style profile is used.
           type: boolean
           example: true
         creation_time:
