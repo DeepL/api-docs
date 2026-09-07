@@ -47,7 +47,7 @@
     },
     {
       "name": "ManageSpokenTerms",
-      "description": "The *Spoken Terms* functions allow you to create, inspect, edit and delete Spoken Terms collections.\nSpoken Terms improve speech recognition in the Voice API: they ensure specific words and phrases,\nsuch as company names, acronyms, and product names, are transcribed correctly. A collection contains\none or more term lists, each holding terms for a single language, and is applied to a voice session\nvia the `spoken_terms_id` parameter."
+      "description": "The *Spoken Terms* functions allow you to create, inspect, edit and delete Spoken Terms collections.\nSpoken Terms improve speech recognition in the Voice API: they ensure specific words and phrases,\nsuch as company names, acronyms, and product names, are transcribed correctly. A collection contains\none or more term lists, each holding terms for a single language, and is applied to a voice session\nvia the `spoken_terms_ids` parameter."
     },
     {
       "name": "ManageMultilingualGlossaries",
@@ -5242,8 +5242,10 @@
                           "example_document_ids": [
                             "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
                           ],
-                          "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
-                          "glossary_priority_enabled": true,
+                          "spoken_terms_ids": [
+                            "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+                          ],
+                          "glossary_priority_order_enabled": true,
                           "creation_time": "2026-04-01T16:34:25.223Z",
                           "updated_time": "2026-08-06T09:12:44.108Z"
                         },
@@ -5254,7 +5256,7 @@
                           "style_rule_ids": [],
                           "translation_memory_ids": [],
                           "example_document_ids": [],
-                          "glossary_priority_enabled": false,
+                          "glossary_priority_order_enabled": false,
                           "creation_time": "2026-07-14T11:02:09.640Z",
                           "updated_time": "2026-07-14T11:02:09.640Z"
                         }
@@ -5367,13 +5369,18 @@
                       "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
                     ]
                   },
-                  "spoken_terms_id": {
-                    "description": "The ID of the Spoken Terms collection to link, applied when the style profile is used\nfor speech rather than text. A style profile links at most one collection. Omit it to\ncreate the style profile without one. See\n[Improving transcription with Spoken Terms](/docs/customize/improving-transcription-with-spoken-terms).\n\nRequires a plan that includes DeepL Voice. Sending a `spoken_terms_id` on a plan\nwithout it is rejected with `403 Forbidden` and no style profile is created. A value\nthat is not a valid UUID, or that names a collection your account cannot access, is\nrejected with `400 Bad Request` naming the field.",
-                    "type": "string",
-                    "format": "uuid",
-                    "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+                  "spoken_terms_ids": {
+                    "description": "The IDs of the Spoken Terms collections to link, applied when the style profile is\nused for speech rather than text. A style profile links at most one collection today.\nOmit it to create the style profile without any. See\n[Improving transcription with Spoken Terms](/docs/customize/improving-transcription-with-spoken-terms).\n\nRequires a plan that includes DeepL Voice. Sending `spoken_terms_ids` on a plan\nwithout it is rejected with `403 Forbidden` and no style profile is created. A value\nthat is not a valid UUID, or that names a collection your account cannot access, is\nrejected with `400 Bad Request` naming the field.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "example": [
+                      "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+                    ]
                   },
-                  "glossary_priority_enabled": {
+                  "glossary_priority_order_enabled": {
                     "description": "Whether the glossaries linked to this style profile take priority over its other\ncomponents. Defaults to `false`.",
                     "type": "boolean",
                     "default": false,
@@ -5406,8 +5413,10 @@
                     "example_document_ids": [
                       "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
                     ],
-                    "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
-                    "glossary_priority_enabled": true
+                    "spoken_terms_ids": [
+                      "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+                    ],
+                    "glossary_priority_order_enabled": true
                   }
                 }
               }
@@ -5446,8 +5455,10 @@
                       "example_document_ids": [
                         "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
                       ],
-                      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
-                      "glossary_priority_enabled": true,
+                      "spoken_terms_ids": [
+                        "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+                      ],
+                      "glossary_priority_order_enabled": true,
                       "creation_time": "2026-04-01T16:34:25.223Z",
                       "updated_time": "2026-04-01T16:34:25.223Z"
                     }
@@ -5457,7 +5468,7 @@
             }
           },
           "400": {
-            "description": "The request was rejected and no style profile was created. This is returned for a malformed\nrequest body, for a missing or empty `name`, for a value that is longer than the field allows,\nand for a component ID that cannot be used. A component ID that is not a valid UUID, or that\nnames a component your account cannot access, is reported per field, so the message names the\nlist, or `spoken_terms_id`, that the bad ID was passed in.",
+            "description": "The request was rejected and no style profile was created. This is returned for a malformed\nrequest body, for a missing or empty `name`, for a value that is longer than the field allows,\nand for a component ID that cannot be used. A component ID that is not a valid UUID, or that\nnames a component your account cannot access, is reported per field, so the message names the\nlist that the bad ID was passed in.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5484,7 +5495,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "description": "Authorization failed. Please supply a valid `DeepL-Auth-Key` via the `Authorization` header.\nThis error is also returned when the API key is scoped but does not include the\n`style_profiles:write` scope, when your plan does not include creating style profiles, and\nwhen the request sends a `spoken_terms_id` but your plan does not include DeepL Voice.",
+            "description": "Authorization failed. Please supply a valid `DeepL-Auth-Key` via the `Authorization` header.\nThis error is also returned when the API key is scoped but does not include the\n`style_profiles:write` scope, when your plan does not include creating style profiles, and\nwhen the request sends `spoken_terms_ids` but your plan does not include DeepL Voice.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5571,8 +5582,10 @@
                       "example_document_ids": [
                         "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
                       ],
-                      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
-                      "glossary_priority_enabled": true,
+                      "spoken_terms_ids": [
+                        "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+                      ],
+                      "glossary_priority_order_enabled": true,
                       "creation_time": "2026-04-01T16:34:25.223Z",
                       "updated_time": "2026-08-06T09:12:44.108Z"
                     }
@@ -5700,13 +5713,15 @@
                       "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
                     ]
                   },
-                  "spoken_terms_id": {
-                    "description": "The ID of the Spoken Terms collection to link, applied when the style profile is used\nfor speech rather than text. A style profile links at most one collection, so a new ID\nreplaces the current link. Send an empty string to unlink the collection, the same way\nan empty string clears `description` and `industry`.\n\nRequires a plan that includes DeepL Voice. Sending a `spoken_terms_id` on a plan\nwithout it is rejected with `403 Forbidden` and the style profile is not changed. A\nvalue that is not a valid UUID, or that names a collection your account cannot access,\nis rejected with `400 Bad Request` naming the field.",
-                    "type": "string",
-                    "format": "uuid",
-                    "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+                  "spoken_terms_ids": {
+                    "description": "The IDs of the Spoken Terms collections to link, applied when the style profile is\nused for speech rather than text. A style profile links at most one collection today.\nReplaces the linked collections in full. Send an empty list to unlink all of them.\n\nRequires a plan that includes DeepL Voice. Sending `spoken_terms_ids` on a plan\nwithout it is rejected with `403 Forbidden` and the style profile is not changed. A\nvalue that is not a valid UUID, or that names a collection your account cannot access,\nis rejected with `400 Bad Request` naming the field.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
                   },
-                  "glossary_priority_enabled": {
+                  "glossary_priority_order_enabled": {
                     "description": "Whether the glossaries linked to this style profile take priority over its other\ncomponents.",
                     "type": "boolean",
                     "example": true
@@ -5744,7 +5759,7 @@
                 "UnlinkTheSpokenTermsCollection": {
                   "summary": "Unlink the Spoken Terms collection",
                   "value": {
-                    "spoken_terms_id": ""
+                    "spoken_terms_ids": []
                   }
                 }
               }
@@ -5782,8 +5797,10 @@
                         "a74d88fb-ed2a-4943-a664-a4512398b994"
                       ],
                       "example_document_ids": [],
-                      "spoken_terms_id": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7",
-                      "glossary_priority_enabled": true,
+                      "spoken_terms_ids": [
+                        "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+                      ],
+                      "glossary_priority_order_enabled": true,
                       "creation_time": "2026-04-01T16:34:25.223Z",
                       "updated_time": "2026-08-20T13:47:51.902Z"
                     }
@@ -5793,7 +5810,7 @@
             }
           },
           "400": {
-            "description": "The request was rejected and the style profile was not changed. This is returned for a\nmalformed request body, for an empty `name`, for a value that is longer than the field allows,\nand for a component ID that cannot be used. A component ID that is not a valid UUID, or that\nnames a component your account cannot access, is reported per field, so the message names the\nlist, or `spoken_terms_id`, that the bad ID was passed in.",
+            "description": "The request was rejected and the style profile was not changed. This is returned for a\nmalformed request body, for an empty `name`, for a value that is longer than the field allows,\nand for a component ID that cannot be used. A component ID that is not a valid UUID, or that\nnames a component your account cannot access, is reported per field, so the message names the\nlist that the bad ID was passed in.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5820,7 +5837,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "description": "Authorization failed. Please supply a valid `DeepL-Auth-Key` via the `Authorization` header.\nThis error is also returned when the API key is scoped but does not include the\n`style_profiles:write` scope, and when the request sends a `spoken_terms_id` but your plan\ndoes not include DeepL Voice.",
+            "description": "Authorization failed. Please supply a valid `DeepL-Auth-Key` via the `Authorization` header.\nThis error is also returned when the API key is scoped but does not include the\n`style_profiles:write` scope, and when the request sends `spoken_terms_ids` but your plan\ndoes not include DeepL Voice.",
             "content": {
               "application/json": {
                 "schema": {
@@ -9522,7 +9539,8 @@
           "style_rule_ids",
           "translation_memory_ids",
           "example_document_ids",
-          "glossary_priority_enabled",
+          "spoken_terms_ids",
+          "glossary_priority_order_enabled",
           "creation_time",
           "updated_time"
         ],
@@ -9589,13 +9607,18 @@
               "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
             ]
           },
-          "spoken_terms_id": {
-            "description": "The ID of the Spoken Terms collection linked to the style profile, applied when the profile is\nused for speech rather than text. A style profile links at most one collection. Omitted from\nthe response when no collection is linked. Collections are managed with the\n[Spoken Terms endpoints](/api-reference/spoken-terms/list-all-spoken-terms).",
-            "type": "string",
-            "format": "uuid",
-            "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+          "spoken_terms_ids": {
+            "description": "The IDs of the Spoken Terms collections linked to the style profile, applied when the profile\nis used for speech rather than text. A style profile links at most one collection today.\nCollections are managed with the\n[Spoken Terms endpoints](/api-reference/spoken-terms/list-all-spoken-terms).",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": [
+              "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+            ]
           },
-          "glossary_priority_enabled": {
+          "glossary_priority_order_enabled": {
             "description": "Whether the glossaries linked to the style profile take priority over its other components.",
             "type": "boolean",
             "example": true
