@@ -1,30 +1,32 @@
 ---
 title: "Subscription-level cost control"
+description: "Set a subscription-wide limit on characters, STT minutes, or STS minutes to cap your maximum costs."
 mode: "wide"
 public: true
 ---
 
-As a DeepL API Pro user, you have the option to set a limit on the number of characters that can be translated in your entire subscription per month, thereby limiting your maximum costs. You only need to activate *Cost Control* in your DeepL Pro Account on the "API Keys & Limits" tab.
+As a DeepL API Pro user, you have the option to set a limit on the amount of characters, STT minutes, or STS minutes consumed across your entire subscription per month, limiting your maximum costs. You activate "Cost Control" on the ["API Usage" tab](https://www.deepl.com/your-account/usage), the central hub for usage and cost settings. This limit applies subscription-wide; for a limit on a single key instead, see [Set a key-level usage limit](/docs/admin/managing-api-keys#set-a-key-level-usage-limit).
 
-To do so:
+## Set a cost control limit
 
-1. Navigate to the ["API Keys & Limits" tab](https://www.deepl.com/your-account/keys)
-2. Click *Manage cost control*
-3. Tick the checkbox *Activate cost control* to enable
-4. Enter the maximum cost amount
+1. Navigate to the ["API Usage" tab](https://www.deepl.com/your-account/usage)
+2. Click "Manage cost control"
+3. Tick the checkbox "Activate cost control" to enable
+4. Choose the unit (characters, STT minutes, or STS minutes) and enter the maximum amount
 5. Click "Submit" to save the changes
 
 Your new cost control limit is applied immediately.
+
 <Frame caption='The "Manage cost control" link for managing subscription-level cost control'>
 ![](/_assets/images/subscription-level-cost-control.png)
 </Frame>
 
+Once you reach your limit, DeepL stops processing further translation requests until the end of the usage period, to avoid exceeding your set maximum cost. If you want to translate more, you can change the cost control limit at any time.
 
+Within the characters unit, the limit is enforced against the sum of Translate API and Write API characters; it's not possible to set separate limits for each. Characters, STT minutes, and STS minutes each have their own independent limit.
 
-Once you have reached your limit, DeepL will not process any further translation requests until the end of the usage period, in order to not exceed your set maximum cost. If you would like to translate more, you can make changes to the cost control limit at any time.
+## FAQ
 
-The limit is enforced against the sum of Translate API and Write API characters; it's not possible to set separate limits for each.
+#### I have been notified that my Cost Control was raised, but I didn't raise it. What should I do?
 
-#### *I have been notified that my Cost Control was raised, but I didn't raise it. What should I do?*
-
-Every time your *Cost Control* limit is raised, you will receive a notification email for security reasons. If you receive such a notification, but you did not raise your *Cost Control* limit, we highly suggest you reset your authentication key and the password to your DeepL Pro account as soon as possible.
+Every time your "Cost Control" limit is raised, you receive a notification email for security reasons. If you receive such a notification but did not raise your "Cost Control" limit, we highly suggest you reset your authentication key and the password to your DeepL Pro account as soon as possible.
