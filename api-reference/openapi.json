@@ -5256,6 +5256,7 @@
                           "style_rule_ids": [],
                           "translation_memory_ids": [],
                           "example_document_ids": [],
+                          "spoken_terms_ids": [],
                           "glossary_priority_order_enabled": false,
                           "creation_time": "2026-07-14T11:02:09.640Z",
                           "updated_time": "2026-07-14T11:02:09.640Z"
