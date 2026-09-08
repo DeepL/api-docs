@@ -7,12 +7,22 @@ public: true
 
 Manage your API keys in the ["API Keys & Limits" tab](https://www.deepl.com/your-account/keys) when signed into your DeepL API account. A single subscription can have multiple simultaneously active keys: up to 25 on Pro API plans and up to 2 on Free API plans.
 
+This tab has two subtabs: "API Keys" and "Admin API Keys." The sections below — filtering, creating, copying, renaming, deactivating, setting usage limits, and setting permissions — all describe the "API Keys" subtab. See [Manage admin API keys](#manage-admin-api-keys) for how the "Admin API Keys" subtab differs.
+
 <Info>
 To create, deactivate, and limit developer keys programmatically instead, use the [Admin API](/docs/admin/overview#the-admin-api).
 </Info>
 
 <Frame caption="The API Keys & Limits tab">
 ![](/_assets/images/limits-and-api-keys-home.png)
+</Frame>
+
+## Filter API keys
+
+You can filter API keys by dimensions such as key status, key-level permissions, and consumption. Use this to quickly narrow the key table down to, for example, only active keys or only keys nearing their usage limit.
+
+<Frame caption="Filtering the API key table">
+![](/_assets/images/filter-api-keys.png)
 </Frame>
 
 ## Create a key
@@ -65,9 +75,9 @@ Select "Deactivate key" from the key's options menu, then confirm.
 
 ## Set a key-level usage limit
 
-Key-level limits cap the total characters (across text translation, document translation, and text improvement) a key can consume in a one-month usage period. For example, a key with a 1,000,000 character limit stops consuming at 1,000,000 characters and starts fresh when the next usage period begins. You can see your current usage period dates in the [API Usage tab](https://www.deepl.com/your-account/usage).
+Key-level limits cap how much a key can consume in a one-month usage period. You can set a limit in characters (across text translation, document translation, and text improvement), STT minutes, or STS minutes. For example, a key with a 1,000,000 character limit stops consuming at 1,000,000 characters and starts fresh when the next usage period begins. You can see your current usage period dates in the [API Usage tab](https://www.deepl.com/your-account/usage).
 
-To set a limit, select "Set limit" from the key's options menu, activate the limit, and enter a character amount. Setting the limit to 0 prevents the key from consuming any characters.
+To set a limit, select "Set limit" from the key's options menu, activate the limit, choose the unit (characters, STT minutes, or STS minutes), and enter an amount. Setting the limit to 0 prevents the key from consuming any of that unit.
 
 <Frame caption='Select "Set limit" from key options'>
 ![](/_assets/images/set-key-level-limit-1.png)
@@ -108,13 +118,13 @@ The "Permissions" column in the key table shows each key's status as a badge. Ho
 
 ## Manage admin API keys
 
-On the API Pro, API Growth, and API Enterprise plans, you manage [admin keys](/docs/admin/overview#the-admin-api) separately in the ["Admin Keys" tab](https://www.deepl.com/your-account/admin).
+On the API Pro, API Growth, and API Enterprise plans, you manage [admin keys](/docs/admin/overview#the-admin-api) on the "Admin API Keys" subtab of the ["API Keys & Limits" tab](https://www.deepl.com/your-account/keys?keyType=admin).
 
-<Frame caption="The Admin Keys tab">
+<Frame caption="The Admin Keys subtab">
 ![](/_assets/images/admin-api-tab.png)
 </Frame>
 
-Admin keys support the same actions as developer keys: create, copy, rename, and deactivate them from the "Admin Keys" tab exactly as described above. The differences:
+Admin keys support the same actions as developer keys: create, copy, rename, and deactivate them from the "Admin API Keys" subtab exactly as described above. The differences:
 
 - Admin keys always end with an `:adm` suffix, which distinguishes them from developer keys
 - Unnamed admin keys are called "DeepL Admin Key" by default
