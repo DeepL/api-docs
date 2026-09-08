@@ -6,10 +6,14 @@ rss: true
 
 <Update label="In active development">
 - Editing the contents of an existing [translation memory](/docs/customize/using-translation-memories) via API
-- Usage reporting by language pair
 </Update>
 
 <Update label="September 2026">
+## September 8 - Language Pair-Level CSV Report
+- Usage broken down by source-target language pair can now be exported as a CSV report from the account UI. Select "Language pair-level report" from the "Download CSV usage report" dropdown on the [API Keys & Limits tab](https://www.deepl.com/your-account/keys) or the [API Usage tab](https://www.deepl.com/your-account/usage).
+- Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
+- See the [CSV export section of the usage data guide](/docs/admin/retrieving-usage-data#csv-export) for report contents and supported time ranges.
+
 ## September 8 - Voice API French Variants: French (France) and French (Canadian)
 - The Voice API now supports `fr-FR` (French, France) and `fr-CA` (French, Canadian) as target language variants for translation and translated speech (translated speech for both variants is in beta and uses the French voices). `fr-FR` is generally available; `fr-CA` is in beta for the Voice API (for text and document translation it has been generally available since July 17).
 - Because `fr-CA` is beta, include `include=beta` when calling [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) to see it.
