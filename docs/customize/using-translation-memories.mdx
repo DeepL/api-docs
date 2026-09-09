@@ -100,7 +100,7 @@ Notice that we didn't need to specify `source_lang` — language auto-detection 
 
 ## Step 3: Adjust the matching threshold
 
-By default, a stored segment is applied when it matches at least **75%** of the source text. This means translation memory segments can match even when the source text isn't identical — which is useful for catching typos and minor variations.
+By default, a stored segment is applied when it matches at least **75%** of the source text. This means translation memory segments can match even when the source text isn't identical — which is useful for catching typos and minor variations. The lowest supported threshold is 50, and text translation treats a lower value as 50.
 
 Let's see this in action. Imagine we make a typo and send "Halloo Welt!" instead of "Hallo Welt!":
 
