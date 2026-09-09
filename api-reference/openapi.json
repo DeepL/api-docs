@@ -9229,7 +9229,8 @@
         "type": "string",
         "default": "1",
         "enum": [
-          "0"
+          "0",
+          "1"
         ]
       },
       "PatchMultilingualGlossaryParameters": {
@@ -10127,7 +10128,6 @@
           "vi",
           "zh"
         ],
-        "default": null,
         "example": "en"
       },
       "VoiceSourceLanguageMode": {
