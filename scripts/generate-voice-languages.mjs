@@ -11,6 +11,7 @@ import { byCode, byName, fetchLanguages, parseArgs, replaceBlock } from './lib.m
 // The matrix folds target-only variants into their base language's row.
 const MATRIX_NAME_OVERRIDES = {
   en: 'English (American/British)',
+  fr: 'French (France/Canada <Badge color="blue">beta</Badge>)',
   pt: 'Portuguese (Brazil/Portugal)',
   zh: 'Chinese (Simplified/Traditional)',
 };

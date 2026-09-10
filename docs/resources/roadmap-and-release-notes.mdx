@@ -6,7 +6,23 @@ rss: true
 
 <Update label="In active development">
 - Editing the contents of an existing [translation memory](/docs/customize/using-translation-memories) via API
-- Usage reporting by language pair
+</Update>
+
+<Update label="September 2026">
+## September 8 - Language Pair-Level CSV Report
+- Usage broken down by source-target language pair can now be exported as a CSV report from the account UI. Select "Language pair-level report" from the "Download CSV usage report" dropdown on the [API Keys & Limits tab](https://www.deepl.com/your-account/keys) or the [API Usage tab](https://www.deepl.com/your-account/usage).
+- Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
+- See the [CSV export section of the usage data guide](/docs/admin/retrieving-usage-data#csv-export) for report contents and supported time ranges.
+
+## September 8 - Voice API French Variants: French (France) and French (Canadian)
+- The Voice API now supports `fr-FR` (French, France) and `fr-CA` (French, Canadian) as target language variants for translation and translated speech (translated speech for both variants is in beta and uses the French voices). `fr-FR` is generally available; `fr-CA` is in beta for the Voice API (for text and document translation it has been generally available since July 17).
+- Because `fr-CA` is beta, include `include=beta` when calling [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) to see it.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full Voice API language list.
+
+## September 1 - Croatian and Tagalog Translated Speech in the Voice API
+- The [Voice API](/docs/voice/overview) now generates translated speech (voice output) for `hr` (Croatian) and `tl` (Tagalog), in beta. Transcription and translation for these languages were already supported; this adds synthesized audio.
+- Translated speech for both languages is provided by external service partners. In the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response, `translated_speech` is reported with `"external": true` and beta status — call with `include=beta&include=external` to see it.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full list.
 </Update>
 
 <Update label="August 2026">
@@ -35,7 +51,7 @@ rss: true
 ## July 22 - Admin API Available to All API Pro Subscribers
 - The [Admin API](/docs/admin/overview#the-admin-api), which lets admins [manage developer keys](/api-reference/admin-api/managing-developer-keys/create-key) programmatically and retrieve [usage analytics](/docs/admin/retrieving-usage-data#admin-api-analytics) grouped by API key or custom tag, is now available to all API Pro subscribers, in addition to API Growth and API Enterprise subscribers.
 - Previously, API Pro subscribers had to request access through their customer success manager or DeepL support. No action is required to enable access.
-- Create an admin key in the ["Admin Keys" tab](https://www.deepl.com/your-account/admin) of your account to get started. See [Managing API Keys in the Account UI](/docs/admin/managing-api-keys#manage-admin-api-keys) for instructions, or jump into the [Admin API Quickstart](/docs/admin/quickstart).
+- Create an admin key in the ["Admin API Keys" subtab](https://www.deepl.com/your-account/keys?keyType=admin) of your account to get started. See [Managing API Keys in the Account UI](/docs/admin/managing-api-keys#manage-admin-api-keys) for instructions, or jump into the [Admin API Quickstart](/docs/admin/quickstart).
 
 ## July 17 - German (Swiss) and French (Canadian) Generally Available
 - `de-CH` (German, Swiss) and `fr-CA` (French, Canadian) target language variants have moved out of beta and are now generally available for text and document translation.
