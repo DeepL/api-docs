@@ -334,6 +334,15 @@
             ]
           },
           {
+            "group": "Quality Evaluation",
+            "hidden": true,
+            "pages": [
+              "api-reference/quality-evaluation",
+              "api-reference/quality-evaluation/submit",
+              "api-reference/quality-evaluation/poll"
+            ]
+          },
+          {
             "group": "Languages",
             "pages": [
               {

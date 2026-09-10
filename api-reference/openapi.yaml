@@ -4508,7 +4508,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         "429":
           $ref: '#/components/responses/TooManyRequests'
-  /v1/quality-evaluation:
+  /v1/quality-evaluations:
     post:
       tags:
         - QualityEvaluation
@@ -4546,7 +4546,7 @@ paths:
                 $ref: '#/components/schemas/QualityEvaluationJobCreated'
               example:
                 job_id: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
-                poll_url: /v1/quality-evaluation/f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
+                poll_url: /v1/quality-evaluations/f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
         400:
           description: |-
             Request validation failed. Common causes:
@@ -4575,7 +4575,7 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
       security:
         - auth_header: [ ]
-  /v1/quality-evaluation/{job_id}:
+  /v1/quality-evaluations/{job_id}:
     get:
       tags:
         - QualityEvaluation
@@ -4587,7 +4587,7 @@ paths:
         - name: job_id
           in: path
           required: true
-          description: The job identifier returned by `POST /v1/quality-evaluation`. Must be a valid UUID.
+          description: The job identifier returned by `POST /v1/quality-evaluations`. Must be a valid UUID.
           schema:
             type: string
             format: uuid
@@ -4607,6 +4607,8 @@ paths:
                 status: done
                 segments:
                   - segment_index: 0
+                    source: Our Q3 revenue came in 5% above forecast.
+                    target: Unser Q3-Umsatz lag 5 % unter der Prognose.
                     errors:
                       - type: Accuracy
                         sub_type: Mistranslation
@@ -4619,6 +4621,8 @@ paths:
                           - start: 20
                             end: 29
                   - segment_index: 1
+                    source: Please share these results with your teams by Friday.
+                    target: Bitte teilen Sie diese Ergebnisse mit Ihrem Team.
                     errors:
                       - type: Accuracy
                         sub_type: Omission
@@ -4638,15 +4642,6 @@ paths:
                         target_spans:
                           - start: 38
                             end: 48
-                summary:
-                  overall_score: 72
-                  granular_counts:
-                    Accuracy:
-                      Mistranslation:
-                        Critical: 1
-                        Minor: 1
-                      Omission:
-                        Major: 1
         202:
           description: Job is still processing. Continue polling after the time suggested by the `Retry-After` header.
           headers:
@@ -8127,6 +8122,13 @@ components:
               type: string
               description: Language code of the translated text. See [Supported language pairs](/api-reference/quality-evaluation/submit#supported-language-pairs).
               example: de
+            glossary_ids:
+              type: array
+              description: Optional glossary IDs to include when evaluating the segments. Empty values are rejected.
+              items:
+                type: string
+              example:
+                - "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
         segments:
           type: array
           minItems: 1
@@ -8157,12 +8159,12 @@ components:
         job_id:
           type: string
           format: uuid
-          description: The job identifier. Use it with `GET /v1/quality-evaluation/{job_id}` to poll for the result.
+          description: The job identifier. Use it with `GET /v1/quality-evaluations/{job_id}` to poll for the result.
           example: f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
         poll_url:
           type: string
           description: Relative URL you can use to poll for the result.
-          example: /v1/quality-evaluation/f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
+          example: /v1/quality-evaluations/f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19
     QualityEvaluationProcessing:
       type: object
       required:
@@ -8185,7 +8187,6 @@ components:
         - job_id
         - status
         - segments
-        - summary
       properties:
         job_id:
           type: string
@@ -8201,30 +8202,6 @@ components:
           description: One entry per submitted segment, in request order.
           items:
             $ref: '#/components/schemas/QualityEvaluationSegment'
-        summary:
-          type: object
-          required:
-            - overall_score
-            - granular_counts
-          description: Aggregate quality results across all segments.
-          properties:
-            overall_score:
-              type: integer
-              minimum: 0
-              maximum: 100
-              description: Overall translation quality, from 0 (lowest) to 100 (highest). See [Summary](/api-reference/quality-evaluation/poll#summary).
-              example: 72
-            granular_counts:
-              type: object
-              description: Nested counts keyed by `type`, then `sub_type`, then `severity`. Leaf values are integer counts.
-              additionalProperties: true
-              example:
-                Accuracy:
-                  Mistranslation:
-                    Critical: 1
-                    Minor: 1
-                  Omission:
-                    Major: 1
     QualityEvaluationFailed:
       title: Error
       type: object
@@ -8266,11 +8243,43 @@ components:
           type: integer
           description: Zero-based index matching the position of this segment in the request.
           example: 0
+        source:
+          type: string
+          description: Source text echoed from the evaluation pipeline. Omitted when empty.
+          example: Our Q3 revenue came in 5% above forecast.
+        target:
+          type: string
+          description: Target text echoed from the evaluation pipeline. Omitted when empty.
+          example: Unser Q3-Umsatz lag 5 % unter der Prognose.
+        entries:
+          type: array
+          description: Glossary matches applied to this segment. Omitted when there are no matches.
+          items:
+            $ref: '#/components/schemas/QualityEvaluationGlossaryEntry'
         errors:
           type: array
           description: Quality issues identified in this segment. Empty if no issues were found.
           items:
             $ref: '#/components/schemas/QualityEvaluationIssue'
+    QualityEvaluationGlossaryEntry:
+      type: object
+      required:
+        - source_entry
+        - target_entry
+      properties:
+        source_entry:
+          type: string
+          description: Glossary source term.
+          example: revenue
+        target_entry:
+          type: string
+          description: Glossary target term.
+          example: Umsatz
+        ranges:
+          type: array
+          description: Half-open `[start, end)` spans on the segment target text where this match applies.
+          items:
+            $ref: '#/components/schemas/QualityEvaluationSpan'
     QualityEvaluationIssue:
       type: object
       required:
