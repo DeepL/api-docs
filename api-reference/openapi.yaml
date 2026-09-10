@@ -3776,8 +3776,8 @@ paths:
       operationId: createStyleRuleList
       description: |-
         Create a style rule list for a single language, optionally with its configured rules
-        and custom instructions. Use the returned `style_id` with the translation and Write
-        endpoints to apply the list.
+        and custom instructions. Use the returned `style_id` with the translation endpoints
+        to apply the list.
       requestBody:
         required: true
         content:
@@ -7966,9 +7966,13 @@ components:
         request reaches the API itself. The message is nested under `error`, unlike the
         application-level `ErrorResponse`. Clients that parse error bodies should handle both shapes.
       type: object
+      required:
+        - error
       properties:
         error:
           type: object
+          required:
+            - message
           properties:
             message:
               type: string
