@@ -749,6 +749,14 @@
     {
       "source": "/docs/learning-how-tos/cookbook/context-parameter-examples",
       "destination": "/docs/learning-how-tos/examples-and-guides/how-to-use-context-parameter"
+    },
+    {
+      "source": "/api/openapi.yaml",
+      "destination": "/api-reference/openapi.yaml"
+    },
+    {
+      "source": "/openapi.yaml",
+      "destination": "/api-reference/openapi.yaml"
     }
   ],
   "integrations": {
