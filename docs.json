@@ -37,6 +37,7 @@
             "pages": [
               "docs/getting-started/quickstart",
               "docs/getting-started/about",
+              "docs/getting-started/auth",
               "docs/getting-started/client-libraries"
             ]
           },
@@ -458,7 +459,7 @@
     "404": {
       "redirect": false,
       "title": "Page not found",
-      "description": "This page does not exist. Humans: check out the [Quickstart](/docs/getting-started/quickstart) or the [API reference](/api-reference/translate/request-translation). Machines: try [/llms.txt](/llms.txt), [the docs MCP server](https://developers.deepl.com/mcp), or OpenAPI specs for [Text](/api-reference/openapi.yaml) and [Voice](/api-reference/voice/voice.asyncapi.yaml)."
+      "description": "This page does not exist. Humans: check out the [Quickstart](/docs/getting-started/quickstart) or the [API reference](/api-reference/translate/request-translation). Machines: try [/AGENTS.md](/AGENTS.md), [/llms.txt](/llms.txt), [the docs MCP server](https://developers.deepl.com/mcp), or OpenAPI specs for [Text](/api-reference/openapi.yaml) and [Voice](/api-reference/voice/voice.asyncapi.yaml)."
     }
   },
   "redirects": [
@@ -516,7 +517,7 @@
     },
     {
       "source": "/api-reference/languages/retrieve-supported-languages-by-product",
-      "destination": "/api-reference/languages/retrieve-supported-languages-by-resource"
+      "destination": "/docs/languages/using-the-languages-api"
     },
     {
       "source": "/api-reference/languages/retrieve-products",
@@ -556,7 +557,7 @@
     },
     {
       "source": "/docs/api-reference/glossaries/glossaries",
-      "destination": "/api-reference/glossaries"
+      "destination": "/api-reference/glossaries/create-a-glossary"
     },
     {
       "source": "/docs/api-reference",
@@ -809,6 +810,22 @@
     {
       "source": "/asyncapi.json",
       "destination": "/api-reference/voice/voice.asyncapi.json"
+    },
+    {
+      "source": "/pricing",
+      "destination": "https://www.deepl.com/pricing"
+    },
+    {
+      "source": "/openapi",
+      "destination": "/api-reference/openapi.yaml"
+    },
+    {
+      "source": "/asyncapi",
+      "destination": "/api-reference/voice/voice.asyncapi.yaml"
+    },
+    {
+      "source": "/agents",
+      "destination": "/AGENTS.md"
     }
   ],
   "integrations": {
@@ -827,48 +844,20 @@
       "vscode"
     ]
   },
-  "head": [
-    {
-      "tag": "link",
-      "attrs": {
-        "rel": "stylesheet",
-        "href": "/user-study-popup.css"
-      }
-    },
-    {
-      "tag": "script",
-      "attrs": {
-        "src": "/user-study-popup.js",
-        "defer": true
-      }
-    },
-    {
-      "tag": "script",
-      "attrs": {
-        "src": "/user-data.js",
-        "defer": true
-      }
-    },
-    {
-      "tag": "script",
-      "attrs": {
-        "type": "application/ld+json"
-      },
-      "children": "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.deepl.com/#organization\",\"name\":\"DeepL\",\"legalName\":\"DeepL SE\",\"alternateName\":\"DeepL SE\",\"description\":\"DeepL SE is a Language AI company. Its developer products include the DeepL API for text, document, and real-time voice translation, and the DeepL Write API for text improvement.\",\"url\":\"https://www.deepl.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://static.deepl.com/img/logo/deepl-logo-blue.svg\"},\"email\":\"info@deepl.com\",\"faxNumber\":\"+49 221 95018653\",\"vatID\":\"DE349242045\",\"foundingDate\":\"2017\",\"address\":{\"@type\":\"PostalAddress\",\"streetAddress\":\"Maarweg 165\",\"postalCode\":\"50825\",\"addressLocality\":\"Cologne\",\"addressCountry\":\"DE\"},\"contactPoint\":[{\"@type\":\"ContactPoint\",\"contactType\":\"technical support\",\"url\":\"https://developers.deepl.com/docs/resources/contact\",\"areaServed\":\"Worldwide\",\"availableLanguage\":[\"en\"]},{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"url\":\"https://support.deepl.com/hc/en-us/requests/new\",\"areaServed\":\"Worldwide\"},{\"@type\":\"ContactPoint\",\"contactType\":\"sales\",\"url\":\"https://www.deepl.com/en/contact-us\",\"areaServed\":\"Worldwide\"},{\"@type\":\"ContactPoint\",\"contactType\":\"security\",\"email\":\"security@deepl.com\",\"areaServed\":\"Worldwide\",\"availableLanguage\":[\"en\"]}],\"sameAs\":[\"https://github.com/DeepL\",\"https://www.linkedin.com/company/deepl\",\"https://x.com/DeepLcom\",\"https://www.youtube.com/@DeepLcom\",\"https://en.wikipedia.org/wiki/DeepL_Translator\"]},{\"@type\":[\"SoftwareApplication\",\"WebAPI\"],\"@id\":\"https://developers.deepl.com/#deepl-api\",\"name\":\"DeepL API\",\"description\":\"REST and WebSocket APIs for translating text and documents, transcribing and translating speech in real time, improving text, and customizing output with glossaries, style rules, and translation memories.\",\"url\":\"https://developers.deepl.com\",\"applicationCategory\":\"DeveloperApplication\",\"operatingSystem\":\"Any\",\"provider\":{\"@id\":\"https://www.deepl.com/#organization\"},\"documentation\":\"https://developers.deepl.com/docs/getting-started/quickstart\",\"termsOfService\":\"https://www.deepl.com/pro-license\",\"privacyPolicy\":\"https://www.deepl.com/en/privacy\",\"offers\":[{\"@type\":\"Offer\",\"name\":\"DeepL API Free\",\"url\":\"https://www.deepl.com/en/pro#api\",\"price\":\"0\",\"priceCurrency\":\"EUR\",\"category\":\"free\"},{\"@type\":\"Offer\",\"name\":\"DeepL API Pro\",\"url\":\"https://www.deepl.com/en/pro#api\",\"category\":\"subscription\"}]}]}"
-    }
-  ],
   "markdown": {
     "instructions": [
       "Use the DeepL API when a task needs machine translation or text improvement, including translating text strings, whole documents with formatting preservation, or transcribing and translating live speech. Preferred terminology and phrasing may be enforced using customizations (glossaries, style rules, and translation memories). Retrieve supported languages for each product from the `/v3/languages` endpoints.",
-      "Read the machine-readable API surface instead of inferring request shapes from prose: the REST spec is at https://developers.deepl.com/api-reference/openapi.yaml (also served as openapi.json) and the Voice WebSocket protocol is at https://developers.deepl.com/api-reference/voice/voice.asyncapi.yaml. These docs also expose an MCP server at https://developers.deepl.com/mcp (Streamable HTTP, no authentication).",
+      "Do not use the DeepL API to write, summarize, answer, or classify: it transforms text you supply. Full when-to-use guidance, mapped to endpoints, is at https://developers.deepl.com/AGENTS.md.",
+      "Read the machine-readable API surface instead of inferring request shapes from prose: the REST spec is at https://developers.deepl.com/api-reference/openapi.yaml (also served as openapi.json) and the Voice WebSocket protocol is at https://developers.deepl.com/api-reference/voice/voice.asyncapi.yaml. Both are listed in the RFC 9727 catalog at https://developers.deepl.com/.well-known/api-catalog. These docs also expose an MCP server at https://developers.deepl.com/mcp (Streamable HTTP, no authentication).",
       "Use https://api.deepl.com for Pro plans and https://api-free.deepl.com for the Free plan. Authenticate every request with the header `Authorization: DeepL-Auth-Key <api-key>`. Never fabricate an API key: ask the user for one, or point them at https://developers.deepl.com/docs/getting-started/quickstart.",
-      "Errors use standard HTTP status codes with a JSON body containing a `message` field, plus a `code` field where available, and an `X-Trace-ID` response header that identifies the request in DeepL's logs. Log `X-Trace-ID` by default. Retry 429 and 5xx with exponential backoff. Do not retry 456, which means the account quota is exhausted, or 400, which means the request itself is invalid."
+      "Errors use standard HTTP status codes with a JSON body containing a `message` field, plus a `code` field where available, and an `X-Trace-ID` response header that identifies the request in DeepL's logs. Log `X-Trace-ID` by default. Retry 429 and 5xx with exponential backoff. Do not retry 456, which means the account quota is exhausted, or 400, which means the request itself is invalid.",
+      "There is no fixed request-per-second limit and no `RateLimit` response headers: the service adapts to load. Throttle from the responses instead, honoring `Retry-After` when a 429 or 529 includes it, and capping in-flight requests. See https://developers.deepl.com/docs/best-practices/error-handling."
     ]
   },
   "seo": {
     "indexing": "navigable",
     "organization": {
-      "id": "https://www.deepl.com/",
+      "id": "https://www.deepl.com/#organization",
       "name": "DeepL",
       "legalName": "DeepL SE",
       "url": "https://www.deepl.com",
@@ -878,7 +867,8 @@
         "https://www.linkedin.com/company/deepl",
         "https://x.com/DeepLcom",
         "https://www.instagram.com/deeplhq/",
-        "https://www.youtube.com/@DeepLcom"
+        "https://www.youtube.com/@DeepLcom",
+        "https://en.wikipedia.org/wiki/DeepL_Translator"
       ]
     }
   }

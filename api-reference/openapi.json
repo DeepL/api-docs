@@ -6788,6 +6788,13 @@
           "type": "string"
         },
         "example": "501c3d93cc0c4f11ae2f60a226c2f0f0"
+      },
+      "Retry-After": {
+        "description": "The number of seconds to wait before resending the request. Sent when DeepL can suggest a wait time. Honor it in preference to your own backoff interval; when it is absent, retry with exponential backoff and jitter.\n",
+        "schema": {
+          "type": "integer"
+        },
+        "example": 5
       }
     },
     "parameters": {
@@ -6877,6 +6884,11 @@
     "responses": {
       "VoiceTranslateJobBadRequest": {
         "description": "Bad request. Check the error message and request parameters.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6890,6 +6902,11 @@
       },
       "BadRequest": {
         "description": "Bad request. Please check error message and your parameters.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6900,6 +6917,11 @@
       },
       "BadRequestGlossaries": {
         "description": "Bad request. Please check error message and your parameters.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6924,6 +6946,11 @@
       },
       "Unauthorized": {
         "description": "Authorization failed. Please supply a valid `DeepL-Auth-Key` via the `Authorization` header.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6934,6 +6961,11 @@
       },
       "Forbidden": {
         "description": "Authorization failed. Please supply a valid `DeepL-Auth-Key` via the `Authorization` header.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6944,6 +6976,11 @@
       },
       "ForbiddenScoped": {
         "description": "Authorization failed. Please supply a valid `DeepL-Auth-Key` via the `Authorization` header. This error is also returned when the API key is scoped but does not include the scope required for this endpoint.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6954,6 +6991,11 @@
       },
       "ForbiddenGlossaries": {
         "description": "Forbidden. The access to the requested resource is denied, because of insufficient access rights. This error is also returned when the API key is scoped but does not include the scope required for this endpoint.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6964,6 +7006,11 @@
       },
       "NotFound": {
         "description": "The requested resource could not be found.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6974,6 +7021,11 @@
       },
       "NotFound404DocTransDownload": {
         "description": "Trying to download a document using a non-existing document ID or the wrong document key will result in a 404 error. As stated above, documents can only be downloaded once before they are deleted from the server and their document ID is invalidated.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6992,6 +7044,11 @@
       },
       "PayloadTooLarge": {
         "description": "The request size exceeds the limit.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7002,6 +7059,11 @@
       },
       "URITooLong": {
         "description": "The request URL is too long. You can avoid this error by using a POST request instead of a GET request, and sending the parameters in the HTTP body.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7019,6 +7081,11 @@
       },
       "UnsupportedMediaTypeGlossaries": {
         "description": "The requested entries format specified in the `Accept` header is not supported.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7029,6 +7096,14 @@
       },
       "TooManyRequests": {
         "description": "Too many requests. Please wait and resend your request.",
+        "headers": {
+          "Retry-After": {
+            "$ref": "#/components/headers/Retry-After"
+          },
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7039,6 +7114,11 @@
       },
       "QuotaExceeded": {
         "description": "Quota exceeded. The character limit has been reached.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7049,6 +7129,11 @@
       },
       "QuotaExceededGlossaries": {
         "description": "Quota exceeded. Too many requests were made to the glossary endpoints recently.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7059,6 +7144,11 @@
       },
       "BadRequestSpokenTerms": {
         "description": "Bad request. Please check error message and your parameters.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7072,6 +7162,11 @@
       },
       "ForbiddenSpokenTerms": {
         "description": "Forbidden. Authorization failed or feature not available for your plan.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7085,6 +7180,11 @@
       },
       "QuotaExceededSpokenTerms": {
         "description": "Quota exceeded. Spoken Terms collection limit reached for your plan.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7098,6 +7198,11 @@
       },
       "UnsupportedMediaType": {
         "description": "Unsupported Media Type. Must be application/json or application/x-www-form-urlencoded.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7111,6 +7216,11 @@
       },
       "InternalServerError": {
         "description": "Internal error.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7128,6 +7238,11 @@
       },
       "ServiceUnavailable": {
         "description": "Resource currently unavailable. Try again later.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -7145,6 +7260,11 @@
       },
       "ServiceUnavailable503DocTransDownload": {
         "description": "A 503 result will be returned if the user tries to download a translated document that is currently being processed and is not yet ready for download.\nPlease make sure to check that the document status is 'done' before trying to send a download request.",
+        "headers": {
+          "X-Trace-ID": {
+            "$ref": "#/components/headers/X-Trace-ID"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {

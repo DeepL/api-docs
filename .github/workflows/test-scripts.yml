@@ -4,11 +4,19 @@ on:
   pull_request:
     paths:
       - "scripts/**"
+      - "docs.json"
+      - "AGENTS.md"
+      - "api-reference/openapi.yaml"
+      - "api-reference/openapi.json"
   push:
     branches:
       - main
     paths:
       - "scripts/**"
+      - "docs.json"
+      - "AGENTS.md"
+      - "api-reference/openapi.yaml"
+      - "api-reference/openapi.json"
 
 jobs:
   test:
