@@ -772,19 +772,19 @@
     },
     {
       "source": "/contact",
-      "destination": "/docs/resources/contact-and-support"
+      "destination": "/docs/resources/contact"
     },
     {
       "source": "/contact-us",
-      "destination": "/docs/resources/contact-and-support"
+      "destination": "/docs/resources/contact"
     },
     {
       "source": "/support",
-      "destination": "/docs/resources/contact-and-support"
+      "destination": "/docs/resources/contact"
     },
     {
       "source": "/privacy",
-      "destination": "/docs/resources/privacy-and-data-security"
+      "destination": "/docs/resources/privacy"
     },
     {
       "source": "/openapi.yaml",
@@ -854,7 +854,7 @@
       "attrs": {
         "type": "application/ld+json"
       },
-      "children": "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.deepl.com/#organization\",\"name\":\"DeepL\",\"legalName\":\"DeepL SE\",\"alternateName\":\"DeepL SE\",\"description\":\"DeepL SE is a Language AI company. Its developer products include the DeepL API for text, document, and real-time voice translation, and the DeepL Write API for text improvement.\",\"url\":\"https://www.deepl.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://static.deepl.com/img/logo/deepl-logo-blue.svg\"},\"email\":\"info@deepl.com\",\"faxNumber\":\"+49 221 95018653\",\"vatID\":\"DE349242045\",\"foundingDate\":\"2017\",\"address\":{\"@type\":\"PostalAddress\",\"streetAddress\":\"Maarweg 165\",\"postalCode\":\"50825\",\"addressLocality\":\"Cologne\",\"addressCountry\":\"DE\"},\"contactPoint\":[{\"@type\":\"ContactPoint\",\"contactType\":\"technical support\",\"url\":\"https://developers.deepl.com/docs/resources/contact-and-support\",\"areaServed\":\"Worldwide\",\"availableLanguage\":[\"en\"]},{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"url\":\"https://support.deepl.com/hc/en-us/requests/new\",\"areaServed\":\"Worldwide\"},{\"@type\":\"ContactPoint\",\"contactType\":\"sales\",\"url\":\"https://www.deepl.com/en/contact-us\",\"areaServed\":\"Worldwide\"},{\"@type\":\"ContactPoint\",\"contactType\":\"security\",\"email\":\"security@deepl.com\",\"areaServed\":\"Worldwide\",\"availableLanguage\":[\"en\"]}],\"sameAs\":[\"https://github.com/DeepL\",\"https://www.linkedin.com/company/deepl\",\"https://x.com/DeepLcom\",\"https://www.youtube.com/@DeepLcom\",\"https://en.wikipedia.org/wiki/DeepL_Translator\"]},{\"@type\":[\"SoftwareApplication\",\"WebAPI\"],\"@id\":\"https://developers.deepl.com/#deepl-api\",\"name\":\"DeepL API\",\"description\":\"REST and WebSocket APIs for translating text and documents, transcribing and translating speech in real time, improving text, and customizing output with glossaries, style rules, and translation memories.\",\"url\":\"https://developers.deepl.com\",\"applicationCategory\":\"DeveloperApplication\",\"operatingSystem\":\"Any\",\"provider\":{\"@id\":\"https://www.deepl.com/#organization\"},\"documentation\":\"https://developers.deepl.com/docs/getting-started/quickstart\",\"termsOfService\":\"https://www.deepl.com/pro-license\",\"privacyPolicy\":\"https://www.deepl.com/en/privacy\",\"offers\":[{\"@type\":\"Offer\",\"name\":\"DeepL API Free\",\"url\":\"https://www.deepl.com/en/pro#api\",\"price\":\"0\",\"priceCurrency\":\"EUR\",\"category\":\"free\"},{\"@type\":\"Offer\",\"name\":\"DeepL API Pro\",\"url\":\"https://www.deepl.com/en/pro#api\",\"category\":\"subscription\"}]}]}"
+      "children": "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.deepl.com/#organization\",\"name\":\"DeepL\",\"legalName\":\"DeepL SE\",\"alternateName\":\"DeepL SE\",\"description\":\"DeepL SE is a Language AI company. Its developer products include the DeepL API for text, document, and real-time voice translation, and the DeepL Write API for text improvement.\",\"url\":\"https://www.deepl.com\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://static.deepl.com/img/logo/deepl-logo-blue.svg\"},\"email\":\"info@deepl.com\",\"faxNumber\":\"+49 221 95018653\",\"vatID\":\"DE349242045\",\"foundingDate\":\"2017\",\"address\":{\"@type\":\"PostalAddress\",\"streetAddress\":\"Maarweg 165\",\"postalCode\":\"50825\",\"addressLocality\":\"Cologne\",\"addressCountry\":\"DE\"},\"contactPoint\":[{\"@type\":\"ContactPoint\",\"contactType\":\"technical support\",\"url\":\"https://developers.deepl.com/docs/resources/contact\",\"areaServed\":\"Worldwide\",\"availableLanguage\":[\"en\"]},{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"url\":\"https://support.deepl.com/hc/en-us/requests/new\",\"areaServed\":\"Worldwide\"},{\"@type\":\"ContactPoint\",\"contactType\":\"sales\",\"url\":\"https://www.deepl.com/en/contact-us\",\"areaServed\":\"Worldwide\"},{\"@type\":\"ContactPoint\",\"contactType\":\"security\",\"email\":\"security@deepl.com\",\"areaServed\":\"Worldwide\",\"availableLanguage\":[\"en\"]}],\"sameAs\":[\"https://github.com/DeepL\",\"https://www.linkedin.com/company/deepl\",\"https://x.com/DeepLcom\",\"https://www.youtube.com/@DeepLcom\",\"https://en.wikipedia.org/wiki/DeepL_Translator\"]},{\"@type\":[\"SoftwareApplication\",\"WebAPI\"],\"@id\":\"https://developers.deepl.com/#deepl-api\",\"name\":\"DeepL API\",\"description\":\"REST and WebSocket APIs for translating text and documents, transcribing and translating speech in real time, improving text, and customizing output with glossaries, style rules, and translation memories.\",\"url\":\"https://developers.deepl.com\",\"applicationCategory\":\"DeveloperApplication\",\"operatingSystem\":\"Any\",\"provider\":{\"@id\":\"https://www.deepl.com/#organization\"},\"documentation\":\"https://developers.deepl.com/docs/getting-started/quickstart\",\"termsOfService\":\"https://www.deepl.com/pro-license\",\"privacyPolicy\":\"https://www.deepl.com/en/privacy\",\"offers\":[{\"@type\":\"Offer\",\"name\":\"DeepL API Free\",\"url\":\"https://www.deepl.com/en/pro#api\",\"price\":\"0\",\"priceCurrency\":\"EUR\",\"category\":\"free\"},{\"@type\":\"Offer\",\"name\":\"DeepL API Pro\",\"url\":\"https://www.deepl.com/en/pro#api\",\"category\":\"subscription\"}]}]}"
     }
   ],
   "markdown": {
