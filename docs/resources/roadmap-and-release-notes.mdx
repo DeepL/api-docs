@@ -10,6 +10,10 @@ rss: true
 </Update>
 
 <Update label="September 2026">
+## September 11 - Speaker Match Voice for the Voice API
+- **Speaker match** is a new voice option for [Voice API](/docs/voice/overview) translated speech: instead of one of the preset voices, the synthesized audio uses a voice close to the original speaker's. Set [`target_media_voice`](/api-reference/voice/request-session) to `match` on the session request.
+- Speaker match is only available for target languages whose translated speech is provided by DeepL, not for languages provided through external service partners. Requesting it for any other target language is not an error: that language falls back to a preset voice. See the [supported languages table](/docs/voice/supported-voice-languages) for the full list.
+
 ## September 8 - Voice API French Variants: French (France) and French (Canadian)
 - The Voice API now supports `fr-FR` (French, France) and `fr-CA` (French, Canadian) as target language variants for translation and translated speech (translated speech for both variants is in beta and uses the French voices). `fr-FR` is generally available; `fr-CA` is in beta for the Voice API (for text and document translation it has been generally available since July 17).
 - Because `fr-CA` is beta, include `include=beta` when calling [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) to see it.
