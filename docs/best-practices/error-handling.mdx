@@ -1,17 +1,70 @@
 ---
 title: "Error handling"
+description: "Parse DeepL API error responses, decide which status codes to retry, and throttle your client so it stays inside the API's limits."
 mode: "wide"
 public: true
 ---
 
-Errors are indicated by [standard HTTP status codes](https://developer.mozilla.org/docs/Web/HTTP/Status). It is important to make sure that your application handles errors in an appropriate way. To that end, please consult the list of expected status code results that are provided with each endpoint's documentation in the API Reference.
+Errors are indicated by [standard HTTP status codes](https://developer.mozilla.org/docs/Web/HTTP/Status). Branch on the status code first, then read the JSON body for detail. The expected status codes for each endpoint are listed with that endpoint in the [API Reference](/api-reference/translate/request-translation).
 
-* **HTTP 429: too many requests.** This is an error that you might receive when sending many API requests in a short period of time. Your application should be configured to resend the requests after some delay. Specifically, we recommend implementing retries with exponential backoff. This is implemented in all of the official, DeepL-supported [client libraries](/docs/getting-started/client-libraries).
+## Error response body
 
-* **HTTP 456: quota exceeded** **If you're a Free API user**, you'll receive this error when the monthly 500,000 character limit of your subscription has been reached. You can consider [upgrading your subscription](https://www.deepl.com/pro) if you need more character volume. **If you're a Pro API user**, you'll receive this error when your [Cost Control](/docs/best-practices/cost-control) limit has been reached, and you can increase or remove your Cost Control limit if you need to continue translating. You can also use the [usage endpoint](/api-reference/usage-and-quota/check-usage-and-limits) to find out your currently used and available quota.
+Error responses carry a JSON body. Parse it rather than the status text. You should also log the `X-Trace-ID` response header, as it will help our team debug if you need to raise a support ticket.
 
-* **HTTP 500: internal server error** This is an error you'll receive if there are temporary errors in DeepL Services. Your application should be configured to resend the requests after some delay. Specifically, we recommend implementing retries with exponential backoff. This is implemented in all of the official, DeepL-supported [client libraries](/docs/getting-started/client-libraries). You can check the [API Status Page](https://status.deepl.com/?tab=api) for current service availability and incident information.
+```json Example error response
+{
+  "message": "Value for 'target_lang' not supported."
+}
+```
 
-The service dynamically adjusts to the load on the system. Please wait to stop receiving errors to send more requests again. As the service adapts, you will be able to send increasingly more requests within a given amount of time without encountering errors.
+| **Field** | **Description** |
+| --- | --- |
+| `message` | Human-readable description of the error. Present on error responses |
+| `code` | Machine-readable identifier for the error, where available. Branch on this rather than on `message`, which can change wording |
 
-Additional information may be provided by a JSON response that contains more details about the error. In this case, this additional information will be contained in the message key.
+<Warning>
+Don't match on `message` strings. They are written for humans and are not part of the API contract. Use the status code, and `code` where it is present.
+</Warning>
+
+Failures that occur before a request reaches the API, in DeepL's edge infrastructure, use a nested shape instead, with the message under an `error` object:
+
+```json Example infrastructure error response
+{
+  "error": {
+    "message": "Bad Gateway."
+  }
+}
+```
+
+Handle both shapes in your parser. Reading `body.message ?? body.error?.message` covers every error the API can return, and keeps your client from crashing on a gateway error during an incident.
+
+## Which errors to retry
+
+| **Status** | **Meaning** | **Retry?** |
+| --- | --- | --- |
+| `400` | The request itself is invalid | No. Fix the request |
+| `403` | Authorization failed, or the API key lacks the [permission scope](/docs/admin/permission-scopes) for this endpoint | No. Check the key and its scopes |
+| `404` | The resource does not exist, or a document has already been downloaded | No |
+| `413` | The request exceeds the [request size limit](/docs/resources/usage-limits) | No. Split the payload into smaller requests |
+| `429`, `529` | Too many requests in a short period | Yes, with exponential backoff |
+| `456` | Quota exhausted for the billing period or for a [Cost Control](/docs/best-practices/cost-control) limit | No. Retrying will not succeed until the quota is raised or the period resets |
+| `500`, `503`, `504` | Temporary error in DeepL services | Yes, with exponential backoff |
+
+Details on the errors you are most likely to hit:
+
+* **HTTP 429: too many requests.** You may receive this when sending many API requests in a short period of time. Resend the request after a delay, using retries with exponential backoff. This is implemented in all of the official, DeepL-supported [client libraries](/docs/getting-started/client-libraries).
+
+* **HTTP 456: quota exceeded.** **If you're a Free API user**, you'll receive this error when the monthly 500,000 character limit of your subscription has been reached. You can consider [upgrading your subscription](https://www.deepl.com/pro) if you need more character volume. **If you're a Pro API user**, you'll receive this error when your [Cost Control](/docs/best-practices/cost-control) limit has been reached, and you can increase or remove your Cost Control limit if you need to continue translating. You can also use the [usage endpoint](/api-reference/usage-and-quota/check-usage-and-limits) to find out your currently used and available quota.
+
+* **HTTP 500: internal server error.** You'll receive this if there are temporary errors in DeepL services. Resend the request after a delay, using retries with exponential backoff. Check the [API Status Page](https://status.deepl.com/?tab=api) for current service availability and incident information.
+
+## Throttling your client
+
+The service dynamically adjusts to the load on the system, so there is no fixed request-per-second figure to code against. Design your client to find the limit rather than to assume one:
+
+* Retry `429` and 5xx responses with exponential backoff and jitter. Honor the `Retry-After` header when a response includes one, in preference to your own backoff interval
+* Cap the number of requests you have in flight at once, and lower that cap while you are receiving `429` responses
+* Batch multiple strings into a single [translate request](/api-reference/translate/request-translation) instead of sending one request per string, staying inside the [request size limit](/docs/resources/usage-limits)
+* Treat `456` as a stop condition, not a retry condition, and poll the [usage endpoint](/api-reference/usage-and-quota/check-usage-and-limits) to see how close an account is to its quota before you get there
+
+As the service adapts to your traffic, you will be able to send increasingly more requests within a given amount of time without encountering errors.

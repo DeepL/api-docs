@@ -1,16 +1,22 @@
 ---
 title: "OpenAPI spec"
-description: "Download the OpenAPI specification for the DeepL API"
+description: "How to fetch the OpenAPI specifications for the DeepL API"
 ---
 
-This repository contains an [OpenAPI specification](https://openapis.org/) of the DeepL API in YAML and JSON formats.
+The DeepL API is described by an [OpenAPI specification](https://openapis.org/) for the REST endpoints and an [AsyncAPI specification](https://www.asyncapi.com/) for the streaming Voice API. Both are published in YAML and JSON.
 
-| File | Format | Description |
+Fetch them from this documentation site at a stable URL:
+
+| **Spec** | **Format** | **URL** |
 |---|---|---|
-| [`openapi.yaml`](https://raw.githubusercontent.com/DeepL/api-docs/main/api-reference/openapi.yaml) | YAML | Main REST API spec (source of truth) |
-| [`openapi.json`](https://raw.githubusercontent.com/DeepL/api-docs/main/api-reference/openapi.json) | JSON | Same content, auto-generated from YAML |
-| [`voice.asyncapi.yaml`](https://raw.githubusercontent.com/DeepL/api-docs/main/api-reference/voice/voice.asyncapi.yaml) | YAML | AsyncAPI spec for the streaming Voice API |
-| [`voice.asyncapi.json`](https://raw.githubusercontent.com/DeepL/api-docs/main/api-reference/voice/voice.asyncapi.json) | JSON | Same content, auto-generated from YAML |
+| REST API (source of truth) | YAML | [`/api-reference/openapi.yaml`](/api-reference/openapi.yaml) |
+| REST API | JSON | [`/api-reference/openapi.json`](/api-reference/openapi.json) |
+| Voice WebSocket API (source of truth)  | YAML | [`/api-reference/voice/voice.asyncapi.yaml`](/api-reference/voice/voice.asyncapi.yaml) |
+| Voice WebSocket API | JSON | [`/api-reference/voice/voice.asyncapi.json`](/api-reference/voice/voice.asyncapi.json) |
+
+The JSON files are generated from the YAML sources, so treat the YAML as authoritative.
+
+The same files are available on [GitHub](https://github.com/DeepL/api-docs/tree/main/api-reference) if you prefer to pin a revision.
 
 You can use these specs to explore the API in tools like [Postman](https://www.postman.com/), or to auto-generate SDKs and code libraries using tools such as [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/DeepL/api-docs/main/api-reference/openapi.yaml) or [OpenAPI Generator](https://openapi-generator.tech/).
 
@@ -18,4 +24,4 @@ You can use these specs to explore the API in tools like [Postman](https://www.p
 Swagger's "Try it out" in-browser simulator creates valid curl requests, but requests will fail due to [CORS restrictions](/docs/best-practices/cors-requests).
 </Note>
 
-The spec files live in the [`api-reference/`](https://github.com/DeepL/api-docs/tree/main/api-reference) directory of the [api-docs repository](https://github.com/DeepL/api-docs). If you encounter issues or have feature requests, [create an issue](https://github.com/DeepL/api-docs/issues).
+If you encounter issues or have feature requests, [create an issue](https://github.com/DeepL/api-docs/issues).
