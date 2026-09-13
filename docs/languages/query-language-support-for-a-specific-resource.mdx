@@ -1,0 +1,192 @@
+---
+title: "Query language support for a specific resource"
+description: "Use the v3/languages endpoint to look up which languages and features are available for a specific DeepL API resource before you make translation requests."
+covers: [Languages]
+---
+
+The `/v3/languages` endpoint tells you which languages a given DeepL API resource supports and which optional features (formality, glossaries, tag handling, and more) are available per language. Calling it before you build language selectors or validate user input lets you stay current as DeepL adds languages, without maintaining a hardcoded list.
+
+This guide shows you how to query language support for a resource, read the response, and check whether a specific feature is available for a language pair.
+
+<Info>
+The `resource` parameter is required. If you're migrating from `/v2/languages`, see the [migration guide](/docs/languages/migrating-from-v2-languages) — the v3 response structure is different.
+</Info>
+
+## Before you start
+
+You need a DeepL API key. Find yours on the [API Keys & Limits page](https://www.deepl.com/your-account/keys). If you're on the Free plan, use `https://api-free.deepl.com` instead of `https://api.deepl.com` in all requests below.
+
+## Step 1: Choose your resource
+
+The `resource` parameter identifies which DeepL API product you're querying language support for. Choose the value that matches what you're building:
+
+| **`resource` value** | **What it covers** |
+|---|---|
+| `translate_text` | Text translation via `/v2/translate` |
+| `translate_document` | Document translation via `/v2/document` |
+| `glossary` | Glossary management via `/v2/` and `/v3/glossaries` |
+| `voice` | Speech transcription and translation via `/v3/voice` |
+| `write` | Text improvement via `/v2/write` |
+| `style_rules` | Style rules via the style rules endpoints |
+| `translation_memory` | Translation memory features |
+
+## Step 2: Fetch supported languages
+
+Call `GET /v3/languages` with your chosen `resource` value. This example queries languages for text translation:
+
+```sh
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text' \
+  --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+The response is an array where each object represents one language:
+
+```json
+[
+  {
+    "lang": "de",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "formality": { "status": "stable" },
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en",
+    "name": "English",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": false,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en-US",
+    "name": "English (American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  }
+]
+```
+
+A few things to notice in this response:
+
+- `en` is source-only (`usable_as_source: true`, `usable_as_target: false`). For target languages, use a regional variant like `en-US` or `en-GB`.
+- Language codes follow [BCP 47](https://developers.deepl.com/docs/resources/language-release-process). Don't assume codes are always two letters — treat them as opaque identifiers.
+- The `features` object lists optional capabilities available for that language with this resource. A feature's absence means it isn't supported.
+
+## Step 3: Filter source and target languages
+
+Use `usable_as_source` and `usable_as_target` to build your language selectors:
+
+```python
+import requests
+
+def get_languages(resource, auth_key):
+    response = requests.get(
+        "https://api.deepl.com/v3/languages",
+        params={"resource": resource},
+        headers={"Authorization": f"DeepL-Auth-Key {auth_key}"},
+    )
+    response.raise_for_status()
+    return response.json()
+
+languages = get_languages("translate_text", auth_key="[yourAuthKey]")
+
+source_languages = [lang for lang in languages if lang["usable_as_source"]]
+target_languages = [lang for lang in languages if lang["usable_as_target"]]
+
+print("Source languages:", [lang["lang"] for lang in source_languages])
+print("Target languages:", [lang["lang"] for lang in target_languages])
+```
+
+## Step 4: Check feature availability for a language pair
+
+Some features, like formality, depend on both the source and target language supporting it. To know which language must support a feature for it to be available, call `GET /v3/languages/resources`:
+
+```sh
+curl -X GET 'https://api.deepl.com/v3/languages/resources' \
+  --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+```json
+[
+  {
+    "name": "translate_text",
+    "features": [
+      { "name": "formality", "needs_target_support": true },
+      { "name": "glossary", "needs_source_support": true, "needs_target_support": true },
+      { "name": "tag_handling", "needs_source_support": true, "needs_target_support": true },
+      { "name": "auto_detection", "needs_source_support": true }
+    ]
+  }
+]
+```
+
+For `formality`, only `needs_target_support` is set. This means you only need to check whether the target language's `features` object contains `formality` — the source language doesn't matter.
+
+For `glossary`, both `needs_source_support` and `needs_target_support` are set. Both languages in the pair must support `glossary` for you to use a glossary on that translation.
+
+Here's a helper that combines both calls to check whether a feature is available for a given pair:
+
+```python
+def is_feature_available(feature_name, source_lang, target_lang, resource_name, languages, resources):
+    # Find the feature's requirements from the resources list
+    resource_info = next(r for r in resources if r["name"] == resource_name)
+    feature_req = next(
+        (f for f in resource_info["features"] if f["name"] == feature_name),
+        None,
+    )
+    if feature_req is None:
+        return False  # Feature not defined for this resource
+
+    lang_map = {lang["lang"]: lang for lang in languages}
+
+    if feature_req.get("needs_source_support"):
+        source = lang_map.get(source_lang, {})
+        if feature_name not in source.get("features", {}):
+            return False
+
+    if feature_req.get("needs_target_support"):
+        target = lang_map.get(target_lang, {})
+        if feature_name not in target.get("features", {}):
+            return False
+
+    return True
+
+# Example: can we use a glossary for EN → DE?
+available = is_feature_available("glossary", "en", "de", "translate_text", languages, resources)
+print(f"Glossary available for EN→DE: {available}")  # True
+```
+
+## Including beta languages
+
+By default, the endpoint only returns stable languages. To include languages in beta, add `include=beta` to your request:
+
+```sh
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text&include=beta' \
+  --header 'Authorization: DeepL-Auth-Key [yourAuthKey]'
+```
+
+Beta languages appear in the response with `"status": "beta"`. Use the `status` field to decide whether to surface them to end users or restrict them to internal testing.
+
+<Warning>
+Don't hardcode the list of languages returned by this endpoint. New languages are added regularly — call the endpoint at startup (or on a schedule) and cache the result rather than maintaining a static list. See the [language release process](/docs/resources/language-release-process) for details on how DeepL introduces new languages.
+</Warning>
+
+## Next steps
+
+- See the full API reference: [Retrieve languages](/api-reference/languages/retrieve-languages-by-resource) and [Retrieve language resources](/api-reference/languages/retrieve-resources)
+- Browse all languages the API currently supports: [Languages supported](/docs/getting-started/supported-languages)
+- If you're coming from `/v2/languages`: [Migrating from v2/languages](/docs/languages/migrating-from-v2-languages)

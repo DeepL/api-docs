@@ -1,0 +1,161 @@
+---
+title: "Translate an Audio File with the Voice Translate Job API"
+description: "Submit a pre-recorded audio file for translation and download the results using the asynchronous Voice Translate Job API."
+covers: [Translate Audio Files]
+---
+
+The Voice Translate Job API translates pre-recorded audio files asynchronously. You submit a job, upload your audio file, poll for results, and download each output when it's ready. This guide walks through all four steps with a complete curl example.
+
+Use this API for batch or offline workloads: podcasts, meeting recordings, video files, and similar pre-recorded content. For live audio, use the [real-time Voice API](/docs/voice/overview).
+
+<Warning>
+  This API is only available to select DeepL customers and may change without notice. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details, or contact your customer success manager to request access.
+</Warning>
+
+## Prerequisites
+
+- A DeepL API account with Voice Translate Job API access
+- Your DeepL API key (set as `DEEPL_API_KEY` in the examples below)
+- A pre-recorded audio file in a [supported format](/api-reference/jobs-voice-translate/reference#supported-source-audio-formats)
+
+For file size, duration, concurrency, and supported format constraints, see the [Translate Audio Files reference](/api-reference/jobs-voice-translate/reference#limits).
+
+API Pro users call `https://api.deepl.com`. API Free users call `https://api-free.deepl.com` instead.
+
+## The four-step workflow
+
+Every translation follows the same pattern:
+
+1. **Create a job** to declare your source file and desired outputs. The API returns an upload URL.
+2. **Upload your audio file** directly to that URL.
+3. **Poll for status** until all targets are complete (or failed).
+4. **Download each result** from its download URL.
+
+The sections below walk through each step.
+
+## Step 1: Create a job
+
+Send a POST request to `/v1/jobs/voice/translate` with the source file metadata and your desired translation targets.
+
+The `content_length` and `content_type` fields in `source_file` must match your actual file exactly. The API uses them to provision a pre-signed upload URL, so mismatches will cause the upload in step 2 to fail.
+
+```bash
+curl -X POST "https://api.deepl.com/v1/jobs/voice/translate" \
+  -H "Authorization: DeepL-Auth-Key $DEEPL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source_file": {
+      "name": "podcast-episode-42.mp3",
+      "content_type": "audio/mpeg",
+      "content_length": 15728640
+    },
+    "parameters": {
+      "source_language": "en"
+    },
+    "targets": [
+      { "language": "de", "type": "text/plain" },
+      { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+    ]
+  }'
+```
+
+A successful response includes a `job_id`, an `upload_url`, and a `signature`:
+
+```json
+{
+  "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "signature": "eyJhbGciOiJIUzI1NiIs...",
+  "upload_url": "https://assets.deepl.com/collections/a74d88fb-ed2a-4943-a664-a4512398b994/assets/b1c2d3e4-f5a6-7890-abcd-ef1234567890"
+}
+```
+
+Save the `job_id` for polling and the `upload_url` for the next step. You have 5 minutes to complete the upload before the URL expires.
+
+Each job can have multiple targets in different output types, so a single English recording can produce a German transcript, French subtitles, and Spanish audio in one request. See the [Translate Audio Files reference](/api-reference/jobs-voice-translate/reference) for the full list of output types and supported languages.
+
+## Step 2: Upload your audio file
+
+PUT your audio file to the `upload_url` returned in step 1. Set `Content-Type` to the same value you declared in `source_file.content_type`.
+
+Do not include your DeepL API key in the upload request. The URL is pre-signed and only requires the `Content-Type` header. Adding an `Authorization` header will cause the request to fail.
+
+```bash
+curl -X PUT "https://assets.deepl.com/collections/a74d88fb-ed2a-4943-a664-a4512398b994/assets/b1c2d3e4-f5a6-7890-abcd-ef1234567890" \
+  -H "Content-Type: audio/mpeg" \
+  --data-binary @podcast-episode-42.mp3
+```
+
+A `200 OK` response with no body means the upload succeeded. Processing starts automatically once the file is received.
+
+## Step 3: Poll for status
+
+Check the job status by sending a GET request to `/v1/jobs/voice/translate/{job_id}`. Each target in the `results` array has its own `status` field that progresses independently.
+
+```bash
+curl "https://api.deepl.com/v1/jobs/voice/translate/a74d88fb-ed2a-4943-a664-a4512398b994" \
+  -H "Authorization: DeepL-Auth-Key $DEEPL_API_KEY"
+```
+
+While targets are still processing, the response looks like this:
+
+```json
+{
+  "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "operation": "translate",
+  "product": "voice",
+  "parameters": { "source_language": "en" },
+  "source_file": {
+    "name": "podcast-episode-42.mp3",
+    "content_type": "audio/mpeg",
+    "content_length": 15728640
+  },
+  "targets": [
+    { "language": "de", "type": "text/plain" },
+    { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+  ],
+  "results": [
+    { "status": "processing" },
+    { "status": "processing" }
+  ],
+  "created_at": "2026-10-01T01:03:03.444Z",
+  "updated_at": "2026-10-01T04:03:03.333Z"
+}
+```
+
+When a target completes, its result entry includes a `download_url` and `signature`:
+
+```json
+{
+  "results": [
+    {
+      "status": "complete",
+      "download_url": "https://assets.deepl.com/collections/a74d88fb/assets/c3d4e5f6",
+      "signature": "eyJhbGciOiJIUzI1NiIs..."
+    },
+    {
+      "status": "failed",
+      "error": { "message": "processing failed" }
+    }
+  ]
+}
+```
+
+Results are returned in the same order as the `targets` array in your create request, so `results[0]` corresponds to `targets[0]`.
+
+Poll every 10-30 seconds for files under 100 MB. Larger files or longer recordings may take several minutes. Keep polling until every result has reached a terminal status: `complete`, `failed`, or `downloaded`.
+
+## Step 4: Download results
+
+For each target with `status: complete`, download the result from its `download_url`. No authentication header is needed — the URL is pre-signed.
+
+```bash
+# Download the German plain-text transcript
+curl -o translation_de.txt \
+  "https://assets.deepl.com/collections/a74d88fb/assets/c3d4e5f6"
+```
+
+After you download a result, its status transitions to `downloaded` and the asset is queued for deletion. You have 1 hour from the time the upload completes to download all results. After that window, or once all results are downloaded, the job is deleted and returns `404`.
+
+## Handling partial failures
+
+Individual targets can fail while others succeed. Check each result's `status` independently and handle `failed` results by reading the `error.message` field. You cannot retry a failed target within an existing job; you need to create a new job.
