@@ -1,0 +1,216 @@
+---
+title: "Check feature availability for a language pair"
+description: "Use the v3/languages endpoints to look up which features are available for a specific source and target language combination."
+covers: [Languages]
+---
+
+The `GET /v3/languages` endpoint tells you which features — formality, glossaries, tag handling, and more — are available for a given language and DeepL resource. Use it to validate language pairs and conditionally enable features in your integration rather than hardcoding assumptions.
+
+This guide walks through the most common task: given a source language and a target language, determine which features you can use when translating between them.
+
+<Info>
+If you're currently using `GET /v2/languages`, see the [migration guide](/docs/languages/migrating-from-v2-languages) for differences and code examples. The v2 endpoint is deprecated.
+</Info>
+
+## Before you start
+
+You'll need a DeepL API key. Set it as an environment variable:
+
+```bash
+export DEEPL_API_KEY=your-api-key
+```
+
+## Step 1: Fetch languages for your resource
+
+Call `GET /v3/languages` with the `resource` parameter set to the DeepL API resource you're building for. For text translation, use `translate_text`.
+
+```bash
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text' \
+  --header "Authorization: DeepL-Auth-Key $DEEPL_API_KEY"
+```
+
+Each item in the response describes one language and whether it can be used as a source, a target, or both, along with the features it supports:
+
+```json
+[
+  {
+    "lang": "de",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "formality": { "status": "stable" },
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en",
+    "name": "English",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": false,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en-US",
+    "name": "English (American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  }
+]
+```
+
+Notice that `en` is source-only and `en-US` is target-only. Some features appear only on target languages (like `formality`) and some on both (like `glossary`). The next step explains how to determine which is which.
+
+## Step 2: Understand which side a feature applies to
+
+Some features require support on the source language, some on the target, and some on both. To check the rules for your resource, call `GET /v3/languages/resources`:
+
+```bash
+curl -X GET 'https://api.deepl.com/v3/languages/resources' \
+  --header "Authorization: DeepL-Auth-Key $DEEPL_API_KEY"
+```
+
+```json
+[
+  {
+    "name": "translate_text",
+    "features": [
+      { "name": "formality", "needs_target_support": true },
+      { "name": "style_rules", "needs_target_support": true },
+      { "name": "tag_handling", "needs_source_support": true, "needs_target_support": true },
+      { "name": "glossary", "needs_source_support": true, "needs_target_support": true },
+      { "name": "auto_detection", "needs_source_support": true }
+    ]
+  }
+]
+```
+
+For `translate_text`:
+- `formality` requires only target-language support
+- `glossary` and `tag_handling` require support on both the source and target language
+- `auto_detection` requires only source-language support (it applies when you omit the source language)
+
+## Step 3: Check availability for a specific language pair
+
+With the language data from Step 1 and the feature rules from Step 2, you can now determine which features are available for any pair. The logic is straightforward: a feature is available for a pair when every required side supports it.
+
+Here's a function that encapsulates the check:
+
+```python
+def check_pair_features(languages_by_code, resources_by_name, source_code, target_code, resource_name):
+    """
+    Returns a dict of feature -> status for a given source/target pair and resource.
+    Only includes features available for the pair (all required sides support it).
+    """
+    source = languages_by_code.get(source_code)
+    target = languages_by_code.get(target_code)
+
+    if not source or not source.get("usable_as_source"):
+        raise ValueError(f"{source_code!r} is not a valid source language")
+    if not target or not target.get("usable_as_target"):
+        raise ValueError(f"{target_code!r} is not a valid target language")
+
+    resource_features = {
+        f["name"]: f
+        for f in resources_by_name.get(resource_name, {}).get("features", [])
+    }
+
+    available = {}
+    for feature_name, rules in resource_features.items():
+        needs_source = rules.get("needs_source_support", False)
+        needs_target = rules.get("needs_target_support", False)
+
+        source_ok = not needs_source or feature_name in source.get("features", {})
+        target_ok = not needs_target or feature_name in target.get("features", {})
+
+        if source_ok and target_ok:
+            # Pick the most restrictive status across all required sides.
+            # Index order: stable=0, beta=1, early_access=2 — higher index means less stable.
+            statuses = []
+            if needs_source and feature_name in source.get("features", {}):
+                statuses.append(source["features"][feature_name]["status"])
+            if needs_target and feature_name in target.get("features", {}):
+                statuses.append(target["features"][feature_name]["status"])
+            status_order = ["stable", "beta", "early_access"]
+            available[feature_name] = max(statuses, key=lambda s: status_order.index(s)) if statuses else "stable"
+
+    return available
+```
+
+To use it, fetch both endpoints once at startup, index by code/name, then call the function for any pair:
+
+```python
+import os
+import requests
+
+API_KEY = os.environ["DEEPL_API_KEY"]
+HEADERS = {"Authorization": f"DeepL-Auth-Key {API_KEY}"}
+BASE_URL = "https://api.deepl.com"
+
+# Fetch once and cache
+languages = requests.get(
+    f"{BASE_URL}/v3/languages",
+    params={"resource": "translate_text"},
+    headers=HEADERS,
+).json()
+
+resources = requests.get(
+    f"{BASE_URL}/v3/languages/resources",
+    headers=HEADERS,
+).json()
+
+languages_by_code = {lang["lang"]: lang for lang in languages}
+resources_by_name = {res["name"]: res for res in resources}
+
+# Check English → German
+features = check_pair_features(
+    languages_by_code, resources_by_name,
+    source_code="en",
+    target_code="de",
+    resource_name="translate_text",
+)
+print(features)
+# {'formality': 'stable', 'tag_handling': 'stable', 'glossary': 'stable'}
+```
+
+The output tells you exactly which features you can pass to the [translate endpoint](/api-reference/translate) for this pair.
+
+## Step 4: Include beta languages (optional)
+
+By default, `GET /v3/languages` returns only stable languages. To include languages in beta, add `include=beta` to your request:
+
+```bash
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text&include=beta' \
+  --header "Authorization: DeepL-Auth-Key $DEEPL_API_KEY"
+```
+
+Beta languages have `"status": "beta"` in the response. Their features may also carry a `"status": "beta"` marker. Check the `status` field before surfacing beta languages or features to end users.
+
+<Warning>
+Beta languages and features can change or be removed without notice. See [Alpha and beta features](/docs/resources/alpha-and-beta-features) before relying on them in production.
+</Warning>
+
+## Caching recommendations
+
+The language list changes infrequently. Fetching it on every request adds latency and counts against your rate limits. Cache both `/v3/languages` and `/v3/languages/resources` responses and refresh them once daily, or on application startup. When DeepL adds a new language, the [language release process](/docs/resources/language-release-process) page describes what to expect in the API response.
+
+<Tip>
+Do not hardcode language codes or feature lists in your application. Language codes follow BCP 47 and may use subtags beyond the common two-letter form (e.g. `zh-Hans`, `sr-Cyrl-RS`). Always treat codes as opaque identifiers. See [Language release process](/docs/resources/language-release-process) for details.
+</Tip>
+
+## Next steps
+
+- [Using the Languages API](/docs/languages/using-the-languages-api) — full reference for both v3 endpoints, including all `resource` values and the complete response schema
+- [Supported languages](/docs/getting-started/supported-languages) — static table of all currently supported languages
+- [Migrating from v2/languages](/docs/languages/migrating-from-v2-languages) — if you're upgrading from the deprecated v2 endpoint
