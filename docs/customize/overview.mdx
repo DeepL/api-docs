@@ -19,6 +19,8 @@ DeepL's customization features let you control terminology, style, and consisten
 
 Glossaries, style rules, custom instructions, and translation memories work with both [text translation](/docs/translate/translate-text-quickstart) and [document translation](/docs/translate/translate-documents-quickstart), support all `model_type` values, and can be combined in a single request. Spoken terms apply to [Voice API](/docs/voice/overview) sessions, where they can be combined with glossaries.
 
+On the text translation endpoint you can also send all of them in one [`customizations` object](/api-reference/translate/request-translation#body-customizations) instead of the individual parameters. We recommend the object for new integrations.
+
 <Warning>
 Glossaries and style rules are unique to each of DeepL's global data centers and are not shared between them. Clients using [regional endpoints](/docs/getting-started/regional-endpoints) can't access glossaries or style rules created in the UI at this time.
 </Warning>
