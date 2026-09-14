@@ -1,0 +1,147 @@
+---
+title: "Query supported languages for a resource"
+description: "Use GET /v3/languages to fetch the languages and features available for a specific DeepL API resource, so you can build dynamic language selectors and feature checks."
+covers: [Languages]
+---
+
+The `/v3/languages` endpoint tells you which languages are available for a given DeepL API resource, and which optional features (formality, glossary support, tag handling, and more) each language supports. Call it at startup or on a schedule to populate language dropdowns and feature toggles in your integration, rather than hardcoding lists that go stale when DeepL adds new languages.
+
+<Info>
+`GET /v3/languages` replaces the deprecated `GET /v2/languages` endpoint. If you're still using v2, see the [migration guide](/docs/languages/migrating-from-v2-languages).
+</Info>
+
+This guide shows you how to:
+
+- Fetch all languages for the `translate_text` resource
+- Separate languages that are valid as source vs. target
+- Check whether a specific feature (formality) is available for a language
+
+## Prerequisites
+
+- A DeepL API key. Find yours at [your account page](https://www.deepl.com/your-account/keys).
+- `curl` or any HTTP client.
+
+If you're on the Free plan, replace `https://api.deepl.com` with `https://api-free.deepl.com` in every request below.
+
+## Step 1: Fetch languages for a resource
+
+Call `GET /v3/languages` with the `resource` parameter set to the DeepL product you're building for. This example uses `translate_text`.
+
+The `resource` parameter is required — pass the value that matches the DeepL product you are integrating (for example, `translate_text` for text translation). For all supported values, see the [GET /v3/languages reference](/api-reference/languages/get-languages).
+
+```sh
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text' \
+  --header 'Authorization: DeepL-Auth-Key YOUR_AUTH_KEY'
+```
+
+The response is a JSON array. Each object represents one language:
+
+```json
+[
+  {
+    "lang": "de",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "formality": { "status": "stable" },
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en",
+    "name": "English",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": false,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en-US",
+    "name": "English (American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  }
+]
+```
+
+Notice that `en` (English as a base code) is only valid as a source language, while `en-US` (the regional variant) is only valid as a target language. Some languages like `de` are valid in both directions.
+
+<Warning>
+Do not hardcode assumptions about language code format. Codes follow [BCP 47](https://www.rfc-editor.org/rfc/rfc5646) and can include region or script subtags of varying length. Treat the `lang` value as an opaque identifier. See [Language codes and the release process](/docs/resources/language-release-process) for details.
+</Warning>
+
+## Step 2: Build source and target language lists
+
+Filter the response by `usable_as_source` and `usable_as_target` to populate the appropriate selectors in your UI.
+
+```python
+import urllib.request
+import json
+
+api_key = "YOUR_AUTH_KEY"
+url = "https://api.deepl.com/v3/languages?resource=translate_text"
+
+req = urllib.request.Request(url, headers={"Authorization": f"DeepL-Auth-Key {api_key}"})
+with urllib.request.urlopen(req) as response:
+    languages = json.load(response)
+
+source_languages = [lang for lang in languages if lang["usable_as_source"]]
+target_languages = [lang for lang in languages if lang["usable_as_target"]]
+
+print("Source languages:", [lang["lang"] for lang in source_languages])
+print("Target languages:", [lang["lang"] for lang in target_languages])
+```
+
+Example output (truncated):
+
+```text
+Source languages: ['de', 'en', 'es', 'fr', ...]
+Target languages: ['de', 'en-GB', 'en-US', 'es', 'fr', ...]
+```
+
+## Step 3: Check feature availability for a language pair
+
+Before enabling a feature in your UI (for example, a formality selector), check that the target language supports it. Features appear as keys in the `features` object.
+
+```python
+def supports_feature(language, feature_name):
+    return feature_name in language.get("features", {})
+
+# Find German in the target language list
+german = next((lang for lang in target_languages if lang["lang"] == "de"), None)
+
+if german and supports_feature(german, "formality"):
+    print("German supports formality; show the formality selector")
+else:
+    print("German does not support formality; hide the selector")
+```
+
+For a complete picture of which languages must support a feature (source, target, or both) for a given resource, call `GET /v3/languages/resources`. See [Using the Languages API](/docs/languages/using-the-languages-api) for details on that endpoint.
+
+## Step 4: Include beta languages (optional)
+
+By default, the endpoint returns only stable languages. To also include beta languages, add `include=beta` to your request:
+
+```sh
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text&include=beta' \
+  --header 'Authorization: DeepL-Auth-Key YOUR_AUTH_KEY'
+```
+
+Languages returned with `"status": "beta"` are functional but not yet stable. Check the `status` field before displaying them to end users, since beta languages may change.
+
+## Next steps
+
+- [Using the Languages API](/docs/languages/using-the-languages-api) covers the full `GET /v3/languages` and `GET /v3/languages/resources` endpoint reference, including all response fields and feature semantics
+- [Supported languages](/docs/getting-started/supported-languages) lists the currently supported languages as a static reference table
+- [Migrating from v2/languages](/docs/languages/migrating-from-v2-languages) if you're updating an existing integration
