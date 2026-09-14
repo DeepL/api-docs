@@ -38,6 +38,15 @@ Failures that occur before a request reaches the API, in DeepL's edge infrastruc
 
 Handle both shapes in your parser. Reading `body.message ?? body.error?.message` covers every error the API can return, and keeps your client from crashing on a gateway error during an incident.
 
+## Response headers on errors
+
+| **Header** | **When it's sent** | **What to do with it** |
+| --- | --- | --- |
+| `X-Trace-ID` | Every response, including every error | Log it. Include it in support requests so our team can find the request |
+| `Retry-After` | On some `429` and `529` responses | Wait that many seconds before resending, in preference to your own backoff interval |
+
+The DeepL API does not return `RateLimit` headers, because there is no fixed per-second limit to report. Derive your pace from the responses instead, as described below.
+
 ## Which errors to retry
 
 | **Status** | **Meaning** | **Retry?** |
