@@ -1,0 +1,169 @@
+---
+title: "Check which languages and features are supported for a resource"
+description: "Query the Languages API to discover which languages and optional features are available for a specific DeepL API resource before making translation requests."
+covers: [Languages]
+---
+
+The Languages API lets you query language and feature support per DeepL API resource at runtime. Use it to populate language dropdowns, enable or disable feature toggles (like formality or glossaries), and validate language codes — instead of hardcoding assumptions that go stale when DeepL adds new languages.
+
+This guide shows you how to fetch languages for a resource, read the response, and filter by feature availability.
+
+<Info>
+  `GET /v3/languages` replaces the deprecated `GET /v2/languages` endpoint. If you're currently using v2, see the [migration guide](/docs/languages/migrating-from-v2-languages).
+</Info>
+
+## Before you start
+
+You'll need a DeepL API key. If you don't have one, [sign up for a free account](https://www.deepl.com/pro/change-plan#developer).
+
+Set your key as an environment variable so you can reuse it across examples:
+
+```sh
+export DEEPL_API_KEY=your-api-key-here
+```
+
+If you're on the free plan, replace `https://api.deepl.com` with `https://api-free.deepl.com` in every request below.
+
+## Step 1: Choose a resource
+
+The `resource` query parameter is required. It tells the API which DeepL product you're querying language support for:
+
+| **Value** | **Use when building against...** |
+|---|---|
+| `translate_text` | Text translation (`/v2/translate`) |
+| `translate_document` | Document translation (`/v2/document`) |
+| `glossary` | Glossary management (`/v2/` and `/v3/glossaries`) |
+| `voice` | Speech transcription and translation (`/v3/voice`) |
+| `write` | Text improvement (`/v2/write`) |
+| `style_rules` | Style rules (`/v3/style-rules`) |
+| `translation_memory` | Translation memory |
+
+For this guide, we'll use `translate_text` — the most common starting point.
+
+## Step 2: Fetch supported languages
+
+Call `GET /v3/languages` with your chosen resource:
+
+```sh
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text' \
+  --header "Authorization: DeepL-Auth-Key $DEEPL_API_KEY"
+```
+
+The response is a JSON array. Each entry represents one language:
+
+```json
+[
+  {
+    "lang": "de",
+    "name": "German",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": true,
+    "features": {
+      "formality": { "status": "stable" },
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en",
+    "name": "English",
+    "status": "stable",
+    "usable_as_source": true,
+    "usable_as_target": false,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  },
+  {
+    "lang": "en-US",
+    "name": "English (American)",
+    "status": "stable",
+    "usable_as_source": false,
+    "usable_as_target": true,
+    "features": {
+      "glossary": { "status": "stable" },
+      "tag_handling": { "status": "stable" }
+    }
+  }
+]
+```
+
+Notice that `en` and `en-US` are separate entries. `en` is source-only (`usable_as_source: true`, `usable_as_target: false`) while `en-US` is target-only. Always use `usable_as_source` and `usable_as_target` to determine role — don't infer it from the language code.
+
+<Warning>
+  Treat `lang` codes as opaque identifiers. Don't assume they'll always be two letters, or that hyphenated codes follow any particular pattern. Use a BCP 47-compliant library if you need to parse them. See [Language release process](/docs/resources/language-release-process) for details.
+</Warning>
+
+## Step 3: Read the features object
+
+Each language entry includes a `features` object. The keys are feature names; each value has at least a `status` field (`stable`, `beta`, or `early_access`).
+
+Whether a feature requires source-language support, target-language support, or both depends on the resource. To look that up programmatically, call `GET /v3/languages/resources`:
+
+```sh
+curl -X GET 'https://api.deepl.com/v3/languages/resources' \
+  --header "Authorization: DeepL-Auth-Key $DEEPL_API_KEY"
+```
+
+```json
+[
+  {
+    "name": "translate_text",
+    "features": [
+      { "name": "formality", "needs_target_support": true },
+      { "name": "glossary", "needs_source_support": true, "needs_target_support": true },
+      { "name": "tag_handling", "needs_source_support": true, "needs_target_support": true },
+      { "name": "auto_detection", "needs_source_support": true }
+    ]
+  }
+]
+```
+
+This tells you, for example, that `formality` only requires the target language to support it — the source language doesn't matter. `glossary` requires both. Use this response to determine feature availability for any language pair without hardcoding the rules.
+
+## Step 4: Filter by feature or role
+
+Here are common filtering tasks you'll encounter when building a UI or validating inputs.
+
+**Get all valid target languages:**
+
+```sh
+curl -s 'https://api.deepl.com/v3/languages?resource=translate_text' \
+  --header "Authorization: DeepL-Auth-Key $DEEPL_API_KEY" \
+  | jq '[.[] | select(.usable_as_target == true) | {lang, name}]'
+```
+
+**Get target languages that support formality:**
+
+```sh
+curl -s 'https://api.deepl.com/v3/languages?resource=translate_text' \
+  --header "Authorization: DeepL-Auth-Key $DEEPL_API_KEY" \
+  | jq '[.[] | select(.usable_as_target == true and .features.formality != null) | {lang, name}]'
+```
+
+**Include beta languages** (excluded by default):
+
+```sh
+curl -X GET 'https://api.deepl.com/v3/languages?resource=translate_text&include=beta' \
+  --header "Authorization: DeepL-Auth-Key $DEEPL_API_KEY"
+```
+
+Use `include=beta` when you want to surface languages that are available but not yet stable. You can also pass `include=external` to include features provided by third-party service partners, or combine them: `?include=beta&include=external`.
+
+## What to do with this data
+
+A few practical patterns:
+
+- **Language pickers**: filter by `usable_as_source` or `usable_as_target` and display `name` to users. Store `lang` as the value to send in API requests.
+- **Feature toggles**: before showing a formality selector, check that the target language has `formality` in its `features` object. Hide the control if it's absent.
+- **Input validation**: check that a user-supplied language code appears in the response before passing it to a translation request. Return a clear error if it doesn't.
+- **Cache the response**: language support changes infrequently. Cache the `/v3/languages` response for a reasonable period (for example, 24 hours) rather than fetching it on every request.
+
+## Next steps
+
+- See the full response schema and parameter reference: [Retrieve languages](/api-reference/languages/retrieve-languages-by-resource)
+- Understand which features each resource supports: [Retrieve language resources](/api-reference/languages/retrieve-resources)
+- Browse the full list of supported languages: [Languages supported](/docs/getting-started/supported-languages)
+- Migrating from v2? See the [migration guide](/docs/languages/migrating-from-v2-languages)

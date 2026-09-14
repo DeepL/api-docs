@@ -1,0 +1,266 @@
+---
+title: "Translate a Pre-Recorded Audio File"
+description: "Submit an audio file to the Voice Translate Job API, poll for results, and download translations as text, subtitles, or audio."
+covers: [Translate Audio Files]
+---
+
+<Warning>
+  **Closed alpha.** This API may change without notice and is only available to select DeepL customers. See [alpha and beta features](/docs/resources/alpha-and-beta-features) for details. To request access, contact your customer success manager.
+</Warning>
+
+The Voice Translate Job API translates pre-recorded audio files asynchronously. You submit a file, poll until each target is ready, then download the results. One source file can produce multiple outputs in one job: plain text transcripts, SRT subtitles, and translated speech audio in any combination.
+
+This guide walks through all four steps with a concrete example: an English MP3 podcast episode translated into German text and Spanish audio.
+
+## Overview
+
+- The API separates job creation from file upload and uses pre-signed URLs for direct object storage access
+- Job targets are tracked independently, each transitioning through its own status values
+- Per-target results must be checked individually; partial failures do not affect other targets in the same job
+
+## Prerequisites
+
+- A DeepL API key with Voice Translate Job access
+- An audio file to translate (see [supported source formats](/api-reference/jobs-voice-translate/reference#supported-source-audio-formats) and [limits](/api-reference/jobs-voice-translate/reference#limits))
+- `curl` for the HTTP requests; `wget` or any HTTP client for the download
+
+## Create a job
+
+Send a POST request to `/v1/jobs/voice/translate` with the source file metadata and a list of targets. The API returns an upload URL for your audio file; it does not accept the file directly.
+
+```bash
+curl https://api.deepl.com/v1/jobs/voice/translate \
+  --request POST \
+  --header "Authorization: DeepL-Auth-Key YOUR_AUTH_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "source_file": {
+      "name": "podcast-episode-42.mp3",
+      "content_type": "audio/mpeg",
+      "content_length": 15728640
+    },
+    "parameters": {
+      "source_language": "en"
+    },
+    "targets": [
+      { "language": "de", "type": "text/plain" },
+      { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+    ]
+  }'
+```
+
+`content_length` must be the exact byte size of the file. The API uses this to pre-allocate the upload URL and rejects uploads that don't match.
+
+The response contains the job ID and a pre-signed upload URL:
+
+```json
+{
+  "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "upload_url": "https://assets.deepl.com/collections/a74d88fb-ed2a-4943-a664-a4512398b994/assets/b1c2d3e4-f5a6-7890-abcd-ef1234567890",
+  "signature": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+
+Save the `job_id` and `upload_url`. You have 5 minutes to complete the upload before the URL expires.
+
+<Tip>
+  API Free users should use `https://api-free.deepl.com` instead of `https://api.deepl.com`.
+</Tip>
+
+## Upload the source file
+
+PUT your audio file directly to the `upload_url` from the previous step. This is a direct upload to object storage, not to the DeepL API, so no authorization header is needed.
+
+```bash
+curl "https://assets.deepl.com/collections/a74d88fb-ed2a-4943-a664-a4512398b994/assets/b1c2d3e4-f5a6-7890-abcd-ef1234567890" \
+  --request PUT \
+  --header "Content-Type: audio/mpeg" \
+  --data-binary @podcast-episode-42.mp3
+```
+
+The `Content-Type` header must match the `content_type` you declared when creating the job.
+
+A successful upload returns HTTP 200 with an empty body. Processing starts automatically once the upload is complete.
+
+<Warning>
+  You must upload within 5 minutes of creating the job. If the upload URL expires, create a new job.
+</Warning>
+
+## Poll for status
+
+Check the job status by sending a GET request to `/v1/jobs/voice/translate/{job_id}`. Results for each target are returned in the same order as the targets in your create request.
+
+```bash
+curl "https://api.deepl.com/v1/jobs/voice/translate/a74d88fb-ed2a-4943-a664-a4512398b994" \
+  --header "Authorization: DeepL-Auth-Key YOUR_AUTH_KEY"
+```
+
+While processing is still underway, targets will be in `processing` status:
+
+```json
+{
+  "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "operation": "translate",
+  "product": "voice",
+  "source_file": {
+    "name": "podcast-episode-42.mp3",
+    "content_type": "audio/mpeg",
+    "content_length": 15728640
+  },
+  "parameters": { "source_language": "en" },
+  "targets": [
+    { "language": "de", "type": "text/plain" },
+    { "language": "es", "type": "audio/pcm;encoding=s16le;rate=16000" }
+  ],
+  "results": [
+    { "status": "processing" },
+    { "status": "processing" }
+  ],
+  "created_at": "2026-10-01T01:03:03.444Z",
+  "updated_at": "2026-10-01T04:03:03.333Z"
+}
+```
+
+Poll every 10-30 seconds until each target reaches `complete` or `failed`. See the [status lifecycle reference](/api-reference/jobs-voice-translate/reference) for the full set of intermediate statuses. When a target reaches `complete`, its result object includes a `download_url`:
+
+```json
+{
+  "job_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "results": [
+    {
+      "status": "complete",
+      "download_url": "https://assets.deepl.com/collections/a74d88fb/assets/c3d4e5f6",
+      "signature": "eyJhbGciOiJIUzI1NiIs..."
+    },
+    {
+      "status": "failed",
+      "error": { "message": "processing failed" }
+    }
+  ]
+}
+```
+
+Targets can fail independently. A failed target does not affect other targets in the same job. Check each result's `status` field before attempting to download.
+
+## Download results
+
+Fetch each completed result from its `download_url`. Like the upload, this is a direct request to object storage, so no authorization header is needed (access is controlled by the pre-signed URL itself).
+
+```bash
+curl "https://assets.deepl.com/collections/a74d88fb/assets/c3d4e5f6" \
+  --output translation-de.txt
+```
+
+For audio targets, save the file with an extension matching the format you requested (`.pcm`, `.mp3`, `.wav`, etc.).
+
+<Warning>
+  Download results within 1 hour of the upload completing. After that window, results expire and the job returns 404. Once all results are downloaded, assets are also marked for deletion.
+</Warning>
+
+## Full example script
+
+This Python script runs all four steps end to end. Replace the placeholder values with your own.
+
+<Note>
+  This is a minimal example. It reads the full audio file into memory, which is not suitable for large files. Production code should open the file in streaming mode rather than loading it all at once.
+</Note>
+
+```python translate_audio.py
+import os
+import time
+import requests
+
+AUTH_KEY = "YOUR_AUTH_KEY"
+BASE_URL = "https://api.deepl.com"
+AUDIO_FILE = "podcast-episode-42.mp3"
+
+def create_job(file_path: str) -> dict:
+    file_size = os.path.getsize(file_path)
+
+    response = requests.post(
+        f"{BASE_URL}/v1/jobs/voice/translate",
+        headers={"Authorization": f"DeepL-Auth-Key {AUTH_KEY}"},
+        json={
+            "source_file": {
+                "name": file_path,
+                "content_type": "audio/mpeg",
+                "content_length": file_size,
+            },
+            "parameters": {"source_language": "en"},
+            "targets": [
+                {"language": "de", "type": "text/plain"},
+                {"language": "es", "type": "audio/pcm;encoding=s16le;rate=16000"},
+            ],
+        },
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def upload_file(upload_url: str, file_path: str) -> None:
+    with open(file_path, "rb") as f:
+        response = requests.put(
+            upload_url,
+            headers={"Content-Type": "audio/mpeg"},
+            data=f,
+        )
+    response.raise_for_status()
+
+
+def poll_until_done(job_id: str, poll_interval: int = 15) -> list:
+    while True:
+        response = requests.get(
+            f"{BASE_URL}/v1/jobs/voice/translate/{job_id}",
+            headers={"Authorization": f"DeepL-Auth-Key {AUTH_KEY}"},
+        )
+        response.raise_for_status()
+        data = response.json()
+        results = data["results"]
+
+        # Check whether all targets have reached a terminal state
+        if all(r["status"] in ("complete", "failed") for r in results):
+            return results
+
+        print(f"Status: {[r['status'] for r in results]}, polling again in {poll_interval}s")
+        time.sleep(poll_interval)
+
+
+def download_results(results: list, targets: list) -> None:
+    extensions = {"text/plain": "txt", "audio/pcm;encoding=s16le;rate=16000": "pcm"}
+
+    for i, result in enumerate(results):
+        if result["status"] != "complete":
+            print(f"Target {i} failed: {result.get('error', {}).get('message')}")
+            continue
+
+        target = targets[i]
+        ext = extensions.get(target["type"], "bin")
+        filename = f"translation-{target['language']}.{ext}"
+
+        url = result.get("download_url")
+        if not url:
+            print(f"Target {i} missing download_url")
+            continue
+        content = requests.get(url).content
+        with open(filename, "wb") as f:
+            f.write(content)
+        print(f"Saved {filename}")
+
+
+job_response = create_job(AUDIO_FILE)
+job_id = job_response["job_id"]
+upload_url = job_response["upload_url"]
+print(f"Job created: {job_id}")
+
+upload_file(upload_url, AUDIO_FILE)
+print("Upload complete")
+
+results = poll_until_done(job_id)
+download_results(results, job_response["targets"])
+```
+
+## Next steps
+
+- Check the [status lifecycle, limits, and supported formats](/api-reference/jobs-voice-translate/reference) for the full list of input and output audio types
+- For live audio, see the [Real-Time Voice Quickstart](/docs/voice/real-time-voice-quickstart)
+- Review the [Create Job](/api-reference/jobs-voice-translate/create-voice-translate-job) and [Get Job Status](/api-reference/jobs-voice-translate/get-voice-translate-job-status) endpoint references for complete request and response schemas
