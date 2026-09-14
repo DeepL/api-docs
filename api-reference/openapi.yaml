@@ -668,6 +668,25 @@ paths:
                   items:
                     type: string
                     example: "Use a friendly, diplomatic tone"
+                style_profile_id:
+                  description: |-
+                    Translate with a [style profile](/api-reference/style-profiles/get-style-profile): its glossaries,
+                    style rule lists, translation memories and example documents through one ID. The profile is applied
+                    per text once the source language is known: the glossaries with a dictionary for the text's language
+                    pair, the style rule list for the target language, the translation memories whose source language
+                    matches the text, and the example documents written in the target language. A component that does
+                    not fit a text's language pair is left out for that text; this is not an error.
+
+                    A style profile is a complete set of customizations, so it cannot be combined with `customizations`,
+                    `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`, `translation_memory_threshold` or
+                    `custom_instructions`. A request that combines them is rejected with `400 Bad Request`. A style
+                    profile that does not exist or that your account cannot access is rejected with `404 Not Found`.
+
+                    Available for accounts with style profiles enabled; otherwise the request is rejected with
+                    `403 Forbidden`.
+                  type: string
+                  format: uuid
+                  example: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
                 tag_handling:
                   $ref: '#/components/schemas/TagHandlingOption'
                 tag_handling_version:
@@ -755,6 +774,25 @@ paths:
                   $ref: '#/components/schemas/TranslationMemoryId'
                 translation_memory_threshold:
                   $ref: '#/components/schemas/TranslationMemoryThreshold'
+                style_profile_id:
+                  description: |-
+                    Translate with a [style profile](/api-reference/style-profiles/get-style-profile): its glossaries,
+                    style rule lists, translation memories and example documents through one ID. The profile is applied
+                    per text once the source language is known: the glossaries with a dictionary for the text's language
+                    pair, the style rule list for the target language, the translation memories whose source language
+                    matches the text, and the example documents written in the target language. A component that does
+                    not fit a text's language pair is left out for that text; this is not an error.
+
+                    A style profile is a complete set of customizations, so it cannot be combined with `customizations`,
+                    `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`, `translation_memory_threshold` or
+                    `custom_instructions`. A request that combines them is rejected with `400 Bad Request`. A style
+                    profile that does not exist or that your account cannot access is rejected with `404 Not Found`.
+
+                    Available for accounts with style profiles enabled; otherwise the request is rejected with
+                    `403 Forbidden`.
+                  type: string
+                  format: uuid
+                  example: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
                 tag_handling:
                   $ref: '#/components/schemas/TagHandlingOption'
                 outline_detection:
