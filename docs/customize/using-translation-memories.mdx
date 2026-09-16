@@ -163,6 +163,62 @@ curl -X POST 'https://api.deepl.com/v2/translate' \
 
 With a threshold of `100`, "Halloo Welt!" is no longer an exact match for "Hallo Welt!", so the translation memory segment is not applied. DeepL falls back to its default translation: "Hello world!".
 
+## Step 4: See which segments came from the translation memory
+
+When you route translations to human review, you may want to skip the segments that came from your translation memory and only review freshly translated ones. Set `show_translation_memory_matches` to `true` to find out which stored segments made it into the output and where.
+
+<Note>
+This parameter is currently available to selected accounts. If it is not enabled for your account, the request fails with a 400 error. Contact your DeepL representative to request access.
+</Note>
+
+```sh
+curl -X POST 'https://api.deepl.com/v2/translate' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "text": [
+    "Hallo Welt! Wie geht es dir?"
+  ],
+  "target_lang": "EN",
+  "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "show_translation_memory_matches": true
+}'
+```
+
+**Expected output:**
+
+```json
+{
+  "translations": [
+    {
+      "detected_source_language": "DE",
+      "text": "Hello everyone! How are you?",
+      "customizations": {
+        "translation_memory_matches": [
+          {
+            "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+            "segment_id": "8b1d5c2e-3f4a-4b6c-9d7e-0f1a2b3c4d5e",
+            "match_score": 100,
+            "text_ranges": [
+              { "start": 0, "end": 15 }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Each entry names the stored segment that was used, its match score, and the `text_ranges` it covers in `text`, counted in Unicode code points. Here, "Hello everyone!" (positions 0 to 15) came from the translation memory, while "How are you?" was freshly translated. An empty `translation_memory_matches` list means nothing from the translation memory reached the output.
+
+A few things to keep in mind:
+
+- The list only contains segments that were integrated into the output. A stored segment that was found but not used does not appear.
+- Whether a segment counts as integrated, and where, is determined by a model after translation. A fuzzy match that was adapted can be reported in several ranges, with the adapted words in the gaps.
+- Setting the parameter adds a processing step to each request, so only use it when you need the result.
+- With `tag_handling` set, the entries are returned without `text_ranges`, because positions cannot be mapped onto the output with reinserted tags.
+
 ## What you've accomplished
 
 You've learned how to:
@@ -170,9 +226,11 @@ You've learned how to:
 - Retrieve the translation memories on your account
 - Use a translation memory in a translation request
 - Control the matching threshold to tune how closely source text must match a stored segment
+- Find out which segments of a translation came from the translation memory
 
 ## See also
 
 - [List translation memories](/api-reference/translation-memory/list-translation-memories) — API reference
 - [Text translation endpoint](/api-reference/translate/request-translation#body-translation-memory-id) — `translation_memory_id` and `translation_memory_threshold` parameter reference
+- [Text translation endpoint](/api-reference/translate/request-translation#body-show-translation-memory-matches) — `show_translation_memory_matches` parameter reference
 - [Supported languages](/docs/getting-started/supported-languages) — check which languages support translation memories

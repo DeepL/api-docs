@@ -830,6 +830,9 @@
                   "translation_memory_threshold": {
                     "$ref": "#/components/schemas/TranslationMemoryThreshold"
                   },
+                  "show_translation_memory_matches": {
+                    "$ref": "#/components/schemas/ShowTranslationMemoryMatches"
+                  },
                   "custom_instructions": {
                     "description": "Specify a list of instructions to customize the translation behavior. Up to 10 custom instructions can be specified, each with a maximum of 300 characters.\n\n**Important:**  The target language must be `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, `zh` or any variants of these languages.",
                     "type": "array",
@@ -940,6 +943,9 @@
                   "translation_memory_threshold": {
                     "$ref": "#/components/schemas/TranslationMemoryThreshold"
                   },
+                  "show_translation_memory_matches": {
+                    "$ref": "#/components/schemas/ShowTranslationMemoryMatches"
+                  },
                   "tag_handling": {
                     "$ref": "#/components/schemas/TagHandlingOption"
                   },
@@ -1034,6 +1040,53 @@
                               "v1"
                             ],
                             "example": "v2"
+                          },
+                          "customizations": {
+                            "description": "Details about the customizations applied to this text. Only present if the `show_translation_memory_matches` parameter is set to true.",
+                            "type": "object",
+                            "properties": {
+                              "translation_memory_matches": {
+                                "description": "The translation memory segments that were integrated into the translated text, in text order.\nAn empty list means nothing from the translation memory reached the output.\n\nWhether a segment counts as integrated, and where, is determined by a model after\ntranslation. A fuzzy match that was adapted can be reported in several pieces.",
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "translation_memory_id": {
+                                      "$ref": "#/components/schemas/TranslationMemoryId"
+                                    },
+                                    "segment_id": {
+                                      "description": "Identifier of the matched segment inside the translation memory.",
+                                      "type": "string",
+                                      "example": "8b1d5c2e-3f4a-4b6c-9d7e-0f1a2b3c4d5e"
+                                    },
+                                    "match_score": {
+                                      "description": "Similarity between the source text and the matched segment, from 50 to 100. 100 means the two are identical.",
+                                      "type": "number",
+                                      "example": 100
+                                    },
+                                    "text_ranges": {
+                                      "description": "Where the segment appears in `text`, as half-open ranges of Unicode code points.\nNot present when `tag_handling` is set, because positions cannot be mapped onto\nthe output with reinserted tags.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "start": {
+                                            "description": "Position of the first code point of the range.",
+                                            "type": "integer",
+                                            "example": 0
+                                          },
+                                          "end": {
+                                            "description": "Position after the last code point of the range.",
+                                            "type": "integer",
+                                            "example": 15
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
                           }
                         }
                       }
@@ -9417,6 +9470,11 @@
       "ShowBilledCharacters": {
         "description": "When true, the response will include the billed_characters parameter, giving the\nnumber of characters from the request that will be counted by DeepL for billing purposes.",
         "type": "boolean"
+      },
+      "ShowTranslationMemoryMatches": {
+        "description": "When true, each translation includes a `customizations.translation_memory_matches` list with the\ntranslation memory segments that were integrated into the translated text and where they appear.\nRequires a translation memory on the request; without one the request fails with a 400.\n\nAdds a model call after translation, so only set it when you use the result. This parameter is\ncurrently available to selected accounts; if it is not enabled for yours, the request fails with a 400.",
+        "type": "boolean",
+        "default": false
       },
       "SplitSentencesOption": {
         "description": "Sets whether the translation engine should first split the input into sentences.\n\nPossible values are:\n  * 0 - no splitting at all, whole input is treated as one sentence\n  * 1 (default when tag_handling is not set to html) - splits on punctuation and on newlines\n  * nonewlines (default when tag_handling=html) - splits on punctuation only, ignoring newlines",
