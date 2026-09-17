@@ -32,8 +32,10 @@ export async function update({ authKey, dryRun = false }) {
         console.warn(`voice variant ${l.lang} has no base language (${baseCode})`);
       }
 
-      // Transcription for variants is determined by base language
-      const transcription = isVariant ? base?.features?.transcription : l.features.transcription;
+      // Transcription for variants is determined by base language, if it exists
+      const transcription = isVariant
+        ? (base?.features?.transcription ?? l.features.transcription)
+        : l.features.transcription;
       const name = l.status !== 'stable' ? `${l.name} <Badge color="blue">beta</Badge>` : l.name;
 
       return `| ${name} | ${mark(transcription)} | ✓ | ${mark(l.features.translated_speech)} |`;
