@@ -20,7 +20,7 @@ export async function update({ authKey, dryRun = false }) {
   const languagesByCode = new Map(languages.map((language) => [language.lang, language]));
 
   const rows = languages
-    // Skip row for base language is variants are available
+    // Skip the row for a base language if variants are available
     .filter((l) => l.lang.includes('-') || !languages.some((f) => f.lang.startsWith(`${l.lang}-`)))
     .sort(byName)
     .map((l) => {
