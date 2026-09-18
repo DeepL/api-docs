@@ -5,7 +5,7 @@ rss: true
 ---
 
 <Update label="In active development">
-- Editing the contents of an existing [translation memory](/docs/customize/using-translation-memories) via API
+- Editing the contents of an existing [translation memory](/docs/customize/managing-translation-memories) via API
 </Update>
 
 <Update label="September 2026">
@@ -35,7 +35,7 @@ rss: true
 - A tag can only be set on the session request, since the WebSocket connection carries no headers. To attribute audio to more than one tag, open a separate session per tag.
 
 ## August 11 - Translation Memory Management API
-- You can now create, inspect, export, and delete [translation memories](/docs/customize/using-translation-memories) through the API. Translation memories store previously translated segments so the same source text produces consistent output across projects. Previously, the API could only list the translation memories on your account, and everything else had to be done in the DeepL UI.
+- You can now create, inspect, export, and delete [translation memories](/docs/customize/managing-translation-memories) through the API. Translation memories store previously translated segments so the same source text produces consistent output across projects. Previously, the API could only list the translation memories on your account, and everything else had to be done in the DeepL UI.
 - [`POST /v3/translation_memories/import`](/api-reference/translation-memory/import-a-translation-memory) creates a translation memory from a TMX file. The request declares the file and returns a signed upload URL plus a `job_id`; you upload the file to that URL and poll the job for the new `translation_memory_id`.
 - [`POST /v3/translation_memories/{translation_memory_id}/export`](/api-reference/translation-memory/export-a-translation-memory) exports a translation memory as TMX, also as a background job.
 - [`GET /v3/translation_memories/jobs/{job_id}`](/api-reference/translation-memory/retrieve-a-translation-memory-job) reports the status of both import and export jobs.
