@@ -391,6 +391,11 @@ def main():
             "gap": {
                 "type": args.task_type,
                 "family": Path(target_path).parts[1] if len(Path(target_path).parts) > 1 else "",
+                # The page being reworked, so this task has an identity of its own.
+                # Without it every rework of the same family shares one gap key and
+                # the open-PR check reads task B as a duplicate of task A
+                # (see pipeline/open_prs.py).
+                "path": target_path,
                 "description": args.instruction,
             },
         })
