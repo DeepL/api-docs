@@ -38,6 +38,59 @@ def load_text(path):
         return ""
 
 
+def load_agent(path):
+    """Load an agent file's prose, minus its YAML frontmatter.
+
+    The .claude/agents/*.md files are agent definitions: the frontmatter declares
+    `tools: Read, Write, Grep, Glob, ...` and the body is written for a harness
+    where those exist. Pasted verbatim into a plain API call they tell the model
+    it can search the repo, so it obliges by inventing tool calls and returns a
+    transcript instead of a page. Drop the frontmatter here; NO_TOOLS below
+    overrides what the body still assumes.
+    """
+    text = load_text(path)
+    if text.startswith("---"):
+        end = text.find("\n---", 3)
+        if end != -1:
+            return text[end + 4:].lstrip("\n")
+    return text
+
+
+NO_TOOLS = """## No Tools In This Context
+
+You are called through the API with no tools available:
+
+- Ignore any instruction above to read files, search with Grep or Glob, browse the
+  web, or delegate to another agent. Everything you need is in this prompt, and
+  there is nothing else to look up.
+- Never emit tool calls, tool results, or a note about research you are about to do.
+  A reply that opens with "I'll research..." or "Let me read..." is a failed reply.
+- Where the guidelines say to return content "using Write or Edit", they mean: put
+  the content in your reply, and nothing else."""
+
+
+def looks_like_mdx(text):
+    """Whether a reply is a page, rather than commentary or a faked transcript."""
+    stripped = (text or "").lstrip()
+    if not stripped.startswith("---"):
+        return False
+    return stripped.find("\n---", 3) != -1  # frontmatter block is closed
+
+
+def format_retry_prompt(problem):
+    """Corrective turn for a reply that came back in the wrong shape.
+
+    The agent guidelines are written for a tool-equipped harness, so the model
+    sometimes follows them into narrating research it cannot do. One plain
+    correction recovers that far more safely than trying to cut a page out of a
+    transcript, which can splice in content the model quoted from elsewhere.
+    """
+    return f"""Your previous reply was not usable: {problem}
+
+Reply again with the content only. No preamble, no commentary, no tool calls, no
+markdown fences, and no explanation of what you changed."""
+
+
 OUTPUT_RULES = """## Output Format
 
 - Output ONLY the .mdx file content. No commentary, no explanation, no markdown fences.
@@ -65,15 +118,17 @@ conflict, the docs-writer guidelines win.
 
 ## Docs Writer Guidelines
 
-{load_text(DOCS_WRITER_PATH)}
+{load_agent(DOCS_WRITER_PATH)}
 
 ## Diataxis Framework
 
-{load_text(DIATAXIS_PATH)}
+{load_agent(DIATAXIS_PATH)}
 
 ## Information Architecture
 
-{load_text(DOCS_IA_PATH)}
+{load_agent(DOCS_IA_PATH)}
+
+{NO_TOOLS}
 
 {OUTPUT_RULES}"""
 
@@ -90,15 +145,17 @@ Review .mdx drafts against the guidelines below and return structured findings a
 
 ## Editorial Review Criteria
 
-{load_text(EDITORIAL_REVIEWER_PATH)}
+{load_agent(EDITORIAL_REVIEWER_PATH)}
 
 ## Diataxis Framework and Review Criteria
 
-{load_text(DIATAXIS_PATH)}
+{load_agent(DIATAXIS_PATH)}
 
 ## Information Architecture
 
-{load_text(DOCS_IA_PATH)}
+{load_agent(DOCS_IA_PATH)}
+
+{NO_TOOLS}
 """
 
 
@@ -106,8 +163,8 @@ def load_planning_context():
     """IA + Diataxis prose for the batch planner, so its routing rules aren't a
     third hand-maintained copy of the content-type rules."""
     return (
-        f"## Information Architecture\n\n{load_text(DOCS_IA_PATH)}\n\n"
-        f"## Diataxis Framework\n\n{load_text(DIATAXIS_PATH)}"
+        f"## Information Architecture\n\n{load_agent(DOCS_IA_PATH)}\n\n"
+        f"## Diataxis Framework\n\n{load_agent(DIATAXIS_PATH)}"
     )
 
 
