@@ -9,6 +9,15 @@ rss: true
 </Update>
 
 <Update label="September 2026">
+## September XX - New Voice API Languages: Catalan and Galician
+- The [Voice API](/docs/voice/overview) now supports `ca` (Catalan) and `gl` (Galician) as source languages and as targets for translation and translated speech. Both are beta for the Voice API; they are already generally available for text and document translation. Translation is provided by DeepL; transcription and translated speech are provided by external service partners, so the source language must be set explicitly (no auto-detection).
+- Both languages are marked `"external": true` on the `transcription` and `translated_speech` features in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response. Because they are beta and external, call with `include=beta&include=external` to see them.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full list.
+
+## September XX - Hebrew, Slovenian, and Thai Translated Speech in the Voice API
+- The [Voice API](/docs/voice/overview) now generates translated speech (voice output) for `he` (Hebrew), `sl` (Slovenian), and `th` (Thai), in beta. Transcription and translation for these languages were already supported; this adds synthesized audio.
+- Translated speech for all three languages is provided by external service partners. In the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response, `translated_speech` is reported with `"external": true` and beta status. Call with `include=beta&include=external` to see it.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full list.
 ## September 11 - Speaker Match Voice for the Voice API
 - **Speaker match** is a new voice option for [Voice API](/docs/voice/overview) translated speech: instead of one of the preset voices, the synthesized audio uses a voice close to the original speaker's. Set [`target_media_voice`](/api-reference/voice/request-session) to `match` on the session request.
 - Speaker match is only available for target languages whose translated speech is provided by DeepL, not for languages provided through external service partners. Requesting it for any other target language is not an error: that language falls back to a preset voice. See the [supported languages table](/docs/voice/supported-voice-languages) for the full list.
