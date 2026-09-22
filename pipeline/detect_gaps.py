@@ -155,23 +155,44 @@ def ungrouped_tags(endpoints, families):
 # Pages — frontmatter + coarse Diataxis classification                         #
 # --------------------------------------------------------------------------- #
 
-def page_frontmatter(page_path):
-    """Return (frontmatter_dict, raw_content). (None, None) if the file is missing."""
+def page_file(page_path):
+    """The file backing a docs.json page entry, or None if nothing does.
+
+    Nav entries carry no extension, so a nav path is never a usable file path.
+    Worse, a page can share its name with the directory holding its children
+    (docs/resources/breaking-changes-change-notices is both a page and the folder
+    its notices live in), so appending nothing and opening the result hands you a
+    directory. Resolve through here; never build a path from a nav entry by hand.
+    """
     for ext in (".mdx", ".md"):
         fp = REPO_ROOT / (page_path + ext)
-        if fp.exists():
-            try:
-                content = fp.read_text(encoding="utf-8")
-            except Exception:
-                return {}, ""
-            if content.startswith("---"):
-                end = content.find("---", 3)
-                if end != -1:
-                    try:
-                        return (yaml.safe_load(content[3:end]) or {}), content
-                    except yaml.YAMLError:
-                        return {}, content
-            return {}, content
+        if fp.is_file():
+            return fp
+    return None
+
+
+def has_child_pages(all_pages, page_path):
+    """Whether other nav entries sit under this one, making it a parent page."""
+    prefix = page_path + "/"
+    return any(p.startswith(prefix) for p in all_pages)
+
+
+def page_frontmatter(page_path):
+    """Return (frontmatter_dict, raw_content). (None, None) if the file is missing."""
+    fp = page_file(page_path)
+    if fp:
+        try:
+            content = fp.read_text(encoding="utf-8")
+        except OSError:
+            return {}, ""
+        if content.startswith("---"):
+            end = content.find("---", 3)
+            if end != -1:
+                try:
+                    return (yaml.safe_load(content[3:end]) or {}), content
+                except yaml.YAMLError:
+                    return {}, content
+        return {}, content
     return None, None  # page listed in nav but file missing
 
 
@@ -329,14 +350,17 @@ def detect_gaps(docs_json, endpoints, families, section=None, force=False):
 
     # --- Doc-quality checks on non-reference pages ------------------------ #
     if not section:
-        for p in all_doc_pages(docs_json, apiref_tab):
+        doc_pages = all_doc_pages(docs_json, apiref_tab)
+        for p in doc_pages:
             fm, content = page_frontmatter(p)
             if fm is None:
                 continue
             if not fm.get("description"):
                 gaps.append(gap("missing_description", "low", None, path=p,
                                 desc=f"{p} has no frontmatter description"))
-            if len(strip_frontmatter(content).split()) < 100:
+            # A page with children is a hub: it's short because the content sits
+            # on the child pages. Padding it out is the wrong fix, so don't ask.
+            if len(strip_frontmatter(content).split()) < 100 and not has_child_pages(doc_pages, p):
                 gaps.append(gap("thin_page", "medium", None, path=p,
                                 desc=f"{p} has under 100 words"))
 
