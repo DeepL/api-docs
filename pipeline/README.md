@@ -23,6 +23,23 @@ All model prompts are assembled from the files above in one place: the
 `build_*_system_prompt` / `load_planning_context` helpers in `pipeline/util.py`. That
 is plumbing — change behavior in the files above, not in `util.py`.
 
+Two things in `util.py` are not plumbing, because the agent files can't express them.
+The `.claude/agents/*.md` files are agent definitions: their frontmatter declares
+`tools:` and their bodies say to search the repo with Grep and Glob and to return work
+"using Write or Edit". The pipeline pastes their prose into plain API calls where no
+tools exist, and taken at face value those instructions make the model return a
+transcript of itself researching instead of a page. So:
+
+- `load_agent()` strips the frontmatter, and the `NO_TOOLS` block (appended after the
+  guidelines, so it wins) cancels what the bodies still assume.
+- `generate.py` and `rework.py` check the reply's shape and, if it isn't a file, spend
+  one corrective turn on it. Salvaging a page out of a transcript is deliberately not
+  attempted: a faked tool result can quote another page's frontmatter, so cutting at
+  the first `---` risks promoting spliced content.
+
+Keep that in mind when editing the agent files: prose aimed at the interactive agent
+is also prompt text for the pipeline.
+
 ## Setup
 
 ```bash

@@ -58,7 +58,7 @@ except ImportError:
     sys.exit(1)
 
 
-from util import build_authoring_system_prompt
+from util import build_authoring_system_prompt, looks_like_mdx, format_retry_prompt
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OPENAPI_PATH = REPO_ROOT / "api-reference" / "openapi.yaml"
@@ -359,13 +359,35 @@ def main():
     # Call Claude
     print("Calling Claude...")
     client = anthropic.Anthropic()
-    with client.messages.stream(
-        model=MODEL,
-        max_tokens=MAX_TOKENS * len(targets),
-        system=system_prompt,
-        messages=[{"role": "user", "content": user_prompt}],
-    ) as stream:
-        raw_output = stream.get_final_text()
+
+    def stream_text(messages):
+        with client.messages.stream(
+            model=MODEL,
+            max_tokens=MAX_TOKENS * len(targets),
+            system=system_prompt,
+            messages=messages,
+        ) as stream:
+            return stream.get_final_text()
+
+    messages = [{"role": "user", "content": user_prompt}]
+    raw_output = stream_text(messages)
+
+    # A multi-target reply is keyed on `--- SPLIT: <path> ---` markers; a
+    # single-target one is just the file. Either way, give one corrective turn
+    # when the shape is wrong instead of writing an unusable draft.
+    if len(targets) > 1:
+        ok = "--- SPLIT:" in raw_output
+        problem = "it contained no `--- SPLIT: <path> ---` markers"
+    else:
+        ok = looks_like_mdx(raw_output)
+        problem = "it did not start with YAML frontmatter (---)"
+
+    if not ok and raw_output.strip():
+        print("  Reply was the wrong shape, asking again")
+        raw_output = stream_text(messages + [
+            {"role": "assistant", "content": raw_output[:500].strip()},
+            {"role": "user", "content": format_retry_prompt(problem)},
+        ])
 
     # Parse output
     if len(targets) > 1:
