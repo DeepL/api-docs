@@ -232,6 +232,14 @@
                 "drilldown": false
               },
               {
+                "group": "Quality Evaluation",
+                "tag": "BETA",
+                "pages": [
+                  "api-reference/quality-evaluation/poll"
+                ],
+                "drilldown": false
+              },
+              {
                 "group": "Write",
                 "pages": [
                   "api-reference/improve-text/request-text-improvement",
@@ -613,6 +621,14 @@
     {
       "source": "/api-reference/document",
       "destination": "/api-reference/document/upload-and-translate-a-document"
+    },
+    {
+      "source": "/api-reference/quality-evaluation",
+      "destination": "/api-reference/quality-evaluation/poll"
+    },
+    {
+      "source": "/api-reference/quality-evaluation/submit",
+      "destination": "/api-reference/quality-evaluation/poll"
     },
     {
       "source": "/api-reference/multilingual-glossaries",

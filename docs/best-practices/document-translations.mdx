@@ -1,8 +1,9 @@
 ---
 title: "Document translations"
-description: "Handle file size limits, status codes, and error details when translating documents with the DeepL API."
+description: "Handle file size limits, status codes, quality evaluation reports, and error details when translating documents with the DeepL API."
 mode: "wide"
 public: true
+covers: [Quality Evaluation]
 ---
 
 Below you will find general guidance on how to handle status codes and error details to ensure a smooth document translation experience.
@@ -76,6 +77,73 @@ Translation time depends on document size and server load: small documents typic
 
 ### Using glossaries with documents
 You can apply a glossary to a document translation with the `glossary_id` parameter (or up to 5 glossaries with `glossary_ids`). This requires the `source_lang` parameter to be set, and the glossary's language pair has to match the language pair of the request.
+
+### Requesting a quality evaluation
+A quality evaluation is a report on the translation DeepL just produced: for each segment of the document it lists the issues it detected, such as mistranslations, omissions, and fluency or style problems, with a severity and the character range each issue applies to. Use it to target human review at the segments that need it instead of reviewing the whole document.
+
+<Warning>
+  Quality evaluation is in [beta](/docs/resources/alpha-and-beta-features) and available to select customers only. To have it enabled for your account, contact your customer success manager; until then, opting in returns HTTP 403.
+</Warning>
+
+Add [`enable_quality_evaluation`](/api-reference/document/upload-and-translate-a-document) to the upload. Two limits apply, and both are checked before the upload is accepted: only `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, and XLIFF 2.1 files can be evaluated, and quality evaluation covers fewer language pairs than translation does. Check the [supported language pairs](/api-reference/quality-evaluation/poll#supported-language-pairs) before you opt in.
+
+An ineligible file type or an unsupported language pair is rejected with HTTP 400 before the translation starts, so nothing is translated and nothing is billed. Opting in never puts the translation itself at risk.
+
+```bash
+curl -X POST https://api.deepl.com/v2/document \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --form 'source_lang=EN' \
+  --form 'target_lang=DE' \
+  --form 'file=@quarterly-report.docx' \
+  --form 'enable_quality_evaluation=true'
+```
+
+The upload response carries a `quality_evaluation_job_id` alongside the usual document fields. It is the unique ID of the evaluation, and the value you poll with to retrieve the report:
+
+```json
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "document_key": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A",
+  "quality_evaluation_job_id": "04DE5AD98A02647D83285A36021911C6"
+}
+```
+
+Keep polling the [status endpoint](/api-reference/document/check-document-status) and downloading the translated document as you normally would. The report is a separate job, so poll for it separately:
+
+```bash
+curl https://api.deepl.com/v1/quality-evaluations/04DE5AD98A02647D83285A36021911C6 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+While the evaluation is running you get HTTP 202 and `"status": "processing"`; wait the number of seconds in the `Retry-After` header and poll again. Expect this for a while after the translated document is ready, because the evaluation only starts once there is a translation to evaluate.
+
+A finished evaluation returns HTTP 200 whether it succeeded or failed, so branch on `status` rather than the status code: `done` carries the report, and `error` means the evaluation could not be produced, for example because the language pair isn't supported.
+
+```json
+{
+  "job_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "done",
+  "segments": [
+    {
+      "segment_index": 0,
+      "source": "Our Q3 revenue came in 5% above forecast.",
+      "target": "Unser Q3-Umsatz lag 5 % unter der Prognose.",
+      "errors": [
+        {
+          "type": "Accuracy",
+          "sub_type": "Mistranslation",
+          "severity": "Critical",
+          "explanation": "The source says revenue was '5% above forecast' but the translation says '5 % unter der Prognose' (5% below forecast). This reverses the meaning.",
+          "source_spans": [{ "start": 23, "end": 31 }],
+          "target_spans": [{ "start": 20, "end": 29 }]
+        }
+      ]
+    }
+  ]
+}
+```
+
+Store the report as soon as it's `done`: reports are kept for [24 hours](/api-reference/quality-evaluation/poll#report-retention) after the evaluation finishes, and polling after that returns HTTP 404. For the severity and issue-type vocabulary, how to resolve `source_spans` and `target_spans`, and the glossary entries a report returns per segment, see the [quality evaluation reference](/api-reference/quality-evaluation/poll).
 
 ### Document format conversions
 By default, the translated document comes back in the same format as the input. Two conversions differ:
