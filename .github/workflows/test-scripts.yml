@@ -30,5 +30,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # Stdlib only — these tests stub out gh and never call the network.
+      # pyyaml only: the tests stub out gh, never call the network, and the
+      # Anthropic SDK is imported lazily so it isn't needed here.
+      - run: pip install pyyaml
       - run: python -m unittest discover -s pipeline -p "test_*.py" -v

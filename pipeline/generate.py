@@ -30,15 +30,9 @@ from pathlib import Path
 
 import yaml
 
-try:
-    import anthropic
-except ImportError:
-    print("Install the Anthropic SDK: pip install anthropic")
-    sys.exit(1)
-
-
 from util import build_authoring_system_prompt
 from open_prs import EXIT_NOTHING_TO_DO, fetch_open_prs, split_claimed_gaps
+from detect_gaps import page_file
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OPENAPI_PATH = REPO_ROOT / "api-reference" / "openapi.yaml"
@@ -72,6 +66,25 @@ def load_file(path):
         return path.read_text(encoding="utf-8")
     except FileNotFoundError:
         return ""
+
+
+def load_existing_page(gap):
+    """Content of the page a gap edits, resolved from its nav entry.
+
+    Raises instead of returning nothing. A gap's `path` is a docs.json nav entry
+    with no extension, so opening it directly either fails or (when a directory
+    shares the page's name) hands back a directory. Both used to surface as an
+    empty page, which turned "expand this page" into "write one from scratch"
+    and silently discarded the real content.
+    """
+    page_path = gap.get("path", "")
+    resolved = page_file(page_path)
+    if not resolved:
+        raise FileNotFoundError(f"no .mdx or .md file backs the nav entry '{page_path}'")
+    content = load_file(resolved)
+    if not content.strip():
+        raise ValueError(f"{resolved.relative_to(REPO_ROOT)} is empty, refusing to rewrite it from nothing")
+    return content
 
 
 def load_openapi_for_tags(tags):
@@ -128,12 +141,24 @@ def find_existing_docs_for_family(family_name):
 
     context_docs = {}
     for pp in dict.fromkeys(page_paths):  # dedupe, preserve order
-        for ext in (".mdx", ".md"):
-            full_path = REPO_ROOT / (pp + ext)
-            if full_path.exists():
-                context_docs[pp + ext] = load_file(full_path)
-                break
+        full_path = page_file(pp)
+        if full_path:
+            context_docs[str(full_path.relative_to(REPO_ROOT))] = load_file(full_path)
     return context_docs
+
+
+def make_client():
+    """Build the API client, importing the SDK only when a call is imminent.
+
+    Kept lazy so --dry-run, gap detection and the tests all work without the
+    SDK installed — none of them talk to the model.
+    """
+    try:
+        import anthropic
+    except ImportError:
+        print("Install the Anthropic SDK: pip install anthropic")
+        sys.exit(1)
+    return anthropic.Anthropic()
 
 
 def build_system_prompt():
@@ -208,7 +233,7 @@ Follow the docs-writer guidelines exactly.
 
     elif gap_type == "thin_page":
         page_path = gap.get("path", "")
-        page_content = load_file(REPO_ROOT / page_path)
+        page_content = load_existing_page(gap)
         return f"""Expand this thin page. It currently has only {gap.get('word_count', 0)} words.
 
 Current content of {page_path}:
@@ -225,7 +250,7 @@ Follow the docs-writer guidelines exactly.
 
     elif gap_type == "missing_code_examples":
         page_path = gap.get("path", "")
-        page_content = load_file(REPO_ROOT / page_path)
+        page_content = load_existing_page(gap)
         return f"""Add code examples to this page. It's a guide but has no runnable code.
 
 Current content of {page_path}:
@@ -242,7 +267,7 @@ Follow the docs-writer guidelines exactly.
 
     elif gap_type == "missing_description":
         page_path = gap.get("path", "")
-        page_content = load_file(REPO_ROOT / page_path)[:500]
+        page_content = load_existing_page(gap)[:500]
         return f"""Generate a frontmatter description for this page.
 
 Current content of {page_path} (first 500 chars):
@@ -292,10 +317,13 @@ def determine_output_path(gap, family_name, content=None):
         slug = slugify(title_from_content(content))
         return DOCS_DIR / family_name.lower() / f"{slug}.mdx"
 
-    elif gap_type in ("thin_page", "missing_code_examples"):
-        return REPO_ROOT / gap["path"]
+    elif gap_type in ("thin_page", "missing_code_examples", "missing_description"):
+        # Resolve the nav entry to the real file. Without the extension the draft
+        # is written as `docs--a--b` and promote.py, which only collects *.mdx,
+        # drops it without a word — the page looks generated but never ships.
+        return page_file(gap.get("path", ""))
 
-    return None  # missing_description handled inline; non-generative types skipped
+    return None  # non-generative types skipped
 
 
 def _predicted_path(gap):
@@ -323,7 +351,9 @@ def _pr_review_hint(claimed):
 
 def apply_description(gap, description):
     """Insert a frontmatter description into an existing page."""
-    page_path = REPO_ROOT / gap["path"]
+    page_path = page_file(gap.get("path", ""))
+    if not page_path:
+        return False
     content = page_path.read_text(encoding="utf-8")
 
     if not content.startswith("---"):
@@ -423,10 +453,14 @@ def main():
                 out_path = determine_output_path(g, family)
                 if out_path:
                     print(f"    -> {out_path.relative_to(REPO_ROOT)}")
+                elif g.get("path"):
+                    print(f"    -> skip (no file backs the nav entry '{g['path']}')")
+                else:
+                    print(f"    -> filename chosen from the generated title")
             print()
         return 0
 
-    client = anthropic.Anthropic()
+    client = make_client()
     system_prompt = build_system_prompt()
 
     run_id = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
@@ -476,8 +510,12 @@ def main():
                     print(f"  Wrote {draft_path.relative_to(REPO_ROOT)}")
                     generated.append({"gap": gap, "action": "file_written", "path": str(rel), "draft": str(draft_path.relative_to(REPO_ROOT))})
                 else:
-                    print(f"  No output path determined, skipping")
-                    errors.append({"gap": gap, "error": "No output path"})
+                    detail = (
+                        f"no file backs the nav entry '{gap['path']}'"
+                        if gap.get("path") else "no output path could be determined"
+                    )
+                    print(f"  Skipping: {detail}")
+                    errors.append({"gap": gap, "error": detail})
 
         except Exception as e:
             print(f"  Error: {e}")
