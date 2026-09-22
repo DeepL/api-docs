@@ -30,7 +30,7 @@ from pathlib import Path
 
 import yaml
 
-from util import build_authoring_system_prompt
+from util import build_authoring_system_prompt, looks_like_mdx, format_retry_prompt
 from open_prs import EXIT_NOTHING_TO_DO, fetch_open_prs, split_claimed_gaps
 from detect_gaps import page_file
 
@@ -291,15 +291,39 @@ Follow the docs-writer guidelines exactly.
 {existing_docs_summary}"""
 
 
-def generate_content(client, system_prompt, user_prompt):
-    """Call Claude to generate content."""
+def _complete(client, system_prompt, messages):
     response = client.messages.create(
         model=MODEL,
         max_tokens=MAX_TOKENS,
         system=system_prompt,
-        messages=[{"role": "user", "content": user_prompt}],
+        messages=messages,
     )
     return response.content[0].text
+
+
+def generate_content(client, system_prompt, user_prompt, expect_file=True):
+    """Call Claude to generate content.
+
+    A reply that isn't a page gets one corrective turn rather than failing the
+    run. The docs-writer guidelines are written for a harness with tools, so the
+    model occasionally obliges by narrating research it cannot do and returns a
+    transcript instead of a file.
+    """
+    messages = [{"role": "user", "content": user_prompt}]
+    text = _complete(client, system_prompt, messages)
+
+    if not expect_file or looks_like_mdx(text) or not text.strip():
+        return text
+
+    print("  Reply was not a page (commentary or a faked tool transcript), asking again")
+    messages += [
+        # Echo a slice back rather than the whole thing: the bad reply can run to
+        # hundreds of lines and only needs to be identifiable.
+        {"role": "assistant", "content": text[:500].strip()},
+        {"role": "user", "content": format_retry_prompt(
+            "it did not start with YAML frontmatter (---)")},
+    ]
+    return _complete(client, system_prompt, messages)
 
 
 def determine_output_path(gap, family_name, content=None):
@@ -488,7 +512,12 @@ def main():
             existing_docs = find_existing_docs_for_family(family)
             user_prompt = build_generation_prompt(gap, family, openapi_context, existing_docs)
 
-            content = generate_content(client, system_prompt, user_prompt)
+            # Every gap but missing_description wants a whole file back;
+            # missing_description wants a bare string, so don't shape-check it.
+            content = generate_content(
+                client, system_prompt, user_prompt,
+                expect_file=gap["type"] != "missing_description",
+            )
 
             if gap["type"] == "missing_description":
                 description = content.strip().strip('"').strip("'")
