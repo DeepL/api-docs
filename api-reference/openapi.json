@@ -1216,7 +1216,7 @@
                     "default": false
                   },
                   "enable_quality_evaluation": {
-                    "description": "(beta) When `true`, DeepL also evaluates the finished translation and returns a `quality_evaluation_job_id`. Poll [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluation/poll) with it for a per-segment report of translation issues. The translation itself is unaffected.\n\n**Important:** Available to select customers; contact your customer success manager to enable it. Supported for `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, and XLIFF 2.1 uploads, and for the [supported language pairs](/api-reference/quality-evaluation/poll#supported-language-pairs) only.\n\nRejected before the upload is accepted: `403` if quality evaluation is not enabled for the account, `400` for an ineligible file type, an unsupported language pair, or a value other than `true` or `false`.",
+                    "description": "(beta) When `true`, DeepL also evaluates the finished translation and returns a `quality_evaluation_job_id`. Poll [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluations/poll) with it for a per-segment report of translation issues. The translation itself is unaffected.\n\n**Important:** Available to select customers; contact your customer success manager to enable it. Supported for `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, and XLIFF 2.1 uploads, and for the [supported language pairs](/api-reference/quality-evaluations/poll#supported-language-pairs) only.\n\nRejected before the upload is accepted: `403` if quality evaluation is not enabled for the account, `400` for an ineligible file type, an unsupported language pair, or a value other than `true` or `false`.",
                     "type": "boolean",
                     "default": false
                   },
@@ -1255,7 +1255,7 @@
                       "example": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"
                     },
                     "quality_evaluation_job_id": {
-                      "description": "(beta) A unique ID assigned to the quality evaluation. Returned only when the request set `enable_quality_evaluation=true`. Use it to retrieve the report from [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluation/poll).",
+                      "description": "(beta) A unique ID assigned to the quality evaluation. Returned only when the request set `enable_quality_evaluation=true`. Use it to retrieve the report from [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluations/poll).",
                       "type": "string",
                       "example": "04DE5AD98A02647D83285A36021911C6"
                     }
@@ -6697,7 +6697,7 @@
             }
           },
           "404": {
-            "description": "No evaluation exists for this `job_id`, it belongs to another account, or it has expired. See [Report retention](/api-reference/quality-evaluation/poll#report-retention).",
+            "description": "No evaluation exists for this `job_id`, it belongs to another account, or it has expired. See [Report retention](/api-reference/quality-evaluations/poll#report-retention).",
             "content": {
               "application/json": {
                 "schema": {
@@ -10993,12 +10993,12 @@
           },
           "source": {
             "type": "string",
-            "description": "The segment's source text as the evaluation read it. `source_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluation/poll#segment-text).",
+            "description": "The segment's source text as the evaluation read it. `source_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluations/poll#segment-text).",
             "example": "Our Q3 revenue came in 5% above forecast."
           },
           "target": {
             "type": "string",
-            "description": "The segment's translated text as the evaluation read it. `target_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluation/poll#segment-text).",
+            "description": "The segment's translated text as the evaluation read it. `target_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluations/poll#segment-text).",
             "example": "Unser Q3-Umsatz lag 5 % unter der Prognose."
           },
           "applied_glossary_term_pairs": {
@@ -11038,7 +11038,7 @@
           },
           "ranges": {
             "type": "array",
-            "description": "Spans in `target` where the target term was applied, using the same convention as `source_spans` and `target_spans`. See [Span ranges](/api-reference/quality-evaluation/poll#span-ranges).",
+            "description": "Spans in `target` where the target term was applied, using the same convention as `source_spans` and `target_spans`. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).",
             "items": {
               "$ref": "#/components/schemas/QualityEvaluationSpan"
             }
@@ -11058,7 +11058,7 @@
         "properties": {
           "type": {
             "type": "string",
-            "description": "Top-level category of the issue. See [Type and sub-type values](/api-reference/quality-evaluation/poll#type-and-sub-type-values).",
+            "description": "Top-level category of the issue. See [Type and sub-type values](/api-reference/quality-evaluations/poll#type-and-sub-type-values).",
             "enum": [
               "Accuracy",
               "Fluency",
@@ -11070,7 +11070,7 @@
           },
           "sub_type": {
             "type": "string",
-            "description": "Finer-grained category within `type`. See [Type and sub-type values](/api-reference/quality-evaluation/poll#type-and-sub-type-values).",
+            "description": "Finer-grained category within `type`. See [Type and sub-type values](/api-reference/quality-evaluations/poll#type-and-sub-type-values).",
             "enum": [
               "Addition",
               "Omission",
@@ -11092,7 +11092,7 @@
           },
           "severity": {
             "type": "string",
-            "description": "How serious the issue is. See [Severity values](/api-reference/quality-evaluation/poll#severity-values).",
+            "description": "How serious the issue is. See [Severity values](/api-reference/quality-evaluations/poll#severity-values).",
             "enum": [
               "Critical",
               "Major",
@@ -11107,14 +11107,14 @@
           },
           "source_spans": {
             "type": "array",
-            "description": "Spans on the segment's source text where this issue applies. Empty if no source-side highlight. See [Span ranges](/api-reference/quality-evaluation/poll#span-ranges).",
+            "description": "Spans on the segment's source text where this issue applies. Empty if no source-side highlight. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).",
             "items": {
               "$ref": "#/components/schemas/QualityEvaluationSpan"
             }
           },
           "target_spans": {
             "type": "array",
-            "description": "Spans on the segment's target text where this issue applies. Empty if no target-side highlight. See [Span ranges](/api-reference/quality-evaluation/poll#span-ranges).",
+            "description": "Spans on the segment's target text where this issue applies. Empty if no target-side highlight. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).",
             "items": {
               "$ref": "#/components/schemas/QualityEvaluationSpan"
             }
@@ -11127,7 +11127,7 @@
           "start",
           "end"
         ],
-        "description": "A half-open `[start, end)` range of Unicode code points within a segment's source or target text. See [Span ranges](/api-reference/quality-evaluation/poll#span-ranges).",
+        "description": "A half-open `[start, end)` range of Unicode code points within a segment's source or target text. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).",
         "properties": {
           "start": {
             "type": "integer",

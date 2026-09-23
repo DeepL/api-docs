@@ -79,7 +79,7 @@ Translation time depends on document size and server load: small documents typic
 You can apply a glossary to a document translation with the `glossary_id` parameter (or up to 5 glossaries with `glossary_ids`). This requires the `source_lang` parameter to be set, and the glossary's language pair has to match the language pair of the request.
 
 ### Requesting a quality evaluation
-A quality evaluation is a report on the translation DeepL just produced: for each segment of the document it lists the issues it detected, such as mistranslations, omissions, and fluency or style problems, with a severity and the character range each issue applies to. Use it to target human review at the segments that need it instead of reviewing the whole document.
+A quality evaluation is a report on the translation DeepL just produced: for each segment of the document it lists the issues it detected, such as mistranslations, omissions, and fluency or style problems, with a severity and the character range each issue applies to. Use it to target human review at the segments that need it instead of reviewing the whole document. For a product overview, see [About quality evaluation for file translations](https://support.deepl.com/hc/en-us/articles/26360433777436-About-quality-evaluation-for-file-translations).
 
 <Warning>
   Quality evaluation is in [beta](/docs/resources/alpha-and-beta-features) and available to select customers only. To have it enabled for your account, contact your customer success manager; until then, opting in returns HTTP 403.
@@ -89,7 +89,7 @@ To request a quality evaluation, set [`enable_quality_evaluation`](/api-referenc
 
 When `enable_quality_evaluation=true`, three additional checks run before the translation request is accepted:
 
-- The language pair must be in the [supported language pairs](/api-reference/quality-evaluation/poll#supported-language-pairs). Quality evaluation supports fewer language pairs than document translation.
+- The language pair must be in the [supported language pairs](/api-reference/quality-evaluations/poll#supported-language-pairs). Quality evaluation supports fewer language pairs than document translation.
 - The file must be `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, or XLIFF 2.1. Quality evaluation supports fewer file types than document translation.
 - Your account must have enough quality evaluation characters. Quality evaluation characters are metered separately from translation characters.
 
@@ -157,7 +157,7 @@ A finished evaluation returns HTTP 200 whether it succeeded or failed, so branch
 }
 ```
 
-Store the report as soon as it's `done`: reports are kept for [24 hours](/api-reference/quality-evaluation/poll#report-retention) after the evaluation finishes, and polling after that returns HTTP 404. For the severity and issue-type vocabulary, how to resolve `source_spans` and `target_spans`, and the applied glossary term pairs a report returns per segment, see the [quality evaluation reference](/api-reference/quality-evaluation/poll).
+Store the report as soon as it's `done`: reports are kept for [24 hours](/api-reference/quality-evaluations/poll#report-retention) after the evaluation finishes, and polling after that returns HTTP 404. For the severity and issue-type vocabulary, how to resolve `source_spans` and `target_spans`, and the applied glossary term pairs a report returns per segment, see the [quality evaluation reference](/api-reference/quality-evaluations/poll).
 
 ### Document format conversions
 By default, the translated document comes back in the same format as the input. Two conversions differ:

@@ -235,7 +235,7 @@
                 "group": "Quality Evaluation",
                 "tag": "BETA",
                 "pages": [
-                  "api-reference/quality-evaluation/poll"
+                  "api-reference/quality-evaluations/poll"
                 ],
                 "drilldown": false
               },
@@ -623,12 +623,24 @@
       "destination": "/api-reference/document/upload-and-translate-a-document"
     },
     {
+      "source": "/api-reference/quality-evaluations",
+      "destination": "/api-reference/quality-evaluations/poll"
+    },
+    {
+      "source": "/api-reference/quality-evaluations/submit",
+      "destination": "/api-reference/quality-evaluations/poll"
+    },
+    {
       "source": "/api-reference/quality-evaluation",
-      "destination": "/api-reference/quality-evaluation/poll"
+      "destination": "/api-reference/quality-evaluations/poll"
+    },
+    {
+      "source": "/api-reference/quality-evaluation/poll",
+      "destination": "/api-reference/quality-evaluations/poll"
     },
     {
       "source": "/api-reference/quality-evaluation/submit",
-      "destination": "/api-reference/quality-evaluation/poll"
+      "destination": "/api-reference/quality-evaluations/poll"
     },
     {
       "source": "/api-reference/multilingual-glossaries",
