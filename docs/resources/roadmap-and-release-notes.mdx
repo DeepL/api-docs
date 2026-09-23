@@ -9,6 +9,16 @@ rss: true
 </Update>
 
 <Update label="September 2026">
+## September 22 - New Voice API Languages: Catalan and Galician
+- The [Voice API](/docs/voice/overview) now supports `ca` (Catalan) and `gl` (Galician) as source languages and as targets for translation and translated speech. Both are beta for the Voice API; they are already generally available for text and document translation. Translation is provided by DeepL; transcription and translated speech are provided by external service partners, so the source language must be set explicitly (no auto-detection).
+- Both languages are marked `"external": true` on the `transcription` and `translated_speech` features in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response. Because they are beta and external, call with `include=beta&include=external` to see them.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full list.
+
+## September 22 - Hebrew, Slovenian, and Thai Translated Speech in the Voice API
+- The [Voice API](/docs/voice/overview) now generates translated speech (voice output) for `he` (Hebrew), `sl` (Slovenian), and `th` (Thai), in beta. Transcription and translation for these languages were already supported; this adds synthesized audio.
+- Translated speech for all three languages is provided by external service partners. In the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response, `translated_speech` is reported with `"external": true` and beta status. Call with `include=beta&include=external` to see it.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full list.
+
 ## September 20 - Quality Evaluation for Document Translation (Beta)
 - A **quality evaluation** is a report on a translation DeepL has produced: for each segment it lists detected issues such as mistranslations, omissions, and fluency or style problems, with a severity and the character range the issue applies to. Use it to target human review at the segments that need it.
 - Request one by setting `enable_quality_evaluation=true` on [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document). The upload response then returns a `quality_evaluation_job_id`, which you poll at [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluation/poll) to retrieve the report. See [Requesting a quality evaluation](/docs/best-practices/document-translations#requesting-a-quality-evaluation) for the full flow.
