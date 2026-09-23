@@ -4660,11 +4660,12 @@ paths:
                 status: done
                 segments:
                   - segment_index: 0
+                    segment_score: 38.5
                     source: Our Q3 revenue came in 5% above forecast.
                     target: Unser Q3-Umsatz lag 5 % unter der Prognose.
-                    entries:
-                      - source_entry: forecast
-                        target_entry: Prognose
+                    applied_glossary_term_pairs:
+                      - source_term: forecast
+                        target_term: Prognose
                         ranges:
                           - start: 34
                             end: 42
@@ -4680,6 +4681,7 @@ paths:
                           - start: 20
                             end: 29
                   - segment_index: 1
+                    segment_score: 62
                     source: Please share these results with your teams by Friday.
                     target: Bitte teilen Sie diese Ergebnisse mit Ihrem Team.
                     errors:
@@ -8287,12 +8289,20 @@ components:
       type: object
       required:
         - segment_index
+        - segment_score
         - errors
       properties:
         segment_index:
           type: integer
           description: Zero-based index of this segment within the document, in reading order.
           example: 0
+        segment_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Quality score for this segment, where 0 is lowest and 100 is highest.
+          example: 38.5
         source:
           type: string
           description: The segment's source text as the evaluation read it. `source_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluation/poll#segment-text).
@@ -8301,31 +8311,31 @@ components:
           type: string
           description: The segment's translated text as the evaluation read it. `target_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluation/poll#segment-text).
           example: Unser Q3-Umsatz lag 5 % unter der Prognose.
-        entries:
+        applied_glossary_term_pairs:
           type: array
-          description: Glossary entries applied to this segment when the document was translated, so you can tell which customizations were in play where an issue was reported. Omitted when no entry was applied.
+          description: Glossary term pairs applied to this segment when the document was translated, so you can tell which customizations were in play where an issue was reported. Omitted when no term pair was applied.
           items:
-            $ref: '#/components/schemas/QualityEvaluationGlossaryEntry'
+            $ref: '#/components/schemas/QualityEvaluationAppliedGlossaryTermPair'
         errors:
           type: array
           description: Quality issues identified in this segment. Empty if no issues were found.
           items:
             $ref: '#/components/schemas/QualityEvaluationIssue'
-    QualityEvaluationGlossaryEntry:
+    QualityEvaluationAppliedGlossaryTermPair:
       type: object
-      description: A glossary entry that was applied to the segment's translation.
+      description: A glossary term pair that was applied to the segment's translation.
       required:
-        - source_entry
-        - target_entry
+        - source_term
+        - target_term
         - ranges
       properties:
-        source_entry:
+        source_term:
           type: string
-          description: The entry's source term, as defined in the glossary.
+          description: The source term, as defined in the glossary.
           example: forecast
-        target_entry:
+        target_term:
           type: string
-          description: The entry's target term, as applied to the translation.
+          description: The target term, as applied to the translation.
           example: Prognose
         ranges:
           type: array
@@ -8379,7 +8389,6 @@ components:
             - Critical
             - Major
             - Minor
-            - Unclear (Check Needed)
           example: Critical
         explanation:
           type: string

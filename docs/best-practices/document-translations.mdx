@@ -85,9 +85,15 @@ A quality evaluation is a report on the translation DeepL just produced: for eac
   Quality evaluation is in [beta](/docs/resources/alpha-and-beta-features) and available to select customers only. To have it enabled for your account, contact your customer success manager; until then, opting in returns HTTP 403.
 </Warning>
 
-Add [`enable_quality_evaluation`](/api-reference/document/upload-and-translate-a-document) to the upload. Two limits apply, and both are checked before the upload is accepted: only `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, and XLIFF 2.1 files can be evaluated, and quality evaluation covers fewer language pairs than translation does. Check the [supported language pairs](/api-reference/quality-evaluation/poll#supported-language-pairs) before you opt in.
+To request a quality evaluation, set [`enable_quality_evaluation`](/api-reference/document/upload-and-translate-a-document) to `true` when uploading a document.
 
-An ineligible file type or an unsupported language pair is rejected with HTTP 400 before the translation starts, so nothing is translated and nothing is billed. Opting in never puts the translation itself at risk.
+When `enable_quality_evaluation=true`, three additional checks run before the translation request is accepted:
+
+- The language pair must be in the [supported language pairs](/api-reference/quality-evaluation/poll#supported-language-pairs). Quality evaluation supports fewer language pairs than document translation.
+- The file must be `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, or XLIFF 2.1. Quality evaluation supports fewer file types than document translation.
+- Your account must have enough quality evaluation characters. Quality evaluation characters are metered separately from translation characters.
+
+If any check fails, the request is rejected before translation starts, so nothing is translated or billed. Opting in never puts the translation itself at risk.
 
 ```bash
 curl -X POST https://api.deepl.com/v2/document \
@@ -126,8 +132,16 @@ A finished evaluation returns HTTP 200 whether it succeeded or failed, so branch
   "segments": [
     {
       "segment_index": 0,
+      "segment_score": 38.5,
       "source": "Our Q3 revenue came in 5% above forecast.",
       "target": "Unser Q3-Umsatz lag 5 % unter der Prognose.",
+      "applied_glossary_term_pairs": [
+        {
+          "source_term": "forecast",
+          "target_term": "Prognose",
+          "ranges": [{ "start": 34, "end": 42 }]
+        }
+      ],
       "errors": [
         {
           "type": "Accuracy",
@@ -143,7 +157,7 @@ A finished evaluation returns HTTP 200 whether it succeeded or failed, so branch
 }
 ```
 
-Store the report as soon as it's `done`: reports are kept for [24 hours](/api-reference/quality-evaluation/poll#report-retention) after the evaluation finishes, and polling after that returns HTTP 404. For the severity and issue-type vocabulary, how to resolve `source_spans` and `target_spans`, and the glossary entries a report returns per segment, see the [quality evaluation reference](/api-reference/quality-evaluation/poll).
+Store the report as soon as it's `done`: reports are kept for [24 hours](/api-reference/quality-evaluation/poll#report-retention) after the evaluation finishes, and polling after that returns HTTP 404. For the severity and issue-type vocabulary, how to resolve `source_spans` and `target_spans`, and the applied glossary term pairs a report returns per segment, see the [quality evaluation reference](/api-reference/quality-evaluation/poll).
 
 ### Document format conversions
 By default, the translated document comes back in the same format as the input. Two conversions differ:

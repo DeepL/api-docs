@@ -12,7 +12,7 @@ rss: true
 ## September 20 - Quality Evaluation for Document Translation (Beta)
 - A **quality evaluation** is a report on a translation DeepL has produced: for each segment it lists detected issues such as mistranslations, omissions, and fluency or style problems, with a severity and the character range the issue applies to. Use it to target human review at the segments that need it.
 - Request one by setting `enable_quality_evaluation=true` on [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document). The upload response then returns a `quality_evaluation_job_id`, which you poll at [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluation/poll) to retrieve the report. See [Requesting a quality evaluation](/docs/best-practices/document-translations#requesting-a-quality-evaluation) for the full flow.
-- Reports cover `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, and XLIFF 2.1 uploads, and a subset of the language pairs translation supports. Each report also returns the source and translated text of every segment, plus the glossary entries that were applied to it.
+- Reports cover `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, and XLIFF 2.1 uploads, and a subset of the language pairs translation supports. Each report also returns a quality score, the source and translated text, and any applied glossary term pairs for every segment.
 - In beta and available to select customers only. To have it enabled for your account, contact your customer success manager.
 
 ## September 11 - Speaker Match Voice for the Voice API
