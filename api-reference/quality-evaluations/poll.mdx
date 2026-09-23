@@ -1,0 +1,117 @@
+---
+openapi: get /v1/quality-evaluations/{job_id}
+tag: "BETA"
+title: "Poll for the evaluation result"
+description: "Poll a document's quality evaluation for its status and retrieve the per-segment report of translation issues once it completes."
+---
+
+<Warning>
+  Quality evaluation is in [beta](/docs/resources/alpha-and-beta-features) and available to select DeepL customers only. To request access, contact your customer success manager.
+</Warning>
+
+Evaluations are requested with `enable_quality_evaluation` on [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document), which returns a `quality_evaluation_job_id`. That is the unique ID of the evaluation, and the value this endpoint takes. There is no public endpoint for starting an evaluation. For the end-to-end flow, see [Requesting a quality evaluation](/docs/best-practices/document-translations#requesting-a-quality-evaluation).
+
+Evaluations resolve only within the account that requested them. A job ID belonging to another account returns `404`, the same response as an unknown ID.
+
+## Status values
+
+| **Value** | **HTTP status** | **Response body** |
+|---|---|---|
+| `processing` | `202` | `job_id` and `status` only. The `Retry-After` header carries the suggested number of seconds before the next poll. |
+| `done` | `200` | The full report in `segments`. |
+| `error` | `200` | An `error` object. The evaluation produced no report and will not produce one later. |
+
+A completed evaluation and a failed one both return `200`, so `status` rather than the HTTP status code distinguishes them. A malformed `job_id` returns `400` without reaching an evaluation.
+
+`error.code` is currently always `evaluation_failed`, so the response does not distinguish one cause of failure from another.
+
+## Segment text
+
+A report carries one entry in `segments` per evaluated segment of the document, in reading order, including segments where no issue was found. On those, `errors` is an empty array.
+
+`segment_index` is that reading-order position. It is not a durable handle: re-translating the same document can produce a different segmentation.
+
+`segment_score` rates the translation quality of that segment from 0 (lowest) to 100 (highest). It is always present in a completed report.
+
+`source` and `target` hold the segment text as the evaluation read it, which is DeepL's own segmentation of the document with inline formatting tags removed. This text does not byte-match the text in the uploaded or translated file, and segment boundaries do not necessarily correspond to the paragraphs or sentences in the document. Span offsets index these two strings, not the uploaded or translated file.
+
+Both fields are omitted when the text is unavailable for a segment. An issue on such a segment still carries its spans, but there is no text in the response to resolve them against.
+
+`applied_glossary_term_pairs` lists the glossary term pairs applied to a segment when the document was translated. It is omitted for segments where no glossary term pair was applied. Each item gives the `source_term`, `target_term`, and the spans in `target` where the target term was applied.
+
+## Span ranges
+
+Each span describes a half-open interval over the segment's source or target text. `start` is the index of the first Unicode code point in the span; `end` is one past the last. The span covers the substring `text[start:end]` in Python-style slicing, and its length is `end - start`. For example:
+
+```text
+target:   Unser Q3-Umsatz lag 5 % unter der Prognose.
+```
+
+A target span of `{ "start": 20, "end": 29 }` covers `target[20:29]`, the 9 code points `"5 % unter"`. Offsets count code points, not UTF-16 code units, so a language whose characters fall outside the Basic Multilingual Plane indexes differently than a UTF-16 string length would suggest.
+
+- `source_spans` and `target_spans` are always present on an issue. If no span applies to that side, the value is an empty array
+- Within a single issue, the ranges in `source_spans` (and in `target_spans`) are sorted by `start` and do not overlap
+- Different issues may cover the same part of a segment
+- `ranges` on an applied glossary term pair follows the same convention and indexes into `target`
+
+## Severity values
+
+The `severity` field on an issue takes one of three values.
+
+| **Value** | **Description** |
+|---|---|
+| `Critical` | Renders the content unusable or significantly changes its meaning. For example, the meaning is reversed, important information is missing, or the content is unsuitable for the intended audience. |
+| `Major` | Misleads the reader or significantly alters the meaning. The general idea is clear, but specific details are wrong, terminology is incorrect, or grammar issues make the text hard to understand. |
+| `Minor` | Does not make the text unreadable, but can make it harder to understand and less appealing. |
+
+## Type and sub-type values
+
+Every issue carries a `type`, the top-level category, and a `sub_type`, which narrows it within that type. The five types and their sub-types are listed below.
+
+<Note>
+  New values for `type`, `sub_type`, and `severity` may be added without warning.
+</Note>
+
+| **type** | **sub_type** | **Description** |
+|---|---|---|
+| `Accuracy` | `Addition` | The target includes text that was not part of the source. |
+| `Accuracy` | `Omission` | Content from the source is missing from the target. |
+| `Accuracy` | `Mistranslation` | The content from the target doesn't match the content of the source. |
+| `Accuracy` | `Over-translation` | The target is more specific than the source. |
+| `Accuracy` | `Under-translation` | The target is less specific than the source. |
+| `Accuracy` | `Untranslated text` | Content that should have been translated has been left untranslated. |
+| `Fluency` | `Punctuation` | Punctuation is used incorrectly. |
+| `Fluency` | `Spelling` | Incorrect spelling in the target text. |
+| `Fluency` | `Grammar` | Issues with the grammar or syntax of the text, other than spelling and orthography. |
+| `Fluency` | `Grammatical register` | The text uses the wrong grammatical register, such as informal forms where formal is required. |
+| `Fluency` | `Inconsistency` | The text is not internally consistent. For example, using two different abbreviations for the same term. |
+| `Fluency` | `Character encoding` | Characters are garbled due to incorrect application of an encoding. |
+| `Style` | `Awkward` | The text is written in an awkward style. |
+| `Style` | `Inconsistent style` | The text uses inconsistent stylistic conventions across sections. |
+| `Miscellaneous` | Not enumerated | An error that does not fall into the other categories but is nonetheless clearly identifiable as a mistake. The sub-types of this type are not a fixed set, so read `sub_type` as free text. |
+| `InternalTQEError` | `SegmentTooLarge` | The segment's source and target exceed 10,000 characters combined, so it was not analyzed. Reported with severity `Critical`. |
+
+An issue of this type reports that a segment could not be evaluated rather than a defect in the translation. The rest of the document is evaluated normally.
+
+## Supported language pairs
+
+| **Source language** | **Target languages** |
+|---|---|
+| German (`DE`) | English (`EN-GB`, `EN-US`) |
+| English (`EN`) | German (`DE`), Spanish (`ES`, `ES-419`), French (`FR`), Italian (`IT`), Japanese (`JA`), Korean (`KO`) |
+| Spanish (`ES`) | English (`EN-GB`, `EN-US`) |
+| French (`FR`) | English (`EN-GB`, `EN-US`) |
+| Italian (`IT`) | English (`EN-GB`, `EN-US`) |
+| Japanese (`JA`) | English (`EN-GB`, `EN-US`), Korean (`KO`), Chinese Simplified (`ZH-HANS`), Chinese Traditional (`ZH-HANT`) |
+| Korean (`KO`) | English (`EN-GB`, `EN-US`), Japanese (`JA`) |
+| Chinese (`ZH`) | Japanese (`JA`) |
+
+Requesting an evaluation for a pair that is not listed is rejected with `400` when the document is uploaded, so an evaluation only ever exists for a supported pair. See [`enable_quality_evaluation`](/api-reference/document/upload-and-translate-a-document).
+
+## Rate limit
+
+This endpoint accepts 1,000 requests per minute per API key. Exceeding it returns `429 Too Many Requests`.
+
+## Report retention
+
+A report is retained for 24 hours after its evaluation reaches `done` or `error`. After that, this endpoint returns `404 Not Found` for that job ID.
