@@ -60,12 +60,6 @@ example Cursor, VS Code, or Copilot Studio.
   </Step>
 </Steps>
 
-<Tip>
-Team admins can turn off AI connector access for their whole organization. If sign-in fails with an
-access error, check with your admin. See
-[Manage AI assistant access to DeepL for your team](https://support.deepl.com/hc/en-us/articles/28877202200092).
-</Tip>
-
 ## What you can do on each plan
 
 | **Capability** | **DeepL Free** | **Seat-based plans** |
@@ -116,11 +110,6 @@ model's context window. One upload can be translated into up to 10 target langua
 Supported formats: `.docx`, `.doc`, `.pptx`, `.ppt`, `.xlsx`, `.xls`, `.pdf`, `.htm`, `.html`, `.txt`,
 `.xlf`, `.xliff`, `.srt`, `.png`, `.jpg`, and `.jpeg`. PNG and JPEG files can be up to 3 MB. Size
 limits for other formats depend on your plan.
-
-<Warning>
-Some corporate networks block the short-lived upload and download links. If the upload never completes,
-ask your IT team to allow DeepL's document translation URLs.
-</Warning>
 
 ## Glossaries, style rules, and style profiles
 
@@ -191,6 +180,28 @@ your customizations. Destructive tools overwrite or delete existing data.
 | `create-custom-instruction` | Create Custom Instruction | Write | Add a custom instruction to a style rule set. |
 | `update-custom-instruction` | Update Custom Instruction | Destructive | Change a custom instruction. |
 | `delete-custom-instruction` | Delete Custom Instruction | Destructive | Delete a custom instruction. |
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Document translation doesn't work in Claude. What should I check?">
+    Claude uploads files from its code execution sandbox, which needs network access to
+    `mcp.deepl.com`. On Claude Team and Enterprise plans, an owner allows it in
+    **Organization settings > Capabilities**: turn on **Allow network egress**, choose
+    **package managers and specific domains**, and add `mcp.deepl.com`.
+
+    Without this, the assistant gives you an upload link instead. Open it in your browser to upload
+    the file yourself.
+  </Accordion>
+  <Accordion title="My company uses a firewall or proxy. What do I need to allow?">
+    Allow `mcp.deepl.com`. The MCP server, OAuth sign-in, and document upload and download all run on
+    this domain. During sign-in, your browser also opens the regular DeepL login page.
+  </Accordion>
+  <Accordion title="Sign-in fails with an access error. Why?">
+    Team admins can turn off AI connector access for their whole organization. Check with your admin.
+    See [Manage AI assistant access to DeepL for your team](https://support.deepl.com/hc/en-us/articles/28877202200092).
+  </Accordion>
+</AccordionGroup>
 
 ## Data handling
 
