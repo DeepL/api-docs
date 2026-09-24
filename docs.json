@@ -191,7 +191,8 @@
           {
             "group": "Translation Memories",
             "pages": [
-              "docs/customize/using-translation-memories"
+              "docs/customize/using-translation-memories",
+              "docs/customize/managing-translation-memories"
             ]
           }
         ]
