@@ -5,5 +5,5 @@ description: "AsyncAPI reference for the real-time voice WebSocket protocol, cov
 ---
 
 <Warning>
-Don't hardcode the WebSocket address shown on this page. Connect to the `streaming_url` returned by [Request Session](/api-reference/voice/request-session), which can change between sessions.
+Don't hardcode the WebSocket address shown on this page. Always connect to the `streaming_url` from the most recent [Request Session](/api-reference/voice/request-session) or [Reconnect Session](/api-reference/voice/reconnect-session) response, because it can change.
 </Warning>
