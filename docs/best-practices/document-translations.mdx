@@ -90,7 +90,7 @@ To request a quality evaluation, set [`enable_quality_evaluation`](/api-referenc
 When `enable_quality_evaluation=true`, three additional checks run before the translation request is accepted:
 
 - The language pair must be in the [supported language pairs](/api-reference/quality-evaluations/poll#supported-language-pairs). Quality evaluation supports fewer language pairs than document translation.
-- The file must be `docx`, `pptx`, `pdf`, `idml`, `xml`, `dita`, `mif`, or XLIFF 2.1. Quality evaluation supports fewer file types than document translation. Subtitle files (`.srt`) can be translated, but they cannot be quality-evaluated.
+- The file must be `docx`, `pptx`, `pdf`, `idml`, `xml`, `dita`, `mif`, or XLIFF 2.1. Quality evaluation supports fewer file types than document translation.
 - Your account must have enough quality evaluation characters. Quality evaluation characters are metered separately from translation characters.
 
 If any check fails, the request is rejected before translation starts, so nothing is translated or billed. Opting in never puts the translation itself at risk.
