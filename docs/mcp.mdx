@@ -97,13 +97,15 @@ model's context window. One upload can be translated into up to 10 target langua
     and a short-lived link.
   </Step>
   <Step title="Provide the file">
-    A client with filesystem access (for example, a coding agent) uploads the file directly. In other
-    clients, the assistant gives you a link to upload the file yourself.
+    If the assistant can reach `mcp.deepl.com` (for example, a coding agent or Claude with network access),
+    it uploads the file directly. Otherwise, it calls `upload-document-show-fallback-widget`, which shows
+    an upload widget in the chat where you select the file yourself.
   </Step>
   <Step title="Poll and download">
     The assistant checks progress with `get-document-status`, then returns the translated file with
-    `download-document` once it's ready. The file name includes the target language, for example
-    `report DE.docx`.
+    `download-document` once it's ready. If you uploaded through the widget, the widget shows the progress
+    and offers the download instead: one file for a single language, or a ZIP archive for several. The
+    file name includes the target language, for example `report DE.docx`.
   </Step>
 </Steps>
 
@@ -130,7 +132,7 @@ See [Managing glossaries](/docs/customize/managing-glossaries) and
 
 ## Tool reference
 
-The server exposes up to 28 tools. Read tools only return data. Write tools create content or change
+The server exposes up to 29 tools. Read tools only return data. Write tools create content or change
 your customizations. Destructive tools overwrite or delete existing data.
 
 ### Translation and writing
@@ -148,6 +150,7 @@ your customizations. Destructive tools overwrite or delete existing data.
 | **Tool** | **Title** | **Type** | **Description** |
 |------|-------|:----:|-------------|
 | `upload-document` | Upload Document for Translation | Write | Start an out-of-band translation of a document or image into one or more target languages. |
+| `upload-document-show-fallback-widget` | Show Document Upload Widget | Read | Show an upload widget for a translation that `upload-document` started, when the assistant can't upload the file itself. |
 | `get-document-status` | Check Document Translation Status | Read | Check the status of a document translation. |
 | `download-document` | Download Translated Document | Write | Retrieve the translated file. |
 
@@ -190,8 +193,8 @@ your customizations. Destructive tools overwrite or delete existing data.
     **Organization settings > Capabilities**: turn on **Allow network egress**, choose
     **package managers and specific domains**, and add `mcp.deepl.com`.
 
-    Without this, the assistant gives you an upload link instead. Open it in your browser to upload
-    the file yourself.
+    Without this, the assistant shows an upload widget in the chat instead. Select the file there, and
+    download the translation from the widget when it's ready.
   </Accordion>
   <Accordion title="My company uses a firewall or proxy. What do I need to allow?">
     Allow `mcp.deepl.com`. The MCP server, OAuth sign-in, and document upload and download all run on
