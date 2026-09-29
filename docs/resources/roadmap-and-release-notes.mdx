@@ -9,6 +9,11 @@ rss: true
 </Update>
 
 <Update label="September 2026">
+## September 29 - Style Rules for Language Variants
+- [Style rule lists](/docs/customize/using-style-rules) hold the configured rules and custom instructions DeepL applies when translating into one target language. A list could previously only be created for a root language such as `de`, and it applied to every variant of that language. You can now also create a list for a specific variant, such as `de-CH` or `en-GB`, so conventions that differ between variants stay separate.
+- Set the variant code in the `language` field of [`POST /v3/style_rules`](/api-reference/style-rules/create-style-rule). A variant list applies when `target_lang` is that variant; root-language lists keep applying to all variants as before.
+- Lists for `de-CH`, `fr-CA`, `pt-BR`, and `pt-PT` are generally available; lists for `de-DE`, `en-GB`, `en-US`, `es-419`, `es-ES`, `fr-FR`, `zh-Hans`, and `zh-Hant` are in beta. The current list and the status of each language are returned by [`GET /v3/languages?resource=style_rules&include=beta`](/docs/languages/using-the-languages-api).
+
 ## September 22 - New Voice API Languages: Catalan and Galician
 - The [Voice API](/docs/voice/overview) now supports `ca` (Catalan) and `gl` (Galician) as source languages and as targets for translation and translated speech. Both are beta for the Voice API; they are already generally available for text and document translation. Translation is provided by DeepL; transcription and translated speech are provided by external service partners, so the source language must be set explicitly (no auto-detection).
 - Both languages are marked `"external": true` on the `transcription` and `translated_speech` features in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response. Because they are beta and external, call with `include=beta&include=external` to see them.
