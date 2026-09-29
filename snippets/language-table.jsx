@@ -302,7 +302,7 @@ export const LanguageTable = () => {
                             { key: 'tagHandling', label: 'Tag Handling', link: '/docs/xml-and-html-handling/xml' },
                             { key: 'textImprovement', label: 'Text Improvement', link: '/api-reference/improve-text' },
                             { key: 'translationMemory', label: 'Translation Memory', link: '/docs/learning-how-tos/examples-and-guides/how-to-use-translation-memories' },
-                            { key: 'styleRules', label: 'Style Rules', link: '/api-reference/style-rules' }
+                            { key: 'styleRules', label: 'Style Rules & Custom Instructions', link: '/api-reference/style-rules' }
                         ].map(({ key, label, link }) => (
                             <label
                                 key={key}
