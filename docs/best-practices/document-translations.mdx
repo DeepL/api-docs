@@ -72,14 +72,14 @@ Each supported format has behaviors and constraints worth knowing before you upl
 - Some valid FrameMaker 10 MIF files may fail with HTTP 500 — try re-saving from a newer FrameMaker version.
 - MIF does not use `translate="no"`. Protect content via FrameMaker conditional text or character formatting.
 
-**XLSM**
+**XLSM** (currently in beta)
 - Cell text is translated across all sheets; rich text formatting, merged cells, and multi-sheet layouts are preserved. Numbers and dates are left unchanged.
 - Macros are preserved byte-for-byte and never translated. The VBA project is carried through untouched, so user-facing strings inside macro code remain in the source language.
 - Formulas are preserved verbatim and cached values are kept as-is.
 - Lookup formulas (`VLOOKUP`, `MATCH`, `INDEX`) whose lookup key is a text literal typed into the formula keep that literal in the source language while the table they search is translated, so the lookup can stop matching and return `#N/A` after recalculation. Key lookups off a cell reference (e.g. `=VLOOKUP(D1,...)`) instead.
 - Files with no translatable text are rejected with `No translatable text can be extracted from the document.` This does not mean the file is malformed.
 
-**SCORM (`.zip`)**
+**SCORM (`.zip`)** (currently in beta)
 - The `.zip` must be a valid SCORM package (SCORM 1.2 or SCORM 2004) with `imsmanifest.xml` at the root of the archive. AICC, xAPI (Tin Can), and cmi5 packages are not supported and are rejected.
 - Course titles in `imsmanifest.xml` and lesson content in the package's HTML files are translated. Manifest identifiers, file paths, and HTML markup are preserved exactly.
 - Audio and video files (MP3, MP4, WAV, images) are preserved byte-for-byte. DeepL does not transcribe or translate media content.
@@ -87,30 +87,30 @@ Each supported format has behaviors and constraints worth knowing before you upl
 - The manifest must be under 4 MB. A larger `imsmanifest.xml` is rejected.
 - Non-SCORM `.zip` uploads are rejected with `400 Invalid or missing file extension`.
 
-**VTT (WebVTT)**
+**VTT (WebVTT)** (currently in beta)
 - Cue text is translated; cue timings, identifiers, settings lines, and `WEBVTT` headers are preserved so subtitles stay in sync with the original media.
 - Inline styling tags (e.g. `<c>`, `<v Speaker>`, karaoke timestamps) are preserved. Review their placement, since translated text length differs from the source.
 - Files with no translatable text are rejected.
 
-**YAML / YML**
+**YAML / YML** (currently in beta)
 - String values are translated at every level of nesting; keys, numbers, booleans, `null` values, comments, and indentation structure are preserved.
 - Placeholders and escape sequences (`\n`, `\t`, etc.) are preserved.
 - Files with no translatable text are rejected.
 - Malformed YAML (inconsistent indentation, unquoted special characters) returns an error. Validate before uploading.
 
-**Java `.properties`**
+**Java `.properties`** (currently in beta)
 - Property values are translated; keys and separators are preserved. Comment lines (`#` or `!`) are not translated.
 - Placeholders (`{0}`, `%s`, `%d`) are normally preserved. Verify them after translation before shipping.
 - Escaped characters (`\n`, `\t`, `\:`) are preserved.
 - Files with no translatable text are returned unchanged.
 
-**iOS/macOS `.strings`**
+**iOS/macOS `.strings`** (currently in beta)
 - String values are translated; keys and the `"key" = "value";` structure are preserved.
 - Format specifiers (`%@`, `%d`, positional specifiers like `%1$@`) are normally preserved. Verify them after translation before shipping.
 - Escaped characters (`\n`, `\"`, `\\`) are preserved.
 - Files with no translatable text are returned unchanged.
 
-**Markdown (`.md` / `.markdown`)**
+**Markdown (`.md` / `.markdown`)** (currently in beta)
 - Paragraphs, headings, list items, blockquotes, table cell content, and image alt text are translated. URLs and link targets are not, only the link label text is.
 - YAML front matter is not translated. **Known issue:** the `---` delimiters that open and close the front matter block are currently dropped from the translated file, which can fuse the metadata into the first paragraph. Re-add the `---` lines after download, or move the front matter out of the file before uploading.
 - HTML blocks embedded in Markdown are processed via an HTML sub-filter. Results may vary for complex inline HTML.

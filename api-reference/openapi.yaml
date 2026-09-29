@@ -30,23 +30,23 @@ tags:
       * `docx` - Microsoft Word Document
       * `pptx` - Microsoft PowerPoint Document
       * `xlsx` - Microsoft Excel Document
-      * `xlsm` - Microsoft Excel Macro-Enabled Workbook
+      * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)
       * `pdf` - Portable Document Format
       * `htm / html` - HTML Document
       * `txt` - Plain Text Document
       * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)
       * `srt` - SRT Document
-      * `vtt` - WebVTT Subtitle Document
+      * `vtt` - WebVTT Subtitle Document (currently in beta)
       * `idml` - Adobe InDesign Markup Language
       * `xml` - XML Document
       * `json` - JSON Document
-      * `yaml / yml` - YAML Document
-      * `properties` - Java Properties Document
-      * `strings` - iOS/macOS Strings Document
-      * `md / markdown` - Markdown Document
+      * `yaml / yml` - YAML Document (currently in beta)
+      * `properties` - Java Properties Document (currently in beta)
+      * `strings` - iOS/macOS Strings Document (currently in beta)
+      * `md / markdown` - Markdown Document (currently in beta)
       * `dita` - DITA topic (Darwin Information Typing Architecture)
       * `mif` - Adobe FrameMaker Interchange Format
-      * `zip` - SCORM Package (e-learning content)
+      * `zip` - SCORM Package (e-learning content, currently in beta)
       * `odt` - OpenDocument Text Document (currently in beta)
       * `rtf` - Rich Text Format Document (currently in beta)
       * `resx` - .NET Resource Document (currently in beta)
@@ -954,23 +954,23 @@ paths:
                       * `docx` - Microsoft Word Document
                       * `pptx` - Microsoft PowerPoint Document
                       * `xlsx` - Microsoft Excel Document
-                      * `xlsm` - Microsoft Excel Macro-Enabled Workbook
+                      * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)
                       * `pdf` - Portable Document Format
                       * `htm / html` - HTML Document
                       * `txt` - Plain Text Document
                       * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)
                       * `srt` - SRT Document
-                      * `vtt` - WebVTT Subtitle Document
+                      * `vtt` - WebVTT Subtitle Document (currently in beta)
                       * `idml` - Adobe InDesign Markup Language
                       * `xml` - XML Document
                       * `json` - JSON Document
-                      * `yaml / yml` - YAML Document
-                      * `properties` - Java Properties Document
-                      * `strings` - iOS/macOS Strings Document
-                      * `md / markdown` - Markdown Document
+                      * `yaml / yml` - YAML Document (currently in beta)
+                      * `properties` - Java Properties Document (currently in beta)
+                      * `strings` - iOS/macOS Strings Document (currently in beta)
+                      * `md / markdown` - Markdown Document (currently in beta)
                       * `dita` - DITA topic (Darwin Information Typing Architecture)
                       * `mif` - Adobe FrameMaker Interchange Format
-                      * `zip` - SCORM Package (e-learning content)
+                      * `zip` - SCORM Package (e-learning content, currently in beta)
                       * `odt` - OpenDocument Text Document (currently in beta)
                       * `rtf` - Rich Text Format Document (currently in beta)
                       * `resx` - .NET Resource Document (currently in beta)
