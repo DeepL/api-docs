@@ -15,7 +15,7 @@ For DOCX and PPTX, our .NET, PHP and NodeJS client libraries offer functionality
 This allows users to translate files that might hit the size limit.
 
 ### Billing minimums
-Every submitted document of type `.pptx`, `.docx`, `.doc`, `.xlsx`, or `.pdf` is billed a minimum of 50,000 characters on DeepL API plans, no matter how many characters the document contains.
+Every submitted document of type `.pptx`, `.docx`, `.doc`, `.xlsx`, or `.pdf` is billed a minimum of 50,000 characters on DeepL API plans, no matter how many characters the document contains. Formats currently in beta are not billed and are not subject to this minimum.
 
 ### One source/target language pair per upload
 The `source_lang` and `target_lang` values on the request apply to the entire uploaded file. For most formats, keep each upload to a single source language for consistent results — behavior on content that isn't in the selected source language is not guaranteed.
@@ -71,6 +71,69 @@ Each supported format has behaviors and constraints worth knowing before you upl
 - Save as UTF-8 from FrameMaker before uploading; the file should begin with a `<MIFFile ...>` header.
 - Some valid FrameMaker 10 MIF files may fail with HTTP 500 — try re-saving from a newer FrameMaker version.
 - MIF does not use `translate="no"`. Protect content via FrameMaker conditional text or character formatting.
+
+**XLSM** (currently in beta)
+- Cell text is translated across all sheets; rich text formatting, merged cells, and multi-sheet layouts are preserved. Numbers and dates are left unchanged.
+- Macros are preserved byte-for-byte and never translated. The VBA project is carried through untouched, so user-facing strings inside macro code remain in the source language.
+- Formulas are preserved verbatim and cached values are kept as-is.
+- Lookup formulas (`VLOOKUP`, `MATCH`, `INDEX`) whose lookup key is a text literal typed into the formula keep that literal in the source language while the table they search is translated, so the lookup can stop matching and return `#N/A` after recalculation. Key lookups off a cell reference (e.g. `=VLOOKUP(D1,...)`) instead.
+- Files with no translatable text are rejected with `No translatable text can be extracted from the document.` This does not mean the file is malformed.
+
+**SCORM (`.zip`)** (currently in beta)
+- The `.zip` must be a valid SCORM package (SCORM 1.2 or SCORM 2004) with `imsmanifest.xml` at the root of the archive. AICC, xAPI (Tin Can), and cmi5 packages are not supported and are rejected.
+- Course titles in `imsmanifest.xml` and lesson content in the package's HTML files are translated. Manifest identifiers, file paths, and HTML markup are preserved exactly.
+- Audio and video files (MP3, MP4, WAV, images) are preserved byte-for-byte. DeepL does not transcribe or translate media content.
+- Zip the contents, not the folder. `imsmanifest.xml` must sit at the root of the archive, exactly one. An archive that starts with a folder (e.g. `course/imsmanifest.xml`) is rejected.
+- The manifest must be under 4 MB. A larger `imsmanifest.xml` is rejected.
+- Non-SCORM `.zip` uploads are rejected with `400 Invalid or missing file extension`.
+
+**VTT (WebVTT)** (currently in beta)
+- Cue text is translated; cue timings, identifiers, settings lines, and `WEBVTT` headers are preserved so subtitles stay in sync with the original media.
+- Inline styling tags (e.g. `<c>`, `<v Speaker>`, karaoke timestamps) are preserved. Review their placement, since translated text length differs from the source.
+- Files with no translatable text are rejected.
+
+**YAML / YML** (currently in beta)
+- String values are translated at every level of nesting; keys, numbers, booleans, `null` values, comments, and indentation structure are preserved.
+- Placeholders and escape sequences (`\n`, `\t`, etc.) are preserved.
+- Files with no translatable text are rejected.
+- Malformed YAML (inconsistent indentation, unquoted special characters) returns an error. Validate before uploading.
+
+**Java `.properties`** (currently in beta)
+- Property values are translated; keys and separators are preserved. Comment lines (`#` or `!`) are not translated.
+- Placeholders (`{0}`, `%s`, `%d`) are normally preserved. Verify them after translation before shipping.
+- Escaped characters (`\n`, `\t`, `\:`) are preserved.
+- Files with no translatable text are returned unchanged.
+
+**iOS/macOS `.strings`** (currently in beta)
+- String values are translated; keys and the `"key" = "value";` structure are preserved.
+- Format specifiers (`%@`, `%d`, positional specifiers like `%1$@`) are normally preserved. Verify them after translation before shipping.
+- Escaped characters (`\n`, `\"`, `\\`) are preserved.
+- Files with no translatable text are returned unchanged.
+
+**Markdown (`.md` / `.markdown`)** (currently in beta)
+- Paragraphs, headings, list items, blockquotes, table cell content, and image alt text are translated. URLs and link targets are not, only the link label text is.
+- YAML front matter is not translated. **Known issue:** the `---` delimiters that open and close the front matter block are currently dropped from the translated file, which can fuse the metadata into the first paragraph. Re-add the `---` lines after download, or move the front matter out of the file before uploading.
+- HTML blocks embedded in Markdown are processed via an HTML sub-filter. Results may vary for complex inline HTML.
+- Markdown formatting (bold, italic, headings, lists) is preserved.
+- Malformed Markdown is accepted and translated as-is (not validated for well-formedness).
+
+**RESX** (currently in beta)
+- String values in `<data>` elements are translated; element names, IDs, and XML structure are preserved. Comments in `<comment>` elements are not translated.
+- Placeholders (`{0}`, `%s`) are normally preserved. Verify them after translation before shipping.
+- Files with no translatable text are returned unchanged.
+
+**ODT** (currently in beta)
+- Body text, headings, table content, footnotes, endnotes, annotations, and document metadata are translated.
+- Accept or reject all tracked changes before uploading. Deleted text that has not been formally removed may still be extracted and translated.
+- Consecutive tabs may be dropped during translation. Review content that relies on tab-based alignment.
+- If the target language requires characters outside the document's fonts, they may not render correctly. Check fonts after translation.
+
+**RTF** (currently in beta)
+- Body text in paragraphs, headings, list items, table cells, footnotes, and endnotes is translated. RTF control words, groups, and formatting tokens (`\b`, `\i`, `\par`, `\fonttbl`, etc.) are preserved untouched.
+- Non-ASCII characters are written as `\uXXXX?` escape sequences. Old RTF readers that ignore `\u` escapes will show only the ASCII fallback character. Open the result in a modern reader (Word 2007+, LibreOffice).
+- Embedded objects (images, OLE objects, embedded fonts) are preserved as binary blocks and not modified.
+- Fields (`\field`) are preserved, but field instruction text is not translated. Only the displayed text result is.
+- Hyperlink targets are not translated; only the link's display text is.
 
 ### Polling and translation time
 Translation time depends on document size and server load: small documents typically finish in seconds, larger ones in 1-2 minutes once translation has started. Poll the [status endpoint](/api-reference/document/check-document-status) at regular intervals or with exponential backoff. Treat the `seconds_remaining` field as a rough estimate only; it can be unreliable and occasionally returns implausible values (e.g. 2^27).

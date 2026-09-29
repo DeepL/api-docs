@@ -9,6 +9,11 @@ rss: true
 </Update>
 
 <Update label="September 2026">
+## September 29 - New Document Formats (Beta) and Embedded Image Translation Controls
+- [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now supports ten additional file formats, all currently in beta: `xlsm` (macro-enabled Excel), `zip` (SCORM e-learning packages), `vtt` (WebVTT subtitles), `yaml` / `yml`, `properties` (Java properties), `strings` (iOS/macOS strings), `md` / `markdown`, `resx` (.NET resources), `odt` (OpenDocument Text), and `rtf` (Rich Text Format).
+- A new `input_conversion_options` parameter controls how the input document is converted before translation. The `suppress-image-types` option leaves specified types of images embedded in `pptx` documents untranslated. For example, `version:1,suppress-image-types:all` suppresses all embedded images, and `version:1,suppress-image-types:logo-photo` suppresses logos and photos only.
+- See [document translation best practices](/docs/best-practices/document-translations) for format-specific guidance and known constraints.
+
 ## September 29 - Style Rules for Language Variants
 - [Style rule lists](/docs/customize/using-style-rules) hold the configured rules and custom instructions DeepL applies when translating into one target language. A list could previously only be created for a root language such as `de`, and it applied to every variant of that language. You can now also create a list for a specific variant, such as `de-CH` or `en-GB`, so conventions that differ between variants stay separate.
 - Set the variant code in the `language` field of [`POST /v3/style_rules`](/api-reference/style-rules/create-style-rule). A variant list applies when `target_lang` is that variant; root-language lists keep applying to all variants as before.
