@@ -13,6 +13,11 @@ rss: true
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) protects brace-delimited placeholders in `json` documents by default: values such as `{stars}` or `{{userName}}` are kept verbatim instead of being translated along with the surrounding text. Set `input_conversion_options=version:1,json-placeholders:translate` to translate them instead.
 - ICU MessageFormat skeletons such as `{count, plural, one {# item} other {# items}}` are always protected, with only the branch text translated, in both modes.
 
+## September 30 - Voice API Spanish (Latin America)
+- The [Voice API](/docs/voice/overview) now supports `es-419` (Spanish, Latin America) as a target-language variant for translation and translated speech, in beta. Translation is provided by DeepL; translated speech is provided by an external service partner.
+- `es-419` translated speech is reported with `"external": true` and beta status in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response, so call with `include=beta&include=external` to see it.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full Voice API language list.
+
 ## September 29 - New Document Formats (Beta) and Embedded Image Translation Controls
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now supports ten additional file formats, all currently in beta: `xlsm` (macro-enabled Excel), `zip` (SCORM e-learning packages), `vtt` (WebVTT subtitles), `yaml` / `yml`, `properties` (Java properties), `strings` (iOS/macOS strings), `md` / `markdown`, `resx` (.NET resources), `odt` (OpenDocument Text), and `rtf` (Rich Text Format).
 - A new `input_conversion_options` parameter controls how the input document is converted before translation. The `suppress-image-types` option leaves specified types of images embedded in `pptx` documents untranslated. For example, `version:1,suppress-image-types:all` suppresses all embedded images, and `version:1,suppress-image-types:logo-photo` suppresses logos and photos only.
@@ -22,11 +27,6 @@ rss: true
 - [Style rule lists](/docs/customize/using-style-rules) hold the configured rules and custom instructions DeepL applies when translating into one target language. A list could previously only be created for a root language such as `de`, and it applied to every variant of that language. You can now also create a list for a specific variant, such as `de-CH` or `en-GB`, so conventions that differ between variants stay separate.
 - Set the variant code in the `language` field of [`POST /v3/style_rules`](/api-reference/style-rules/create-style-rule). A variant list applies when `target_lang` is that variant; root-language lists keep applying to all variants as before.
 - Lists for `de-CH`, `fr-CA`, `pt-BR`, and `pt-PT` are generally available; lists for `de-DE`, `en-GB`, `en-US`, `es-419`, `es-ES`, `fr-FR`, `zh-Hans`, and `zh-Hant` are in beta. The current list and the status of each language are returned by [`GET /v3/languages?resource=style_rules&include=beta`](/docs/languages/using-the-languages-api).
-
-## September 28 - Voice API Spanish (Latin America)
-- The [Voice API](/docs/voice/overview) now supports `es-419` (Spanish, Latin America) as a target-language variant for translation and translated speech, in beta. Translation is provided by DeepL; translated speech is provided by an external service partner.
-- `es-419` translated speech is reported with `"external": true` and beta status in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response, so call with `include=beta&include=external` to see it.
-- See the [supported languages table](/docs/voice/supported-voice-languages) for the full Voice API language list.
 
 ## September 22 - New Voice API Languages: Catalan and Galician
 - The [Voice API](/docs/voice/overview) now supports `ca` (Catalan) and `gl` (Galician) as source languages and as targets for translation and translated speech. Both are beta for the Voice API; they are already generally available for text and document translation. Translation is provided by DeepL; transcription and translated speech are provided by external service partners, so the source language must be set explicitly (no auto-detection).
