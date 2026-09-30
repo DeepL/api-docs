@@ -58,6 +58,8 @@ Each supported format has behaviors and constraints worth knowing before you upl
 - Files must be strict, parseable JSON — no trailing commas, no comments. JSONC-style extensions are not supported.
 - **Upload limit is 1 MB** regardless of plan. Large metadata payloads (e.g., DataCite, Zenodo, Backstage catalog dumps) may need to be split, or translated string-by-string via the text-translation API.
 - Embedded HTML or Markdown inside string values (common in Contentful Rich Text and similar CMS payloads) is handled — DeepL translates the natural-language text and attempts to preserve the embedded markup. Review the output for complex rich-text content.
+- Brace-delimited placeholders such as `{stars}` or `{{userName}}` are kept verbatim by default, so template variables survive translation. Multi-word groups such as `{see note}` are treated as translatable text. To translate placeholders along with the text, set `input_conversion_options=version:1,json-placeholders:translate` when uploading.
+- ICU MessageFormat skeletons such as `{count, plural, one {# item} other {# items}}` are always protected: the variable name, keywords, and categories stay intact while the branch text is translated. Branch text is translated in isolation, so review plural forms in the output. Languages whose plural categories are absent from the source (for example Polish `few`/`many` from an English message) fall back to `other`. Expand categories in your i18n tooling if exact pluralization matters.
 - To protect specific values from translation, encode them as non-strings (numbers/booleans/null) or pre-process the file to strip them.
 
 **IDML**
