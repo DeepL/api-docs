@@ -20,8 +20,9 @@ export async function update({ authKey, dryRun = false }) {
   const languagesByCode = new Map(languages.map((language) => [language.lang, language]));
 
   const rows = languages
-    // Skip the row for a base language if variants are available
-    .filter((l) => l.lang.includes('-') || !languages.some((f) => f.lang.startsWith(`${l.lang}-`)))
+    // Skip the row for a base language if two or more variants cover it (e.g. fr-CA + fr-FR).
+    // A single variant (e.g. es-419 without es-ES) leaves the base row as the other variety.
+    .filter((l) => l.lang.includes('-') || languages.filter((f) => f.lang.startsWith(`${l.lang}-`)).length < 2)
     .sort(byName)
     .map((l) => {
       const isVariant = l.lang.includes('-');

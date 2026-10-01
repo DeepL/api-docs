@@ -13,6 +13,11 @@ rss: true
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) protects brace-delimited placeholders in `json` documents by default: values such as `{stars}` or `{{userName}}` are kept verbatim instead of being translated along with the surrounding text. Set `input_conversion_options=version:1,json-placeholders:translate` to translate them instead.
 - ICU MessageFormat skeletons such as `{count, plural, one {# item} other {# items}}` are always protected, with only the branch text translated, in both modes.
 
+## September 30 - Voice API Spanish (Latin America)
+- The [Voice API](/docs/voice/overview) now supports `es-419` (Spanish, Latin America) as a target-language variant for translation and translated speech, in beta. Translation is provided by DeepL; translated speech is provided by an external service partner.
+- `es-419` translated speech is reported with `"external": true` and beta status in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response, so call with `include=beta&include=external` to see it.
+- See the [supported languages table](/docs/voice/supported-voice-languages) for the full Voice API language list.
+
 ## September 29 - New Document Formats (Beta) and Embedded Image Translation Controls
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now supports ten additional file formats, all currently in beta: `xlsm` (macro-enabled Excel), `zip` (SCORM e-learning packages), `vtt` (WebVTT subtitles), `yaml` / `yml`, `properties` (Java properties), `strings` (iOS/macOS strings), `md` / `markdown`, `resx` (.NET resources), `odt` (OpenDocument Text), and `rtf` (Rich Text Format).
 - A new `input_conversion_options` parameter controls how the input document is converted before translation. The `suppress-image-types` option leaves specified types of images embedded in `pptx` documents untranslated. For example, `version:1,suppress-image-types:all` suppresses all embedded images, and `version:1,suppress-image-types:logo-photo` suppresses logos and photos only.
