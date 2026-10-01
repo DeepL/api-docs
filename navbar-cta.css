@@ -1,10 +1,10 @@
-/* Navbar "Free API Key" / "Dashboard" CTA button */
-#topbar-cta-button a > span:first-child {
+/* Navbar "Free API Key" / "Dashboard" CTA button (dark mode only) */
+html.dark #topbar-cta-button a > span:first-child {
     background-color: #FFFFFF !important;
 }
 
-#topbar-cta-button a,
-#topbar-cta-button a span,
-#topbar-cta-button a svg {
+html.dark #topbar-cta-button a,
+html.dark #topbar-cta-button a span,
+html.dark #topbar-cta-button a svg {
     color: #292929 !important;
 }
