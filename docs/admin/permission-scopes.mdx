@@ -27,7 +27,7 @@ Each scope grants a [scoped API key](/docs/admin/api-key-permissions) access to 
     | `POST` | [`/v3/voice/realtime`](/api-reference/voice/request-session) |
     | `GET` | [`/v3/voice/realtime`](/api-reference/voice/reconnect-session) |
 
-    The [WebSocket stream](/api-reference/voice/websocket-streaming) authenticates with the token from the session response, not your API key, so it needs no scope of its own. A key without `voice:realtime` can't request or reconnect a session, so it never receives a stream token.
+    The [WebSocket stream](/api-reference/voice/websocket-streaming) authenticates with the token from the session response, not your API key, so it needs no scope of its own. A scoped key without `voice:realtime` can't request or reconnect a session, so it never receives a stream token. Unrestricted keys keep full Voice API access.
   </Accordion>
 
   <Accordion title="Rephrase or correct text (write:improve)">
