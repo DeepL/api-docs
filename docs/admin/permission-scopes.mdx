@@ -27,7 +27,7 @@ Each scope grants a [scoped API key](/docs/admin/api-key-permissions) access to 
     | `POST` | [`/v3/voice/realtime`](/api-reference/voice/request-session) |
     | `GET` | [`/v3/voice/realtime`](/api-reference/voice/reconnect-session) |
 
-    The [WebSocket stream](/api-reference/voice/websocket-streaming) authenticates with the token from the session response, not your API key, so it needs no scope of its own. A scoped key without `voice:realtime` can't request or reconnect a session, so it never receives a stream token. Unrestricted keys keep full Voice API access.
+    This scope also covers the [WebSocket stream](/api-reference/voice/websocket-streaming). You open the stream with the streaming URL and token from one of the endpoints above, so a scoped key needs `voice:realtime` to use any part of a real-time session.
   </Accordion>
 
   <Accordion title="Rephrase or correct text (write:improve)">
@@ -114,3 +114,7 @@ Each scope grants a [scoped API key](/docs/admin/api-key-permissions) access to 
     | `GET` | [`/v2/usage`](/api-reference/usage-and-quota/check-usage-and-limits) |
   </Accordion>
 </AccordionGroup>
+
+<Info>
+No scope covers [audio file translation](/api-reference/jobs-voice-translate) yet, so those endpoints are accessible only with unrestricted keys.
+</Info>

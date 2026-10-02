@@ -28,15 +28,14 @@ Scoped keys apply the principle of least privilege: each key gets exactly the ac
 A developer key becomes scoped the moment you assign it one or more scopes. Once scoped:
 
 - The key can call only the endpoints fully covered by its scopes.
-- Every other endpoint returns `403 Forbidden`, including endpoints that have no scope requirement of their own.
+- Every other endpoint returns `403 Forbidden`, including endpoints that have no scope requirement of their own (currently the case for [audio file translation](/api-reference/jobs-voice-translate)).
 - Some endpoints require more than one scope. The key must hold all of them; if any is missing, the request is denied.
 
-When a scoped key calls an endpoint outside its scopes, the `detail` field of the response lists what's missing:
+When a scoped key calls an endpoint outside its scopes, the `message` field of the response lists what's missing:
 
 ```json
 {
-  "message": "Forbidden",
-  "detail": "Missing required scope(s): glossaries:write"
+  "message": "Missing required scope(s): glossaries:write. You can find more info in our docs: https://developers.deepl.com/docs/getting-started/auth"
 }
 ```
 
