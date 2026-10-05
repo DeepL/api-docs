@@ -877,13 +877,6 @@
     {
       "tag": "script",
       "attrs": {
-        "src": "/api-roadmap-survey-banner.js",
-        "defer": true
-      }
-    },
-    {
-      "tag": "script",
-      "attrs": {
         "src": "/user-data.js",
         "defer": true
       }
