@@ -3,6 +3,10 @@
   "theme": "mint",
   "name": "DeepL Documentation",
   "description": "Developer documentation for the DeepL API: translate text and documents, transcribe and translate speech in real time, improve text, and customize output with glossaries, style rules, and translation memories.",
+  "banner": {
+    "content": "Help shape the DeepL API roadmap. [Take the survey](https://deepl.qualtrics.com/jfe/form/SV_8fbjoZx1wQUkAC2)",
+    "dismissible": true
+  },
   "colors": {
     "primary": "#0f2b46",
     "light": "#ffffff",
