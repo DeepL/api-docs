@@ -47,9 +47,15 @@ export const AgentPicker = () => {
 
     return (
         <div className="not-prose my-6">
-            <style>{`.agent-picker-title { font-size: 1.25rem; font-weight: 600; color: #18181b; } .agent-picker-hint { font-size: 0.95rem; color: #52525b; margin: 0.25rem 0 0.875rem; } html.dark .agent-picker-title { color: #f4f4f5; } html.dark .agent-picker-hint { color: #a1a1aa; } .agent-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 0.75rem; border: 1px solid #e4e4e7; background: #fff; color: #27272a; padding: 1rem 0.75rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, background 0.15s; } .agent-btn:hover { border-color: #a1a1aa; } .agent-btn-active, .agent-btn-active:hover { background: #0f2b46; border-color: #0f2b46; color: #fff; } html.dark .agent-btn { background: #18181b; border-color: #3f3f46; color: #f4f4f5; } html.dark .agent-btn:hover { border-color: #71717a; } html.dark .agent-btn-active, html.dark .agent-btn-active:hover { background: #f4f4f5; border-color: #f4f4f5; color: #0f2b46; } .agent-tip-body [data-as="p"] { display: block; margin: 0.75rem 0; }`}</style>
-            <div className="agent-picker-title">Which AI agent do you use?</div>
-            <div className="agent-picker-hint">Select a box to see agent-specific guidance.</div>
+            <style>{`.agent-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 0.75rem; border: 1px solid #e4e4e7; background: #fff; color: #27272a; padding: 1rem 0.75rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, background 0.15s; } .agent-btn:hover { border-color: #a1a1aa; } .agent-btn-active, .agent-btn-active:hover { background: #0f2b46; border-color: #0f2b46; color: #fff; } html.dark .agent-btn { background: #18181b; border-color: #3f3f46; color: #f4f4f5; } html.dark .agent-btn:hover { border-color: #71717a; } html.dark .agent-btn-active, html.dark .agent-btn-active:hover { background: #f4f4f5; border-color: #f4f4f5; color: #0f2b46; } .agent-tip-body [data-as="p"] { display: block; margin: 0.75rem 0; }`}</style>
+            <div style={{ marginBottom: '0.875rem' }}>
+                {selected === 'all' ? 'Select a box to see agent-specific guidance.' : (
+                    <span>
+                        Showing tips for {agents.find((a) => a.id === selected).name}.{' '}
+                        <button type="button" onClick={() => choose(selected)} className="underline cursor-pointer">Show all</button>
+                    </span>
+                )}
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 {agents.map((a) => {
                     const active = selected === a.id
@@ -66,14 +72,6 @@ export const AgentPicker = () => {
                         </button>
                     )
                 })}
-            </div>
-            <div className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-                {selected === 'all' ? 'Showing tips for all agents.' : (
-                    <span>
-                        Showing tips for {agents.find((a) => a.id === selected).name}.{' '}
-                        <button type="button" onClick={() => choose(selected)} className="underline cursor-pointer">Show all</button>
-                    </span>
-                )}
             </div>
         </div>
     )
@@ -115,10 +113,10 @@ export const AgentTip = ({ agents, title, id, num, children }) => {
     }
 
     return (
-        <div id={id} style={{ display: visible ? 'block' : 'none', scrollMarginTop: '6rem' }} className="mt-10">
-            <h3 className="flex flex-wrap items-center gap-x-3 gap-y-1 not-prose text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+        <div id={id} style={{ display: visible ? 'block' : 'none', scrollMarginTop: '6rem' }}>
+            <h3 style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.25rem 0.75rem' }}>
                 <span>{num !== undefined ? `${num}. ` : ''}{title}</span>
-                <span className="inline-flex items-center gap-1.5 text-zinc-900 dark:text-zinc-100">
+                <span className="inline-flex items-center gap-1.5">
                     {list.map((a) => (
                         <span key={a} title={names[a]} aria-label={names[a]} className="inline-flex">{icon(a, 16)}</span>
                     ))}
