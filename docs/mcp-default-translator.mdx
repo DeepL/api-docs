@@ -7,8 +7,6 @@ public: false
 
 import { AgentPicker, AgentTip, AgentTips } from "/snippets/agent-picker.jsx"
 
-Use these tips to make your AI agent translate with DeepL.
-
 Before you start, connect DeepL to your agent. See [DeepL Remote MCP](/docs/mcp).
 
 <AgentPicker />
@@ -56,11 +54,11 @@ Admins can install the DeepL plugin for everyone in the organization, so DeepL i
 **How to set it up**
 1. Open your agent's admin settings:
 
-   | **Agent** | **Where** |
+   | **Agent** | **How** |
    |-------|-------|
-   | ChatGPT | **Admin > Plugins > DeepL**. Set the installation policy to **Installed** |
-   | Claude | **Organization settings > Connectors**, add **DeepL**. Then go to **Organization settings > Plugins & skills > Inventory > DeepL** and set **Default access** to **Required** |
-   | Copilot | Microsoft 365 admin center, **Agents > Tools > DeepL**. Under **Installed for**, choose all users |
+   | ChatGPT | Go to **Admin > Plugins > DeepL** and set the installation policy to **Installed**. |
+   | Claude | Add **DeepL** in **Organization settings > Connectors**. Then go to **Organization settings > Plugins & skills > Inventory > DeepL** and set **Default access** to **Required**. |
+   | Copilot | In the Microsoft 365 admin center, go to **Agents > Tools > DeepL** and choose all users under **Installed for**. |
 
 2. Choose who gets it: everyone, or specific roles or groups.
 
@@ -102,7 +100,7 @@ When someone picks the DeepL agent or types @DeepL, Copilot hands the conversati
 
 **How to set it up**
 1. In the Microsoft 365 admin center, go to **Agents > All agents**, open **DeepL**, and deploy it to your users.
-2. Optional: click **...** > **Manage pinned agents** and pin **DeepL**, so it shows at the top of everyone's agents list.
+2. Optional: select **...** > **Manage pinned agents** and pin **DeepL**, so it shows at the top of everyone's agents list.
 3. In Copilot Chat, type `@DeepL` or pick **DeepL** from the agents list.
 
 [Microsoft docs: Manage agents](https://learn.microsoft.com/en-us/microsoft-365/copilot/agent-essentials/m365-agents-admin-guide)
@@ -115,12 +113,12 @@ When someone types "Translate..." in Copilot Chat, Copilot suggests your ready-m
 
 **How to set it up**
 1. In the Microsoft 365 admin center, go to **Copilot > Prompts**.
-2. Click **Create prompt**.
+2. Select **Create prompt**.
 3. Paste a prompt like this one:
    ```text
    Use DeepL to translate the following text into [language]:
    ```
-4. Click **Publish**, then **Pin** it so it shows under **Suggested**.
+4. Select **Publish**, then **Pin** it so it shows under **Suggested**.
 
 [Microsoft docs: Organizational prompts](https://learn.microsoft.com/en-us/microsoft-365/copilot/organizational-prompts)
 

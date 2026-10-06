@@ -49,7 +49,7 @@ export const AgentPicker = () => {
         <div className="not-prose my-6">
             <style>{`.agent-picker-title { font-size: 1.25rem; font-weight: 600; color: #18181b; } .agent-picker-hint { font-size: 0.95rem; color: #52525b; margin: 0.25rem 0 0.875rem; } html.dark .agent-picker-title { color: #f4f4f5; } html.dark .agent-picker-hint { color: #a1a1aa; } .agent-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 0.75rem; border: 1px solid #e4e4e7; background: #fff; color: #27272a; padding: 1rem 0.75rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, background 0.15s; } .agent-btn:hover { border-color: #a1a1aa; } .agent-btn-active, .agent-btn-active:hover { background: #0f2b46; border-color: #0f2b46; color: #fff; } html.dark .agent-btn { background: #18181b; border-color: #3f3f46; color: #f4f4f5; } html.dark .agent-btn:hover { border-color: #71717a; } html.dark .agent-btn-active, html.dark .agent-btn-active:hover { background: #f4f4f5; border-color: #f4f4f5; color: #0f2b46; } .agent-tip-body [data-as="p"] { display: block; margin: 0.75rem 0; }`}</style>
             <div className="agent-picker-title">Which AI agent do you use?</div>
-            <div className="agent-picker-hint">Click on the box to see agent-specific guidance.</div>
+            <div className="agent-picker-hint">Select a box to see agent-specific guidance.</div>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 {agents.map((a) => {
                     const active = selected === a.id
