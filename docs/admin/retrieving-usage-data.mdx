@@ -17,11 +17,11 @@ Consumption data in the account UI, in CSV exports, and in the [Admin API analyt
 | --- | --- | --- | --- | --- |
 | [API Keys & Limits tab](#api-keys-and-limits-tab) | Per API key | Current usage period only | Previous UTC day | Account UI |
 | [API Usage tab](#api-usage-tab) | Account total (plus year-to-date on yearly plans) | Current usage period (and yearly period) | Previous UTC day | Account UI |
-| [CSV export](#csv-export) | Per API key, per custom tag, or per language pair | Custom or preset ranges up to 4 months, optional grouping by day | Previous UTC day | CSV download |
+| [CSV export](#csv-export) | Per API key, per custom tag, per language pair, or per document | Preset ranges for all reports; custom ranges up to 4 months and optional grouping by day for key-level and tag-level reports | Previous UTC day | CSV download |
 | [`/usage` endpoint](#the-usage-endpoint) | Account total | Current usage period only | Near-real-time (within minutes) | REST API |
 | [Admin API analytics](#admin-api-analytics) | Per API key or per custom tag | Custom date range, optional grouping by day | Previous UTC day | REST API |
 
-Use the **account UI** for a quick check while signed in, the **CSV export** for detailed or offline analysis per key, per custom tag, or per language pair, the **`/usage` endpoint** for programmatic near-real-time quota checks, and the **Admin API analytics endpoints** for programmatic reporting and cost attribution.
+Use the **account UI** for a quick check while signed in, the **CSV export** for detailed or offline analysis per key, per custom tag, per language pair, or per document, the **`/usage` endpoint** for programmatic near-real-time quota checks, and the **Admin API analytics endpoints** for programmatic reporting and cost attribution.
 
 ## API Keys and Limits tab
 
@@ -47,21 +47,34 @@ To check your account totals, open the [API Usage tab](https://www.deepl.com/you
 
 ## CSV export
 
-Generate a CSV report of your usage for a chosen time period. Three report types are available:
+Generate a CSV report of your usage for a chosen time period. Four report types are available:
 
 - **API key-level report**: characters translated per API key, including a column that breaks out text improvement (Write API) characters separately. Key-level usage is not broken out on invoices; retrieve it via CSV export, the "API Keys & Limits" tab, or the [Admin API analytics endpoints](#admin-api-analytics).
 - **Custom tag-level report**: characters translated per [custom reporting tag](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags). Only tagged requests appear in this report, so results reflect a subset of total usage unless every request is tagged.
 - **Language pair-level report**: characters translated per source-target language pair. Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
+- **Document translation report**: one row per translated document, with the document type, language pair, input characters, billed characters (reflecting any [billing minimum](/docs/best-practices/document-translations#billing-minimums) applied), and whether a glossary was used. Use it to trace document translation usage back to individual documents. Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
 
-To download a report, click "Download CSV usage report" on the [API Keys & Limits tab](https://www.deepl.com/your-account/keys) or the [API Usage tab](https://www.deepl.com/your-account/usage) and select "API key-level report," "Custom tag-level report," or "Language pair-level report" from the dropdown. Then select a time period and click "Download your report".
+To download a report, click "Download CSV usage report" on the [API Keys & Limits tab](https://www.deepl.com/your-account/keys) or the [API Usage tab](https://www.deepl.com/your-account/usage) and select "API key-level report," "Custom tag-level report," "Language pair-level report," or "Document translation report" from the dropdown. Then select a time period and click "Download your report".
 
 <Frame caption='Select a report type from the "Download CSV usage report" dropdown'>
 ![](/_assets/images/download-csv-usage-report.png)
 </Frame>
 
-Select a custom date range of up to 4 months (on UTC calendar days) or one of the presets, which cover rolling windows from the last 24 hours up to the last year as well as calendar months and usage periods. Rolling presets include the current day; calendar-month and usage-period ranges align to UTC day or period boundaries, so they might not start and end on a full calendar day.
+Select one of the presets or, for the API key-level and custom tag-level reports, a custom date range of up to 4 months (on UTC calendar days). The language pair-level and document translation reports currently support presets only.
 
-For any time range, you can also group usage data by UTC calendar day:
+For the API key-level and custom tag-level reports, presets cover rolling windows from the last 24 hours up to the last year, as well as calendar months and usage periods. The language pair-level and document translation reports offer these presets:
+
+- Last 24 hours
+- Last 7 days
+- Last 30 days
+- Current month
+- Last month
+- Current usage period
+- Last usage period
+
+Rolling presets include the current day; calendar-month and usage-period ranges align to UTC day or period boundaries, so they might not start and end on a full calendar day.
+
+In the API key-level and custom tag-level reports, you can also group usage data by UTC calendar day for any time range. The language pair-level and document translation reports currently don't support grouping by day.
 
 <Frame caption='Select the "Group by day" option to group usage data by UTC calendar day'>
 ![](/_assets/images/group-by-day-option.png)

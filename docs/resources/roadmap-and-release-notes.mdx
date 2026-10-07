@@ -9,6 +9,10 @@ rss: true
 </Update>
 
 <Update label="October 2026">
+## October 7 - Document Translation CSV Report
+- The document translation report is a CSV export of usage with one row per translated document. Each row shows the document type, source and target language, input and billed characters (including any billing minimum applied), and whether a glossary was used. Use it to trace document translation usage to individual documents; see the [CSV export section of the usage data guide](/docs/admin/retrieving-usage-data#csv-export) for how to download it.
+- Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
+
 ## October 1 - Voice API: Catalan, Galician, Hindi, Malay, Tamil, French (Canadian), and Spanish (Latin American) Generally Available
 - `ca` (Catalan), `gl` (Galician), `hi` (Hindi), `ms` (Malay), and `ta` (Tamil) have moved out of beta and are now generally available in the [Voice API](/docs/voice/overview) as source languages and as translation targets. The `fr-CA` (French, Canadian) and `es-419` (Spanish, Latin American) translation target variants have moved out of beta as well.
 - These languages now appear in the [`GET /v3/languages?resource=voice`](/docs/languages/using-the-languages-api) response without `include=beta`. Transcription for Catalan, Galician, Hindi, Malay, and Tamil is still provided by external service partners and stays marked `"external": true`, so `include=external` is still required to list it and the source language must be set explicitly (no auto-detection).
