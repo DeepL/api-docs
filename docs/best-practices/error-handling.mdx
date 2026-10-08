@@ -47,14 +47,23 @@ Handle both shapes in your parser. Reading `body.message ?? body.error?.message`
 | `404` | The resource does not exist, or a document has already been downloaded | No |
 | `413` | The request exceeds the [request size limit](/docs/resources/usage-limits) | No. Split the payload into smaller requests |
 | `429`, `529` | Too many requests in a short period | Yes, with exponential backoff |
-| `456` | Quota exhausted for the billing period or for a [Cost Control](/docs/best-practices/cost-control) limit | No. Retrying will not succeed until the quota is raised or the period resets |
+| `456` | A usage limit was reached: the character quota for the billing period, a [Cost Control](/docs/best-practices/cost-control) or [key-level](/docs/admin/managing-api-keys#set-a-key-level-usage-limit) limit, or the number of glossaries your plan allows | No. Retrying will not succeed until the limit is raised, the period resets, or (for glossaries) you delete one |
 | `500`, `503`, `504` | Temporary error in DeepL services | Yes, with exponential backoff |
 
 Details on the errors you are most likely to hit:
 
 * **HTTP 429: too many requests.** You may receive this when sending many API requests in a short period of time. Resend the request after a delay, using retries with exponential backoff. This is implemented in all of the official, DeepL-supported [client libraries](/docs/getting-started/client-libraries).
 
-* **HTTP 456: quota exceeded.** **If you're a Free API user**, you'll receive this error when the monthly 500,000 character limit of your subscription has been reached. You can consider [upgrading your subscription](https://www.deepl.com/pro) if you need more character volume. **If you're a Pro API user**, you'll receive this error when your [Cost Control](/docs/best-practices/cost-control) limit has been reached, and you can increase or remove your Cost Control limit if you need to continue translating. You can also use the [usage endpoint](/api-reference/usage-and-quota/check-usage-and-limits) to find out your currently used and available quota.
+* **HTTP 456: quota exceeded.** The request would take the account or API key past one of its usage limits. The status code is the same for every cause, so log the `message` and `X-Trace-ID` to see which limit you hit:
+
+  | **Cause** | **Returned by** | **What to do** |
+  | --- | --- | --- |
+  | Your plan's character allowance is used up | Translate, Write, and other character-billed requests | **Free API users**: [upgrade your subscription](https://www.deepl.com/pro-api) for more character volume. **Pro API users**: buy additional characters or move to a larger plan |
+  | A [Cost Control](/docs/best-practices/cost-control) limit was reached | Character-billed requests | Increase or remove the Cost Control limit |
+  | A [key-level usage limit](/docs/admin/managing-api-keys#set-a-key-level-usage-limit) was reached | Requests made with that key | Raise the key's limit, or wait for the next usage period |
+  | The account already has the maximum number of glossaries its plan allows | [Create a glossary](/api-reference/multilingual-glossaries/create-a-glossary) | Delete glossaries you no longer need, or [upgrade your plan](https://www.deepl.com/pro-api). See [glossary limits](/docs/customize/managing-glossaries#limits-and-restrictions) |
+
+  Use the [usage endpoint](/api-reference/usage-and-quota/check-usage-and-limits) to check your current character usage and remaining quota before you hit a character limit.
 
 * **HTTP 500: internal server error.** You'll receive this if there are temporary errors in DeepL services. Resend the request after a delay, using retries with exponential backoff. Check the [API Status Page](https://status.deepl.com/?tab=api) for current service availability and incident information.
 
