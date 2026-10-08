@@ -63,15 +63,6 @@ Details on the errors you are most likely to hit:
   | A [key-level usage limit](/docs/admin/managing-api-keys#set-a-key-level-usage-limit) was reached | Requests made with that key | Raise the key's limit, or wait for the next usage period |
   | The account already has the maximum number of glossaries its plan allows | [Create a glossary](/api-reference/multilingual-glossaries/create-a-glossary) | Delete glossaries you no longer need, or [upgrade your plan](https://www.deepl.com/pro-api). See [glossary limits](/docs/customize/managing-glossaries#limits-and-restrictions) |
 
-  For example, when the glossary limit is reached:
-
-  ```text Example glossary limit response
-  HTTP 456
-  x-trace-id: 34341551161e4d389647143f467f7fc7
-
-  {"message":"Too many glossaries"}
-  ```
-
   Use the [usage endpoint](/api-reference/usage-and-quota/check-usage-and-limits) to check your current character usage and remaining quota before you hit a character limit.
 
 * **HTTP 500: internal server error.** You'll receive this if there are temporary errors in DeepL services. Resend the request after a delay, using retries with exponential backoff. Check the [API Status Page](https://status.deepl.com/?tab=api) for current service availability and incident information.
