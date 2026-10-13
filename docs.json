@@ -185,6 +185,12 @@
             "pages": [
               "docs/customize/using-translation-memories"
             ]
+          },
+          {
+            "group": "Style Profiles",
+            "pages": [
+              "docs/customize/using-style-profiles"
+            ]
           }
         ]
       },
@@ -275,6 +281,17 @@
                   "api-reference/spoken-terms/delete-spoken-terms",
                   "api-reference/spoken-terms/delete-spoken-terms-list",
                   "api-reference/spoken-terms/replace-or-create-term-list"
+                ],
+                "drilldown": false
+              },
+              {
+                "group": "Style Profiles",
+                "pages": [
+                  "api-reference/style-profiles/list-all-style-profiles",
+                  "api-reference/style-profiles/create-style-profile",
+                  "api-reference/style-profiles/get-style-profile",
+                  "api-reference/style-profiles/update-style-profile",
+                  "api-reference/style-profiles/delete-style-profile"
                 ],
                 "drilldown": false
               },
