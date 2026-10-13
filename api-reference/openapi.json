@@ -59,7 +59,7 @@
     },
     {
       "name": "ManageStyleProfiles",
-      "description": "The style profile functions allow you to create, inspect, edit and delete style profiles.\nA style profile bundles your other customizations, glossaries, style rule lists, translation memories\nand example documents, behind a single ID, so one `style_profile_id` stands for a whole translation\nconfiguration instead of a list of individual parameters.\n\nEvery component list is optional. A style profile can hold nothing but a name, and you can link\ncomponents to it later with a partial update. Within each list, the order of the IDs is the order in\nwhich the components are applied, and a style profile can reference at most one translation memory per\nsource language.\n\nA style profile can also link one Spoken Terms collection, which is applied when the profile is used\nfor speech rather than text instead of the text-only components. A profile links at most one\ncollection: collections are deliberately small so that transcription stays fast (see\n[Spoken Terms requirements](/docs/customize/spoken-terms-requirements)), and stacking several against\none profile would work against that. Manage collections with the\n[Spoken Terms endpoints](/api-reference/spoken-terms/list-all-spoken-terms).\n\nDeleting a style profile only unlinks its components. The glossaries, style rule lists, translation\nmemories, example documents and Spoken Terms collection themselves are left in place and can be reused\nin another style profile."
+      "description": "The style profile functions allow you to create, inspect, edit and delete style profiles.\nA style profile bundles your other customizations, glossaries, style rule lists and translation\nmemories, behind a single ID, so one `style_profile_id` stands for a whole translation configuration\ninstead of a list of individual parameters.\n\nEvery component list is optional. A style profile can hold nothing but a name, and you can link\ncomponents to it later with a partial update. Within each list, the order of the IDs is the order in\nwhich the components are applied, and a style profile can reference at most one translation memory per\nsource language.\n\nA style profile can also link one Spoken Terms collection, which is applied when the profile is used\nfor speech rather than text instead of the text-only components. A profile links at most one\ncollection: collections are deliberately small so that transcription stays fast (see\n[Spoken Terms requirements](/docs/customize/spoken-terms-requirements)), and stacking several against\none profile would work against that. Manage collections with the\n[Spoken Terms endpoints](/api-reference/spoken-terms/list-all-spoken-terms).\n\nDeleting a style profile only unlinks its components. The glossaries, style rule lists, translation\nmemories and Spoken Terms collection themselves are left in place and can be reused in another style\nprofile."
     },
     {
       "name": "MetaInformation",
@@ -5239,9 +5239,6 @@
                           "translation_memory_ids": [
                             "a74d88fb-ed2a-4943-a664-a4512398b994"
                           ],
-                          "example_document_ids": [
-                            "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
-                          ],
                           "spoken_terms_ids": [
                             "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
                           ],
@@ -5255,7 +5252,6 @@
                           "glossary_ids": [],
                           "style_rule_ids": [],
                           "translation_memory_ids": [],
-                          "example_document_ids": [],
                           "spoken_terms_ids": [],
                           "glossary_priority_order_enabled": false,
                           "creation_time": "2026-07-14T11:02:09.640Z",
@@ -5359,17 +5355,6 @@
                       "a74d88fb-ed2a-4943-a664-a4512398b994"
                     ]
                   },
-                  "example_document_ids": {
-                    "description": "The IDs of the example documents to link, in the order they should be applied. A\ndocument must be fully imported before it can be linked. Defaults to an empty list.",
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "example": [
-                      "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
-                    ]
-                  },
                   "spoken_terms_ids": {
                     "description": "The IDs of the Spoken Terms collections to link, applied when the style profile is\nused for speech rather than text. A style profile links at most one collection today.\nOmit it to create the style profile without any. See\n[Improving transcription with Spoken Terms](/docs/customize/improving-transcription-with-spoken-terms).\n\nRequires a plan that includes DeepL Voice. Sending `spoken_terms_ids` on a plan\nwithout it is rejected with `403 Forbidden` and no style profile is created. A value\nthat is not a valid UUID, or that names a collection your account cannot access, is\nrejected with `400 Bad Request` naming the field.",
                     "type": "array",
@@ -5411,9 +5396,6 @@
                     "translation_memory_ids": [
                       "a74d88fb-ed2a-4943-a664-a4512398b994"
                     ],
-                    "example_document_ids": [
-                      "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
-                    ],
                     "spoken_terms_ids": [
                       "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
                     ],
@@ -5452,9 +5434,6 @@
                       ],
                       "translation_memory_ids": [
                         "a74d88fb-ed2a-4943-a664-a4512398b994"
-                      ],
-                      "example_document_ids": [
-                        "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
                       ],
                       "spoken_terms_ids": [
                         "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
@@ -5580,9 +5559,6 @@
                       "translation_memory_ids": [
                         "a74d88fb-ed2a-4943-a664-a4512398b994"
                       ],
-                      "example_document_ids": [
-                        "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
-                      ],
                       "spoken_terms_ids": [
                         "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
                       ],
@@ -5703,17 +5679,6 @@
                       "a74d88fb-ed2a-4943-a664-a4512398b994"
                     ]
                   },
-                  "example_document_ids": {
-                    "description": "The IDs of the example documents to link, in the order they should be applied. A\ndocument must be fully imported before it can be linked. Replaces the linked example\ndocuments in full. Send an empty list to unlink all of them.",
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "example": [
-                      "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
-                    ]
-                  },
                   "spoken_terms_ids": {
                     "description": "The IDs of the Spoken Terms collections to link, applied when the style profile is\nused for speech rather than text. A style profile links at most one collection today.\nReplaces the linked collections in full. Send an empty list to unlink all of them.\n\nRequires a plan that includes DeepL Voice. Sending `spoken_terms_ids` on a plan\nwithout it is rejected with `403 Forbidden` and the style profile is not changed. A\nvalue that is not a valid UUID, or that names a collection your account cannot access,\nis rejected with `400 Bad Request` naming the field.",
                     "type": "array",
@@ -5749,12 +5714,6 @@
                       "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81",
                       "7b2f6d84-3c15-4e90-8a72-d5e1490bc637"
                     ]
-                  }
-                },
-                "UnlinkAllExampleDocuments": {
-                  "summary": "Unlink all example documents",
-                  "value": {
-                    "example_document_ids": []
                   }
                 },
                 "UnlinkTheSpokenTermsCollection": {
@@ -5797,7 +5756,6 @@
                       "translation_memory_ids": [
                         "a74d88fb-ed2a-4943-a664-a4512398b994"
                       ],
-                      "example_document_ids": [],
                       "spoken_terms_ids": [
                         "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
                       ],
@@ -5821,7 +5779,7 @@
                   "UnusableComponentId": {
                     "summary": "Unusable component ID",
                     "value": {
-                      "message": "One or more IDs in example_document_ids could not be used"
+                      "message": "One or more IDs in translation_memory_ids could not be used"
                     }
                   },
                   "EmptyName": {
@@ -5879,7 +5837,7 @@
         ],
         "summary": "Delete a style profile",
         "operationId": "deleteStyleProfile",
-        "description": "Delete a style profile. Only the account that owns a style profile can delete it. A style profile\nthat was shared with your account, and that you can therefore list and retrieve, returns\n`404 Not Found` on delete, the same status as an ID that does not exist.\n\nDeleting a style profile unlinks its components rather than deleting them. The glossaries, style\nrule lists, translation memories, example documents and Spoken Terms collection it referenced are\nleft in place. Translation requests that pass the deleted `style_profile_id` fail after this call,\nso update your integration before deleting.\n\nRequires an API key with the `style_profiles:write` scope.",
+        "description": "Delete a style profile. Only the account that owns a style profile can delete it. A style profile\nthat was shared with your account, and that you can therefore list and retrieve, returns\n`404 Not Found` on delete, the same status as an ID that does not exist.\n\nDeleting a style profile unlinks its components rather than deleting them. The glossaries, style\nrule lists, translation memories and Spoken Terms collection it referenced are left in place.\nTranslation requests that pass the deleted `style_profile_id` fail after this call, so update your\nintegration before deleting.\n\nRequires an API key with the `style_profiles:write` scope.",
         "parameters": [
           {
             "name": "style_profile_id",
@@ -9539,7 +9497,6 @@
           "glossary_ids",
           "style_rule_ids",
           "translation_memory_ids",
-          "example_document_ids",
           "spoken_terms_ids",
           "glossary_priority_order_enabled",
           "creation_time",
@@ -9595,17 +9552,6 @@
             },
             "example": [
               "a74d88fb-ed2a-4943-a664-a4512398b994"
-            ]
-          },
-          "example_document_ids": {
-            "description": "The IDs of the example documents linked to the style profile, in the order they are applied.",
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "example": [
-              "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
             ]
           },
           "spoken_terms_ids": {

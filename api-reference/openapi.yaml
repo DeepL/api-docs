@@ -91,9 +91,9 @@ tags:
 - name: ManageStyleProfiles
   description: |-
     The style profile functions allow you to create, inspect, edit and delete style profiles.
-    A style profile bundles your other customizations, glossaries, style rule lists, translation memories
-    and example documents, behind a single ID, so one `style_profile_id` stands for a whole translation
-    configuration instead of a list of individual parameters.
+    A style profile bundles your other customizations, glossaries, style rule lists and translation
+    memories, behind a single ID, so one `style_profile_id` stands for a whole translation configuration
+    instead of a list of individual parameters.
 
     Every component list is optional. A style profile can hold nothing but a name, and you can link
     components to it later with a partial update. Within each list, the order of the IDs is the order in
@@ -108,8 +108,8 @@ tags:
     [Spoken Terms endpoints](/api-reference/spoken-terms/list-all-spoken-terms).
 
     Deleting a style profile only unlinks its components. The glossaries, style rule lists, translation
-    memories, example documents and Spoken Terms collection themselves are left in place and can be reused
-    in another style profile.
+    memories and Spoken Terms collection themselves are left in place and can be reused in another style
+    profile.
 - name: MetaInformation
   description: Information about API usage and value ranges
 - name: TranslationMemories
@@ -3741,8 +3741,6 @@ paths:
                       - bd0a38f3-1831-440b-a8dd-2c702e2325ab
                       translation_memory_ids:
                       - a74d88fb-ed2a-4943-a664-a4512398b994
-                      example_document_ids:
-                      - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                       spoken_terms_ids:
                       - def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                       glossary_priority_order_enabled: true
@@ -3753,7 +3751,6 @@ paths:
                       glossary_ids: []
                       style_rule_ids: []
                       translation_memory_ids: []
-                      example_document_ids: []
                       spoken_terms_ids: []
                       glossary_priority_order_enabled: false
                       creation_time: '2026-07-14T11:02:09.640Z'
@@ -3844,16 +3841,6 @@ paths:
                     format: uuid
                   example:
                   - a74d88fb-ed2a-4943-a664-a4512398b994
-                example_document_ids:
-                  description: |-
-                    The IDs of the example documents to link, in the order they should be applied. A
-                    document must be fully imported before it can be linked. Defaults to an empty list.
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
-                  example:
-                  - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                 spoken_terms_ids:
                   description: |-
                     The IDs of the Spoken Terms collections to link, applied when the style profile is
@@ -3895,8 +3882,6 @@ paths:
                   - bd0a38f3-1831-440b-a8dd-2c702e2325ab
                   translation_memory_ids:
                   - a74d88fb-ed2a-4943-a664-a4512398b994
-                  example_document_ids:
-                  - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                   spoken_terms_ids:
                   - def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                   glossary_priority_order_enabled: true
@@ -3923,8 +3908,6 @@ paths:
                     - bd0a38f3-1831-440b-a8dd-2c702e2325ab
                     translation_memory_ids:
                     - a74d88fb-ed2a-4943-a664-a4512398b994
-                    example_document_ids:
-                    - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                     spoken_terms_ids:
                     - def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                     glossary_priority_order_enabled: true
@@ -4018,8 +4001,6 @@ paths:
                     - bd0a38f3-1831-440b-a8dd-2c702e2325ab
                     translation_memory_ids:
                     - a74d88fb-ed2a-4943-a664-a4512398b994
-                    example_document_ids:
-                    - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                     spoken_terms_ids:
                     - def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                     glossary_priority_order_enabled: true
@@ -4125,17 +4106,6 @@ paths:
                     format: uuid
                   example:
                   - a74d88fb-ed2a-4943-a664-a4512398b994
-                example_document_ids:
-                  description: |-
-                    The IDs of the example documents to link, in the order they should be applied. A
-                    document must be fully imported before it can be linked. Replaces the linked example
-                    documents in full. Send an empty list to unlink all of them.
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
-                  example:
-                  - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
                 spoken_terms_ids:
                   description: |-
                     The IDs of the Spoken Terms collections to link, applied when the style profile is
@@ -4171,10 +4141,6 @@ paths:
                   glossary_ids:
                   - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
                   - 7b2f6d84-3c15-4e90-8a72-d5e1490bc637
-              UnlinkAllExampleDocuments:
-                summary: Unlink all example documents
-                value:
-                  example_document_ids: []
               UnlinkTheSpokenTermsCollection:
                 summary: Unlink the Spoken Terms collection
                 value:
@@ -4203,7 +4169,6 @@ paths:
                     - bd0a38f3-1831-440b-a8dd-2c702e2325ab
                     translation_memory_ids:
                     - a74d88fb-ed2a-4943-a664-a4512398b994
-                    example_document_ids: []
                     spoken_terms_ids:
                     - def3a26b-3e84-45b3-84ae-0c0aaf3525f7
                     glossary_priority_order_enabled: true
@@ -4224,7 +4189,7 @@ paths:
                 UnusableComponentId:
                   summary: Unusable component ID
                   value:
-                    message: One or more IDs in example_document_ids could not be used
+                    message: One or more IDs in translation_memory_ids could not be used
                 EmptyName:
                   summary: Empty name
                   value:
@@ -4268,9 +4233,9 @@ paths:
         `404 Not Found` on delete, the same status as an ID that does not exist.
 
         Deleting a style profile unlinks its components rather than deleting them. The glossaries, style
-        rule lists, translation memories, example documents and Spoken Terms collection it referenced are
-        left in place. Translation requests that pass the deleted `style_profile_id` fail after this call,
-        so update your integration before deleting.
+        rule lists, translation memories and Spoken Terms collection it referenced are left in place.
+        Translation requests that pass the deleted `style_profile_id` fail after this call, so update your
+        integration before deleting.
 
         Requires an API key with the `style_profiles:write` scope.
       parameters:
@@ -6912,7 +6877,6 @@ components:
         - glossary_ids
         - style_rule_ids
         - translation_memory_ids
-        - example_document_ids
         - spoken_terms_ids
         - glossary_priority_order_enabled
         - creation_time
@@ -6966,15 +6930,6 @@ components:
             format: uuid
           example:
           - a74d88fb-ed2a-4943-a664-a4512398b994
-        example_document_ids:
-          description: |-
-            The IDs of the example documents linked to the style profile, in the order they are applied.
-          type: array
-          items:
-            type: string
-            format: uuid
-          example:
-          - 9e7b41c2-58da-4a03-b6f1-3c85e0d97a26
         spoken_terms_ids:
           description: |-
             The IDs of the Spoken Terms collections linked to the style profile, applied when the profile
