@@ -225,7 +225,7 @@ export const LanguageTable = () => {
             { key: 'tagHandling', label: 'Tag Handling' },
             { key: 'textImprovement', label: 'Text Improvement' },
             { key: 'translationMemory', label: 'Translation Memory' },
-            { key: 'styleRules', label: 'Style Rules' },
+            { key: 'styleRules', label: 'Style Rules & Custom Instructions' },
         ]
         return (
             <div className="flex flex-wrap gap-1.5">
