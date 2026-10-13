@@ -74,7 +74,6 @@
               "docs/learning-how-tos/cookbook/usage-analytics-dashboard",
               "docs/learning-how-tos/cookbook/sending-custom-reporting-tags-from-client-libraries",
               "docs/learning-how-tos/cookbook/api-usage-logger",
-              "docs/learning-how-tos/examples-and-guides/deepl-mcp-server-how-to-build-and-use-translation-in-llm-applications",
               "docs/learning-how-tos/cookbook/google-sheets"
             ]
           },
@@ -82,7 +81,6 @@
             "group": "Developer Tools",
             "pages": [
               "docs/getting-started/deepl-cli",
-              "docs/getting-started/deepl-mcp-server",
               "docs/getting-started/docs-mcp-server",
               "docs/getting-started/test-your-api-requests-with-postman",
               "docs/resources/deepl-developer-community",
@@ -841,6 +839,14 @@
     {
       "source": "/asyncapi.json",
       "destination": "/api-reference/voice/voice.asyncapi.json"
+    },
+    {
+      "source": "/docs/getting-started/deepl-mcp-server",
+      "destination": "/docs/mcp"
+    },
+    {
+      "source": "/docs/learning-how-tos/examples-and-guides/deepl-mcp-server-how-to-build-and-use-translation-in-llm-applications",
+      "destination": "/docs/mcp"
     }
   ],
   "integrations": {
