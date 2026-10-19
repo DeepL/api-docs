@@ -838,6 +838,67 @@
                       "example": "Use a friendly, diplomatic tone"
                     }
                   },
+                  "customizations": {
+                    "description": "All customizations of the request in one object: glossaries, a style rule list, custom\ninstructions, a translation memory and example documents. For new integrations we recommend\nthis object over the individual customization parameters. Each field behaves like the\nparameter it corresponds to.\n\nCannot be used together with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,\n`translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected\nwith `400 Bad Request` naming the conflicting parameter. Accepted in JSON request bodies only.\n\nAvailable for accounts that have it enabled. Contact your DeepL representative to request access.",
+                    "type": "object",
+                    "properties": {
+                      "glossary_ids": {
+                        "description": "Up to 5 glossaries to use for the translation, in the order they should be applied. Corresponds to\n`glossary_ids`: requires `source_lang`, and every listed glossary must contain a dictionary for the\nrequested language pair.",
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid",
+                          "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
+                        }
+                      },
+                      "style_rule_id": {
+                        "description": "The [style rule list](/docs/customize/using-style-rules) to use for the translation. Corresponds to\n`style_id`: the target language has to match the language of the style rule list.",
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "7ff9bfd6-cd85-4190-8503-d6215a321519"
+                      },
+                      "custom_instructions": {
+                        "description": "Up to 10 instructions of at most 300 characters each. Corresponds to `custom_instructions`,\nincluding its target language restriction.",
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "example": "Use a friendly, diplomatic tone"
+                        }
+                      },
+                      "translation_memories": {
+                        "description": "The translation memory to use for the translation, with an optional matching threshold. Corresponds\nto `translation_memory_id` and `translation_memory_threshold`. Currently one entry is supported;\na request with more is rejected with `400 Bad Request`.",
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id"
+                          ],
+                          "properties": {
+                            "id": {
+                              "$ref": "#/components/schemas/TranslationMemoryId"
+                            },
+                            "threshold": {
+                              "description": "The minimum matching percentage required for a translation memory segment to be applied,\nbetween 50 and 100. Defaults to 75. A value outside this range is rejected with\n`400 Bad Request`.",
+                              "type": "integer",
+                              "minimum": 50,
+                              "maximum": 100,
+                              "default": 75,
+                              "example": 75
+                            }
+                          }
+                        }
+                      },
+                      "example_document_ids": {
+                        "description": "Up to 10 example documents whose translations the model adapts to, in the order they should be\napplied. A document must be fully imported and written in the target language; a document that\ndoes not fit the request's language pair is left out. An ID your account cannot access is rejected\nwith `404 Not Found`.\n\nAvailable for accounts with example documents enabled.",
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid",
+                          "example": "9e7b41c2-58da-4a03-b6f1-3c85e0d97a26"
+                        }
+                      }
+                    }
+                  },
                   "tag_handling": {
                     "$ref": "#/components/schemas/TagHandlingOption"
                   },
