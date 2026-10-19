@@ -905,6 +905,9 @@
   },
   "seo": {
     "indexing": "navigable",
+    "metatags": {
+      "google-site-verification": "0VDGg3gJk53xL5burIUykHtV_eBhXTp5AMdzaeffbbU"
+    },
     "organization": {
       "id": "https://www.deepl.com/",
       "name": "DeepL",
