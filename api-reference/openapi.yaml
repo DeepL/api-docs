@@ -1036,11 +1036,9 @@ paths:
                   $ref: '#/components/schemas/TranslationMemoryThreshold'
                 custom_instructions:
                   description: |-
-                    Specify a list of [custom instructions](/docs/customize/custom-instructions) to customize the translation behavior, as a JSON array of strings in a single form field, for example `["Use a friendly, diplomatic tone", "Keep sentences short"]`. See [Technical constraints](/docs/customize/custom-instructions#technical-constraints) for the number and length of instructions and the supported target languages.
+                    Specify a list of instructions to customize the translation behavior, as a JSON array of strings, for example `["Use a friendly, diplomatic tone"]`. Up to 10 custom instructions can be specified, each with a maximum of 300 characters.
 
-                    Can be combined with `style_id`. The style rule list's stored custom instructions are applied as well.
-
-                    Rejected with `400` before the upload is accepted if the value is not a JSON array of strings, or if it has too many or too long instructions.
+                    Rejected with `400` before the upload is accepted if the value is not a JSON array of strings or exceeds these limits.
                   type: string
                   example: '["Use a friendly, diplomatic tone"]'
                 enable_watermark:
