@@ -1154,6 +1154,14 @@
                     "translation_memory_threshold": 75
                   }
                 },
+                "CustomInstructions": {
+                  "summary": "Using Custom Instructions",
+                  "value": {
+                    "target_lang": "DE",
+                    "file": "@document.docx",
+                    "custom_instructions": "[\"Use a friendly, diplomatic tone\", \"Keep sentences short\"]"
+                  }
+                },
                 "QualityEvaluation": {
                   "summary": "Requesting a quality evaluation report (beta)",
                   "value": {
@@ -1222,6 +1230,11 @@
                   },
                   "translation_memory_threshold": {
                     "$ref": "#/components/schemas/TranslationMemoryThreshold"
+                  },
+                  "custom_instructions": {
+                    "description": "Specify a list of [custom instructions](/docs/customize/custom-instructions) to customize the translation behavior, as a JSON array of strings in a single form field, for example `[\"Use a friendly, diplomatic tone\", \"Keep sentences short\"]`. See [Technical constraints](/docs/customize/custom-instructions#technical-constraints) for the number and length of instructions and the supported target languages.\n\nCan be combined with `style_id`. The style rule list's stored custom instructions are applied as well.\n\nRejected with `400` before the upload is accepted if the value is not a JSON array of strings, or if it has too many or too long instructions.",
+                    "type": "string",
+                    "example": "[\"Use a friendly, diplomatic tone\"]"
                   },
                   "enable_watermark": {
                     "description": "When `true`, adds a \"Translated by DeepL\" watermark to the translated document.\n\nOnly supported for `docx` and `pdf` output. For all other output formats the parameter is ignored and the document is returned without a watermark.",
