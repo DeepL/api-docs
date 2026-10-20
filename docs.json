@@ -490,6 +490,10 @@
   },
   "redirects": [
     {
+      "source": "/docs/mcp-default-translator",
+      "destination": "https://support.deepl.com/hc/en-us/articles/29756767653788-Make-DeepL-your-default-translator-in-your-AI-assistant"
+    },
+    {
       "source": "/docs/xml-and-html-handling/xml",
       "destination": "/docs/translate/translating-xml"
     },
