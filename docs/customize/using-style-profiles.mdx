@@ -61,8 +61,8 @@ curl -X POST https://api.deepl.com/v2/translate \
   --header "Authorization: DeepL-Auth-Key $API_KEY" \
   --header "Content-Type: application/json" \
   --data '{
-    "text": ["Der Kunde hat den Vertrag unterschrieben."],
-    "target_lang": "EN",
+    "text": ["The customer signed the contract."],
+    "target_lang": "DE",
     "style_profile_id": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47"
 }'
 ```
@@ -70,8 +70,10 @@ curl -X POST https://api.deepl.com/v2/translate \
 DeepL picks the components that fit the request once the source language is known: the glossaries with a dictionary for the language pair, the style rule list for the target language, and the translation memory whose source language matches the text. A component that doesn't fit is left out without an error, so the same profile works for every language pair it covers. You don't need to set `source_lang`; language detection works as usual.
 
 <Warning>
-A style profile replaces the individual customization parameters. A request that combines `style_profile_id` with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`, `translation_memory_threshold`, or `custom_instructions` is rejected with `400 Bad Request`.
+A style profile replaces the individual customization parameters. A request that combines `style_profile_id` with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`, or `translation_memory_threshold` is rejected with `400 Bad Request`. On `/v2/translate`, the same applies to `custom_instructions`.
 </Warning>
+
+If the style profile doesn't exist or your account can't access it, `/v2/translate` returns `404 Not Found`. `/v2/document` accepts the upload and reports the error in the [document status](/api-reference/document/check-document-status) with the message `Style profile not found.`.
 
 All `model_type` values are supported. Translation memories linked through a profile use the default matching threshold of 75.
 
