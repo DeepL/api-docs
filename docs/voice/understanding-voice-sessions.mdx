@@ -48,7 +48,7 @@ Two security properties follow from the token design:
 * Each token and streaming URL is valid for one-time use. Using a token more than once to open a WebSocket connection terminates the session immediately.
 * Only the latest token can request a reconnection. Presenting an outdated token invalidates the session.
 
-Requesting a reconnection token while a connection is still active disconnects that connection, so only reconnect after the existing connection has closed. Connections also have a maximum duration; when it's reached, reconnect the same way to continue the session. See [session limits](/docs/voice/voice-api-requirements#session-limits) for the exact values.
+Requesting a reconnection token while a connection is still active disconnects that connection, so only reconnect after the existing connection has closed. The API keeps connections open for as long as possible, but your client must handle disconnects and reconnect to continue the session. See [session limits](/docs/voice/voice-api-requirements#session-limits) for details.
 
 ## How audio and results flow
 
@@ -64,6 +64,8 @@ Applications typically append concluded segments to the running transcript and d
 ### Translated speech
 
 When a translated speech target is configured, synthesized audio arrives incrementally as [target media chunks](/api-reference/voice/websocket-streaming). To save bandwidth, the stream contains only speech, without silence or padding, so there are gaps with no data whenever the speaker pauses. Each chunk carries text and audio duration information, which you can use to highlight the currently spoken text or to subtitle the audio output.
+
+By default, each target language is spoken by its own language-specific voice, and you can instead request a preset male or female voice on the [session request](/api-reference/voice/request-session). **Speaker match** is a third option: it produces translated speech with a voice close to the original speaker's voice. Speaker match works only for target languages whose translated speech is provided by DeepL, not for languages provided through external service partners. See [Supported Voice Languages](/docs/voice/supported-voice-languages) for which languages qualify. Requesting speaker match for any other target language is not an error: the session starts as usual and that language is spoken by a preset voice instead, so check the language table rather than relying on a failed request.
 
 <Accordion title="Show detailed message flow">
 ```mermaid

@@ -12,6 +12,11 @@ Usage:
     python pipeline/generate.py --dry-run                 # show what would be generated
     python pipeline/generate.py --force                   # regenerate even if files exist
     python pipeline/generate.py --section admin --force   # regenerate one section
+    python pipeline/generate.py --ignore-open-prs         # draft gaps even if a PR is open for them
+
+Gaps that an open PR already covers are skipped before any model call — a gap is
+only closed when its PR merges, so every run would otherwise redraft and reship
+the same pages. See pipeline/open_prs.py.
 """
 
 import argparse
@@ -33,6 +38,7 @@ except ImportError:
 
 
 from util import build_authoring_system_prompt
+from open_prs import EXIT_NOTHING_TO_DO, fetch_open_prs, split_claimed_gaps
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OPENAPI_PATH = REPO_ROOT / "api-reference" / "openapi.yaml"
@@ -292,6 +298,29 @@ def determine_output_path(gap, family_name, content=None):
     return None  # missing_description handled inline; non-generative types skipped
 
 
+def _predicted_path(gap):
+    """The repo-relative path a gap would write to, or None if unpredictable.
+
+    Used only for open-PR matching. For missing_howto / missing_group_coverage the
+    filename comes from the title the model invents, so there's nothing to predict
+    and those gaps are matched on their gap key instead.
+    """
+    out_path = determine_output_path(gap, gap.get("family", "unknown"))
+    if not out_path:
+        return None
+    try:
+        return str(out_path.relative_to(REPO_ROOT))
+    except ValueError:
+        return None
+
+
+def _pr_review_hint(claimed):
+    """One line pointing at the PRs worth reviewing, for the skip summary."""
+    numbers = sorted({pr.get("number") for _, pr, _ in claimed if pr.get("number")})
+    listed = ", ".join(f"#{n}" for n in numbers)
+    return f"Review or close {listed} to let the pipeline redraft these."
+
+
 def apply_description(gap, description):
     """Insert a frontmatter description into an existing page."""
     page_path = REPO_ROOT / gap["path"]
@@ -332,6 +361,10 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Show what would be generated")
     parser.add_argument("--force", action="store_true", help="Regenerate even when files already exist")
     parser.add_argument("--gap-report", help="Path to existing gap report JSON (skips re-running detection)")
+    parser.add_argument(
+        "--ignore-open-prs", action="store_true",
+        help="Draft every gap, even ones an open PR already covers (default: skip those)",
+    )
     args = parser.parse_args()
 
     if args.gap_report:
@@ -348,7 +381,33 @@ def main():
 
     if not gaps:
         print("No gaps to generate for.")
-        return 0
+        return EXIT_NOTHING_TO_DO
+
+    # Drop gaps that an open PR already covers. Done here, before any model call,
+    # so a duplicate run costs nothing instead of a full generate → review cycle
+    # that ends in a PR nobody wants.
+    if args.ignore_open_prs:
+        print("Skipping the open-PR check (--ignore-open-prs).")
+    else:
+        prs, err = fetch_open_prs()
+        if prs is None:
+            print(f"Warning: could not check open PRs ({err}).")
+            print("  Proceeding without deduplication — this run may duplicate an open PR.")
+        else:
+            gaps, claimed = split_claimed_gaps(
+                gaps, prs,
+                path_for_gap=_predicted_path,
+            )
+            if claimed:
+                print(f"Skipping {len(claimed)} gap(s) already covered by an open PR:")
+                for gap, pr, reason in claimed:
+                    print(f"  - {gap['type']} ({gap.get('family', 'site-wide')}): {reason}")
+                print(f"  {_pr_review_hint(claimed)}")
+
+    if not gaps:
+        print("\nEvery detected gap is already covered by an open PR. Nothing to do.")
+        print("Merge or close those PRs, then re-run the pipeline.")
+        return EXIT_NOTHING_TO_DO
 
     standards = yaml.safe_load(open(STANDARDS_PATH))
     families = standards.get("families", {})

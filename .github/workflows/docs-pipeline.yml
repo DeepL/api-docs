@@ -5,6 +5,11 @@ name: Docs Pipeline
 # pipeline detects gaps, drafts + reviews the missing content, and opens a PR.
 # There is deliberately no schedule/cron trigger — spec change is the only
 # automatic entry point. (workflow_dispatch is a manual escape hatch.)
+#
+# Gaps stay open until their PR merges, so consecutive runs see the same ones.
+# The pipeline skips gaps an open PR already covers and won't open a duplicate
+# PR (pipeline/open_prs.py) — a run with nothing new to say exits cleanly having
+# done nothing. GH_TOKEN below is what lets it read the open PRs.
 on:
   push:
     branches: [main]
@@ -62,7 +67,8 @@ jobs:
           # Required — add this secret in repo Settings → Secrets → Actions.
           # The pipeline can't call Claude without it.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          # ship.py / post_review.py use the gh CLI, which reads GH_TOKEN.
+          # ship.py / post_review.py and the open-PR duplicate check all use the
+          # gh CLI, which reads GH_TOKEN.
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail

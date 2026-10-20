@@ -35,6 +35,7 @@ import sys
 from pathlib import Path
 
 from util import REPO_ROOT, find_latest_run
+from open_prs import EXIT_NOTHING_TO_DO
 
 
 STEPS = ["generate", "evaluate", "review", "promote", "ship", "post_review"]
@@ -51,7 +52,11 @@ STEP_SCRIPTS = {
 
 
 def run_step(step_name, args, run_dir=None, dry_run=False):
-    """Run a single pipeline step. Returns (success, run_dir)."""
+    """Run a single pipeline step. Returns its exit code.
+
+    Exit codes: 0 did work, EXIT_NOTHING_TO_DO an open PR already covers this,
+    anything else a failure.
+    """
     script = REPO_ROOT / "pipeline" / STEP_SCRIPTS[step_name]
     cmd = [sys.executable, str(script)]
 
@@ -96,7 +101,7 @@ def run_step(step_name, args, run_dir=None, dry_run=False):
     print(f"{'='*60}\n")
 
     result = subprocess.run(cmd, cwd=REPO_ROOT)
-    return result.returncode == 0
+    return result.returncode
 
 
 def parse_args():
@@ -229,11 +234,21 @@ def main():
             args_for_step = config["mode_args"][1:]
             if dry_run and "--dry-run" not in args_for_step:
                 args_for_step = args_for_step + ["--dry-run"]
-            success = run_step(step, args_for_step, dry_run=dry_run)
+            code = run_step(step, args_for_step, dry_run=dry_run)
         else:
-            success = run_step(step, [], run_dir=run_dir, dry_run=dry_run)
+            code = run_step(step, [], run_dir=run_dir, dry_run=dry_run)
 
-        if not success:
+        # "Nothing to do" is not a failure: an open PR already covers this work.
+        # Stop here rather than continuing — the later steps operate on --latest,
+        # so carrying on would promote and reship an older run's drafts.
+        if code == EXIT_NOTHING_TO_DO:
+            print(f"\n{'='*60}")
+            print(f"  PIPELINE STOPPED at '{step}': nothing to do.")
+            print(f"  An open PR already covers this work (or no gaps were found).")
+            print(f"{'='*60}")
+            return 0
+
+        if code != 0:
             if step == "evaluate":
                 print(f"\n{'='*60}")
                 print(f"  EVALUATE FAILED — drafts have errors.")

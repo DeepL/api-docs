@@ -21,6 +21,15 @@ Each scope grants a [scoped API key](/docs/admin/api-key-permissions) access to 
     | `GET` | [`/v2/document/{document_id}/result`](/api-reference/document/download-translated-document) |
   </Accordion>
 
+  <Accordion title="Translate real-time speech (voice:realtime)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `POST` | [`/v3/voice/realtime`](/api-reference/voice/request-session) |
+    | `GET` | [`/v3/voice/realtime`](/api-reference/voice/reconnect-session) |
+
+    This scope also covers the [WebSocket stream](/api-reference/voice/websocket-streaming). You open the stream with the streaming URL and token from one of the endpoints above, so a scoped key needs `voice:realtime` to use any part of a real-time session.
+  </Accordion>
+
   <Accordion title="Rephrase or correct text (write:improve)">
     | **Method** | **Endpoint** |
     | --- | --- |
@@ -107,5 +116,5 @@ Each scope grants a [scoped API key](/docs/admin/api-key-permissions) access to 
 </AccordionGroup>
 
 <Info>
-No scope covers the Voice API yet, so Voice endpoints are accessible only with unrestricted keys. Voice scopes will be added in a future update.
+No scope covers [audio file translation](/api-reference/jobs-voice-translate) yet, so those endpoints are accessible only with unrestricted keys.
 </Info>

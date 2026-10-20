@@ -5,7 +5,7 @@
   const CONSENT_KEY = 'deepl_cookie_consent';
   const CONSENT_ACCEPTED = 'accepted';
   const CONSENT_REJECTED = 'rejected';
-  const SIGNUP_URL = 'https://deepl.ethn.io/177614';
+  const SIGNUP_URL = 'https://greatquestion.co/deepl/GrnjONNw/apply';
   const SHOW_PROBABILITY = 0.1;
   const INITIAL_DELAY_MS = 2000;
   const RETRY_DELAY_MS = 1000;

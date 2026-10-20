@@ -35,7 +35,7 @@
     },
     {
       "name": "TranslateDocuments",
-      "description": "The document translation API allows you to translate whole documents and supports the following file types and extensions:\n  * `docx` - Microsoft Word Document\n  * `pptx` - Microsoft PowerPoint Document\n  * `xlsx` - Microsoft Excel Document\n  * `pdf` - Portable Document Format\n  * `htm / html` - HTML Document\n  * `txt` - Plain Text Document\n  * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)\n  * `srt` - SRT Document\n  * `idml` - Adobe InDesign Markup Language\n  * `xml` - XML Document\n  * `json` - JSON Document\n  * `dita` - DITA topic (Darwin Information Typing Architecture)\n  * `mif` - Adobe FrameMaker Interchange Format\n  * `jpeg` / `jpg` / `png` - Image (currently in beta)"
+      "description": "The document translation API allows you to translate whole documents and supports the following file types and extensions:\n  * `docx` - Microsoft Word Document\n  * `pptx` - Microsoft PowerPoint Document\n  * `xlsx` - Microsoft Excel Document\n  * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)\n  * `pdf` - Portable Document Format\n  * `htm / html` - HTML Document\n  * `txt` - Plain Text Document\n  * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)\n  * `srt` - SRT Document\n  * `vtt` - WebVTT Subtitle Document (currently in beta)\n  * `idml` - Adobe InDesign Markup Language\n  * `xml` - XML Document\n  * `json` - JSON Document\n  * `yaml / yml` - YAML Document (currently in beta)\n  * `properties` - Java Properties Document (currently in beta)\n  * `strings` - iOS/macOS Strings Document (currently in beta)\n  * `md / markdown` - Markdown Document (currently in beta)\n  * `dita` - DITA topic (Darwin Information Typing Architecture)\n  * `mif` - Adobe FrameMaker Interchange Format\n  * `zip` - SCORM Package (e-learning content, currently in beta)\n  * `odt` - OpenDocument Text Document (currently in beta)\n  * `rtf` - Rich Text Format Document (currently in beta)\n  * `resx` - .NET Resource Document (currently in beta)\n  * `jpeg` / `jpg` / `png` - Image (currently in beta)"
     },
     {
       "name": "RephraseText",
@@ -83,7 +83,7 @@
     },
     {
       "name": "QualityEvaluation",
-      "description": "**Closed alpha.** Evaluate translation quality. Submit source/target segment pairs and retrieve per-segment quality issues categorized by error type and severity, with character spans pointing to where each issue occurs."
+      "description": "**Beta.** Retrieve a quality evaluation report for a document DeepL has translated. Reports are requested with `enable_quality_evaluation` on `POST /v2/document` and polled here. A report lists per-segment quality issues categorized by error type and severity, with character spans pointing to where each issue occurs."
     }
   ],
   "x-hideTryItPanel": true,
@@ -454,6 +454,7 @@
         ],
         "summary": "Create a developer key as an admin",
         "operationId": "adminCreateDeveloperKey",
+        "description": "Create a developer key in your organization with the given label and return its\nmetadata, including the `key_id`. Requires an Admin API key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -510,6 +511,7 @@
         ],
         "summary": "Get all developer keys as an admin",
         "operationId": "adminGetDeveloperKeys",
+        "description": "List every developer key in your organization, including labels, creation and\ndeactivation timestamps, and any configured usage limits. Requires an Admin API key.",
         "responses": {
           "200": {
             "description": "The get function returns a JSON representation of all developer API keys in the organization.",
@@ -556,6 +558,7 @@
         ],
         "summary": "Deactivate a developer key as an admin",
         "operationId": "adminDeactivateDeveloperKey",
+        "description": "Deactivate a developer key so it can no longer authenticate API requests.\nDeactivation is permanent: create a new key to restore access. Requires an Admin API key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -617,6 +620,7 @@
         ],
         "summary": "Rename a developer key as an admin",
         "operationId": "adminRenameDeveloperKey",
+        "description": "Change the label of a developer key. Labels are for your own bookkeeping and do not\naffect the key's permissions. Requires an Admin API key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -684,6 +688,7 @@
         ],
         "summary": "Set developer key usage limits as an admin",
         "operationId": "adminSetDeveloperKeyUsageLimits",
+        "description": "Set per-key usage limits for characters and speech-to-text milliseconds. Requests made\nwith the key fail with HTTP 456 once a limit is reached. Requires an Admin API key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -751,6 +756,7 @@
         ],
         "summary": "Request Translation",
         "operationId": "translateText",
+        "description": "Translate one or more text strings into a target language. Send multiple strings in a\nsingle request, within the request size limit, and specify formatting, tag handling,\nand customization options such as glossaries, style rules, and translation memories.",
         "parameters": [
           {
             "$ref": "#/components/parameters/CustomReportingTag"
@@ -818,7 +824,7 @@
                     }
                   },
                   "style_id": {
-                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:**  The target language has to match the language of the style rule list.\n\nAll `model_type` values are supported.",
+                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:** The target language has to match the language of the style rule list. A list\ncreated for a root language (for example `en`) applies to that language and all of its variants\n(`EN-GB`, `EN-US`). A list created for a variant (for example `en-GB`) applies only when\n`target_lang` is that variant.\n\nAll `model_type` values are supported.",
                     "type": "string",
                     "example": "7ff9bfd6-cd85-4190-8503-d6215a321519"
                   },
@@ -829,7 +835,7 @@
                     "$ref": "#/components/schemas/TranslationMemoryThreshold"
                   },
                   "custom_instructions": {
-                    "description": "Specify a list of instructions to customize the translation behavior. Up to 10 custom instructions can be specified, each with a maximum of 300 characters.\n\n**Important:**  The target language must be `de`, `en`, `es`, `fr`, `it`, `ja`, `ko`, `zh` or any variants of these languages.",
+                    "description": "Specify a list of instructions to customize the translation behavior. Up to 10 custom instructions can be specified, each with a maximum of 300 characters.",
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -1098,6 +1104,7 @@
         ],
         "summary": "Upload and Translate a Document",
         "operationId": "translateDocument",
+        "description": "Upload a document for translation and receive a `document_id` and `document_key`. Use\nthem to poll the document status and download the translated file. Translation is\nasynchronous: the upload response confirms the request, not a finished translation.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1116,6 +1123,14 @@
                     "target_lang": "DE",
                     "file": "@document.pdf",
                     "enable_watermark": true
+                  }
+                },
+                "SuppressImages": {
+                  "summary": "Suppressing translation of embedded images (pptx only)",
+                  "value": {
+                    "target_lang": "DE",
+                    "file": "@document.pptx",
+                    "input_conversion_options": "version:1,suppress-image-types:all"
                   }
                 },
                 "Glossary": {
@@ -1154,6 +1169,15 @@
                     "translation_memory_id": "[yourTranslationMemoryId]",
                     "translation_memory_threshold": 75
                   }
+                },
+                "QualityEvaluation": {
+                  "summary": "Requesting a quality evaluation report (beta)",
+                  "value": {
+                    "source_lang": "EN",
+                    "target_lang": "DE",
+                    "file": "@document.docx",
+                    "enable_quality_evaluation": true
+                  }
                 }
               },
               "schema": {
@@ -1172,7 +1196,7 @@
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "The document file to be translated. The file name should be included in this part's content disposition. As an alternative, the filename parameter can be used. The following file types and extensions are supported:\n  * `docx` - Microsoft Word Document\n  * `pptx` - Microsoft PowerPoint Document\n  * `xlsx` - Microsoft Excel Document\n  * `pdf` - Portable Document Format\n  * `htm / html` - HTML Document\n  * `txt` - Plain Text Document\n  * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)\n  * `srt` - SRT Document\n  * `idml` - Adobe InDesign Markup Language\n  * `xml` - XML Document\n  * `json` - JSON Document\n  * `dita` - DITA topic (Darwin Information Typing Architecture)\n  * `mif` - Adobe FrameMaker Interchange Format\n  * `jpeg` / `jpg` / `png` - Image (currently in beta)"
+                    "description": "The document file to be translated. The file name should be included in this part's content disposition. As an alternative, the filename parameter can be used. The following file types and extensions are supported:\n  * `docx` - Microsoft Word Document\n  * `pptx` - Microsoft PowerPoint Document\n  * `xlsx` - Microsoft Excel Document\n  * `xlsm` - Microsoft Excel Macro-Enabled Workbook (currently in beta)\n  * `pdf` - Portable Document Format\n  * `htm / html` - HTML Document\n  * `txt` - Plain Text Document\n  * `xlf / xliff` - XLIFF Document (versions 1.2, 2.0, and 2.1)\n  * `srt` - SRT Document\n  * `vtt` - WebVTT Subtitle Document (currently in beta)\n  * `idml` - Adobe InDesign Markup Language\n  * `xml` - XML Document\n  * `json` - JSON Document\n  * `yaml / yml` - YAML Document (currently in beta)\n  * `properties` - Java Properties Document (currently in beta)\n  * `strings` - iOS/macOS Strings Document (currently in beta)\n  * `md / markdown` - Markdown Document (currently in beta)\n  * `dita` - DITA topic (Darwin Information Typing Architecture)\n  * `mif` - Adobe FrameMaker Interchange Format\n  * `zip` - SCORM Package (e-learning content, currently in beta)\n  * `odt` - OpenDocument Text Document (currently in beta)\n  * `rtf` - Rich Text Format Document (currently in beta)\n  * `resx` - .NET Resource Document (currently in beta)\n  * `jpeg` / `jpg` / `png` - Image (currently in beta)"
                   },
                   "filename": {
                     "type": "string",
@@ -1181,6 +1205,11 @@
                   "output_format": {
                     "type": "string",
                     "description": "File extension of desired format of translated file, for example: `docx`. If unspecified, by default the translated file will be in the same format as the input file.\n"
+                  },
+                  "input_conversion_options": {
+                    "description": "Comma-separated list of `key:value` conversion options, prefixed with a version, that control how the input document is converted before translation. For example: `version:1,suppress-image-types:all`.\n\nSupported keys:\n\n  * `suppress-image-types` - Leaves the specified types of images embedded in the document untranslated. The value is a hyphen-separated list of image content types (for example `logo-photo` suppresses logos and photos), or `all` to suppress every embedded image. Recognized image content types: `logo`, `icon`, `decorative`, `barcode`, `formula`, `signature`, `handwriting`, `stamp`, `screenshot`, `diagram`, `chart`, `photo`, `illustration`, `comic`, `music`, `infographic`, `table`, `text`, `other`, `unknown`. Only `pptx` documents support this key.\n  * `json-placeholders` - Controls how brace-delimited placeholders in `json` string values are handled. `protect` (the default) keeps identifier-shaped placeholders such as `{stars}` or `{{userName}}` verbatim so they are not translated; `translate` translates them along with the surrounding text. ICU MessageFormat skeletons such as `{count, plural, one {# item} other {# items}}` are always protected, with only the branch text translated, in both modes. Multi-word groups such as `{see note}` are treated as translatable text in both modes.\n\nFor other file types this parameter is ignored. Unrecognized keys are ignored.",
+                    "type": "string",
+                    "example": "version:1,suppress-image-types:all"
                   },
                   "formality": {
                     "$ref": "#/components/schemas/Formality"
@@ -1200,7 +1229,7 @@
                     }
                   },
                   "style_id": {
-                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:** The target language has to match the language of the style rule list.",
+                    "description": "Specify the [style rule list](/docs/customize/using-style-rules) to use for the translation.\n\n**Important:** The target language has to match the language of the style rule list. A list\ncreated for a root language (for example `en`) applies to that language and all of its variants\n(`EN-GB`, `EN-US`). A list created for a variant (for example `en-GB`) applies only when\n`target_lang` is that variant.",
                     "type": "string",
                     "example": "7ff9bfd6-cd85-4190-8503-d6215a321519"
                   },
@@ -1218,6 +1247,11 @@
                   },
                   "enable_watermark": {
                     "description": "When `true`, adds a \"Translated by DeepL\" watermark to the translated document.\n\nOnly supported for `docx` and `pdf` output. For all other output formats the parameter is ignored and the document is returned without a watermark.",
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "enable_quality_evaluation": {
+                    "description": "(beta) When `true`, DeepL also evaluates the finished translation and returns a `quality_evaluation_job_id`. Poll [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluations/poll) with it for a per-segment report of translation issues. The translation itself is unaffected.\n\n**Important:** Available to select customers; contact your customer success manager to enable it. Supported for `docx`, `pptx`, `pdf`, `srt`, `idml`, `xml`, `dita`, `mif`, and XLIFF 2.1 uploads, and for the [supported language pairs](/api-reference/quality-evaluations/poll#supported-language-pairs) only.\n\nRejected before the upload is accepted: `403` if quality evaluation is not enabled for the account, `400` for an ineligible file type, an unsupported language pair, or a value other than `true` or `false`.",
                     "type": "boolean",
                     "default": false
                   },
@@ -1254,6 +1288,11 @@
                       "description": "A unique key that is used to encrypt the uploaded document as well as the resulting translation on the server side. Must be provided with every subsequent API request regarding this particular document.",
                       "type": "string",
                       "example": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A"
+                    },
+                    "quality_evaluation_job_id": {
+                      "description": "(beta) A unique ID assigned to the quality evaluation. Returned only when the request set `enable_quality_evaluation=true`. Use it to retrieve the report from [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluations/poll).",
+                      "type": "string",
+                      "example": "04DE5AD98A02647D83285A36021911C6"
                     }
                   }
                 },
@@ -1306,6 +1345,7 @@
         ],
         "summary": "Check Document Status",
         "operationId": "getDocumentStatus",
+        "description": "Retrieve the translation status of an uploaded document. Poll this endpoint until the\nstatus is `done`, then download the result. The response includes an estimated\nremaining time while the document is still translating.",
         "parameters": [
           {
             "$ref": "#/components/parameters/DocumentID"
@@ -1461,6 +1501,7 @@
         ],
         "summary": "Download Translated Document",
         "operationId": "downloadDocument",
+        "description": "Download a translated document. The document must have a status of `done`. Each\ndocument can be downloaded only once: after a successful download DeepL deletes the\nfile and invalidates the `document_id`.",
         "parameters": [
           {
             "$ref": "#/components/parameters/DocumentID"
@@ -1660,6 +1701,7 @@
         ],
         "summary": "Create a Glossary",
         "operationId": "createMultilingualGlossary",
+        "description": "Create a glossary containing one or more dictionaries, each holding entries for a\nsingle source and target language pair. Use the returned `glossary_id` with the\ntranslation endpoints to apply your own preferred translations.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2206,6 +2248,7 @@
         ],
         "summary": "Deletes the dictionary associated with the given language pair with the given glossary ID.",
         "operationId": "deleteDictionary",
+        "description": "Delete the dictionary for a single source and target language pair from a glossary,\nleaving the glossary and its other dictionaries in place.",
         "parameters": [
           {
             "$ref": "#/components/parameters/GlossaryID"
@@ -2277,6 +2320,7 @@
         ],
         "summary": "Replaces or creates a dictionary in the glossary with the specified entries.",
         "operationId": "replaceDictionary",
+        "description": "Replace all entries in the dictionary for a source and target language pair, or create\nthe dictionary if it does not exist yet. Entries not included in the request are removed.",
         "parameters": [
           {
             "$ref": "#/components/parameters/GlossaryID"
@@ -2361,6 +2405,7 @@
         ],
         "summary": "Create a Glossary",
         "operationId": "createGlossary",
+        "description": "**For new integrations we recommend `POST /v3/glossaries`**, which supports multiple\nlanguage pairs in a single glossary.\n\nCreate a glossary for one source and target language pair and return its `glossary_id`.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2756,6 +2801,7 @@
         ],
         "summary": "Improve text",
         "operationId": "rephraseText",
+        "description": "Rewrite one or more texts to improve fluency and readability, optionally targeting a\nspecific writing style or tone. Use the `correct` endpoint instead when you want a\nminimal spelling and grammar pass rather than broader rewriting.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2873,7 +2919,7 @@
             "$ref": "#/components/responses/PayloadTooLarge"
           },
           "415": {
-            "description": "Unsupported Content-Type. Use `application/json` or `application/x-www-form-urlencoded`."
+            "$ref": "#/components/responses/UnsupportedMediaType"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
@@ -3008,7 +3054,7 @@
             "$ref": "#/components/responses/PayloadTooLarge"
           },
           "415": {
-            "description": "Unsupported Content-Type. Use `application/json` or `application/x-www-form-urlencoded`."
+            "$ref": "#/components/responses/UnsupportedMediaType"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
@@ -3037,6 +3083,7 @@
         ],
         "summary": "Check Usage and Limits",
         "operationId": "getUsage",
+        "description": "Retrieve character and minute usage for the current billing period together with the\ncorresponding account limits. Poll this endpoint to track consumption and detect when\nan account is approaching its quota.",
         "responses": {
           "200": {
             "description": "The account's usage and limits.",
@@ -5871,6 +5918,7 @@
       "get": {
         "summary": "Retrieve style rule lists",
         "operationId": "getStyleRuleLists",
+        "description": "List the style rule lists in your account. Results are paginated. Set `detailed` to\ninclude each list's configured rules and custom instructions.",
         "parameters": [
           {
             "name": "page",
@@ -5954,6 +6002,7 @@
       "post": {
         "summary": "Create a style rule list",
         "operationId": "createStyleRuleList",
+        "description": "Create a style rule list for a single language, optionally with its configured rules\nand custom instructions. The `language` can be a root code such as `de` or a variant\ncode such as `de-CH`. Use the returned `style_id` with the translation endpoints\nto apply the list.",
         "requestBody": {
           "required": true,
           "content": {
@@ -6077,6 +6126,7 @@
       "get": {
         "summary": "Get a style rule list",
         "operationId": "getStyleRuleList",
+        "description": "Retrieve a single style rule list, including its configured rules and custom instructions.",
         "parameters": [
           {
             "name": "style_id",
@@ -6135,6 +6185,7 @@
       "patch": {
         "summary": "Update a style rule list's name",
         "operationId": "updateStyleRuleList",
+        "description": "Rename a style rule list. This does not change its configured rules or custom instructions.",
         "parameters": [
           {
             "name": "style_id",
@@ -6211,6 +6262,7 @@
       "delete": {
         "summary": "Delete a style rule list",
         "operationId": "deleteStyleRuleList",
+        "description": "Delete a style rule list and its custom instructions. Requests that reference the\ndeleted `style_id` fail afterwards.",
         "parameters": [
           {
             "name": "style_id",
@@ -6264,6 +6316,7 @@
       "put": {
         "summary": "Replace configured rules for a style rule list",
         "operationId": "updateStyleRuleConfiguredRules",
+        "description": "Replace the full set of configured rules on a style rule list. Rules not included in\nthe request are removed, so send the complete set you want to keep.",
         "parameters": [
           {
             "name": "style_id",
@@ -6342,6 +6395,7 @@
       "post": {
         "summary": "Create a custom instruction",
         "operationId": "createCustomInstruction",
+        "description": "Add a custom instruction to a style rule list to express a style preference that the\npredefined rules do not cover. Instructions apply to text in the given source language.",
         "parameters": [
           {
             "name": "style_id",
@@ -6441,6 +6495,7 @@
       "get": {
         "summary": "Get a custom instruction",
         "operationId": "getCustomInstruction",
+        "description": "Retrieve a single custom instruction from a style rule list.",
         "parameters": [
           {
             "name": "style_id",
@@ -6508,6 +6563,7 @@
       "put": {
         "summary": "Replace a custom instruction",
         "operationId": "updateCustomInstruction",
+        "description": "Replace a custom instruction. Send every field you want to keep, because omitted\nfields are overwritten.",
         "parameters": [
           {
             "name": "style_id",
@@ -6605,6 +6661,7 @@
       "delete": {
         "summary": "Delete a custom instruction",
         "operationId": "deleteCustomInstruction",
+        "description": "Delete a custom instruction from a style rule list. The rest of the list is unchanged.",
         "parameters": [
           {
             "name": "style_id",
@@ -6676,6 +6733,7 @@
         ],
         "summary": "Get Streaming URL",
         "operationId": "getVoiceStreamingUrl",
+        "description": "Create a real-time voice session and return the WebSocket URL and ephemeral token used\nto stream audio. Session options such as languages, message format, and media types are\nfixed at creation time. Invalid options are rejected with HTTP 400 before a session is\ncreated.",
         "parameters": [
           {
             "$ref": "#/components/parameters/CustomReportingTag"
@@ -6724,7 +6782,7 @@
                     "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
                   },
                   "glossary_ids": {
-                    "description": "Specify the glossaries to use for the target transcripts (translations), as an array of\nglossary IDs ordered by priority (highest first). Each glossary's matching terms are applied to\nthe translation; where entries conflict, the higher-priority glossary wins. Unknown glossary IDs\nare ignored.\n\nCannot be used together with `glossary_id`. Requests that exceed the session limit, contain\nduplicates, or combine `glossary_ids` with `glossary_id` are rejected with a `400 Bad Request`\nbefore a session is created.",
+                    "description": "Specify the glossaries to use for the target transcripts (translations), as an array of\nglossary IDs ordered by priority (highest first). Each glossary's matching terms are applied to\nthe translation; where entries conflict, the higher-priority glossary wins. Unknown glossary IDs\nare ignored.\n\nIn realtime Voice, glossary terms are matched against the streaming source transcription,\nwhich affects how and when terms are applied. See\n[Glossaries in realtime Voice](/docs/voice/overview#glossaries-in-realtime-voice).\n\nCannot be used together with `glossary_id`. Requests that exceed the\n[session limit](/docs/voice/voice-api-requirements#session-limits), contain duplicates, or\ncombine `glossary_ids` with `glossary_id` are rejected with a `400 Bad Request` before a\nsession is created.",
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -6809,6 +6867,20 @@
                     ],
                     "target_media_content_type": "audio/webm;codecs=opus",
                     "target_media_voice": "female"
+                  }
+                },
+                "with_speaker_match": {
+                  "summary": "With translated audio using a speaker-matched voice",
+                  "value": {
+                    "source_media_content_type": "audio/ogg;codecs=opus",
+                    "source_language": "en",
+                    "target_languages": [
+                      "de"
+                    ],
+                    "target_media_languages": [
+                      "de"
+                    ],
+                    "target_media_voice": "match"
                   }
                 },
                 "with_tts_short_form": {
@@ -6913,6 +6985,7 @@
         ],
         "summary": "Request Reconnection",
         "operationId": "requestReconnection",
+        "description": "Exchange a session token for a fresh WebSocket URL and token so a client can rejoin a\nvoice session after the connection drops. Session options are carried over from the\noriginal session.",
         "parameters": [
           {
             "name": "token",
@@ -7183,125 +7256,29 @@
         }
       }
     },
-    "/v1/quality-evaluation": {
-      "post": {
-        "tags": [
-          "QualityEvaluation"
-        ],
-        "summary": "Submit an evaluation job",
-        "operationId": "submitQualityEvaluation",
-        "description": "Starts an evaluation job for the given segments. Returns a `poll_url` that can be used to retrieve the result.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/QualityEvaluationRequest"
-              },
-              "example": {
-                "metadata": {
-                  "source_language": "en",
-                  "target_language": "de"
-                },
-                "segments": [
-                  {
-                    "source": "Our Q3 revenue came in 5% above forecast.",
-                    "target": "Unser Q3-Umsatz lag 5 % unter der Prognose."
-                  },
-                  {
-                    "source": "Please share these results with your teams by Friday.",
-                    "target": "Bitte teilen Sie diese Ergebnisse mit Ihrem Team."
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "Job accepted. Use the returned `poll_url` to retrieve the result.",
-            "headers": {
-              "Retry-After": {
-                "description": "Suggested number of seconds to wait before polling.",
-                "schema": {
-                  "type": "integer"
-                },
-                "example": 5
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QualityEvaluationJobCreated"
-                },
-                "example": {
-                  "job_id": "f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19",
-                  "poll_url": "/v1/quality-evaluation/f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Request validation failed. Common causes:\n- `metadata.source_language`, `metadata.target_language`, or `segments` is missing or empty.\n- `segments` contains more than 500 entries.\n- A segment's `source` or `target` exceeds 10,000 characters.\n- The `source_language` / `target_language` combination is not supported.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QualityEvaluationApiError"
-                },
-                "example": {
-                  "message": "segments[0].source is required."
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authorization failed. Common causes:\n- The API key does not have access to the Quality Evaluation feature.\n- A free-tier key is used against the paid endpoint, or vice versa.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QualityEvaluationApiError"
-                },
-                "example": {
-                  "message": "Forbidden"
-                }
-              }
-            }
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [
-          {
-            "auth_header": []
-          }
-        ]
-      }
-    },
-    "/v1/quality-evaluation/{job_id}": {
+    "/v1/quality-evaluations/{job_id}": {
       "get": {
         "tags": [
           "QualityEvaluation"
         ],
         "summary": "Poll for the evaluation result",
         "operationId": "pollQualityEvaluation",
-        "description": "Returns the current state of an evaluation job. While the job is in progress the response contains only status information. Once complete the response includes the full evaluation report.",
+        "description": "Returns the current state of a quality evaluation. While the evaluation is in progress the response carries only status information; once it completes, the response carries the full report.\n\nEvaluations are requested with `enable_quality_evaluation` on [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document). There is no public endpoint for starting one.",
         "parameters": [
           {
             "name": "job_id",
             "in": "path",
             "required": true,
-            "description": "The job identifier returned by `POST /v1/quality-evaluation`. Must be a valid UUID.",
+            "description": "The unique ID of the quality evaluation, returned as `quality_evaluation_job_id` when the document was [uploaded for translation](/api-reference/document/upload-and-translate-a-document).",
             "schema": {
               "type": "string",
-              "format": "uuid",
-              "example": "f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19"
+              "example": "04DE5AD98A02647D83285A36021911C6"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Polling result. The response shape depends on the `status` field. `done` returns the full evaluation report; `error` returns error details.",
+            "description": "Polling result. The response shape depends on the `status` field. `done` carries the full report; `error` carries error details.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7315,11 +7292,26 @@
                   ]
                 },
                 "example": {
-                  "job_id": "f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19",
+                  "job_id": "04DE5AD98A02647D83285A36021911C6",
                   "status": "done",
                   "segments": [
                     {
                       "segment_index": 0,
+                      "segment_score": 38.5,
+                      "source": "Our Q3 revenue came in 5% above forecast.",
+                      "target": "Unser Q3-Umsatz lag 5 % unter der Prognose.",
+                      "applied_glossary_term_pairs": [
+                        {
+                          "source_term": "forecast",
+                          "target_term": "Prognose",
+                          "ranges": [
+                            {
+                              "start": 34,
+                              "end": 42
+                            }
+                          ]
+                        }
+                      ],
                       "errors": [
                         {
                           "type": "Accuracy",
@@ -7343,6 +7335,9 @@
                     },
                     {
                       "segment_index": 1,
+                      "segment_score": 62,
+                      "source": "Please share these results with your teams by Friday.",
+                      "target": "Bitte teilen Sie diese Ergebnisse mit Ihrem Team.",
                       "errors": [
                         {
                           "type": "Accuracy",
@@ -7377,27 +7372,13 @@
                         }
                       ]
                     }
-                  ],
-                  "summary": {
-                    "overall_score": 72,
-                    "granular_counts": {
-                      "Accuracy": {
-                        "Mistranslation": {
-                          "Critical": 1,
-                          "Minor": 1
-                        },
-                        "Omission": {
-                          "Major": 1
-                        }
-                      }
-                    }
-                  }
+                  ]
                 }
               }
             }
           },
           "202": {
-            "description": "Job is still processing. Continue polling after the time suggested by the `Retry-After` header.",
+            "description": "The evaluation is still running. Continue polling after the time suggested by the `Retry-After` header.",
             "headers": {
               "Retry-After": {
                 "description": "Suggested number of seconds to wait before polling again.",
@@ -7413,14 +7394,14 @@
                   "$ref": "#/components/schemas/QualityEvaluationProcessing"
                 },
                 "example": {
-                  "job_id": "f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19",
+                  "job_id": "04DE5AD98A02647D83285A36021911C6",
                   "status": "processing"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid `job_id` format. The `job_id` must be a valid UUID.",
+            "description": "The `job_id` is not a well-formed identifier.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7433,7 +7414,7 @@
             }
           },
           "404": {
-            "description": "Job not found. The `job_id` is well-formed but no job exists with that ID, or it has expired. Jobs are retained for 24 hours after reaching `done` or `error` state.",
+            "description": "No evaluation exists for this `job_id`, it belongs to another account, or it has expired. See [Report retention](/api-reference/quality-evaluations/poll#report-retention).",
             "content": {
               "application/json": {
                 "schema": {
@@ -7630,7 +7611,14 @@
         }
       },
       "ForbiddenGlossaries": {
-        "description": "Forbidden. The access to the requested resource is denied, because of insufficient access rights. This error is also returned when the API key is scoped but does not include the scope required for this endpoint."
+        "description": "Forbidden. The access to the requested resource is denied, because of insufficient access rights. This error is also returned when the API key is scoped but does not include the scope required for this endpoint.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
       },
       "NotFound": {
         "description": "The requested resource could not be found.",
@@ -7671,10 +7659,31 @@
         }
       },
       "URITooLong": {
-        "description": "The request URL is too long. You can avoid this error by using a POST request instead of a GET request, and sending the parameters in the HTTP body."
+        "description": "The request URL is too long. You can avoid this error by using a POST request instead of a GET request, and sending the parameters in the HTTP body.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/InfrastructureErrorResponse"
+                }
+              ]
+            }
+          }
+        }
       },
       "UnsupportedMediaTypeGlossaries": {
-        "description": "The requested entries format specified in the `Accept` header is not supported."
+        "description": "The requested entries format specified in the `Accept` header is not supported.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
       },
       "TooManyRequests": {
         "description": "Too many requests. Please wait and resend your request.",
@@ -7697,7 +7706,14 @@
         }
       },
       "QuotaExceededGlossaries": {
-        "description": "Quota exceeded. Too many requests were made to the glossary endpoints recently."
+        "description": "Quota exceeded. Too many requests were made to the glossary endpoints recently.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
       },
       "BadRequestSpokenTerms": {
         "description": "Bad request. Please check error message and your parameters.",
@@ -7752,10 +7768,38 @@
         }
       },
       "InternalServerError": {
-        "description": "Internal error."
+        "description": "Internal error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/InfrastructureErrorResponse"
+                }
+              ]
+            }
+          }
+        }
       },
       "ServiceUnavailable": {
-        "description": "Resource currently unavailable. Try again later."
+        "description": "Resource currently unavailable. Try again later.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/InfrastructureErrorResponse"
+                }
+              ]
+            }
+          }
+        }
       },
       "ServiceUnavailable503DocTransDownload": {
         "description": "A 503 result will be returned if the user tries to download a translated document that is currently being processed and is not yet ready for download.\nPlease make sure to check that the document status is 'done' before trying to send a download request.",
@@ -9604,17 +9648,54 @@
         "example": "bd0a38f3-1831-440b-a8dd-2c702e2325ab"
       },
       "StyleRuleLanguage": {
-        "description": "The language that the style rule list is applied to.",
+        "description": "The target language the style rule list applies to. Codes are matched case-insensitively;\nthe response returns the canonical form (for example `de-CH`).\n\nA root code (for example `en`) applies to that language and all of its variants. A variant\ncode (for example `en-GB`) applies only when `target_lang` is that variant.\n\nVariant lists for `de-CH`, `fr-CA`, `pt-BR`, and `pt-PT` are generally available. Variant\nlists for `de-DE`, `en-GB`, `en-US`, `es-419`, `es-ES`, `fr-FR`, `zh-Hans`, and `zh-Hant`\nare in beta. The current list and the status of each language are returned by\n[`GET /v3/languages?resource=style_rules&include=beta`](/docs/languages/using-the-languages-api).",
         "type": "string",
         "enum": [
+          "ar",
+          "bg",
+          "cs",
+          "da",
           "de",
+          "de-CH",
+          "de-DE",
+          "el",
           "en",
+          "en-GB",
+          "en-US",
           "es",
+          "es-419",
+          "es-ES",
+          "et",
+          "fi",
           "fr",
+          "fr-CA",
+          "fr-FR",
+          "he",
+          "hu",
+          "id",
           "it",
           "ja",
           "ko",
-          "zh"
+          "lt",
+          "lv",
+          "nb",
+          "nl",
+          "pl",
+          "pt",
+          "pt-BR",
+          "pt-PT",
+          "ro",
+          "ru",
+          "sk",
+          "sl",
+          "sv",
+          "th",
+          "tr",
+          "uk",
+          "vi",
+          "zh",
+          "zh-Hans",
+          "zh-Hant"
         ]
       },
       "StyleRuleName": {
@@ -9742,7 +9823,6 @@
           "sk",
           "sl",
           "sv",
-          "th",
           "tr",
           "uk",
           "vi",
@@ -9782,7 +9862,6 @@
           "sk",
           "sl",
           "sv",
-          "th",
           "tr",
           "uk",
           "vi",
@@ -9932,7 +10011,8 @@
         "type": "string",
         "default": "1",
         "enum": [
-          "0"
+          "0",
+          "1"
         ]
       },
       "PatchMultilingualGlossaryParameters": {
@@ -10476,7 +10556,7 @@
       },
       "TranslationMemoryThreshold": {
         "type": "integer",
-        "description": "The minimum matching percentage required for a translation memory segment to be applied (recommended to be 75% or higher).",
+        "description": "The minimum matching percentage required for a translation memory segment to be applied (recommended to be 75% or higher). A value below 50 is treated as 50.",
         "minimum": 0,
         "maximum": 100,
         "default": 75,
@@ -10740,7 +10820,7 @@
         "example": "formal"
       },
       "VoiceMessageFormat": {
-        "description": "Message encoding format for WebSocket communication. Determines how messages are serialized and transmitted.\nUsing `json`,  messages are JSON-encoded and sent as TEXT WebSocket frames. All binary fields (such as audio data) are base64-encoded strings.\nUsing `msgpack`, messages are MessagePack-encoded and sent as BINARY WebSocket frames. All binary fields (such as audio data) contain raw binary data.\n\nFor more details, see [Message Encoding](/api-reference/voice#message-encoding).",
+        "description": "Message encoding format for WebSocket communication. Determines how messages are serialized and transmitted.\nUsing `json`,  messages are JSON-encoded and sent as TEXT WebSocket frames. All binary fields (such as audio data) are base64-encoded strings.\nUsing `msgpack`, messages are MessagePack-encoded and sent as BINARY WebSocket frames. All binary fields (such as audio data) contain raw binary data.\n\nFor more details, see [Message Encoding](/docs/voice/message-encoding).",
         "type": "string",
         "enum": [
           "json",
@@ -10750,11 +10830,12 @@
         "example": "json"
       },
       "VoiceTargetMediaVoice": {
-        "description": "Target audio voice selection for synthesized speech. The default voice is language dependent.",
+        "description": "Target audio voice selection for synthesized speech. The default voice is language dependent.\nUse `match` for speaker match, which produces translated speech with a voice close to the speaker's voice. Speaker match is only available for target languages whose translated speech is provided by DeepL, not for languages provided through external service partners. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\nRequesting `match` for a target language that does not support it is not an error: the session is created and that language's translated speech uses a preset voice instead.\n",
         "type": "string",
         "enum": [
           "male",
-          "female"
+          "female",
+          "match"
         ],
         "example": "female"
       },
@@ -10786,11 +10867,12 @@
       },
       "VoiceSourceLanguage": {
         "type": "string",
-        "description": "The source language of the audio stream. It can be left empty or must be one of the supported Voice API source languages and comply with IETF BCP 47 language tags.\nNote: Some source transcription languages are provided through external service partners. See the [supported languages table](/api-reference/voice#show-supported-languages) for details.\n",
+        "description": "The source language of the audio stream. It can be left empty or must be one of the supported Voice API source languages and comply with IETF BCP 47 language tags.\nNote: Some source transcription languages are provided through external service partners. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\n",
         "enum": [
           "ar",
           "bg",
           "bn",
+          "ca",
           "cs",
           "da",
           "de",
@@ -10801,6 +10883,7 @@
           "fi",
           "fr",
           "ga",
+          "gl",
           "he",
           "hi",
           "hr",
@@ -10830,7 +10913,6 @@
           "vi",
           "zh"
         ],
-        "default": null,
         "example": "en"
       },
       "VoiceSourceLanguageMode": {
@@ -10845,13 +10927,14 @@
       },
       "VoiceTargetLanguages": {
         "type": "array",
-        "description": "List of target languages for translation. The stream will emit translations for each language. Language identifiers must comply with IETF BCP 47. See the [supported languages table](/api-reference/voice#show-supported-languages) for details.\n",
+        "description": "List of target languages for translation. The stream will emit translations for each language. Language identifiers must comply with IETF BCP 47. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\n",
         "items": {
           "type": "string",
           "enum": [
             "ar",
             "bg",
             "bn",
+            "ca",
             "cs",
             "da",
             "de",
@@ -10860,10 +10943,14 @@
             "en-GB",
             "en-US",
             "es",
+            "es-419",
             "et",
             "fi",
             "fr",
+            "fr-CA",
+            "fr-FR",
             "ga",
+            "gl",
             "he",
             "hi",
             "hr",
@@ -10908,12 +10995,13 @@
       },
       "VoiceTargetMediaLanguages": {
         "type": "array",
-        "description": "List of target languages for which to generate synthesized audio. Languages specified here will automatically be added to target_languages if not already present, ensuring you receive both text translation and audio synthesis for these languages. If omitted, only text transcription and translation will be provided (no audio synthesis). Language identifiers must comply with IETF BCP 47.\nNote: Some translated audio languages are provided through external service partners. See the [supported languages table](/api-reference/voice#show-supported-languages) for details.\n",
+        "description": "List of target languages for which to generate synthesized audio. Languages specified here will automatically be added to target_languages if not already present, ensuring you receive both text translation and audio synthesis for these languages. If omitted, only text transcription and translation will be provided (no audio synthesis). Language identifiers must comply with IETF BCP 47.\nNote: Some translated audio languages are provided through external service partners. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\n",
         "items": {
           "type": "string",
           "enum": [
             "ar",
             "bg",
+            "ca",
             "cs",
             "da",
             "de",
@@ -10922,9 +11010,15 @@
             "en-GB",
             "en-US",
             "es",
+            "es-419",
             "fi",
             "fr",
+            "fr-CA",
+            "fr-FR",
+            "gl",
+            "he",
             "hi",
+            "hr",
             "hu",
             "id",
             "it",
@@ -10940,8 +11034,11 @@
             "ro",
             "ru",
             "sk",
+            "sl",
             "sv",
             "ta",
+            "th",
+            "tl",
             "tr",
             "uk",
             "vi",
@@ -11259,6 +11356,28 @@
             "type": "number",
             "description": "Duration of speech-to-speech usage in minutes.",
             "example": 4.2
+          }
+        }
+      },
+      "InfrastructureErrorResponse": {
+        "description": "Error body returned by DeepL's edge infrastructure for failures that occur before a request reaches the API itself. The message is nested under `error`, unlike the application-level `ErrorResponse`. Clients that parse error bodies should handle both shapes.\n",
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "message"
+            ],
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "A human-readable description of the error.",
+                "example": "Bad Gateway."
+              }
+            }
           }
         }
       },
@@ -11604,82 +11723,6 @@
           }
         }
       },
-      "QualityEvaluationRequest": {
-        "type": "object",
-        "required": [
-          "metadata",
-          "segments"
-        ],
-        "properties": {
-          "metadata": {
-            "type": "object",
-            "required": [
-              "source_language",
-              "target_language"
-            ],
-            "description": "Job-level metadata.",
-            "properties": {
-              "source_language": {
-                "type": "string",
-                "description": "Language code of the source text. See [Supported language pairs](/api-reference/quality-evaluation/submit#supported-language-pairs).",
-                "example": "en"
-              },
-              "target_language": {
-                "type": "string",
-                "description": "Language code of the translated text. See [Supported language pairs](/api-reference/quality-evaluation/submit#supported-language-pairs).",
-                "example": "de"
-              }
-            }
-          },
-          "segments": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 500,
-            "description": "The segment pairs to evaluate. Up to 500 segments per request.",
-            "items": {
-              "type": "object",
-              "required": [
-                "source",
-                "target"
-              ],
-              "properties": {
-                "source": {
-                  "type": "string",
-                  "maxLength": 10000,
-                  "description": "The original text in the source language.",
-                  "example": "Our Q3 revenue came in 5% above forecast."
-                },
-                "target": {
-                  "type": "string",
-                  "maxLength": 10000,
-                  "description": "The translated text in the target language.",
-                  "example": "Unser Q3-Umsatz lag 5 % unter der Prognose."
-                }
-              }
-            }
-          }
-        }
-      },
-      "QualityEvaluationJobCreated": {
-        "type": "object",
-        "required": [
-          "job_id",
-          "poll_url"
-        ],
-        "properties": {
-          "job_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "The job identifier. Use it with `GET /v1/quality-evaluation/{job_id}` to poll for the result.",
-            "example": "f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19"
-          },
-          "poll_url": {
-            "type": "string",
-            "description": "Relative URL you can use to poll for the result.",
-            "example": "/v1/quality-evaluation/f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19"
-          }
-        }
-      },
       "QualityEvaluationProcessing": {
         "type": "object",
         "required": [
@@ -11689,8 +11732,7 @@
         "properties": {
           "job_id": {
             "type": "string",
-            "format": "uuid",
-            "example": "f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19"
+            "example": "04DE5AD98A02647D83285A36021911C6"
           },
           "status": {
             "type": "string",
@@ -11707,14 +11749,12 @@
         "required": [
           "job_id",
           "status",
-          "segments",
-          "summary"
+          "segments"
         ],
         "properties": {
           "job_id": {
             "type": "string",
-            "format": "uuid",
-            "example": "f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19"
+            "example": "04DE5AD98A02647D83285A36021911C6"
           },
           "status": {
             "type": "string",
@@ -11725,42 +11765,9 @@
           },
           "segments": {
             "type": "array",
-            "description": "One entry per submitted segment, in request order.",
+            "description": "One entry per evaluated segment of the document, in reading order.",
             "items": {
               "$ref": "#/components/schemas/QualityEvaluationSegment"
-            }
-          },
-          "summary": {
-            "type": "object",
-            "required": [
-              "overall_score",
-              "granular_counts"
-            ],
-            "description": "Aggregate quality results across all segments.",
-            "properties": {
-              "overall_score": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 100,
-                "description": "Overall translation quality, from 0 (lowest) to 100 (highest). See [Summary](/api-reference/quality-evaluation/poll#summary).",
-                "example": 72
-              },
-              "granular_counts": {
-                "type": "object",
-                "description": "Nested counts keyed by `type`, then `sub_type`, then `severity`. Leaf values are integer counts.",
-                "additionalProperties": true,
-                "example": {
-                  "Accuracy": {
-                    "Mistranslation": {
-                      "Critical": 1,
-                      "Minor": 1
-                    },
-                    "Omission": {
-                      "Major": 1
-                    }
-                  }
-                }
-              }
             }
           }
         }
@@ -11776,8 +11783,7 @@
         "properties": {
           "job_id": {
             "type": "string",
-            "format": "uuid",
-            "example": "f3a8c5e1-9b7d-4e62-a1c4-8f5d2b6e3c19"
+            "example": "04DE5AD98A02647D83285A36021911C6"
           },
           "status": {
             "type": "string",
@@ -11811,19 +11817,73 @@
         "type": "object",
         "required": [
           "segment_index",
+          "segment_score",
           "errors"
         ],
         "properties": {
           "segment_index": {
             "type": "integer",
-            "description": "Zero-based index matching the position of this segment in the request.",
+            "description": "Zero-based index of this segment within the document, in reading order.",
             "example": 0
+          },
+          "segment_score": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Quality score for this segment, where 0 is lowest and 100 is highest.",
+            "example": 38.5
+          },
+          "source": {
+            "type": "string",
+            "description": "The segment's source text as the evaluation read it. `source_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluations/poll#segment-text).",
+            "example": "Our Q3 revenue came in 5% above forecast."
+          },
+          "target": {
+            "type": "string",
+            "description": "The segment's translated text as the evaluation read it. `target_spans` are offsets into this text. Omitted when the text is unavailable. See [Segment text](/api-reference/quality-evaluations/poll#segment-text).",
+            "example": "Unser Q3-Umsatz lag 5 % unter der Prognose."
+          },
+          "applied_glossary_term_pairs": {
+            "type": "array",
+            "description": "Glossary term pairs applied to this segment when the document was translated, so you can tell which customizations were in play where an issue was reported. Omitted when no term pair was applied.",
+            "items": {
+              "$ref": "#/components/schemas/QualityEvaluationAppliedGlossaryTermPair"
+            }
           },
           "errors": {
             "type": "array",
             "description": "Quality issues identified in this segment. Empty if no issues were found.",
             "items": {
               "$ref": "#/components/schemas/QualityEvaluationIssue"
+            }
+          }
+        }
+      },
+      "QualityEvaluationAppliedGlossaryTermPair": {
+        "type": "object",
+        "description": "A glossary term pair that was applied to the segment's translation.",
+        "required": [
+          "source_term",
+          "target_term",
+          "ranges"
+        ],
+        "properties": {
+          "source_term": {
+            "type": "string",
+            "description": "The source term, as defined in the glossary.",
+            "example": "forecast"
+          },
+          "target_term": {
+            "type": "string",
+            "description": "The target term, as applied to the translation.",
+            "example": "Prognose"
+          },
+          "ranges": {
+            "type": "array",
+            "description": "Spans in `target` where the target term was applied, using the same convention as `source_spans` and `target_spans`. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).",
+            "items": {
+              "$ref": "#/components/schemas/QualityEvaluationSpan"
             }
           }
         }
@@ -11841,18 +11901,19 @@
         "properties": {
           "type": {
             "type": "string",
-            "description": "Top-level category of the issue. See [Type and sub-type values](/api-reference/quality-evaluation/poll#type-and-sub-type-values).",
+            "description": "Top-level category of the issue. See [Type and sub-type values](/api-reference/quality-evaluations/poll#type-and-sub-type-values).",
             "enum": [
               "Accuracy",
               "Fluency",
               "Style",
-              "Miscellaneous"
+              "Miscellaneous",
+              "InternalTQEError"
             ],
             "example": "Accuracy"
           },
           "sub_type": {
             "type": "string",
-            "description": "Finer-grained category within `type`. See [Type and sub-type values](/api-reference/quality-evaluation/poll#type-and-sub-type-values).",
+            "description": "Finer-grained category within `type`. See [Type and sub-type values](/api-reference/quality-evaluations/poll#type-and-sub-type-values).",
             "enum": [
               "Addition",
               "Omission",
@@ -11867,13 +11928,14 @@
               "Inconsistency",
               "Character encoding",
               "Awkward",
-              "Inconsistent style"
+              "Inconsistent style",
+              "SegmentTooLarge"
             ],
             "example": "Mistranslation"
           },
           "severity": {
             "type": "string",
-            "description": "How serious the issue is. See [Severity values](/api-reference/quality-evaluation/poll#severity-values).",
+            "description": "How serious the issue is. See [Severity values](/api-reference/quality-evaluations/poll#severity-values).",
             "enum": [
               "Critical",
               "Major",
@@ -11888,14 +11950,14 @@
           },
           "source_spans": {
             "type": "array",
-            "description": "Spans on the segment's source text where this issue applies. Empty if no source-side highlight. See [About span ranges](/api-reference/quality-evaluation/poll#about-span-ranges).",
+            "description": "Spans on the segment's source text where this issue applies. Empty if no source-side highlight. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).",
             "items": {
               "$ref": "#/components/schemas/QualityEvaluationSpan"
             }
           },
           "target_spans": {
             "type": "array",
-            "description": "Spans on the segment's target text where this issue applies. Empty if no target-side highlight. See [About span ranges](/api-reference/quality-evaluation/poll#about-span-ranges).",
+            "description": "Spans on the segment's target text where this issue applies. Empty if no target-side highlight. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).",
             "items": {
               "$ref": "#/components/schemas/QualityEvaluationSpan"
             }
@@ -11908,7 +11970,7 @@
           "start",
           "end"
         ],
-        "description": "A half-open `[start, end)` range of Unicode code points within a segment's source or target text. See [About span ranges](/api-reference/quality-evaluation/poll#about-span-ranges).",
+        "description": "A half-open `[start, end)` range of Unicode code points within a segment's source or target text. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).",
         "properties": {
           "start": {
             "type": "integer",

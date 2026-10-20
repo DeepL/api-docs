@@ -1,7 +1,9 @@
 ---
 title: "Document translations"
+description: "Handle file size limits, status codes, quality evaluation reports, and error details when translating documents with the DeepL API."
 mode: "wide"
 public: true
+covers: [Quality Evaluation]
 ---
 
 Below you will find general guidance on how to handle status codes and error details to ensure a smooth document translation experience.
@@ -13,7 +15,7 @@ For DOCX and PPTX, our .NET, PHP and NodeJS client libraries offer functionality
 This allows users to translate files that might hit the size limit.
 
 ### Billing minimums
-Every submitted document of type `.pptx`, `.docx`, `.doc`, `.xlsx`, or `.pdf` is billed a minimum of 50,000 characters on DeepL API plans, no matter how many characters the document contains.
+Every submitted document of type `.pptx`, `.docx`, `.doc`, `.xlsx`, or `.pdf` is billed a minimum of 50,000 characters on DeepL API plans, no matter how many characters the document contains. Formats currently in beta are not billed and are not subject to this minimum.
 
 ### One source/target language pair per upload
 The `source_lang` and `target_lang` values on the request apply to the entire uploaded file. For most formats, keep each upload to a single source language for consistent results — behavior on content that isn't in the selected source language is not guaranteed.
@@ -56,6 +58,8 @@ Each supported format has behaviors and constraints worth knowing before you upl
 - Files must be strict, parseable JSON — no trailing commas, no comments. JSONC-style extensions are not supported.
 - **Upload limit is 1 MB** regardless of plan. Large metadata payloads (e.g., DataCite, Zenodo, Backstage catalog dumps) may need to be split, or translated string-by-string via the text-translation API.
 - Embedded HTML or Markdown inside string values (common in Contentful Rich Text and similar CMS payloads) is handled — DeepL translates the natural-language text and attempts to preserve the embedded markup. Review the output for complex rich-text content.
+- Brace-delimited placeholders such as `{stars}` or `{{userName}}` are kept verbatim by default, so template variables survive translation. Multi-word groups such as `{see note}` are treated as translatable text. To translate placeholders along with the text, set `input_conversion_options=version:1,json-placeholders:translate` when uploading.
+- ICU MessageFormat skeletons such as `{count, plural, one {# item} other {# items}}` are always protected: the variable name, keywords, and categories stay intact while the branch text is translated. Branch text is translated in isolation, so review plural forms in the output. Languages whose plural categories are absent from the source (for example Polish `few`/`many` from an English message) fall back to `other`. Expand categories in your i18n tooling if exact pluralization matters.
 - To protect specific values from translation, encode them as non-strings (numbers/booleans/null) or pre-process the file to strip them.
 
 **IDML**
@@ -70,11 +74,155 @@ Each supported format has behaviors and constraints worth knowing before you upl
 - Some valid FrameMaker 10 MIF files may fail with HTTP 500 — try re-saving from a newer FrameMaker version.
 - MIF does not use `translate="no"`. Protect content via FrameMaker conditional text or character formatting.
 
+**XLSM** (currently in beta)
+- Cell text is translated across all sheets; rich text formatting, merged cells, and multi-sheet layouts are preserved. Numbers and dates are left unchanged.
+- Macros are preserved byte-for-byte and never translated. The VBA project is carried through untouched, so user-facing strings inside macro code remain in the source language.
+- Formulas are preserved verbatim and cached values are kept as-is.
+- Lookup formulas (`VLOOKUP`, `MATCH`, `INDEX`) whose lookup key is a text literal typed into the formula keep that literal in the source language while the table they search is translated, so the lookup can stop matching and return `#N/A` after recalculation. Key lookups off a cell reference (e.g. `=VLOOKUP(D1,...)`) instead.
+- Files with no translatable text are rejected with `No translatable text can be extracted from the document.` This does not mean the file is malformed.
+
+**SCORM (`.zip`)** (currently in beta)
+- The `.zip` must be a valid SCORM package (SCORM 1.2 or SCORM 2004) with `imsmanifest.xml` at the root of the archive. AICC, xAPI (Tin Can), and cmi5 packages are not supported and are rejected.
+- Course titles in `imsmanifest.xml` and lesson content in the package's HTML files are translated. Manifest identifiers, file paths, and HTML markup are preserved exactly.
+- Audio and video files (MP3, MP4, WAV, images) are preserved byte-for-byte. DeepL does not transcribe or translate media content.
+- Zip the contents, not the folder. `imsmanifest.xml` must sit at the root of the archive, exactly one. An archive that starts with a folder (e.g. `course/imsmanifest.xml`) is rejected.
+- The manifest must be under 4 MB. A larger `imsmanifest.xml` is rejected.
+- Non-SCORM `.zip` uploads are rejected with `400 Invalid or missing file extension`.
+
+**VTT (WebVTT)** (currently in beta)
+- Cue text is translated; cue timings, identifiers, settings lines, and `WEBVTT` headers are preserved so subtitles stay in sync with the original media.
+- Inline styling tags (e.g. `<c>`, `<v Speaker>`, karaoke timestamps) are preserved. Review their placement, since translated text length differs from the source.
+- Files with no translatable text are rejected.
+
+**YAML / YML** (currently in beta)
+- String values are translated at every level of nesting; keys, numbers, booleans, `null` values, comments, and indentation structure are preserved.
+- Placeholders and escape sequences (`\n`, `\t`, etc.) are preserved.
+- Files with no translatable text are rejected.
+- Malformed YAML (inconsistent indentation, unquoted special characters) returns an error. Validate before uploading.
+
+**Java `.properties`** (currently in beta)
+- Property values are translated; keys and separators are preserved. Comment lines (`#` or `!`) are not translated.
+- Placeholders (`{0}`, `%s`, `%d`) are normally preserved. Verify them after translation before shipping.
+- Escaped characters (`\n`, `\t`, `\:`) are preserved.
+- Files with no translatable text are returned unchanged.
+
+**iOS/macOS `.strings`** (currently in beta)
+- String values are translated; keys and the `"key" = "value";` structure are preserved.
+- Format specifiers (`%@`, `%d`, positional specifiers like `%1$@`) are normally preserved. Verify them after translation before shipping.
+- Escaped characters (`\n`, `\"`, `\\`) are preserved.
+- Files with no translatable text are returned unchanged.
+
+**Markdown (`.md` / `.markdown`)** (currently in beta)
+- Paragraphs, headings, list items, blockquotes, table cell content, and image alt text are translated. URLs and link targets are not, only the link label text is.
+- YAML front matter is not translated. **Known issue:** the `---` delimiters that open and close the front matter block are currently dropped from the translated file, which can fuse the metadata into the first paragraph. Re-add the `---` lines after download, or move the front matter out of the file before uploading.
+- HTML blocks embedded in Markdown are processed via an HTML sub-filter. Results may vary for complex inline HTML.
+- Markdown formatting (bold, italic, headings, lists) is preserved.
+- Malformed Markdown is accepted and translated as-is (not validated for well-formedness).
+
+**RESX** (currently in beta)
+- String values in `<data>` elements are translated; element names, IDs, and XML structure are preserved. Comments in `<comment>` elements are not translated.
+- Placeholders (`{0}`, `%s`) are normally preserved. Verify them after translation before shipping.
+- Files with no translatable text are returned unchanged.
+
+**ODT** (currently in beta)
+- Body text, headings, table content, footnotes, endnotes, annotations, and document metadata are translated.
+- Accept or reject all tracked changes before uploading. Deleted text that has not been formally removed may still be extracted and translated.
+- Consecutive tabs may be dropped during translation. Review content that relies on tab-based alignment.
+- If the target language requires characters outside the document's fonts, they may not render correctly. Check fonts after translation.
+
+**RTF** (currently in beta)
+- Body text in paragraphs, headings, list items, table cells, footnotes, and endnotes is translated. RTF control words, groups, and formatting tokens (`\b`, `\i`, `\par`, `\fonttbl`, etc.) are preserved untouched.
+- Non-ASCII characters are written as `\uXXXX?` escape sequences. Old RTF readers that ignore `\u` escapes will show only the ASCII fallback character. Open the result in a modern reader (Word 2007+, LibreOffice).
+- Embedded objects (images, OLE objects, embedded fonts) are preserved as binary blocks and not modified.
+- Fields (`\field`) are preserved, but field instruction text is not translated. Only the displayed text result is.
+- Hyperlink targets are not translated; only the link's display text is.
+
 ### Polling and translation time
 Translation time depends on document size and server load: small documents typically finish in seconds, larger ones in 1-2 minutes once translation has started. Poll the [status endpoint](/api-reference/document/check-document-status) at regular intervals or with exponential backoff. Treat the `seconds_remaining` field as a rough estimate only; it can be unreliable and occasionally returns implausible values (e.g. 2^27).
 
 ### Using glossaries with documents
 You can apply a glossary to a document translation with the `glossary_id` parameter (or up to 5 glossaries with `glossary_ids`). This requires the `source_lang` parameter to be set, and the glossary's language pair has to match the language pair of the request.
+
+### Requesting a quality evaluation
+A quality evaluation is a report on the translation DeepL just produced: for each segment of the document it lists the issues it detected, such as mistranslations, omissions, and fluency or style problems, with a severity and the character range each issue applies to. Use it to target human review at the segments that need it instead of reviewing the whole document. For a product overview, see [About quality evaluation for file translations](https://support.deepl.com/hc/en-us/articles/26360433777436-About-quality-evaluation-for-file-translations).
+
+<Warning>
+  Quality evaluation is in [beta](/docs/resources/alpha-and-beta-features) and available to select customers only. To have it enabled for your account, contact your customer success manager; until then, opting in returns HTTP 403.
+</Warning>
+
+To request a quality evaluation, set [`enable_quality_evaluation`](/api-reference/document/upload-and-translate-a-document) to `true` when uploading a document.
+
+When `enable_quality_evaluation=true`, three additional checks run before the translation request is accepted:
+
+- The language pair must be in the [supported language pairs](/api-reference/quality-evaluations/poll#supported-language-pairs). Quality evaluation supports fewer language pairs than document translation.
+- The file must be `docx`, `pptx`, `pdf`, `idml`, `xml`, `dita`, `mif`, or XLIFF 1.2/2.0/2.1. Quality evaluation supports fewer file types than document translation.
+- Your account must have enough quality evaluation characters. Quality evaluation characters are metered separately from translation characters.
+
+If any check fails, the request is rejected before translation starts, so nothing is translated or billed. Opting in never puts the translation itself at risk.
+
+```bash
+curl -X POST https://api.deepl.com/v2/document \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --form 'source_lang=EN' \
+  --form 'target_lang=DE' \
+  --form 'file=@quarterly-report.docx' \
+  --form 'enable_quality_evaluation=true'
+```
+
+The upload response carries a `quality_evaluation_job_id` alongside the usual document fields. It is the unique ID of the evaluation, and the value you poll with to retrieve the report:
+
+```json
+{
+  "document_id": "04DE5AD98A02647D83285A36021911C6",
+  "document_key": "0CB0054F1C132C1625B392EADDA41CB754A742822F6877173029A6C487E7F60A",
+  "quality_evaluation_job_id": "04DE5AD98A02647D83285A36021911C6"
+}
+```
+
+Keep polling the [status endpoint](/api-reference/document/check-document-status) and downloading the translated document as you normally would. The report is a separate job, so poll for it separately:
+
+```bash
+curl https://api.deepl.com/v1/quality-evaluations/04DE5AD98A02647D83285A36021911C6 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+While the evaluation is running you get HTTP 202 and `"status": "processing"`; wait the number of seconds in the `Retry-After` header and poll again. Expect this for a while after the translated document is ready, because the evaluation only starts once there is a translation to evaluate.
+
+A finished evaluation returns HTTP 200 whether it succeeded or failed, so branch on `status` rather than the status code: `done` carries the report, and `error` means the evaluation could not be produced, for example because the language pair isn't supported.
+
+```json
+{
+  "job_id": "04DE5AD98A02647D83285A36021911C6",
+  "status": "done",
+  "segments": [
+    {
+      "segment_index": 0,
+      "segment_score": 38.5,
+      "source": "Our Q3 revenue came in 5% above forecast.",
+      "target": "Unser Q3-Umsatz lag 5 % unter der Prognose.",
+      "applied_glossary_term_pairs": [
+        {
+          "source_term": "forecast",
+          "target_term": "Prognose",
+          "ranges": [{ "start": 34, "end": 42 }]
+        }
+      ],
+      "errors": [
+        {
+          "type": "Accuracy",
+          "sub_type": "Mistranslation",
+          "severity": "Critical",
+          "explanation": "The source says revenue was '5% above forecast' but the translation says '5 % unter der Prognose' (5% below forecast). This reverses the meaning.",
+          "source_spans": [{ "start": 23, "end": 31 }],
+          "target_spans": [{ "start": 20, "end": 29 }]
+        }
+      ]
+    }
+  ]
+}
+```
+
+Store the report as soon as it's `done`: reports are kept for [24 hours](/api-reference/quality-evaluations/poll#report-retention) after the evaluation finishes, and polling after that returns HTTP 404. For the severity and issue-type vocabulary, how to resolve `source_spans` and `target_spans`, and the applied glossary term pairs a report returns per segment, see the [quality evaluation reference](/api-reference/quality-evaluations/poll).
 
 ### Document format conversions
 By default, the translated document comes back in the same format as the input. Two conversions differ:

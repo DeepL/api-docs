@@ -30,6 +30,46 @@ pip install anthropic pyyaml
 export ANTHROPIC_API_KEY=...
 ```
 
+## Duplicate PRs
+
+A gap stays open until its PR **merges**, so every run re-detects the gaps that are
+already waiting for review. Left alone, the pipeline opens one PR per run for the
+same missing pages.
+
+`pipeline/open_prs.py` is the check that prevents that. It runs twice:
+
+- **`generate.py`** drops gaps an open PR already covers, before any model call, so a
+  duplicate run costs nothing.
+- **`ship.py`** refuses to open a PR when an open one already covers the whole run.
+
+Both exit with code **3** ("nothing to do") instead of 0 or 1, and `run.py` stops the
+chain cleanly when it sees it.
+
+A gap is "already in flight" if any open PR matches it on:
+
+| Signal | Source | Catches |
+| --- | --- | --- |
+| Gap key | `<!-- docs-pipeline-gaps: [...] -->` marker in the PR body, written by `ship.py` | Any gap, including ones whose filename the model invents (two runs of the same gap produce different slugs) |
+| File path | The PR's changed files | Gaps with a predictable target path, including PRs the pipeline didn't open |
+| `covers:` frontmatter | The PR's diff | `missing_group_coverage` gaps, whose filename is unpredictable but whose group name is in the diff |
+
+Overrides, for when you want the PR anyway:
+
+```bash
+python pipeline/generate.py --ignore-open-prs   # draft claimed gaps too
+python pipeline/ship.py --latest --force-new-pr  # open a second PR
+```
+
+If `gh` can't be reached the check is skipped with a warning rather than blocking the
+run, so a missing CLI never stops the pipeline (it just allows a duplicate).
+
+The logic has tests (stdlib only, no gh, no network), run in CI on any `pipeline/**`
+change:
+
+```bash
+python pipeline/test_open_prs.py
+```
+
 ## Pipeline Steps
 
 The pipeline runs as a sequence of independent scripts. Each step reads the output of the previous one. You can run any step standalone, or use `run.py` to chain them all.
@@ -64,7 +104,11 @@ python pipeline/generate.py --section admin              # generate for one fami
 python pipeline/generate.py --type missing_orientation   # generate one gap type
 python pipeline/generate.py --force                      # regenerate even if files exist
 python pipeline/generate.py --section admin --force      # regenerate one section
+python pipeline/generate.py --ignore-open-prs            # include gaps an open PR covers
 ```
+
+Gaps that an open PR already covers are skipped before any model call. See
+[Duplicate PRs](#duplicate-prs).
 
 Each run creates a timestamped folder under `pipeline/drafts/` with the generated `.mdx` files and a `report.json` with metadata.
 
@@ -137,9 +181,14 @@ python pipeline/ship.py --latest --dry-run              # preview branch, commit
 python pipeline/ship.py --latest                        # create branch, commit, prompt before push
 python pipeline/ship.py --latest --yes                  # skip push confirmation
 python pipeline/ship.py --latest --branch docs/my-branch  # custom branch name
+python pipeline/ship.py --latest --force-new-pr           # ship even if an open PR covers it
 ```
 
 Requires `gh` CLI authenticated. Stages only `docs/**/*.mdx` and `docs.json`. Never force-pushes.
+
+Exits 3 without creating a branch when an open PR already covers the whole run, and
+stamps every PR body with the gap keys it covers so later runs recognize it. See
+[Duplicate PRs](#duplicate-prs).
 
 ### 7. Post Review (PR Suggestions)
 
@@ -306,5 +355,5 @@ The live site structure (which page sits in which tab) is read from `docs.json` 
 - Python 3.8+
 - `anthropic` (for generate.py, rework.py, review.py, post_review.py)
 - `pyyaml` (for all scripts)
-- `gh` CLI (for ship.py, post_review.py)
+- `gh` CLI (for ship.py, post_review.py, and the open-PR check in generate.py)
 - `mint` / `npx` (optional, for broken-links check in promote.py)

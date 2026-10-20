@@ -58,6 +58,6 @@ families:
       - {name: Languages, tags: [MetaInformation]}
 
   QualityEvaluation:
-    narrative_home: unplaced           # alpha — human decides (maybe under Translate)
+    narrative_home: Translate          # reports are requested via document translation
     groups:
       - {name: Quality Evaluation, tags: [QualityEvaluation]}
