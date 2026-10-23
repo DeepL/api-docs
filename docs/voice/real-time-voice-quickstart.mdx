@@ -237,11 +237,13 @@ The Voice API can also speak the translation aloud, so listeners hear the German
 
 ### Request translated speech
 
-Add a constant for the playback rate next to `SAMPLE_RATE`, then add two fields to the request body in `create_session`. Requesting raw 24 kHz PCM lets `sounddevice` play the audio without a decoder:
+Two session fields turn on translated speech. `target_media_languages` names the language to speak, and the server then streams synthesized audio of each German translation alongside the text. `target_media_content_type` sets the audio format: raw 24 kHz PCM plays directly through `sounddevice`, with no decoder. Add a constant for that playback rate next to `SAMPLE_RATE`:
 
 ```python
 OUTPUT_SAMPLE_RATE = 24000  # Must match the rate declared in target_media_content_type
 ```
+
+Then add both fields to the request body in `create_session`:
 
 ```python
 json={
@@ -252,7 +254,7 @@ json={
 },
 ```
 
-A session returns translated speech for one language. To pick a voice or a different audio format, see the [Request Session reference](/api-reference/voice/request-session).
+A session synthesizes speech for one language, which also appears in the text translations. To pick a voice or another audio format, see the [Request Session reference](/api-reference/voice/request-session).
 
 ### Play the audio as it arrives
 
@@ -324,10 +326,140 @@ async with websockets.connect(url) as ws:
 
 ### Run it with translated speech
 
-Put on your headphones and run the script again:
+Here's the complete script with all the changes from this section. Save it as `live_speech_translation.py` if you want to keep the text-only version, and replace `YOUR_AUTH_KEY` with your DeepL API key:
+
+```python live_speech_translation.py [expandable]
+import asyncio
+import base64
+import json
+import signal
+
+import requests
+import sounddevice
+import websockets
+
+AUTH_KEY = "YOUR_AUTH_KEY"
+SESSION_ENDPOINT = "https://api.deepl.com/v3/voice/realtime"
+TARGET_LANGUAGES = ["de", "fr"]
+SAMPLE_RATE = 16000  # Must match the rate declared in source_media_content_type
+OUTPUT_SAMPLE_RATE = 24000  # Must match the rate declared in target_media_content_type
+CHUNK_FRAMES = 3200  # 200 ms per chunk at 16 kHz
+RECORD_SECONDS = 30  # Safety cap; Ctrl+C stops recording earlier
+
+
+def create_session() -> dict:
+    response = requests.post(
+        SESSION_ENDPOINT,
+        headers={"Authorization": f"DeepL-Auth-Key {AUTH_KEY}"},
+        json={
+            "source_media_content_type": "audio/pcm;encoding=s16le;rate=16000",
+            "target_languages": TARGET_LANGUAGES,
+            "target_media_languages": ["de"],
+            "target_media_content_type": "audio/pcm;encoding=s16le;rate=24000",
+        },
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+async def send_microphone_audio(ws, stop: asyncio.Event) -> None:
+    stream = sounddevice.RawInputStream(
+        samplerate=SAMPLE_RATE, channels=1, dtype="int16"
+    )
+    stream.start()
+    try:
+        for _ in range(RECORD_SECONDS * SAMPLE_RATE // CHUNK_FRAMES):
+            if stop.is_set():
+                break
+            # Read in a worker thread so receiving continues while we block
+            data, _overflowed = await asyncio.to_thread(stream.read, CHUNK_FRAMES)
+            encoded = base64.b64encode(bytes(data)).decode("ascii")
+            await ws.send(json.dumps({"source_media_chunk": {"data": encoded}}))
+    finally:
+        stream.stop()
+        stream.close()
+    print("Finalizing transcripts...")
+    await ws.send(json.dumps({"end_of_source_media": {}}))
+
+
+async def play_translated_speech(audio: asyncio.Queue) -> None:
+    stream = sounddevice.RawOutputStream(
+        samplerate=OUTPUT_SAMPLE_RATE, channels=1, dtype="int16"
+    )
+    stream.start()
+    try:
+        while (pcm := await audio.get()) is not None:
+            await asyncio.to_thread(stream.write, pcm)
+    finally:
+        stream.stop()
+        stream.close()
+
+
+async def receive_results(ws, audio: asyncio.Queue) -> None:
+    pending = {}  # Concluded text per language, buffered until a sentence ends
+
+    def handle_update(label: str, segments: list) -> None:
+        text = pending.get(label, "") + "".join(s["text"] for s in segments)
+        if text.rstrip().endswith((".", "!", "?")):
+            print(f"[{label}] {text.strip()}")
+            text = ""
+        pending[label] = text
+
+    try:
+        async for message in ws:
+            data = json.loads(message)
+            if "source_transcript_update" in data:
+                handle_update("source", data["source_transcript_update"]["concluded"])
+            elif "target_transcript_update" in data:
+                update = data["target_transcript_update"]
+                handle_update(update["language"], update["concluded"])
+            elif "target_media_chunk" in data:
+                # Raw PCM has no header packets, so every packet is playable audio
+                for packet in data["target_media_chunk"]["data"]:
+                    await audio.put(base64.b64decode(packet))
+            elif "end_of_stream" in data:
+                # The very last message: flush any unfinished sentences and exit
+                for label, text in pending.items():
+                    if text.strip():
+                        print(f"[{label}] {text.strip()}")
+                return
+            elif "error" in data:
+                raise RuntimeError(f"Voice API error: {data['error']['error_message']}")
+    finally:
+        await audio.put(None)
+
+
+async def main() -> None:
+    stop = asyncio.Event()
+    try:
+        asyncio.get_running_loop().add_signal_handler(signal.SIGINT, stop.set)
+    except NotImplementedError:
+        pass  # Windows: Ctrl+C raises KeyboardInterrupt instead
+
+    session = create_session()
+    url = f"{session['streaming_url']}?token={session['token']}"
+    audio = asyncio.Queue()
+    async with websockets.connect(url) as ws:
+        print("Connected. Speak now (Ctrl+C to stop)...")
+        await asyncio.gather(
+            send_microphone_audio(ws, stop),
+            receive_results(ws, audio),
+            play_translated_speech(audio),
+        )
+    print("Done. All transcripts are final.")
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
+```
+
+Put on your headphones and run it:
 
 ```bash
-python live_translation.py
+python live_speech_translation.py
 ```
 
 The terminal shows the same transcript and translations as before. A moment after each sentence, you hear it spoken in German. The audio contains only speech, so playback pauses whenever you do.
