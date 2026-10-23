@@ -4,12 +4,13 @@ description: "Stream microphone audio to the DeepL Voice API from Python and pri
 covers: [Voice]
 ---
 
-In this tutorial you'll run a small Python program that captures audio from your microphone, streams it to the DeepL Voice API, and prints the transcript plus German and French translations to your terminal, sentence by sentence, while you speak. The same pattern works for any live audio source: a meeting bot, a phone bridge, or a broadcast feed.
+In this tutorial you'll run a small Python program that captures audio from your microphone, streams it to the DeepL Voice API, and prints the transcript plus German and French translations to your terminal, sentence by sentence, while you speak. You can then extend it to [play the German translation aloud](#hear-the-translation-spoken). The same pattern works for any live audio source: a meeting bot, a phone bridge, or a broadcast feed.
 
 ## Prerequisites
 
 - A DeepL API account with Voice API access
 - Python 3.10 or later
+- Headphones, if you want to [hear the translation spoken](#hear-the-translation-spoken)
 - A microphone (no microphone? see [Simulate a live stream from a file](#simulate-a-live-stream-from-a-file))
 
 ## Building with an AI coding agent?
@@ -226,6 +227,111 @@ The response has the same shape as the session response above. Always pass the t
 
 To add this to the example, wrap the `websockets.connect` block in a `try`/`except websockets.exceptions.ConnectionClosed` loop that calls `reconnect()` and connects again with the new URL and token.
 
+## Hear the translation spoken
+
+The Voice API can also speak the translation aloud, so listeners hear the German version while you talk. In this step you extend `live_translation.py` to request translated speech and play it through your headphones.
+
+<Warning>
+  Use headphones. If the translated speech plays through your speakers, the microphone picks it up and sends it back for translation.
+</Warning>
+
+### Request translated speech
+
+Add a constant for the playback rate next to `SAMPLE_RATE`, then add two fields to the request body in `create_session`. Requesting raw 24 kHz PCM lets `sounddevice` play the audio without a decoder:
+
+```python
+OUTPUT_SAMPLE_RATE = 24000  # Must match the rate declared in target_media_content_type
+```
+
+```python
+json={
+    "source_media_content_type": "audio/pcm;encoding=s16le;rate=16000",
+    "target_languages": TARGET_LANGUAGES,
+    "target_media_languages": ["de"],
+    "target_media_content_type": "audio/pcm;encoding=s16le;rate=24000",
+},
+```
+
+A session returns translated speech for one language. To pick a voice or a different audio format, see the [Request Session reference](/api-reference/voice/request-session).
+
+### Play the audio as it arrives
+
+Add a player task that writes audio from a queue to your headphones. Like the microphone reader, it blocks in a worker thread so the receive loop keeps running:
+
+```python
+async def play_translated_speech(audio: asyncio.Queue) -> None:
+    stream = sounddevice.RawOutputStream(
+        samplerate=OUTPUT_SAMPLE_RATE, channels=1, dtype="int16"
+    )
+    stream.start()
+    try:
+        while (pcm := await audio.get()) is not None:
+            await asyncio.to_thread(stream.write, pcm)
+    finally:
+        stream.stop()
+        stream.close()
+```
+
+Translated speech arrives in `target_media_chunk` messages, each with a `data` array of base64-encoded audio packets. Replace `receive_results` with this version, which puts every decoded packet on the queue. The `finally` block queues `None` however the loop ends, so the player finishes the remaining audio and stops instead of waiting forever:
+
+```python
+async def receive_results(ws, audio: asyncio.Queue) -> None:
+    pending = {}  # Concluded text per language, buffered until a sentence ends
+
+    def handle_update(label: str, segments: list) -> None:
+        text = pending.get(label, "") + "".join(s["text"] for s in segments)
+        if text.rstrip().endswith((".", "!", "?")):
+            print(f"[{label}] {text.strip()}")
+            text = ""
+        pending[label] = text
+
+    try:
+        async for message in ws:
+            data = json.loads(message)
+            if "source_transcript_update" in data:
+                handle_update("source", data["source_transcript_update"]["concluded"])
+            elif "target_transcript_update" in data:
+                update = data["target_transcript_update"]
+                handle_update(update["language"], update["concluded"])
+            elif "target_media_chunk" in data:
+                # Raw PCM has no header packets, so every packet is playable audio
+                for packet in data["target_media_chunk"]["data"]:
+                    await audio.put(base64.b64decode(packet))
+            elif "end_of_stream" in data:
+                # The very last message: flush any unfinished sentences and exit
+                for label, text in pending.items():
+                    if text.strip():
+                        print(f"[{label}] {text.strip()}")
+                return
+            elif "error" in data:
+                raise RuntimeError(f"Voice API error: {data['error']['error_message']}")
+    finally:
+        await audio.put(None)
+```
+
+Finally, create the queue in `main` and run the player next to the other two tasks:
+
+```python
+audio = asyncio.Queue()
+async with websockets.connect(url) as ws:
+    print("Connected. Speak now (Ctrl+C to stop)...")
+    await asyncio.gather(
+        send_microphone_audio(ws, stop),
+        receive_results(ws, audio),
+        play_translated_speech(audio),
+    )
+```
+
+### Run it with translated speech
+
+Put on your headphones and run the script again:
+
+```bash
+python live_translation.py
+```
+
+The terminal shows the same transcript and translations as before. A moment after each sentence, you hear it spoken in German. The audio contains only speech, so playback pauses whenever you do.
+
 ## Simulate a live stream from a file
 
 If you don't have a microphone, or you want reproducible input while developing, stream a pre-recorded file at real-time pace instead. Set `"source_media_content_type": "audio/auto"` in the session request so the format is detected, and swap `send_microphone_audio` for a reader that paces itself:
@@ -254,6 +360,7 @@ Any recording of speech in a [supported format](/docs/voice/voice-api-requiremen
 
 - See the [WebSocket Streaming reference](/api-reference/voice/websocket-streaming) for the complete message schema and all event types.
 - To understand the session flow and token lifecycle in depth, see [Understanding Voice Sessions](/docs/voice/understanding-voice-sessions).
+- To choose a voice or another audio format for translated speech, see the [Request Session reference](/api-reference/voice/request-session).
 - To reduce bandwidth with MessagePack instead of JSON, see [Message Encoding](/docs/voice/message-encoding).
 - For a fuller command-line version of this program, including glossary and formality options, see the [DeepL Voice CLI example](https://github.com/DeepL/deepl-python/tree/main/examples/voice/cli).
 - To apply a custom glossary to your translations, see the [Glossaries API](/docs/customize/managing-glossaries).
