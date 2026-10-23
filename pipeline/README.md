@@ -92,6 +92,14 @@ python pipeline/detect_gaps.py --force                  # report requirement gap
 
 **What it checks (per family, across surfaces):** missing product tab, missing overview / tutorial / how-to, missing hub link, narrative pages sitting in the API Reference tab, ungrouped OpenAPI tags, plus thin pages (< 100 words) and missing frontmatter descriptions.
 
+Pages with children are exempt from the thin-page check: a hub is short because its
+content sits on the child pages, so padding it out is the wrong fix.
+
+Gap `path` values are docs.json nav entries, which carry **no file extension** and can
+share a name with the directory holding their children (`docs/resources/breaking-changes-change-notices`
+is both a page and that folder). Resolve one to a file with `detect_gaps.page_file()`;
+never append to it by hand.
+
 **What it doesn't check:** fine-grained judgment (is *this specific* endpoint missing a how-to, is a page the wrong Diataxis type) — that's the LLM audit (`audit_gaps.py`, follow-up); style/Diataxis prose compliance (the review step); code sample correctness (validation step).
 
 ### 2. Generate Drafts
@@ -353,7 +361,8 @@ The live site structure (which page sits in which tab) is read from `docs.json` 
 ## Dependencies
 
 - Python 3.8+
-- `anthropic` (for generate.py, rework.py, review.py, post_review.py)
+- `anthropic` (for generate.py, rework.py, review.py, post_review.py). generate.py
+  imports it lazily, so gap detection, `--dry-run` and the tests work without it
 - `pyyaml` (for all scripts)
 - `gh` CLI (for ship.py, post_review.py, and the open-PR check in generate.py)
 - `mint` / `npx` (optional, for broken-links check in promote.py)
