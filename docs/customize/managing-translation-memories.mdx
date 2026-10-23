@@ -1,0 +1,254 @@
+---
+title: "Managing Translation Memories"
+description: "Import a TMX file as a new translation memory, inspect its metadata and stored segments, export it back to TMX, and delete it with the v3 endpoints."
+covers: [Customize]
+public: true
+---
+
+Translation memories store pairs of source segments and their approved translations, and reuse them when you translate matching text. This guide shows how to manage them with the [v3 translation memory endpoints](/api-reference/translation-memory/list-translation-memories): import a TMX file as a new translation memory, inspect what it contains, export it, and delete it. TMX (Translation Memory eXchange) is the XML interchange format for translation memories, and the only format the API accepts.
+
+Reading and exporting need an API key with the `translation_memories:read` scope. Importing and deleting need `translation_memories:write`. See [Permission Scopes](/docs/admin/permission-scopes).
+
+<Tip>
+To apply a translation memory in a translation request and tune how closely text must match, follow [Using Translation Memories](/docs/customize/using-translation-memories), a hands-on tutorial.
+</Tip>
+
+## Import a translation memory
+
+Importing a TMX file is how you create a translation memory over the API. The import runs as a background job in three steps: declare the file, upload it to the URL you get back, then poll the job for the new translation memory's ID.
+
+<Steps>
+  <Step title="Declare the file">
+    Send the file name and its size in bytes, plus the name to give the new translation memory. The request describes the file; it doesn't carry it.
+
+    ```sh Example request
+    curl -X POST https://api.deepl.com/v3/translation_memories/import \
+      --header "Authorization: DeepL-Auth-Key $API_KEY" \
+      --header "Content-Type: application/json" \
+      --data '{
+        "source_file": {
+          "file_name": "legal.tmx",
+          "content_length": 1024
+        },
+        "parameters": {
+          "display_name": "Legal"
+        }
+    }'
+    ```
+
+    ```json Example response
+    {
+      "job_id": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+      "upload_url": "https://assets.deepl.com/upload/0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+      "expires_at": "2026-08-06T15:34:25.223Z"
+    }
+    ```
+  </Step>
+
+  <Step title="Upload the file">
+    `PUT` the TMX file to `upload_url` before `expires_at`. The URL is already signed, so leave out your `Authorization` header. A successful upload returns no body, and processing starts as soon as the upload finishes.
+
+    ```sh Example request
+    curl -X PUT "https://assets.deepl.com/upload/0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40" \
+      --header "Content-Type: application/xml" \
+      --data-binary @legal.tmx
+    ```
+  </Step>
+
+  <Step title="Poll the job">
+    Request the job until its status is `completed`, `failed`, or `expired`. A completed import carries the new `translation_memory_id`.
+
+    ```sh Example request
+    curl -X GET https://api.deepl.com/v3/translation_memories/jobs/0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40 \
+      --header "Authorization: DeepL-Auth-Key $API_KEY"
+    ```
+
+    ```json Example response
+    {
+      "job_id": "0f8b6c1e-4d2a-4c77-9a3e-1b5d8c9e2f40",
+      "product": "translation_memory",
+      "operation": "import",
+      "creation_time": "2026-08-06T15:04:25.223Z",
+      "updated_time": "2026-08-06T15:06:11.418Z",
+      "source_file": {
+        "content_type": "application/xml",
+        "content_length": 1024
+      },
+      "parameters": {
+        "display_name": "Legal"
+      },
+      "results": [
+        {
+          "status": "completed",
+          "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+          "skipped_segment_count": 12
+        }
+      ]
+    }
+    ```
+  </Step>
+</Steps>
+
+Until the job reports `completed`, no translation memory exists yet. A status of `awaiting_input` means the file hasn't arrived, and `processing` means DeepL is still reading it. If the status is `failed`, `error.message` on the result says why. An `expired` job is too old to act on, so start a new import. A non-zero `skipped_segment_count` on a completed import is normal: those segments were malformed or duplicated an existing one, and the rest imported.
+
+If `expires_at` passes before you upload, start a new import rather than retrying the old URL. The [import reference](/api-reference/translation-memory/import-a-translation-memory) lists the file size and name limits and the error responses.
+
+## Inspect a translation memory
+
+[Retrieve a translation memory](/api-reference/translation-memory/retrieve-a-translation-memory) by ID to get its metadata: the name, source language, target languages, segment count, and when it was created and last updated. The contents are a separate request.
+
+```sh Example request
+curl -X GET https://api.deepl.com/v3/translation_memories/a74d88fb-ed2a-4943-a664-a4512398b994 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+```json Example response
+{
+  "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "name": "Legal",
+  "source_language": "en",
+  "target_languages": ["es", "de"],
+  "segment_count": 3542,
+  "creation_time": "2026-04-01T16:34:25.223Z",
+  "updated_time": "2026-08-06T09:12:44.108Z"
+}
+```
+
+To page through all translation memories on your account instead, use [`GET /v3/translation_memories`](/api-reference/translation-memory/list-translation-memories).
+
+### Read the stored segments
+
+[List the segments](/api-reference/translation-memory/list-translation-memory-segments) to read the content itself. Each entry is one source segment with its translation in every target language. Every source and target carries its own creation and update timestamps, plus a last-used timestamp once it has matched a translation.
+
+```sh Example request
+curl -X GET "https://api.deepl.com/v3/translation_memories/a74d88fb-ed2a-4943-a664-a4512398b994/segments?page_size=50" \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+```json Example response
+{
+  "segments": [
+    {
+      "source_segment_id": "4f1c2d3e-8a9b-4c5d-9e6f-7a8b9c0d1e2f",
+      "source_text": "This agreement is governed by the laws of Germany.",
+      "creation_time": "2026-04-01T16:34:25.223Z",
+      "updated_time": "2026-04-01T16:34:25.223Z",
+      "last_used_time": "2026-08-05T11:02:18.771Z",
+      "targets": [
+        {
+          "target_segment_id": "9b8a7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d",
+          "target_language": "de",
+          "target_text": "Dieser Vertrag unterliegt dem Recht der Bundesrepublik Deutschland.",
+          "creation_time": "2026-04-01T16:34:25.223Z",
+          "updated_time": "2026-04-01T16:34:25.223Z",
+          "last_used_time": "2026-08-05T11:02:18.771Z"
+        },
+        {
+          "target_segment_id": "2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f",
+          "target_language": "es",
+          "target_text": "Este contrato se rige por las leyes de Alemania.",
+          "creation_time": "2026-04-01T16:34:25.223Z",
+          "updated_time": "2026-04-01T16:34:25.223Z",
+          "last_used_time": "2026-07-22T08:41:05.330Z"
+        }
+      ]
+    }
+  ],
+  "segment_count": 3542,
+  "next_page_cursor": "eyJvZmZzZXQiOjUwfQ"
+}
+```
+
+`last_used_time` is when that segment was last applied in a translation. It's absent on segments that have never matched, which makes it a quick way to find content nobody reuses.
+
+To get the next page, pass the response's `next_page_cursor` as `page_cursor`; the last page has no cursor. To search the content, add `filter_text` with at least 2 characters:
+
+```sh Example request
+curl -X GET "https://api.deepl.com/v3/translation_memories/a74d88fb-ed2a-4943-a664-a4512398b994/segments?filter_text=agreement" \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+The response has the same shape as above, with only matching segments. Start again without a cursor whenever you change the filter, and stop when `next_page_cursor` is absent rather than counting up to `segment_count`, which always reports the whole translation memory. The [segments reference](/api-reference/translation-memory/list-translation-memory-segments) covers case-sensitive matching and the cursor rules in full.
+
+## Export a translation memory
+
+Export a translation memory to get its contents as a TMX file. Like importing, this runs as a background job: start it, poll it, then download the file.
+
+```sh Example request
+curl -X POST https://api.deepl.com/v3/translation_memories/a74d88fb-ed2a-4943-a664-a4512398b994/export \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+```json Example response
+{
+  "job_id": "7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+  "parameters": {
+    "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994"
+  }
+}
+```
+
+Poll the job the same way as an import, until its status is `completed`, `failed`, or `expired`. A completed export carries a `download_url` and the `expires_at` time after which it stops working:
+
+```sh Example request
+curl -X GET https://api.deepl.com/v3/translation_memories/jobs/7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+```json Example response
+{
+  "job_id": "7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+  "product": "translation_memory",
+  "operation": "export",
+  "creation_time": "2026-08-06T15:04:25.223Z",
+  "updated_time": "2026-08-06T15:05:02.771Z",
+  "parameters": {
+    "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994"
+  },
+  "results": [
+    {
+      "status": "completed",
+      "download_url": "https://assets.deepl.com/download/7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13",
+      "expires_at": "2026-08-06T16:05:02.771Z"
+    }
+  ]
+}
+```
+
+Download the file right away rather than storing the URL. Like the upload URL, it's signed, so send no `Authorization` header. If the URL has expired, start a new export.
+
+```sh Example request
+curl -o legal-export.tmx "https://assets.deepl.com/download/7c2e5a91-3b8d-4f16-8e0a-6d4c2b7f9a13"
+```
+
+A successful download writes the TMX file to `legal-export.tmx` and returns no other body.
+
+Starting an export doesn't always start new work. If a recent export of the same translation memory is still available, the request returns `200 OK` with that job instead of `202 Accepted`, and you poll it in the same way. If an export is already running, the request returns `409 Conflict`: poll the job you already have instead of retrying. See the [export reference](/api-reference/translation-memory/export-a-translation-memory) for details.
+
+## Delete a translation memory
+
+[Delete a translation memory](/api-reference/translation-memory/delete-a-translation-memory) to remove it and every segment in it. A successful request returns `204 No Content` with an empty body.
+
+```sh Example request
+curl -X DELETE https://api.deepl.com/v3/translation_memories/a74d88fb-ed2a-4943-a664-a4512398b994 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+<Warning>
+Deletion is permanent. Export the translation memory first if you need a copy, and remove its ID from your translation requests before deleting, because those requests fail once it's gone.
+</Warning>
+
+## Edit a translation memory
+
+Editing the contents of an existing translation memory over the API isn't supported yet; support is [in active development](/docs/resources/roadmap-and-release-notes). Until then, to change what a translation memory contains:
+
+1. Export it and edit the TMX file
+2. Import the edited file as a new translation memory, which gets a new ID
+3. Switch your translation requests to the new ID
+4. Delete the old translation memory
+
+## Limits and restrictions
+
+- TMX is the only supported format for import and export. File size and name limits are on the [import reference](/api-reference/translation-memory/import-a-translation-memory)
+- Translation memories support a subset of DeepL's languages. Check [supported languages](/docs/getting-started/supported-languages), or call [`GET /v3/languages?resource=translation_memory`](/docs/languages/using-the-languages-api) to check programmatically
+- The number of translation memories per account is [limited by your plan](https://www.deepl.com/en/pro-api). At the limit, an import returns `456`; delete a translation memory before importing another

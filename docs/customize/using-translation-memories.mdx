@@ -18,7 +18,7 @@ In this tutorial, we'll retrieve the translation memories on your account, use o
 You'll need:
 
 - A DeepL API authentication key
-- At least one translation memory uploaded to your account via the DeepL UI
+- At least one translation memory on your account, created in the DeepL web app or [imported over the API](/docs/customize/managing-translation-memories)
 - A terminal or HTTP client for making API requests
 - Approximately 10 minutes
 
@@ -61,7 +61,7 @@ curl -X GET 'https://api.deepl.com/v3/translation_memories' \
 Notice the `translation_memory_id` — this is what we'll pass to the translate endpoint. Also note the `source_language` and `target_languages` fields, which tell us this translation memory translates from German to English.
 
 <Info>
-If you see an empty list, make sure you've uploaded at least one translation memory via the [DeepL translation memory page](https://www.deepl.com/translation-memory).
+If you see an empty list, make sure you've uploaded at least one translation memory via the [DeepL translation memory page](https://www.deepl.com/translation-memory), or import one by following [Managing Translation Memories](/docs/customize/managing-translation-memories).
 </Info>
 
 ## Step 2: Translate text with a translation memory
@@ -173,6 +173,7 @@ You've learned how to:
 
 ## See also
 
+- [Managing Translation Memories](/docs/customize/managing-translation-memories): import, inspect, export, and delete translation memories over the API
 - [List translation memories](/api-reference/translation-memory/list-translation-memories) — API reference
 - [Text translation endpoint](/api-reference/translate/request-translation#body-translation-memory-id) — `translation_memory_id` and `translation_memory_threshold` parameter reference
 - [Supported languages](/docs/getting-started/supported-languages) — check which languages support translation memories
