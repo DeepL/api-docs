@@ -304,7 +304,9 @@ def generate_content(client, system_prompt, user_prompt, expect_file=True):
     A reply that isn't a page gets one corrective turn rather than failing the
     run. The docs-writer guidelines are written for a harness with tools, so the
     model occasionally obliges by narrating research it cannot do and returns a
-    transcript instead of a file.
+    transcript instead of a file. If the second reply is still not a page, raise:
+    main() records that as an error for this gap alone, whereas writing it as a
+    draft would fail evaluate for the whole run.
     """
     messages = [{"role": "user", "content": user_prompt}]
     text = _complete(client, system_prompt, messages)
@@ -320,7 +322,10 @@ def generate_content(client, system_prompt, user_prompt, expect_file=True):
         {"role": "user", "content": format_retry_prompt(
             "it did not start with YAML frontmatter (---)")},
     ]
-    return _complete(client, system_prompt, messages)
+    text = _complete(client, system_prompt, messages)
+    if not looks_like_mdx(text):
+        raise ValueError("reply was still not a page after one corrective turn")
+    return text
 
 
 def determine_output_path(gap, family_name, content=None):

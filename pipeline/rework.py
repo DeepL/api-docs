@@ -388,6 +388,11 @@ def main():
             {"role": "assistant", "content": raw_output[:500].strip()},
             {"role": "user", "content": format_retry_prompt(problem)},
         ])
+        ok = "--- SPLIT:" in raw_output if len(targets) > 1 else looks_like_mdx(raw_output)
+        if not ok:
+            print(f"Error: reply was still the wrong shape after one corrective turn ({problem})",
+                  file=sys.stderr)
+            sys.exit(1)
 
     # Parse output
     if len(targets) > 1:

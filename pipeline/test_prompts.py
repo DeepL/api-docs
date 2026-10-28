@@ -17,6 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import generate  # noqa: E402
 from util import (  # noqa: E402
     NO_TOOLS,
     build_authoring_system_prompt,
@@ -114,6 +115,54 @@ class RetryPromptTest(unittest.TestCase):
         prompt = format_retry_prompt("it did not start with YAML frontmatter (---)")
         self.assertIn("did not start with YAML frontmatter", prompt)
         self.assertIn("No preamble", prompt)
+
+
+class FakeClient:
+    """Stands in for anthropic.Anthropic: returns canned replies, records calls."""
+
+    def __init__(self, *replies):
+        self._replies = list(replies)
+        self.calls = []
+        self.messages = self
+
+    def create(self, **kwargs):
+        # Copy the list: generate_content extends it in place between calls.
+        self.calls.append([dict(m) for m in kwargs["messages"]])
+        text = self._replies.pop(0)
+        return type("Response", (), {"content": [type("Block", (), {"text": text})()]})()
+
+
+class GenerateContentTest(unittest.TestCase):
+    PAGE = '---\ntitle: "T"\n---\n\nBody.\n'
+    TRANSCRIPT = "I'll research the peer pages first.\n<tool_call>{}</tool_call>\n"
+
+    def test_a_page_on_the_first_try_takes_one_call(self):
+        client = FakeClient(self.PAGE)
+        self.assertEqual(generate.generate_content(client, "sys", "write it"), self.PAGE)
+        self.assertEqual(len(client.calls), 1)
+
+    def test_a_bad_reply_gets_one_corrective_turn(self):
+        client = FakeClient(self.TRANSCRIPT, self.PAGE)
+        self.assertEqual(generate.generate_content(client, "sys", "write it"), self.PAGE)
+
+        self.assertEqual(len(client.calls), 2)
+        retry = client.calls[1]
+        self.assertEqual([m["role"] for m in retry], ["user", "assistant", "user"])
+        self.assertEqual(retry[0]["content"], "write it")
+        self.assertTrue(retry[1]["content"].startswith("I'll research"))
+        self.assertIn("did not start with YAML frontmatter", retry[2]["content"])
+
+    def test_two_bad_replies_raise_instead_of_returning_a_transcript(self):
+        client = FakeClient(self.TRANSCRIPT, self.TRANSCRIPT)
+        with self.assertRaises(ValueError):
+            generate.generate_content(client, "sys", "write it")
+        self.assertEqual(len(client.calls), 2)
+
+    def test_a_description_reply_is_not_shape_checked(self):
+        client = FakeClient("Learn how to translate a spreadsheet.")
+        reply = generate.generate_content(client, "sys", "describe it", expect_file=False)
+        self.assertEqual(reply, "Learn how to translate a spreadsheet.")
+        self.assertEqual(len(client.calls), 1)
 
 
 if __name__ == "__main__":

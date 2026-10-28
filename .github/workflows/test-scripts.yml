@@ -32,5 +32,5 @@ jobs:
           python-version: "3.12"
       # pyyaml only: the tests stub out gh, never call the network, and the
       # Anthropic SDK is imported lazily so it isn't needed here.
-      - run: pip install pyyaml
+      - run: pip install pyyaml==6.0.3
       - run: python -m unittest discover -s pipeline -p "test_*.py" -v
