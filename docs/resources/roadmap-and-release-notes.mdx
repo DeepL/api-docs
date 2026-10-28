@@ -9,6 +9,12 @@ rss: true
 </Update>
 
 <Update label="October 2026">
+## October 26 - Glossaries for Language Variants
+- A [glossary](/docs/customize/managing-glossaries) holds dictionaries that map source terms to target terms, one dictionary per language pair. A dictionary could previously only target a base language such as `pt`, and it applied to every variant of that language. You can now also create a dictionary for a specific variant, such as `pt-BR` or `pt-PT`, so terminology that differs between variants stays separate within one glossary.
+- Set the variant code as the dictionary's `target_lang` in the [v3 glossary endpoints](/api-reference/multilingual-glossaries/create-a-glossary). Supported variant targets are `de-CH`, `de-DE`, `en-GB`, `en-US`, `es-419`, `es-ES`, `fr-CA`, `fr-FR`, `pt-BR`, `pt-PT`, `zh-Hans`, and `zh-Hant`. Source languages stay base languages. The current list is returned by [`GET /v3/languages?resource=glossary`](/docs/languages/using-the-languages-api).
+- A dictionary with a base target keeps applying to all variants of that language. A variant dictionary applies only when the request's `target_lang` is that exact variant.
+- Within one glossary, each language family uses either the base language or its variants as targets, not both. For example, `de-CH` and `de-DE` can be combined, but `de` and `de-DE` can't. Requests that break this rule return a 400 error.
+
 ## October 20 - Style Profiles
 - A [style profile](/docs/customize/using-style-profiles) bundles the glossaries, style rule lists, and translation memories you use together under a single ID. Pass one `style_profile_id` in [`/v2/translate`](/api-reference/translate/request-translation) or [`/v2/document`](/api-reference/document/upload-and-translate-a-document) requests instead of the individual customization parameters, and update the profile when the bundle changes instead of your integration.
 - DeepL applies the components that fit each request: the glossaries for the language pair, the style rule list for the target language, and the translation memory for the source language. A profile can't be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`, `translation_memory_threshold`, or `custom_instructions` in the same request.
