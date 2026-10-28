@@ -9,6 +9,11 @@ rss: true
 </Update>
 
 <Update label="October 2026">
+## October 28 - Glossaries Without an Explicit Source Language
+- [`POST /v2/translate`](/api-reference/translate/request-translation) now accepts `glossary_id` or `glossary_ids` without `source_lang`. Glossaries apply terminology you define to a translation. When you omit `source_lang`, DeepL detects the source language and applies the glossary's dictionary for the detected language pair, and `detected_source_language` in the response reports which one was used.
+- The request returns a `400` if the glossary has no dictionary for the detected language pair.
+- Document translation still requires `source_lang` with a glossary, and the DeepL client libraries currently require it too. See [use a glossary with automatic source language detection](/docs/customize/managing-glossaries#use-a-glossary-with-automatic-source-language-detection).
+
 ## October 20 - Style Profiles
 - A [style profile](/docs/customize/using-style-profiles) bundles the glossaries, style rule lists, and translation memories you use together under a single ID. Pass one `style_profile_id` in [`/v2/translate`](/api-reference/translate/request-translation) or [`/v2/document`](/api-reference/document/upload-and-translate-a-document) requests instead of the individual customization parameters, and update the profile when the bundle changes instead of your integration.
 - DeepL applies the components that fit each request: the glossaries for the language pair, the style rule list for the target language, and the translation memory for the source language. A profile can't be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`, `translation_memory_threshold`, or `custom_instructions` in the same request.
