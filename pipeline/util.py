@@ -38,6 +38,21 @@ def load_text(path):
         return ""
 
 
+def page_file(page_id, repo_root=REPO_ROOT):
+    """Repo-relative path of the file behind a docs.json page ID, or None.
+
+    docs.json lists pages without an extension (docs/resources/foo). A gap that
+    carries that ID points at no file, or at a folder that happens to share the
+    page's name, so resolve it to the real .mdx/.md file before any step reads or
+    writes it.
+    """
+    for ext in (".mdx", ".md"):
+        candidate = f"{page_id}{ext}"
+        if (Path(repo_root) / candidate).is_file():
+            return candidate
+    return None
+
+
 OUTPUT_RULES = """## Output Format
 
 - Output ONLY the .mdx file content. No commentary, no explanation, no markdown fences.

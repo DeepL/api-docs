@@ -30,6 +30,8 @@ from pathlib import Path
 
 import yaml
 
+from util import page_file
+
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 STANDARDS_PATH = REPO_ROOT / "standards" / "ia.yaml"
@@ -318,7 +320,7 @@ def detect_gaps(docs_json, endpoints, families, section=None, force=False):
             if fm is None:
                 continue  # file missing; separate concern
             if not is_openapi_page(fm):
-                gaps.append(gap("apiref_narrative_page", "medium", None, path=p,
+                gaps.append(gap("apiref_narrative_page", "medium", None, path=page_file(p) or p,
                                 desc=f"{p} sits in the API Reference tab but is not an endpoint page (narrative belongs in a product tab or Home)"))
 
     # --- Ungrouped OpenAPI tags ------------------------------------------- #
@@ -334,10 +336,10 @@ def detect_gaps(docs_json, endpoints, families, section=None, force=False):
             if fm is None:
                 continue
             if not fm.get("description"):
-                gaps.append(gap("missing_description", "low", None, path=p,
+                gaps.append(gap("missing_description", "low", None, path=page_file(p) or p,
                                 desc=f"{p} has no frontmatter description"))
             if len(strip_frontmatter(content).split()) < 100:
-                gaps.append(gap("thin_page", "medium", None, path=p,
+                gaps.append(gap("thin_page", "medium", None, path=page_file(p) or p,
                                 desc=f"{p} has under 100 words"))
 
     return gaps
