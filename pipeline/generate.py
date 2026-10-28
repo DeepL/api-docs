@@ -67,6 +67,21 @@ def load_file(path):
         return ""
 
 
+def load_existing_page(gap):
+    """Content of the page a gap edits. Raises rather than returning nothing.
+
+    An empty read would turn "expand this page" into "write one from scratch"
+    and silently discard the real content.
+    """
+    page_path = REPO_ROOT / gap.get("path", "")
+    if not page_path.is_file():
+        raise FileNotFoundError(f"no file at '{gap.get('path', '')}' for {gap['type']} gap")
+    content = load_file(page_path)
+    if not content.strip():
+        raise ValueError(f"{gap['path']} is empty, refusing to rewrite it from nothing")
+    return content
+
+
 def load_openapi_for_tags(tags):
     """Extract the portion of the OpenAPI spec whose endpoints carry any of `tags`."""
     with open(OPENAPI_PATH) as f:
@@ -215,7 +230,7 @@ Follow the docs-writer guidelines exactly.
 
     elif gap_type == "thin_page":
         page_path = gap.get("path", "")
-        page_content = load_file(REPO_ROOT / page_path)
+        page_content = load_existing_page(gap)
         return f"""Expand this thin page. It currently has only {gap.get('word_count', 0)} words.
 
 Current content of {page_path}:
@@ -232,7 +247,7 @@ Follow the docs-writer guidelines exactly.
 
     elif gap_type == "missing_code_examples":
         page_path = gap.get("path", "")
-        page_content = load_file(REPO_ROOT / page_path)
+        page_content = load_existing_page(gap)
         return f"""Add code examples to this page. It's a guide but has no runnable code.
 
 Current content of {page_path}:
@@ -249,7 +264,7 @@ Follow the docs-writer guidelines exactly.
 
     elif gap_type == "missing_description":
         page_path = gap.get("path", "")
-        page_content = load_file(REPO_ROOT / page_path)[:500]
+        page_content = load_existing_page(gap)[:500]
         return f"""Generate a frontmatter description for this page.
 
 Current content of {page_path} (first 500 chars):
