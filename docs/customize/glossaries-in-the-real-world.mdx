@@ -95,7 +95,7 @@ acme_glossary = translator.create_glossary(
 print(acme_glossary.glossary_id) # "def3a26b-3e84..."
 ```
 
-Running `glossary.py` will give us a response containing `glossary_id`, which we can add to our initial translation in `main.py`. Also be aware that when you use a glossary with the SDKs, you need to include `source_lang` as part of your request:
+Running `glossary.py` will give us a response containing `glossary_id`, which we can add to our initial translation in `main.py`. The DeepL client libraries currently require `source_lang` when you use a glossary, so we include it in the request:
 
 ```python main.py
 import deepl

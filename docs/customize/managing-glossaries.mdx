@@ -97,7 +97,7 @@ curl -X POST https://api.deepl.com/v3/glossaries \
 
 ## Use a glossary in a translation
 
-Include the `glossary_id` in a [`/v2/translate`](/api-reference/translate/request-translation) or [`/v2/document`](/api-reference/document/upload-and-translate-a-document) request. `/v2/document` requires `source_lang` with a glossary. On `/v2/translate` it's optional: see [Use a glossary without a source language](#use-a-glossary-without-a-source-language).
+Include the `glossary_id` in a [`/v2/translate`](/api-reference/translate/request-translation) or [`/v2/document`](/api-reference/document/upload-and-translate-a-document) request, along with the `source_lang` of the text. To translate text without setting `source_lang`, see [Use a glossary with automatic source language detection](#use-a-glossary-with-automatic-source-language-detection).
 
 ```sh Example request
 curl -X POST https://api.deepl.com/v2/translate \
@@ -126,9 +126,11 @@ Glossaries apply to root languages, not specific variants: a glossary with targe
 
 The `v3` endpoints handle glossary management only; translation itself stays on the `v2` endpoints.
 
-### Use a glossary without a source language
+### Use a glossary with automatic source language detection
 
-On [`/v2/translate`](/api-reference/translate/request-translation) you can omit `source_lang`. DeepL detects the source language and applies the glossary's dictionary for the detected language pair. This request has no `source_lang`:
+On [`/v2/translate`](/api-reference/translate/request-translation) you can omit `source_lang`: DeepL detects the source language and applies the glossary's dictionary for the detected language pair. This works through the REST API only. The DeepL client libraries currently require `source_lang` with a glossary, and so does document translation.
+
+This request has no `source_lang`:
 
 ```sh Example request
 curl -X POST https://api.deepl.com/v2/translate \
@@ -141,7 +143,7 @@ curl -X POST https://api.deepl.com/v2/translate \
 }'
 ```
 
-The glossary maps `finance team` to `Buchhaltung`, and the response reports which language DeepL detected:
+This example assumes the glossary's `EN` to `DE` dictionary also contains the entry `finance team` = `Buchhaltung`. The response reports which language DeepL detected:
 
 ```json Example response
 {
@@ -154,15 +156,12 @@ The glossary maps `finance team` to `Buchhaltung`, and the response reports whic
 }
 ```
 
-Keep these points in mind:
+If a request fails or detection picks the wrong language:
 
-- The glossary must contain a dictionary for the detected source language and your `target_lang`. Otherwise the request returns a `400` and no translation.
-- Detection is less reliable on very short text. A single word can be detected as the wrong language, so set `source_lang` where the input can be that short.
-- With `glossary_ids`, every listed glossary must contain a dictionary for the detected language pair, and one that doesn't returns a `400` for the whole request. Use one multilingual glossary to cover several source languages: DeepL selects the dictionary that matches the detected language.
+- A `400` means the glossary has no dictionary for the detected source language and your `target_lang`. Add the dictionary, or set `source_lang` if detection picked the wrong language.
+- Short input, such as a single word, can be detected as the wrong language. Set `source_lang` for short text. See [Language detection](/docs/best-practices/language-detection).
 
-<Note>
-  This applies to text translation through the REST API. Document translation requires `source_lang` when you use a glossary, and the DeepL client libraries currently require it as well, so call the REST API directly to omit it.
-</Note>
+A multilingual glossary can hold a dictionary for each source language, and DeepL uses the one that matches the detected language. With `glossary_ids`, every listed glossary needs a dictionary for the detected language pair, otherwise the whole request returns a `400`.
 
 ## Edit a glossary
 

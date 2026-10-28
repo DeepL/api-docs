@@ -51,7 +51,7 @@
     },
     {
       "name": "ManageMultilingualGlossaries",
-      "description": "The *glossary* functions allow you to create, inspect, edit and delete glossaries.\nGlossaries created with the glossary function can be used in translate requests by specifying the\n`glossary_id` parameter. A glossary contains (several) dictionaries.\nA dictionary is a mapping of source phrases to target phrases for a single language pair.\nIf you encounter issues, please let us know at support@DeepL.com.\n\nCurrently you can create glossaries with any of the languages DeepL supports (with the exception of Thai).\n\nThe maximum size limit for a glossary is 10 MiB = 10485760 bytes and each source/target text,\nas well as the name of the glossary, is limited to 1024 UTF-8 bytes.\nA total of 1000 glossaries are allowed per account.\n\nWhen creating a dictionary with target language `EN`, `PT`, or `ZH`, it's not necessary to specify a variant\n(e.g. `EN-US`, `EN-GB`, `PT-PT`, `PT-BR`, or `ZH-HANS`).\nDictionaries with target language `EN` can be used in translations with either English variant.\nSimilarly `PT`, and `ZH` dictionaries can be used in translations with their corresponding variants.\n(When you provide the ID of a glossary to a translation, the appropriate dictionary is automatically applied.)\n\nFor text translation, if you omit `source_lang`, DeepL detects the source language and applies the dictionary for the detected language pair. Document translation requires `source_lang`.\n\nGlossaries created via the DeepL API are now unified with glossaries created via the DeepL website and DeepL apps.\nPlease only use the v3 glossary API in conjunction with multilingual or edited glossaries from the website."
+      "description": "The *glossary* functions allow you to create, inspect, edit and delete glossaries.\nGlossaries created with the glossary function can be used in translate requests by specifying the\n`glossary_id` parameter. A glossary contains (several) dictionaries.\nA dictionary is a mapping of source phrases to target phrases for a single language pair.\nIf you encounter issues, please let us know at support@DeepL.com.\n\nCurrently you can create glossaries with any of the languages DeepL supports (with the exception of Thai).\n\nThe maximum size limit for a glossary is 10 MiB = 10485760 bytes and each source/target text,\nas well as the name of the glossary, is limited to 1024 UTF-8 bytes.\nA total of 1000 glossaries are allowed per account.\n\nWhen creating a dictionary with target language `EN`, `PT`, or `ZH`, it's not necessary to specify a variant\n(e.g. `EN-US`, `EN-GB`, `PT-PT`, `PT-BR`, or `ZH-HANS`).\nDictionaries with target language `EN` can be used in translations with either English variant.\nSimilarly `PT`, and `ZH` dictionaries can be used in translations with their corresponding variants.\n(When you provide the ID of a glossary to a translation, the appropriate dictionary is automatically applied.)\n\nFor text translation, if you omit `source_lang`, DeepL detects the source language and applies the dictionary for the detected language pair. Document translation with a glossary requires `source_lang`.\n\nGlossaries created via the DeepL API are now unified with glossaries created via the DeepL website and DeepL apps.\nPlease only use the v3 glossary API in conjunction with multilingual or edited glossaries from the website."
     },
     {
       "name": "ManageGlossaries",
@@ -813,7 +813,7 @@
                     "$ref": "#/components/schemas/ModelType"
                   },
                   "glossary_id": {
-                    "description": "Specify the glossary to use for the translation. The language pair of the glossary has to\nmatch the language pair of the request.\n\nIf `source_lang` is set, it must match the glossary's source language. If `source_lang` is\nomitted, DeepL detects the source language and applies the glossary's dictionary for the\ndetected language pair. The request returns a `400` if the glossary has no dictionary for\nthat pair. Automatic detection is less reliable on very short text.\n\nCannot be used together with `glossary_ids`.",
+                    "description": "Specify the glossary to use for the translation. The glossary needs a dictionary for the\nlanguage pair of the request.\n\nIf `source_lang` is omitted, DeepL detects the source language and uses the dictionary for\nthe detected language pair. The request returns a `400` if the glossary has no dictionary\nfor that pair.\n\nCannot be used together with `glossary_ids`.",
                     "type": "string",
                     "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
                   },
@@ -934,7 +934,7 @@
                     "$ref": "#/components/schemas/ModelType"
                   },
                   "glossary_id": {
-                    "description": "Specify the glossary to use for the translation. The language pair of the glossary has to\nmatch the language pair of the request.\n\nIf `source_lang` is set, it must match the glossary's source language. If `source_lang` is\nomitted, DeepL detects the source language and applies the glossary's dictionary for the\ndetected language pair. The request returns a `400` if the glossary has no dictionary for\nthat pair. Automatic detection is less reliable on very short text.\n\nCannot be used together with `glossary_ids`.",
+                    "description": "Specify the glossary to use for the translation. The glossary needs a dictionary for the\nlanguage pair of the request.\n\nIf `source_lang` is omitted, DeepL detects the source language and uses the dictionary for\nthe detected language pair. The request returns a `400` if the glossary has no dictionary\nfor that pair.\n\nCannot be used together with `glossary_ids`.",
                     "type": "string",
                     "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
                   },
@@ -1223,7 +1223,7 @@
                     "example": "def3a26b-3e84-45b3-84ae-0c0aaf3525f7"
                   },
                   "glossary_ids": {
-                    "description": "Comma-separated list of up to 5 glossary IDs to use for the translation. Each glossary's matching terms are applied to the translated document. May also be sent as a repeated parameter.\n\n**Important:** This requires the `source_lang` parameter to be set. Every listed glossary must contain a dictionary for the requested language pair.\n\nCannot be used together with `glossary_id`.",
+                    "description": "Comma-separated list of up to 5 glossary IDs to use for the translation. Each glossary's matching terms are applied to the translated document. May also be sent as a repeated parameter.\n\nEvery listed glossary must contain a dictionary for the requested language pair.\n\nRequires the `source_lang` parameter. The request returns a `400` if `source_lang` is omitted.\n\nCannot be used together with `glossary_id`.",
                     "type": "array",
                     "maxItems": 5,
                     "items": {
