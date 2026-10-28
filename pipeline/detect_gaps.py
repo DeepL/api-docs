@@ -177,6 +177,12 @@ def page_frontmatter(page_path):
     return None, None  # page listed in nav but file missing
 
 
+def has_child_pages(all_pages, page_path):
+    """Whether other nav entries sit under this one, making it a hub page."""
+    prefix = page_path + "/"
+    return any(p.startswith(prefix) for p in all_pages)
+
+
 def slug(page_path):
     return page_path.rsplit("/", 1)[-1].lower()
 
@@ -331,14 +337,17 @@ def detect_gaps(docs_json, endpoints, families, section=None, force=False):
 
     # --- Doc-quality checks on non-reference pages ------------------------ #
     if not section:
-        for p in all_doc_pages(docs_json, apiref_tab):
+        doc_pages = all_doc_pages(docs_json, apiref_tab)
+        for p in doc_pages:
             fm, content = page_frontmatter(p)
             if fm is None:
                 continue
             if not fm.get("description"):
                 gaps.append(gap("missing_description", "low", None, path=page_file(p) or p,
                                 desc=f"{p} has no frontmatter description"))
-            if len(strip_frontmatter(content).split()) < 100:
+            # A page with children is a hub: it's short because the content sits
+            # on the child pages. Padding it out is the wrong fix, so don't ask.
+            if len(strip_frontmatter(content).split()) < 100 and not has_child_pages(doc_pages, p):
                 gaps.append(gap("thin_page", "medium", None, path=page_file(p) or p,
                                 desc=f"{p} has under 100 words"))
 
