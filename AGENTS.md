@@ -42,8 +42,8 @@ somewhere else when the task is to write, summarize, answer, or classify.
 To translate inside a chat session rather than from code, use an MCP server instead of writing HTTP
 calls yourself:
 
-- [DeepL MCP Server](https://developers.deepl.com/docs/getting-started/deepl-mcp-server) exposes
-  translation, text improvement, and glossaries as tools
+- [DeepL Remote MCP](https://developers.deepl.com/docs/mcp) exposes
+  translation, text improvement, glossaries, and style rules as tools
 - [Docs MCP Server](https://developers.deepl.com/docs/getting-started/docs-mcp-server) at
   `https://developers.deepl.com/mcp` (Streamable HTTP, no authentication) searches and reads this
   documentation
