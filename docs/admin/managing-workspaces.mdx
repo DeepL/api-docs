@@ -1,7 +1,7 @@
 ---
 title: "Managing API Workspaces (Beta)"
 sidebarTitle: "Managing Workspaces"
-description: "Create API workspaces, create keys inside them, and track workspace-level usage in the DeepL account UI."
+description: "Learn how to create API workspaces, create keys inside them, and track workspace-level usage in the DeepL account UI."
 public: true
 ---
 
@@ -65,7 +65,7 @@ Open a workspace and select its "Usage" subtab to see consumption for the keys t
 - Usage for your yearly billing period, if you're on a yearly plan
 - A usage-over-time chart, with a selectable period and frequency, and a toggle between characters, STT minutes, and STS minutes
 
-This tab mirrors the [API Usage tab](/docs/admin/retrieving-usage-data#api-usage-tab), with one difference: it doesn't show included characters, because workspaces don't have their own character allowance.
+This tab mirrors the [API Usage tab](/docs/admin/retrieving-usage-data#api-usage-tab), with one difference: it doesn't show included characters, because workspaces don't have their own character allowance. Like the API Usage tab, it shows data up to and including the previous UTC calendar day.
 
 <Frame caption="The Usage subtab of a workspace">
 ![](/_assets/images/api-workspaces-usage.png)
@@ -93,7 +93,8 @@ Workspaces are currently managed in the account UI only. The [Admin API](/docs/a
 These capabilities are planned for API Workspaces. They aren't available in the beta, and release timing isn't set.
 
 - **Workspace roles**: roles with fewer permissions than admin, so you can invite a user to one workspace or a set of workspaces without giving them access to every API key and all usage data
-- **Workspace-scoped customizations**: the ability to scope customizations to a workspace, so only API keys in that workspace can make requests that use them- **Workspace cost control**: limits set at the workspace level, so you can give a workspace a budget
+- **Workspace-scoped customizations**: the ability to scope customizations to a workspace, so only API keys in that workspace can make requests that use them
+- **Workspace cost control**: limits set at the workspace level, so you can give a workspace a budget
 
 ## FAQ
 
