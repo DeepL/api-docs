@@ -1,0 +1,102 @@
+---
+title: "Managing API Workspaces (Beta)"
+sidebarTitle: "Managing Workspaces"
+description: "Create API workspaces, create keys inside them, and track workspace-level usage in the DeepL account UI."
+public: true
+---
+
+A workspace is a named group of API keys with its own usage view. Use workspaces to separate keys by team, product, or environment and see how much each group consumes, without leaving your subscription. You manage workspaces in the ["API Workspaces" tab](https://www.deepl.com/your-account/api-workspaces) of your DeepL account.
+
+<Note>
+API Workspaces are currently in private beta. To request access, contact your customer success manager. See [Alpha and beta features](/docs/resources/alpha-and-beta-features) for what beta status means.
+</Note>
+
+<Frame caption="The API Workspaces tab">
+![](/_assets/images/api-workspaces-list.png)
+</Frame>
+
+## How workspaces work
+
+- A key created in a workspace is owned by that workspace permanently. You can't move it to another workspace or to another account
+- You can't add existing keys to a workspace. Create new keys inside the workspace instead
+- Keys created outside a workspace stay outside. They appear only in the "API Keys & Limits" tab
+- Your subscription's key limit applies across all keys, whether or not they belong to a workspace. Workspaces don't have their own key limits
+- There's no limit on the number of workspaces you can create
+
+Subscription-level [cost control](/docs/best-practices/cost-control) applies across workspace usage. Workspaces don't have separate usage limits.
+
+## Create a workspace
+
+Click "New workspace", enter a name, and optionally add a description. The name is required.
+
+<Frame caption="Creating a workspace">
+![](/_assets/images/api-workspaces-create-modal.png)
+</Frame>
+
+Click "Create workspace". DeepL opens the new workspace on its "API keys" subtab, where you can create keys.
+
+## Create keys in a workspace
+
+On the workspace's "API keys" subtab, click "Create key". Creating a key works the same way as in the "API Keys & Limits" tab; see [Create a key](/docs/admin/managing-api-keys#create-a-key).
+
+<Warning>
+A key belongs to its workspace for as long as it exists. If you create a key in the wrong workspace, deactivate it and create a new one in the right workspace.
+</Warning>
+
+<Frame caption="The API keys subtab of a new workspace">
+![](/_assets/images/api-workspaces-keys-empty.png)
+</Frame>
+
+Workspace keys support the same actions as other developer keys: [copy](/docs/admin/managing-api-keys#copy-a-key), [rename](/docs/admin/managing-api-keys#rename-a-key), [deactivate](/docs/admin/managing-api-keys#deactivate-a-key), [set a usage limit](/docs/admin/managing-api-keys#set-a-key-level-usage-limit), and [set permissions](/docs/admin/managing-api-keys#set-key-permissions).
+
+## Find a key's workspace
+
+The ["API Keys & Limits" tab](https://www.deepl.com/your-account/keys) has a "Workspace" column. If a workspace owns the key, the column shows the workspace name. Click the name to open that workspace's "API keys" subtab. Keys without a workspace show a dash.
+
+<Frame caption="The Workspace column in the API Keys & Limits tab">
+![](/_assets/images/api-workspaces-keys-column.png)
+</Frame>
+
+## View workspace usage
+
+Open a workspace and select its "Usage" subtab to see consumption for the keys the workspace owns. The tab shows:
+
+- Usage for the current monthly usage period, broken out by text translation, document translation, text improvement (Write), speech-to-text (STT) minutes, and speech-to-speech (STS) minutes
+- Usage for your yearly billing period, if you're on a yearly plan
+- A usage-over-time chart, with a selectable period and frequency, and a toggle between characters, STT minutes, and STS minutes
+
+This tab mirrors the [API Usage tab](/docs/admin/retrieving-usage-data#api-usage-tab), with one difference: it doesn't show included characters, because workspaces don't have their own character allowance.
+
+<Frame caption="The Usage subtab of a workspace">
+![](/_assets/images/api-workspaces-usage.png)
+</Frame>
+
+## Edit a workspace
+
+Open the options menu ("...") on a workspace row:
+
+- **View** opens the workspace's "API keys" subtab
+- **Edit** lets you change the workspace name and description
+
+To find a workspace, search by name or sort the list by name or creation date. You can't delete or archive a workspace. To stop a workspace from consuming usage, [deactivate its keys](/docs/admin/managing-api-keys#deactivate-a-key).
+
+<Frame caption="Workspace options menu">
+![](/_assets/images/api-workspaces-row-menu.png)
+</Frame>
+
+## Manage workspaces programmatically
+
+Workspaces are currently managed in the account UI only. The [Admin API](/docs/admin/overview#the-admin-api) doesn't create workspaces or create keys inside them yet.
+
+## Planned capabilities
+
+These capabilities are planned for API Workspaces. They aren't available in the beta, and release timing isn't set.
+
+- **Workspace roles**: roles with fewer permissions than admin, so you can invite a user to one workspace or a set of workspaces without giving them access to every API key and all usage data
+- **Workspace-scoped customizations**: the ability to scope customizations to a workspace, so only API keys in that workspace can make requests that use them- **Workspace cost control**: limits set at the workspace level, so you can give a workspace a budget
+
+## FAQ
+
+#### Are customizations scoped to a workspace?
+
+No. Customizations, such as glossaries, style rules, and translation memories, are subscription-wide. Any active API key in your subscription can use any of them, whether or not the key belongs to a workspace. Scoping customizations to a workspace is a [planned capability](#planned-capabilities).
