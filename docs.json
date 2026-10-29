@@ -211,6 +211,7 @@
           "docs/admin/overview",
           "docs/admin/quickstart",
           "docs/admin/managing-api-keys",
+          "docs/admin/managing-workspaces",
           "docs/admin/api-key-permissions",
           "docs/admin/permission-scopes",
           "docs/admin/retrieving-usage-data"

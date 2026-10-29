@@ -9,6 +9,11 @@ rss: true
 </Update>
 
 <Update label="October 2026">
+## October 29 - API Workspaces (Beta)
+- API Workspaces let you group API keys into named workspaces and see usage for each workspace in your DeepL account. Use them to separate keys by team, product, or environment.
+- Keys created in a workspace belong to it permanently, and subscription-level key limits and cost control still apply across all keys.
+- API Workspaces are in private beta. To request access, contact your customer success manager. See [Managing API Workspaces](/docs/admin/managing-workspaces) for details.
+
 ## October 28 - Glossaries Without an Explicit Source Language
 - [`POST /v2/translate`](/api-reference/translate/request-translation) now accepts `glossary_id` or `glossary_ids` without `source_lang`. Glossaries apply terminology you define to a translation. When you omit `source_lang`, DeepL detects the source language and applies the glossary's dictionary for the detected language pair, and `detected_source_language` in the response reports which one was used.
 - The request returns a `400` if the glossary has no dictionary for the detected language pair.
