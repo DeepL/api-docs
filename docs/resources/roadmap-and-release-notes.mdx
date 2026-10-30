@@ -10,8 +10,8 @@ rss: true
 
 <Update label="October 2026">
 ## October 29 - Higher Character Limit Per Document
-- Documents submitted with [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) on DeepL API paid plans can now contain up to 5 million characters, increased from 1 million. The limit applies to API submissions only — uploads through the DeepL web app and desktop apps keep their existing limits.
-- Formats with a smaller upload cap can't reach 5 million characters (for example Text at 1 MB), so their effective limit stays lower. See [Usage and limits](/docs/resources/usage-limits) for the limit that applies to each format.
+- Documents submitted with [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) on DeepL API paid plans can now contain up to 5 million characters, increased from 1 million. The limit applies to the document as a whole, not to each format or part.
+- The change applies to API submissions only — uploads through the DeepL web app and desktop apps keep their existing limits. File size limits per format are unchanged. See [Usage and limits](/docs/resources/usage-limits).
 
 ## October 28 - Glossaries Without an Explicit Source Language
 - [`POST /v2/translate`](/api-reference/translate/request-translation) now accepts `glossary_id` or `glossary_ids` without `source_lang`. Glossaries apply terminology you define to a translation. When you omit `source_lang`, DeepL detects the source language and applies the glossary's dictionary for the detected language pair, and `detected_source_language` in the response reports which one was used.
