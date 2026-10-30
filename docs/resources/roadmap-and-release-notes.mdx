@@ -9,6 +9,10 @@ rss: true
 </Update>
 
 <Update label="October 2026">
+## October 29 - Higher Character Limit Per Document
+- Documents submitted with [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) on DeepL API paid plans can now contain up to 5 million characters for Word, PowerPoint, and PDF, increased from 1 million. Other formats keep their existing per-document character limit.
+- The change applies to API submissions only — uploads through the DeepL web app and desktop apps keep their existing limits. See [Usage and limits](/docs/resources/usage-limits) for the per-format table.
+
 ## October 28 - Glossaries Without an Explicit Source Language
 - [`POST /v2/translate`](/api-reference/translate/request-translation) now accepts `glossary_id` or `glossary_ids` without `source_lang`. Glossaries apply terminology you define to a translation. When you omit `source_lang`, DeepL detects the source language and applies the glossary's dictionary for the detected language pair, and `detected_source_language` in the response reports which one was used.
 - The request returns a `400` if the glossary has no dictionary for the detected language pair.
@@ -134,7 +138,7 @@ rss: true
 ## July 7 - New Document Formats and Higher File Size Limits
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now supports five additional file formats: `idml` (Adobe InDesign), `xml`, `json`, `dita` (DITA topics), and `mif` (Adobe FrameMaker).
 - XLIFF support has been expanded to versions 1.2, 2.0, and 2.1 (previously 2.1 only).
-- File size limits on DeepL API Pro have increased to 100 MB for Word (`.docx`), PowerPoint (`.pptx`), and PDF (`.pdf`). See [Usage and limits](/docs/resources/usage-limits) for the full per-format table.
+- File size limits on DeepL API Pro have increased to 100 MB for Word, PowerPoint, and PDF. See [Usage and limits](/docs/resources/usage-limits) for the full per-format table.
 - See [document translation best practices](/docs/best-practices/document-translations) for format-specific guidance and known constraints.
 
 ## July 2 - New Voice API Languages: Hindi, Malay, and Tamil

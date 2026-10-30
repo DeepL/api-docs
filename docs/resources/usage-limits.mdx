@@ -12,13 +12,15 @@ description: "Request size, header, and character limits for the DeepL API, plus
 
 ### Maximum Upload Limits Per Document Format
 
+The maximum upload size and the per-document character limit depend on the format and your plan:
+
 | File Format                     | DeepL API - free plans         | DeepL API - paid plans           |
 | --------------------------------| ------------------------------ | -------------------------------- |
-| Word (.docx / .doc)             | 10 MB<br />500,000 characters  | 100 MB<br />1 million characters |
-| PowerPoint (.pptx)              | 10 MB <br />500,000 characters | 100 MB<br />1 million characters |
+| Word (.docx / .doc)             | 10 MB<br />500,000 characters  | 100 MB<br />5 million characters |
+| PowerPoint (.pptx)              | 10 MB <br />500,000 characters | 100 MB<br />5 million characters |
 | Excel (.xlsx)                   | 10 MB <br />500,000 characters | 30 MB<br />1 million characters  |
 | Excel Macro-Enabled (.xlsm)\*\* | 10 MB <br />500,000 characters | 30 MB<br />1 million characters  |
-| PDF (.pdf)                      | 10 MB <br />500,000 characters | 100 MB<br />1 million characters |
+| PDF (.pdf)                      | 10 MB <br />500,000 characters | 100 MB<br />5 million characters |
 | Text (.txt)                     | 1 MB<br />500,000 characters   | 1 MB <br />1 million characters  |
 | HTML (.html)                    | 5 MB<br />500,000 characters   | 5 MB<br />1 million characters   |
 | IDML (.idml)                    | 10 MB<br />500,000 characters  | 30 MB<br />1 million characters  |
@@ -41,6 +43,10 @@ description: "Request size, header, and character limits for the DeepL API, plus
 
 *DeepL supports XLIFF versions 1.2, 2.0, and 2.1 (2.1 shares the 2.0 core namespace).<br />
 **Currently in Beta. During the Beta phase, characters translated in these file formats are not billed and not counted against your character threshold.
+
+<Note>
+These limits apply to documents submitted through the DeepL API. Uploads through the DeepL web app and desktop apps use separate limits.
+</Note>
 
 ### Your Usage
 
