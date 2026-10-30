@@ -12,39 +12,37 @@ description: "Request size, header, and character limits for the DeepL API, plus
 
 ### Maximum Upload Limits Per Document Format
 
-The maximum file size depends on the format and your plan. The per-document character limit is shown below the table:
+The maximum upload size and the per-document character limit depend on the format and your plan:
 
-| File Format                     | DeepL API - free plans         | DeepL API - paid plans           |
-| --------------------------------| ------------------------------ | -------------------------------- |
-| Word (.docx / .doc)             | 10 MB  | 100 MB |
-| PowerPoint (.pptx)              | 10 MB  | 100 MB |
-| Excel (.xlsx)                   | 10 MB  | 30 MB  |
-| Excel Macro-Enabled (.xlsm)\*\* | 10 MB  | 30 MB  |
-| PDF (.pdf)                      | 10 MB  | 100 MB |
-| Text (.txt)                     | 1 MB   | 1 MB   |
-| HTML (.html)                    | 5 MB   | 5 MB   |
-| IDML (.idml)                    | 10 MB  | 30 MB  |
-| MIF (.mif)                      | 10 MB  | 30 MB  |
-| XML (.xml)                      | 10 MB  | 10 MB  |
-| JSON (.json)                    | 1 MB   | 1 MB   |
-| YAML (.yaml / .yml)\*\*         | 1 MB   | 1 MB   |
-| Java Properties (.properties)\*\*| 1 MB  | 1 MB   |
-| iOS/macOS Strings (.strings)\*\*| 1 MB   | 1 MB   |
-| Markdown (.md / .markdown)\*\*  | 1 MB   | 1 MB   |
-| DITA (.dita)                    | 5 MB   | 5 MB   |
-| XLIFF (.xlf/.xliff)\*           | 10 MB  | 10 MB  |
-| SRT (.srt)                      | 150 KB | 150 KB |
-| WebVTT (.vtt)\*\*               | 150 KB | 150 KB |
-| SCORM (.zip)\*\*                | 10 MB  | 10 MB  |
-| RESX (.resx)\*\*                | 1 MB   | 1 MB   |
-| ODT (.odt)\*\*                  | 10 MB  | 30 MB  |
-| RTF (.rtf)\*\*                  | 10 MB  | 30 MB  |
-| Images (.jpeg/.png)\*\*         | 3 MB   | 3 MB   |
+| File Format                     | DeepL API - free plans          | DeepL API - paid plans            |
+| --------------------------------| ------------------------------- | --------------------------------- |
+| Word (.docx / .doc)             | 10 MB<br />500,000 characters   | 100 MB<br />5 million characters  |
+| PowerPoint (.pptx)              | 10 MB<br />500,000 characters   | 100 MB<br />5 million characters  |
+| Excel (.xlsx)                   | 10 MB<br />500,000 characters   | 30 MB<br />1 million characters   |
+| Excel Macro-Enabled (.xlsm)\*\* | 10 MB<br />500,000 characters   | 30 MB<br />1 million characters   |
+| PDF (.pdf)                      | 10 MB<br />500,000 characters   | 100 MB<br />5 million characters  |
+| Text (.txt)                     | 1 MB<br />500,000 characters    | 1 MB<br />1 million characters    |
+| HTML (.html)                    | 5 MB<br />500,000 characters    | 5 MB<br />1 million characters    |
+| IDML (.idml)                    | 10 MB<br />500,000 characters   | 30 MB<br />1 million characters   |
+| MIF (.mif)                      | 10 MB<br />500,000 characters   | 30 MB<br />1 million characters   |
+| XML (.xml)                      | 10 MB<br />500,000 characters   | 10 MB<br />1 million characters   |
+| JSON (.json)                    | 1 MB<br />500,000 characters    | 1 MB<br />1 million characters    |
+| YAML (.yaml / .yml)\*\*         | 1 MB<br />500,000 characters    | 1 MB<br />1 million characters    |
+| Java Properties (.properties)\*\*| 1 MB<br />500,000 characters   | 1 MB<br />1 million characters    |
+| iOS/macOS Strings (.strings)\*\*| 1 MB<br />500,000 characters    | 1 MB<br />1 million characters    |
+| Markdown (.md / .markdown)\*\*  | 1 MB<br />500,000 characters    | 1 MB<br />1 million characters    |
+| DITA (.dita)                    | 5 MB<br />500,000 characters    | 5 MB<br />1 million characters    |
+| XLIFF (.xlf/.xliff)\*           | 10 MB<br />500,000 characters   | 10 MB<br />1 million characters   |
+| SRT (.srt)                      | 150 KB<br />500,000 characters  | 150 KB<br />1 million characters  |
+| WebVTT (.vtt)\*\*               | 150 KB<br />500,000 characters  | 150 KB<br />1 million characters  |
+| SCORM (.zip)\*\*                | 10 MB<br />500,000 characters   | 10 MB<br />1 million characters   |
+| RESX (.resx)\*\*                | 1 MB<br />500,000 characters    | 1 MB<br />1 million characters    |
+| ODT (.odt)\*\*                  | 10 MB<br />500,000 characters   | 30 MB<br />1 million characters   |
+| RTF (.rtf)\*\*                  | 10 MB<br />500,000 characters   | 30 MB<br />1 million characters   |
+| Images (.jpeg/.png)\*\*         | 3 MB<br />500,000 characters    | 3 MB<br />1 million characters    |
 
 *DeepL supports XLIFF versions 1.2, 2.0, and 2.1 (2.1 shares the 2.0 core namespace).<br />
 **Currently in Beta. During the Beta phase, characters translated in these file formats are not billed and not counted against your character threshold.
-
-Separately from file size, a single document submitted via the API can contain up to 500,000 characters on free plans and up to 5 million characters on paid plans (previously 1 million). The limit applies to the document as a whole, not to each format or part.
 
 <Note>
 These limits apply to documents submitted through the DeepL API. Uploads through the DeepL web app and desktop apps use separate limits.
