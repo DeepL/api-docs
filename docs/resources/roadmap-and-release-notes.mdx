@@ -8,6 +8,13 @@ rss: true
 - Editing the contents of an existing [translation memory](/docs/customize/using-translation-memories) via API
 </Update>
 
+<Update label="November 2026">
+## November 2 - Custom Instructions for Document Translation
+- [Custom instructions](/docs/customize/custom-instructions) are natural language directives, such as "Use a friendly, diplomatic tone", that guide how DeepL translates. [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accepts them in the `custom_instructions` parameter, as they already work in text translation.
+- Send the instructions as a JSON array of strings in a single form field, for example `["Use a friendly, diplomatic tone"]`. The same limits as text translation apply: up to 10 instructions, each with a maximum of 300 characters.
+- The upload is rejected with `400` if the value is not a JSON array of strings, exceeds these limits, or is combined with `style_profile_id`.
+</Update>
+
 <Update label="October 2026">
 ## October 29 - Higher Character Limit Per Document
 - Documents submitted with [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) on DeepL API paid plans can now contain up to 5 million characters for Word, PowerPoint, and PDF, increased from 1 million. Other formats keep their existing per-document character limit.
