@@ -13,6 +13,11 @@ rss: true
 - [Custom instructions](/docs/customize/custom-instructions) are natural language directives, such as "Use a friendly, diplomatic tone", that guide how DeepL translates. [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now accepts them in the `custom_instructions` parameter, as they already work in text translation.
 - Send the instructions as a JSON array of strings in a single form field, for example `["Use a friendly, diplomatic tone"]`. The same limits as text translation apply: up to 10 instructions, each with a maximum of 300 characters.
 - The upload is rejected with `400` if the value is not a JSON array of strings, exceeds these limits, or is combined with `style_profile_id`.
+
+## November 2 - New File Formats Generally Available
+- Ten formats introduced in beta on September 29 — `xlsm` (macro-enabled Excel), `zip` (SCORM e-learning packages), `vtt` (WebVTT subtitles), `yaml` / `yml`, `properties` (Java properties), `strings` (iOS/macOS strings), `md` / `markdown`, `resx` (.NET resources), `odt` (OpenDocument Text), and `rtf` (Rich Text Format) — plus `jpeg` / `png` image translation, are now generally available in [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document). They are no longer marked beta.
+- During beta these formats were not billed. They now count toward your character usage, with the billing rules below.
+- Billing: document-like formats (`.docx`, `.doc`, `.pptx`, `.xlsx`, `.xlsm`, `.pdf`, `.odt`, `.rtf`, SCORM `.zip`, `.jpeg`/`.jpg`/`.png`, `.idml`, `.mif`) are billed a minimum of 50,000 characters per document. Text-like formats (`.txt`, `.htm`/`.html`, `.xml`, `.json`, `.yaml`/`.yml`, `.properties`, `.strings`, `.md`/`.markdown`, `.dita`, `.xlf`/`.xliff`, `.srt`, `.vtt`, `.resx`) are billed for their exact character count. See [Billing minimums](/docs/best-practices/document-translations#billing-minimums).
 </Update>
 
 <Update label="October 2026">
