@@ -16,6 +16,10 @@ rss: true
 </Update>
 
 <Update label="October 2026">
+## November 2 - New File Formats Generally Available
+- Ten formats introduced in beta on September 29 — `xlsm` (macro-enabled Excel), `zip` (SCORM e-learning packages), `vtt` (WebVTT subtitles), `yaml` / `yml`, `properties` (Java properties), `strings` (iOS/macOS strings), `md` / `markdown`, `resx` (.NET resources), `odt` (OpenDocument Text), and `rtf` (Rich Text Format) — plus `jpeg` / `png` image translation, are now generally available in [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document). They are no longer marked beta and are now billed like other formats.
+- Billing: document-like formats (`.docx`, `.doc`, `.pptx`, `.xlsx`, `.xlsm`, `.pdf`, `.odt`, `.rtf`, SCORM `.zip`, `.jpeg`/`.png`, `.idml`, `.mif`) are billed a minimum of 50,000 characters per document. Text-like formats (`.txt`, `.html`, `.xml`, `.json`, `.yaml`/`.yml`, `.properties`, `.strings`, `.md`, `.dita`, `.xlf`/`.xliff`, `.srt`, `.vtt`, `.resx`) are billed for their exact character count. See [Billing minimums](/docs/best-practices/document-translations#billing-minimums).
+
 ## October 29 - Higher Character Limit Per Document
 - Documents submitted with [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) on DeepL API paid plans can now contain up to 5 million characters for Word, PowerPoint, and PDF, increased from 1 million. Other formats keep their existing per-document character limit.
 - The change applies to API submissions only — uploads through the DeepL web app and desktop apps keep their existing limits. See [Usage and limits](/docs/resources/usage-limits) for the per-format table.
