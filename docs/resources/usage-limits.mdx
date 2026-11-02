@@ -19,7 +19,7 @@ The maximum upload size and the per-document character limit depend on the forma
 | Word (.docx / .doc)             | 10 MB<br />500,000 characters  | 100 MB<br />5 million characters |
 | PowerPoint (.pptx)              | 10 MB <br />500,000 characters | 100 MB<br />5 million characters |
 | Excel (.xlsx)                   | 10 MB <br />500,000 characters | 30 MB<br />1 million characters  |
-| Excel Macro-Enabled (.xlsm)\*\* | 10 MB <br />500,000 characters | 30 MB<br />1 million characters  |
+| Excel Macro-Enabled (.xlsm)     | 10 MB <br />500,000 characters | 30 MB<br />1 million characters  |
 | PDF (.pdf)                      | 10 MB <br />500,000 characters | 100 MB<br />5 million characters |
 | Text (.txt)                     | 1 MB<br />500,000 characters   | 1 MB <br />1 million characters  |
 | HTML (.html)                    | 5 MB<br />500,000 characters   | 5 MB<br />1 million characters   |
@@ -27,22 +27,23 @@ The maximum upload size and the per-document character limit depend on the forma
 | MIF (.mif)                      | 10 MB<br />500,000 characters  | 30 MB<br />1 million characters  |
 | XML (.xml)                      | 10 MB<br />500,000 characters  | 10 MB<br />1 million characters  |
 | JSON (.json)                    | 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
-| YAML (.yaml / .yml)\*\*         | 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
-| Java Properties (.properties)\*\*| 1 MB<br />500,000 characters  | 1 MB<br />1 million characters   |
-| iOS/macOS Strings (.strings)\*\*| 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
-| Markdown (.md / .markdown)\*\*  | 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
+| YAML (.yaml / .yml)             | 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
+| Java Properties (.properties)   | 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
+| iOS/macOS Strings (.strings)    | 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
+| Markdown (.md / .markdown)      | 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
 | DITA (.dita)                    | 5 MB<br />500,000 characters   | 5 MB<br />1 million characters   |
 | XLIFF (.xlf/.xliff)\*           | 10 MB<br />500,000 characters  | 10 MB<br />1 million characters  |
 | SRT (.srt)                      | 150 KB<br />500,000 characters | 150 KB<br />1 million characters |
-| WebVTT (.vtt)\*\*               | 150 KB<br />500,000 characters | 150 KB<br />1 million characters |
-| SCORM (.zip)\*\*                | 10 MB<br />500,000 characters  | 10 MB<br />1 million characters  |
-| RESX (.resx)\*\*                | 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
-| ODT (.odt)\*\*                  | 10 MB<br />500,000 characters  | 30 MB<br />1 million characters  |
-| RTF (.rtf)\*\*                  | 10 MB<br />500,000 characters  | 30 MB<br />1 million characters  |
-| Images (.jpeg/.png)\*\*         | 3 MB<br />500,000 characters   | 3 MB<br />1 million characters   |
+| WebVTT (.vtt)                   | 150 KB<br />500,000 characters | 150 KB<br />1 million characters |
+| SCORM (.zip)                    | 10 MB<br />500,000 characters  | 10 MB<br />1 million characters  |
+| RESX (.resx)                    | 1 MB<br />500,000 characters   | 1 MB<br />1 million characters   |
+| ODT (.odt)                      | 10 MB<br />500,000 characters  | 30 MB<br />1 million characters  |
+| RTF (.rtf)                      | 10 MB<br />500,000 characters  | 30 MB<br />1 million characters  |
+| Images (.jpeg/.jpg/.png)        | 3 MB<br />500,000 characters   | 3 MB<br />1 million characters   |
 
-*DeepL supports XLIFF versions 1.2, 2.0, and 2.1 (2.1 shares the 2.0 core namespace).<br />
-Document-like formats (`.docx`, `.doc`, `.pptx`, `.xlsx`, `.xlsm`, `.pdf`, `.odt`, `.rtf`, SCORM `.zip`, `.jpeg`/`.png`, `.idml`, `.mif`) are billed a minimum of 50,000 characters per document; text-like formats are billed for their exact character count. See [Document translations](/docs/best-practices/document-translations#billing-minimums).
+*DeepL supports XLIFF versions 1.2, 2.0, and 2.1 (2.1 shares the 2.0 core namespace).
+
+Document-like formats (`.docx`, `.doc`, `.pptx`, `.xlsx`, `.xlsm`, `.pdf`, `.odt`, `.rtf`, SCORM `.zip`, `.jpeg`/`.jpg`/`.png`, `.idml`, `.mif`) are billed a minimum of 50,000 characters per document; text-like formats (`.txt`, `.htm`/`.html`, `.xml`, `.json`, `.yaml`/`.yml`, `.properties`, `.strings`, `.md`/`.markdown`, `.dita`, `.xlf`/`.xliff`, `.srt`, `.vtt`, `.resx`) are billed for their exact character count. See [Document translations](/docs/best-practices/document-translations#billing-minimums).
 
 <Note>
 These limits apply to documents submitted through the DeepL API. Uploads through the DeepL web app and desktop apps use separate limits.
