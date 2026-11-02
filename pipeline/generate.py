@@ -30,14 +30,7 @@ from pathlib import Path
 
 import yaml
 
-try:
-    import anthropic
-except ImportError:
-    print("Install the Anthropic SDK: pip install anthropic")
-    sys.exit(1)
-
-
-from util import build_authoring_system_prompt
+from util import build_authoring_system_prompt, looks_like_mdx, format_retry_prompt
 from open_prs import EXIT_NOTHING_TO_DO, fetch_open_prs, split_claimed_gaps
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -72,6 +65,21 @@ def load_file(path):
         return path.read_text(encoding="utf-8")
     except FileNotFoundError:
         return ""
+
+
+def load_existing_page(gap):
+    """Content of the page a gap edits. Raises rather than returning nothing.
+
+    An empty read would turn "expand this page" into "write one from scratch"
+    and silently discard the real content.
+    """
+    page_path = REPO_ROOT / gap.get("path", "")
+    if not page_path.is_file():
+        raise FileNotFoundError(f"no file at '{gap.get('path', '')}' for {gap['type']} gap")
+    content = load_file(page_path)
+    if not content.strip():
+        raise ValueError(f"{gap['path']} is empty, refusing to rewrite it from nothing")
+    return content
 
 
 def load_openapi_for_tags(tags):
@@ -134,6 +142,20 @@ def find_existing_docs_for_family(family_name):
                 context_docs[pp + ext] = load_file(full_path)
                 break
     return context_docs
+
+
+def make_client():
+    """Build the API client, importing the SDK only when a call is imminent.
+
+    Kept lazy so --dry-run, gap detection and the tests all work without the
+    SDK installed. None of them talk to the model.
+    """
+    try:
+        import anthropic
+    except ImportError:
+        print("Install the Anthropic SDK: pip install anthropic")
+        sys.exit(1)
+    return anthropic.Anthropic()
 
 
 def build_system_prompt():
@@ -208,7 +230,7 @@ Follow the docs-writer guidelines exactly.
 
     elif gap_type == "thin_page":
         page_path = gap.get("path", "")
-        page_content = load_file(REPO_ROOT / page_path)
+        page_content = load_existing_page(gap)
         return f"""Expand this thin page. It currently has only {gap.get('word_count', 0)} words.
 
 Current content of {page_path}:
@@ -225,7 +247,7 @@ Follow the docs-writer guidelines exactly.
 
     elif gap_type == "missing_code_examples":
         page_path = gap.get("path", "")
-        page_content = load_file(REPO_ROOT / page_path)
+        page_content = load_existing_page(gap)
         return f"""Add code examples to this page. It's a guide but has no runnable code.
 
 Current content of {page_path}:
@@ -242,7 +264,7 @@ Follow the docs-writer guidelines exactly.
 
     elif gap_type == "missing_description":
         page_path = gap.get("path", "")
-        page_content = load_file(REPO_ROOT / page_path)[:500]
+        page_content = load_existing_page(gap)[:500]
         return f"""Generate a frontmatter description for this page.
 
 Current content of {page_path} (first 500 chars):
@@ -266,15 +288,44 @@ Follow the docs-writer guidelines exactly.
 {existing_docs_summary}"""
 
 
-def generate_content(client, system_prompt, user_prompt):
-    """Call Claude to generate content."""
+def _complete(client, system_prompt, messages):
     response = client.messages.create(
         model=MODEL,
         max_tokens=MAX_TOKENS,
         system=system_prompt,
-        messages=[{"role": "user", "content": user_prompt}],
+        messages=messages,
     )
     return response.content[0].text
+
+
+def generate_content(client, system_prompt, user_prompt, expect_file=True):
+    """Call Claude to generate content.
+
+    A reply that isn't a page gets one corrective turn rather than failing the
+    run. The docs-writer guidelines are written for a harness with tools, so the
+    model occasionally obliges by narrating research it cannot do and returns a
+    transcript instead of a file. If the second reply is still not a page, raise:
+    main() records that as an error for this gap alone, whereas writing it as a
+    draft would fail evaluate for the whole run.
+    """
+    messages = [{"role": "user", "content": user_prompt}]
+    text = _complete(client, system_prompt, messages)
+
+    if not expect_file or looks_like_mdx(text) or not text.strip():
+        return text
+
+    print("  Reply was not a page (commentary or a faked tool transcript), asking again")
+    messages += [
+        # Echo a slice back rather than the whole thing: the bad reply can run to
+        # hundreds of lines and only needs to be identifiable.
+        {"role": "assistant", "content": text[:500].strip()},
+        {"role": "user", "content": format_retry_prompt(
+            "it did not start with YAML frontmatter (---)")},
+    ]
+    text = _complete(client, system_prompt, messages)
+    if not looks_like_mdx(text):
+        raise ValueError("reply was still not a page after one corrective turn")
+    return text
 
 
 def determine_output_path(gap, family_name, content=None):
@@ -426,7 +477,7 @@ def main():
             print()
         return 0
 
-    client = anthropic.Anthropic()
+    client = make_client()
     system_prompt = build_system_prompt()
 
     run_id = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
@@ -454,7 +505,12 @@ def main():
             existing_docs = find_existing_docs_for_family(family)
             user_prompt = build_generation_prompt(gap, family, openapi_context, existing_docs)
 
-            content = generate_content(client, system_prompt, user_prompt)
+            # Every gap but missing_description wants a whole file back;
+            # missing_description wants a bare string, so don't shape-check it.
+            content = generate_content(
+                client, system_prompt, user_prompt,
+                expect_file=gap["type"] != "missing_description",
+            )
 
             if gap["type"] == "missing_description":
                 description = content.strip().strip('"').strip("'")

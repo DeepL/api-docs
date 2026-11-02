@@ -195,6 +195,12 @@
             "pages": [
               "docs/customize/using-translation-memories"
             ]
+          },
+          {
+            "group": "Style Profiles",
+            "pages": [
+              "docs/customize/using-style-profiles"
+            ]
           }
         ]
       },
@@ -293,6 +299,17 @@
                   "api-reference/spoken-terms/delete-spoken-terms",
                   "api-reference/spoken-terms/delete-spoken-terms-list",
                   "api-reference/spoken-terms/replace-or-create-term-list"
+                ],
+                "drilldown": false
+              },
+              {
+                "group": "Style Profiles",
+                "pages": [
+                  "api-reference/style-profiles/list-all-style-profiles",
+                  "api-reference/style-profiles/create-style-profile",
+                  "api-reference/style-profiles/get-style-profile",
+                  "api-reference/style-profiles/update-style-profile",
+                  "api-reference/style-profiles/delete-style-profile"
                 ],
                 "drilldown": false
               },
@@ -472,6 +489,10 @@
     }
   },
   "redirects": [
+    {
+      "source": "/docs/mcp-default-translator",
+      "destination": "https://support.deepl.com/hc/en-us/articles/29756767653788-Make-DeepL-your-default-translator-in-your-AI-assistant"
+    },
     {
       "source": "/docs/xml-and-html-handling/xml",
       "destination": "/docs/translate/translating-xml"
@@ -905,6 +926,9 @@
   },
   "seo": {
     "indexing": "navigable",
+    "metatags": {
+      "google-site-verification": "0VDGg3gJk53xL5burIUykHtV_eBhXTp5AMdzaeffbbU"
+    },
     "organization": {
       "id": "https://www.deepl.com/",
       "name": "DeepL",

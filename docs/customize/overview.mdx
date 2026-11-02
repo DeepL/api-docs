@@ -16,8 +16,9 @@ DeepL's customization features let you control terminology, style, and consisten
 | [Custom instructions](/docs/customize/custom-instructions) | Tone, phrasing, and domain-specific behavior via natural-language directives | Inline per request via `custom_instructions`, or stored in a style rule list |
 | [Translation memories](/docs/customize/using-translation-memories) | Reuse of your previously approved translations for matching segments | Stored on your account; passed per request via `translation_memory_id` |
 | [Spoken terms](/docs/customize/improving-transcription-with-spoken-terms) | Recognition of specific terms during Voice API speech transcription | Stored on your account; passed per voice session via `spoken_terms_id` |
+| [Style profiles](/docs/customize/using-style-profiles) | A named bundle of glossaries, style rules, and translation memories | Stored on your account; passed per request via `style_profile_id` instead of the individual parameters |
 
-Glossaries, style rules, custom instructions, and translation memories work with both [text translation](/docs/translate/translate-text-quickstart) and [document translation](/docs/translate/translate-documents-quickstart), support all `model_type` values, and can be combined in a single request. Spoken terms apply to [Voice API](/docs/voice/overview) sessions, where they can be combined with glossaries.
+Glossaries, style rules, custom instructions, and translation memories work with both [text translation](/docs/translate/translate-text-quickstart) and [document translation](/docs/translate/translate-documents-quickstart), support all `model_type` values, and can be combined in a single request. A style profile bundles glossaries, style rules, and translation memories under one ID for both text and document translation, and is used in place of the individual parameters. Spoken terms apply to [Voice API](/docs/voice/overview) sessions, where they can be combined with glossaries.
 
 <Warning>
 Glossaries and style rules are unique to each of DeepL's global data centers and are not shared between them. Clients using [regional endpoints](/docs/getting-started/regional-endpoints) can't access glossaries or style rules created in the UI at this time.
@@ -55,8 +56,11 @@ Here's when to use each customization feature for the best results. The [`contex
   <Card title="Improving Transcription with Spoken Terms" icon="microphone" href="/docs/customize/improving-transcription-with-spoken-terms">
     Keep company terms, acronyms, and names transcribed correctly in Voice API sessions.
   </Card>
+  <Card title="Using Style Profiles" icon="layer-group" href="/docs/customize/using-style-profiles">
+    Bundle glossaries, style rules, and translation memories under one ID and apply them in a single parameter.
+  </Card>
 </CardGroup>
 
 ## API reference
 
-Glossaries, style rules, and translation memories each have management endpoints under the [API Reference](/api-reference/multilingual-glossaries/create-a-glossary). If you're still on the deprecated v2 glossary endpoints, see [Glossary v2 vs v3 Endpoints](/docs/customize/glossary-v2-vs-v3-endpoints) for the differences and migration considerations.
+Glossaries, style rules, translation memories, and style profiles each have management endpoints under the [API Reference](/api-reference/multilingual-glossaries/create-a-glossary). If you're still on the deprecated v2 glossary endpoints, see [Glossary v2 vs v3 Endpoints](/docs/customize/glossary-v2-vs-v3-endpoints) for the differences and migration considerations.

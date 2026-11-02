@@ -1,0 +1,118 @@
+---
+title: "Using Style Profiles"
+description: "Bundle glossaries, style rule lists, and translation memories into a style profile and apply them to translations with the style_profile_id parameter."
+covers: [Customize]
+public: true
+---
+
+A style profile bundles the customizations you use together, such as the glossary, style rule list, and translation memory for one product or client, under a single ID. Instead of passing `glossary_ids`, `style_id`, and `translation_memory_id` with every request, you pass one `style_profile_id`. When the bundle changes, you update the profile, not your integration.
+
+A style profile can link:
+
+- **Glossaries**: any number, optionally with a priority order
+- **Style rule lists**: at most one per target language
+- **Translation memories**: at most one per source language
+
+Manage style profiles with the [style profiles endpoints](/api-reference/style-profiles/list-all-style-profiles), as shown below.
+
+## Create a style profile
+
+Send `POST /v3/style_profiles` a name and the IDs of the components to link. Only `name` is required, so you can also create an empty profile and link components later.
+
+```sh Example request
+curl -X POST https://api.deepl.com/v3/style_profiles \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Legal, German",
+    "description": "Contract wording for the German market.",
+    "industry": "Legal",
+    "glossary_ids": ["4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81"],
+    "style_rule_ids": ["bd0a38f3-1831-440b-a8dd-2c702e2325ab"],
+    "translation_memory_ids": ["a74d88fb-ed2a-4943-a664-a4512398b994"]
+}'
+```
+
+```json Example response
+{
+  "style_profile_id": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47",
+  "name": "Legal, German",
+  "description": "Contract wording for the German market.",
+  "industry": "Legal",
+  "glossary_ids": ["4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81"],
+  "style_rule_ids": ["bd0a38f3-1831-440b-a8dd-2c702e2325ab"],
+  "translation_memory_ids": ["a74d88fb-ed2a-4943-a664-a4512398b994"],
+  "glossary_priority_order_enabled": false,
+  "creation_time": "2026-04-01T16:34:25.223Z",
+  "updated_time": "2026-04-01T16:34:25.223Z"
+}
+```
+
+If one of the IDs doesn't exist or isn't accessible to your account, the request fails with `400 Bad Request` and no profile is created. The error message names the list that contains the bad ID, for example `Check 'glossary_ids'`.
+
+The glossaries, style rule lists, and translation memories you link don't have to share a language pair. A profile can hold an English and a Japanese style rule list at the same time, and each one is used only for its own target language.
+
+## Translate with a style profile
+
+Pass the `style_profile_id` in a [`/v2/translate`](/api-reference/translate/request-translation) or [`/v2/document`](/api-reference/document/upload-and-translate-a-document) request:
+
+```sh Example request
+curl -X POST https://api.deepl.com/v2/translate \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "text": ["The customer signed the contract."],
+    "target_lang": "DE",
+    "style_profile_id": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47"
+}'
+```
+
+DeepL picks the components that fit the request once the source language is known: the glossaries with a dictionary for the language pair, the style rule list for the target language, and the translation memory whose source language matches the text. A component that doesn't fit is left out without an error, so the same profile works for every language pair it covers. You don't need to set `source_lang`; language detection works as usual.
+
+<Warning>
+A style profile replaces the individual customization parameters. A request that combines `style_profile_id` with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`, or `translation_memory_threshold` is rejected with `400 Bad Request`. On `/v2/translate`, the same applies to `custom_instructions`.
+</Warning>
+
+If the style profile doesn't exist or your account can't access it, `/v2/translate` returns `404 Not Found`. `/v2/document` accepts the upload and reports the error in the [document status](/api-reference/document/check-document-status) with the message `Style profile not found.`.
+
+All `model_type` values are supported. Translation memories linked through a profile use the default matching threshold of 75.
+
+## Set the glossary priority
+
+When two linked glossaries define the same source term, enable `glossary_priority_order_enabled` to make the order of `glossary_ids` decide: the first glossary that defines the term wins. Without it, the order has no effect.
+
+```sh Example request
+curl -X PATCH https://api.deepl.com/v3/style_profiles/3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "glossary_ids": [
+      "4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81",
+      "7b2f6d84-3c15-4e90-8a72-d5e1490bc637"
+    ],
+    "glossary_priority_order_enabled": true
+}'
+```
+
+## Update a style profile
+
+[`PATCH /v3/style_profiles/{style_profile_id}`](/api-reference/style-profiles/update-style-profile) changes only the fields you send. Each component list you send replaces the linked list in full, so to add a glossary to a profile that already links two, send all three IDs. An empty list unlinks every component of that kind:
+
+```sh Example request
+curl -X PATCH https://api.deepl.com/v3/style_profiles/3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "translation_memory_ids": []
+}'
+```
+
+You don't need to update a profile when you delete one of its components. A deleted glossary, style rule list, or translation memory is removed from every profile that links it.
+
+To list or inspect profiles, use [`GET /v3/style_profiles`](/api-reference/style-profiles/list-all-style-profiles) or [`GET /v3/style_profiles/{style_profile_id}`](/api-reference/style-profiles/get-style-profile). [`DELETE /v3/style_profiles/{style_profile_id}`](/api-reference/style-profiles/delete-style-profile) removes the profile but leaves its components in place. Translation requests that still pass the deleted ID fail, so update your integration before deleting.
+
+## Limits
+
+- A style profile links at most one style rule list per target language and one translation memory per source language. Sending two for the same language is rejected with `400 Bad Request`
+- The number of style profiles per account depends on your plan. Creating one above the limit is rejected with `456`
+- `name` and `industry` are limited to 255 characters, `description` to 1000

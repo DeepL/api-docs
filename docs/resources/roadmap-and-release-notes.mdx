@@ -9,6 +9,20 @@ rss: true
 </Update>
 
 <Update label="October 2026">
+## October 29 - Higher Character Limit Per Document
+- Documents submitted with [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) on DeepL API paid plans can now contain up to 5 million characters for Word, PowerPoint, and PDF, increased from 1 million. Other formats keep their existing per-document character limit.
+- The change applies to API submissions only — uploads through the DeepL web app and desktop apps keep their existing limits. See [Usage and limits](/docs/resources/usage-limits) for the per-format table.
+
+## October 28 - Glossaries Without an Explicit Source Language
+- [`POST /v2/translate`](/api-reference/translate/request-translation) now accepts `glossary_id` or `glossary_ids` without `source_lang`. Glossaries apply terminology you define to a translation. When you omit `source_lang`, DeepL detects the source language and applies the glossary's dictionary for the detected language pair, and `detected_source_language` in the response reports which one was used.
+- The request returns a `400` if the glossary has no dictionary for the detected language pair.
+- Document translation still requires `source_lang` with a glossary, and the DeepL client libraries currently require it too. See [use a glossary with automatic source language detection](/docs/customize/managing-glossaries#use-a-glossary-with-automatic-source-language-detection).
+
+## October 20 - Style Profiles
+- A [style profile](/docs/customize/using-style-profiles) bundles the glossaries, style rule lists, and translation memories you use together under a single ID. Pass one `style_profile_id` in [`/v2/translate`](/api-reference/translate/request-translation) or [`/v2/document`](/api-reference/document/upload-and-translate-a-document) requests instead of the individual customization parameters, and update the profile when the bundle changes instead of your integration.
+- DeepL applies the components that fit each request: the glossaries for the language pair, the style rule list for the target language, and the translation memory for the source language. A profile can't be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`, `translation_memory_threshold`, or `custom_instructions` in the same request.
+- Create and manage profiles with the new [style profiles endpoints](/api-reference/style-profiles/list-all-style-profiles) under `/v3/style_profiles`.
+
 ## October 7 - Document Translation CSV Report
 - The document translation report is a CSV export of usage with one row per translated document. Each row shows the document type, source and target language, input and billed characters (including any billing minimum applied), and whether a glossary was used. Use it to trace document translation usage to individual documents; see the [CSV export section of the usage data guide](/docs/admin/retrieving-usage-data#csv-export) for how to download it.
 - Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
@@ -124,7 +138,7 @@ rss: true
 ## July 7 - New Document Formats and Higher File Size Limits
 - [`POST /v2/document`](/api-reference/document/upload-and-translate-a-document) now supports five additional file formats: `idml` (Adobe InDesign), `xml`, `json`, `dita` (DITA topics), and `mif` (Adobe FrameMaker).
 - XLIFF support has been expanded to versions 1.2, 2.0, and 2.1 (previously 2.1 only).
-- File size limits on DeepL API Pro have increased to 100 MB for Word (`.docx`), PowerPoint (`.pptx`), and PDF (`.pdf`). See [Usage and limits](/docs/resources/usage-limits) for the full per-format table.
+- File size limits on DeepL API Pro have increased to 100 MB for Word, PowerPoint, and PDF. See [Usage and limits](/docs/resources/usage-limits) for the full per-format table.
 - See [document translation best practices](/docs/best-practices/document-translations) for format-specific guidance and known constraints.
 
 ## July 2 - New Voice API Languages: Hindi, Malay, and Tamil

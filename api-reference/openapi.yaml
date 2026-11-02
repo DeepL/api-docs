@@ -9,7 +9,7 @@ info:
   contact:
     name: DeepL - Contact us
     url: https://www.deepl.com/contact-us
-  version: 3.13.0
+  version: 3.14.0
 externalDocs:
   description: DeepL Pro - Plans and pricing
   url: https://www.deepl.com/pro#developer
@@ -83,7 +83,9 @@ tags:
     (e.g. `EN-US`, `EN-GB`, `PT-PT`, `PT-BR`, or `ZH-HANS`).
     Dictionaries with target language `EN` can be used in translations with either English variant.
     Similarly `PT`, and `ZH` dictionaries can be used in translations with their corresponding variants.
-    (When you provide the ID of a glossary to a translation, the appropriate dictionary is automatically applied. Currently glossaries can not yet be used with source language detection.)
+    (When you provide the ID of a glossary to a translation, the appropriate dictionary is automatically applied.)
+
+    For text translation, if you omit `source_lang`, DeepL detects the source language and applies the dictionary for the detected language pair. Document translation with a glossary requires `source_lang`.
 
     Glossaries created via the DeepL API are now unified with glossaries created via the DeepL website and DeepL apps.
     Please only use the v3 glossary API in conjunction with multilingual or edited glossaries from the website.
@@ -98,6 +100,19 @@ tags:
     If you encounter issues, please let us know at support@DeepL.com.
 
     Currently you can create glossaries with any of the languages DeepL supports (with the exception of Thai).
+- name: ManageStyleProfiles
+  description: |-
+    The style profile endpoints allow you to create, inspect, edit and delete style profiles. A style
+    profile bundles glossaries, style rule lists and translation memories under one ID. Pass its
+    `style_profile_id` in a translation request instead of the individual customization parameters.
+
+    Every component list is optional, and you can link components later with an update. A style
+    profile can reference at most one style rule list per target language and at most one translation
+    memory per source language. With `glossary_priority_order_enabled`, the order of the glossary IDs
+    decides which glossary wins when two of them define the same source term.
+
+    Deleting a style profile does not delete the glossaries, style rule lists and translation memories it
+    links. Deleting one of those components removes it from every style profile that links it.
 - name: MetaInformation
   description: Information about API usage and value ranges
 - name: TranslationMemories
@@ -544,8 +559,9 @@ paths:
       summary: Set developer key usage limits as an admin
       operationId: adminSetDeveloperKeyUsageLimits
       description: |-
-        Set per-key usage limits for characters and speech-to-text milliseconds. Requests made
-        with the key fail with HTTP 456 once a limit is reached. Requires an Admin API key.
+        Set per-key usage limits for characters, speech-to-text milliseconds, and
+        speech-to-speech milliseconds. Requests made with the key fail with HTTP 456
+        once a limit is reached. Requires an Admin API key.
       requestBody:
         required: true
         content:
@@ -561,6 +577,8 @@ paths:
                   $ref: '#/components/schemas/ApiKeyUsageCharacters'
                 speech_to_text_milliseconds:
                   $ref: '#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds'
+                speech_to_speech_milliseconds:
+                  $ref: '#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds'
       responses:
         '200':
           description: The set usage limits function returns a JSON representation of the modified API key.
@@ -634,9 +652,12 @@ paths:
                   $ref: '#/components/schemas/ModelType'
                 glossary_id:
                   description: |-
-                    Specify the glossary to use for the translation. **Important:** This requires the `source_lang`
-                    parameter to be set. The language pair of the glossary has to match the language pair of the
-                    request.
+                    Specify the glossary to use for the translation. The glossary needs a dictionary for the
+                    language pair of the request.
+
+                    If `source_lang` is omitted, DeepL detects the source language and uses the dictionary for
+                    the detected language pair. The request returns a `400` if the glossary has no dictionary
+                    for that pair.
 
                     Cannot be used together with `glossary_ids`.
                   type: string
@@ -645,7 +666,11 @@ paths:
                   description: |-
                     Specify up to 5 glossaries to use for the translation, as an array of glossary IDs. Each glossary's matching terms are applied to the translation.
 
-                    **Important:** This requires the `source_lang` parameter to be set. Every listed glossary must contain a dictionary for the requested language pair.
+                    Every listed glossary must contain a dictionary for the requested language pair.
+
+                    If `source_lang` is omitted, DeepL detects the source language and every listed glossary must
+                    contain a dictionary for the detected language pair. A single glossary without a matching
+                    dictionary returns a `400` for the whole request.
 
                     Cannot be used together with `glossary_id`.
                   type: array
@@ -676,6 +701,22 @@ paths:
                   items:
                     type: string
                     example: "Use a friendly, diplomatic tone"
+                style_profile_id:
+                  description: |-
+                    Translate with a [style profile](/api-reference/style-profiles/list-all-style-profiles): its glossaries,
+                    style rule lists and translation memories through one ID. The profile is applied per text once the
+                    source language is known: the glossaries with a dictionary for the text's language pair, the style
+                    rule list for the target language, and the translation memories whose source language matches the
+                    text. A component that does not fit a text's language pair is left out for that text; this is not an
+                    error.
+
+                    Cannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,
+                    `translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected
+                    with `400 Bad Request`. A style profile that does not exist or that your account cannot access is
+                    rejected with `404 Not Found`.
+                  type: string
+                  format: uuid
+                  example: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
                 tag_handling:
                   $ref: '#/components/schemas/TagHandlingOption'
                 tag_handling_version:
@@ -740,9 +781,12 @@ paths:
                   $ref: '#/components/schemas/ModelType'
                 glossary_id:
                   description: |-
-                    Specify the glossary to use for the translation. **Important:** This requires the `source_lang`
-                    parameter to be set. The language pair of the glossary has to match the language pair of the
-                    request.
+                    Specify the glossary to use for the translation. The glossary needs a dictionary for the
+                    language pair of the request.
+
+                    If `source_lang` is omitted, DeepL detects the source language and uses the dictionary for
+                    the detected language pair. The request returns a `400` if the glossary has no dictionary
+                    for that pair.
 
                     Cannot be used together with `glossary_ids`.
                   type: string
@@ -751,7 +795,11 @@ paths:
                   description: |-
                     Comma-separated list of up to 5 glossary IDs to use for the translation. Each glossary's matching terms are applied to the translation. May also be sent as a repeated parameter.
 
-                    **Important:** This requires the `source_lang` parameter to be set. Every listed glossary must contain a dictionary for the requested language pair.
+                    Every listed glossary must contain a dictionary for the requested language pair.
+
+                    If `source_lang` is omitted, DeepL detects the source language and every listed glossary must
+                    contain a dictionary for the detected language pair. A single glossary without a matching
+                    dictionary returns a `400` for the whole request.
 
                     Cannot be used together with `glossary_id`.
                   type: array
@@ -763,6 +811,22 @@ paths:
                   $ref: '#/components/schemas/TranslationMemoryId'
                 translation_memory_threshold:
                   $ref: '#/components/schemas/TranslationMemoryThreshold'
+                style_profile_id:
+                  description: |-
+                    Translate with a [style profile](/api-reference/style-profiles/list-all-style-profiles): its glossaries,
+                    style rule lists and translation memories through one ID. The profile is applied per text once the
+                    source language is known: the glossaries with a dictionary for the text's language pair, the style
+                    rule list for the target language, and the translation memories whose source language matches the
+                    text. A component that does not fit a text's language pair is left out for that text; this is not an
+                    error.
+
+                    Cannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,
+                    `translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected
+                    with `400 Bad Request`. A style profile that does not exist or that your account cannot access is
+                    rejected with `404 Not Found`.
+                  type: string
+                  format: uuid
+                  example: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
                 tag_handling:
                   $ref: '#/components/schemas/TagHandlingOption'
                 outline_detection:
@@ -1005,6 +1069,8 @@ paths:
                   description: |-
                     A unique ID assigned to a glossary. To check glossary support for a language pair, call `GET /v3/languages?resource=translate_document` and verify the `glossary` feature key is present on both the source and target language.
 
+                    Requires the `source_lang` parameter. The request returns a `400` if `source_lang` is omitted.
+
                     Cannot be used together with `glossary_ids`.
                   type: string
                   example: def3a26b-3e84-45b3-84ae-0c0aaf3525f7
@@ -1012,7 +1078,9 @@ paths:
                   description: |-
                     Comma-separated list of up to 5 glossary IDs to use for the translation. Each glossary's matching terms are applied to the translated document. May also be sent as a repeated parameter.
 
-                    **Important:** This requires the `source_lang` parameter to be set. Every listed glossary must contain a dictionary for the requested language pair.
+                    Every listed glossary must contain a dictionary for the requested language pair.
+
+                    Requires the `source_lang` parameter. The request returns a `400` if `source_lang` is omitted.
 
                     Cannot be used together with `glossary_id`.
                   type: array
@@ -1041,6 +1109,21 @@ paths:
                     Rejected with `400` before the upload is accepted if the value is not a JSON array of strings or exceeds these limits.
                   type: string
                   example: '["Use a friendly, diplomatic tone"]'
+                style_profile_id:
+                  description: |-
+                    Translate with a [style profile](/api-reference/style-profiles/list-all-style-profiles): its glossaries,
+                    style rule lists and translation memories through one ID. The profile is applied once the
+                    document's source language is known: the glossaries with a dictionary for the language pair, the
+                    style rule list for the target language, and the translation memories whose source language matches
+                    the document. A component that does not fit the language pair is left out; this is not an error.
+
+                    Cannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id` or
+                    `translation_memory_threshold`. A request that combines them is rejected with `400 Bad Request`.
+                    A style profile that does not exist or that your account cannot access is not rejected at upload:
+                    the document status reports an error with the message `Style profile not found.`.
+                  type: string
+                  format: uuid
+                  example: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
                 enable_watermark:
                   description: |-
                     When `true`, adds a "Translated by DeepL" watermark to the translated document.
@@ -3790,6 +3873,538 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
       security:
       - auth_header: []
+  /v3/style_profiles:
+    get:
+      tags:
+      - ManageStyleProfiles
+      summary: List style profiles
+      operationId: listStyleProfiles
+      description: |-
+        Retrieve a list of style profiles available to the authenticated account, newest first.
+
+        The list includes style profiles that have been shared with the account.
+
+        Requires an API key with the `style_profiles:read` scope.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: The index of the first page to return. Use with `page_size` to get the next page of style profiles.
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: The maximum number of style profiles to return. Values above 100 are reduced to 100.
+      responses:
+        200:
+          description: Returns a list of style profiles.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  style_profiles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StyleProfile'
+                  total_count:
+                    type: integer
+                    description: The total number of style profiles available to the account.
+                    example: 2
+              examples:
+                Basic:
+                  value:
+                    style_profiles:
+                    - style_profile_id: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
+                      name: Legal, German
+                      description: Contract wording for the German market.
+                      industry: Legal
+                      glossary_ids:
+                      - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
+                      style_rule_ids:
+                      - bd0a38f3-1831-440b-a8dd-2c702e2325ab
+                      translation_memory_ids:
+                      - a74d88fb-ed2a-4943-a664-a4512398b994
+                      glossary_priority_order_enabled: true
+                      creation_time: '2026-04-01T16:34:25.223Z'
+                      updated_time: '2026-08-06T09:12:44.108Z'
+                    - style_profile_id: c58e2a71-90b4-4d6f-a2e3-71d5c8b4f902
+                      name: Marketing, Japanese
+                      glossary_ids: []
+                      style_rule_ids: []
+                      translation_memory_ids: []
+                      glossary_priority_order_enabled: false
+                      creation_time: '2026-07-14T11:02:09.640Z'
+                      updated_time: '2026-07-14T11:02:09.640Z'
+                    total_count: 2
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenScoped'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
+    post:
+      tags:
+      - ManageStyleProfiles
+      summary: Create a style profile
+      operationId: createStyleProfile
+      description: |-
+        Create a style profile. Only `name` is required.
+
+        If any of the component IDs cannot be used, the request fails and no style profile is created.
+
+        Requires an API key with the `style_profiles:write` scope.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  description: |-
+                    Name for the style profile. At most 255 characters. An empty name is rejected with
+                    `400 Bad Request`.
+                  type: string
+                  example: Legal, German
+                description:
+                  description: |-
+                    Free-text description of the style profile. At most 1000 characters. Omit it to create
+                    the style profile without a description.
+                  type: string
+                  example: Contract wording for the German market.
+                industry:
+                  description: |-
+                    The industry the style profile is written for. At most 255 characters. Omit it to create
+                    the style profile without an industry.
+                  type: string
+                  example: Legal
+                glossary_ids:
+                  description: |-
+                    The IDs of the glossaries to link, highest priority first. The order only takes effect
+                    with `glossary_priority_order_enabled`. Defaults to an empty list.
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example:
+                  - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
+                style_rule_ids:
+                  description: |-
+                    The IDs of the style rule lists to link. At most one style rule list per target
+                    language. Defaults to an empty list.
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example:
+                  - bd0a38f3-1831-440b-a8dd-2c702e2325ab
+                translation_memory_ids:
+                  description: |-
+                    The IDs of the translation memories to link. At most one translation memory per source
+                    language. Defaults to an empty list.
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example:
+                  - a74d88fb-ed2a-4943-a664-a4512398b994
+                glossary_priority_order_enabled:
+                  description: |-
+                    Whether the order of `glossary_ids` sets priority: when two linked glossaries define the
+                    same source term, the one listed first wins. When `false`, the order has no effect.
+                    Defaults to `false`.
+                  type: boolean
+                  default: false
+                  example: true
+            examples:
+              MetadataOnly:
+                summary: Metadata only
+                value:
+                  name: Marketing, Japanese
+              FullyConfigured:
+                summary: Fully configured
+                value:
+                  name: Legal, German
+                  description: Contract wording for the German market.
+                  industry: Legal
+                  glossary_ids:
+                  - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
+                  style_rule_ids:
+                  - bd0a38f3-1831-440b-a8dd-2c702e2325ab
+                  translation_memory_ids:
+                  - a74d88fb-ed2a-4943-a664-a4512398b994
+                  glossary_priority_order_enabled: true
+      responses:
+        201:
+          description: Returns the created style profile.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StyleProfile'
+              examples:
+                Basic:
+                  value:
+                    style_profile_id: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
+                    name: Legal, German
+                    description: Contract wording for the German market.
+                    industry: Legal
+                    glossary_ids:
+                    - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
+                    style_rule_ids:
+                    - bd0a38f3-1831-440b-a8dd-2c702e2325ab
+                    translation_memory_ids:
+                    - a74d88fb-ed2a-4943-a664-a4512398b994
+                    glossary_priority_order_enabled: true
+                    creation_time: '2026-04-01T16:34:25.223Z'
+                    updated_time: '2026-04-01T16:34:25.223Z'
+        400:
+          description: |-
+            The request was rejected and no style profile was created. This is returned for a malformed
+            request body, for a missing or empty `name`, for a value that is longer than the field allows,
+            and for a component ID that is not a valid UUID or that names a component your account cannot
+            access. The message names the list that contains the bad ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                UnusableComponentId:
+                  summary: Unusable component ID
+                  value:
+                    message: "Bad request. Reason: One or more glossary ids do not exist or are not accessible. Check 'glossary_ids'."
+                EmptyName:
+                  summary: Empty name
+                  value:
+                    message: 'Bad request. Reason: The Name field is required.'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: |-
+            Authorization failed. Please supply a valid `DeepL-Auth-Key` via the `Authorization` header.
+            This error is also returned when the API key is scoped but does not include the
+            `style_profiles:write` scope, and when your plan does not include creating style profiles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        456:
+          description: |-
+            You have reached the maximum number of style profiles for your account. Delete a style profile
+            before creating another one.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: Quota exceeded
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
+  /v3/style_profiles/{style_profile_id}:
+    get:
+      tags:
+      - ManageStyleProfiles
+      summary: Retrieve a style profile
+      operationId: getStyleProfile
+      description: |-
+        Retrieve a single style profile by its ID, including the components it links and its timestamps.
+
+        Requires an API key with the `style_profiles:read` scope.
+      parameters:
+        - name: style_profile_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/StyleProfileId'
+          description: The ID of the style profile to retrieve.
+      responses:
+        200:
+          description: Returns the style profile.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StyleProfile'
+              examples:
+                Basic:
+                  value:
+                    style_profile_id: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
+                    name: Legal, German
+                    description: Contract wording for the German market.
+                    industry: Legal
+                    glossary_ids:
+                    - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
+                    style_rule_ids:
+                    - bd0a38f3-1831-440b-a8dd-2c702e2325ab
+                    translation_memory_ids:
+                    - a74d88fb-ed2a-4943-a664-a4512398b994
+                    glossary_priority_order_enabled: true
+                    creation_time: '2026-04-01T16:34:25.223Z'
+                    updated_time: '2026-08-06T09:12:44.108Z'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenScoped'
+        404:
+          description: |-
+            The style profile could not be found. This is also returned for a style profile your account
+            cannot access.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
+    patch:
+      tags:
+      - ManageStyleProfiles
+      summary: Update a style profile
+      operationId: updateStyleProfile
+      description: |-
+        Update a style profile you own or that was shared with you for editing. Fields you leave out of the
+        request body are not changed.
+
+        A component list you send replaces the linked list in full. To add a glossary to a style profile
+        that already links two, send all three IDs. To unlink all components in a list, send an empty
+        list.
+
+        Requires an API key with the `style_profiles:write` scope.
+      parameters:
+        - name: style_profile_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/StyleProfileId'
+          description: The ID of the style profile to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: |-
+                    A new name for the style profile. At most 255 characters. An empty string is rejected
+                    with `400 Bad Request`.
+                  type: string
+                  example: Legal, German (2026)
+                description:
+                  description: |-
+                    A new description for the style profile. At most 1000 characters. Send an empty string
+                    to clear it.
+                  type: string
+                  example: Contract wording for the German market, 2026 revision.
+                industry:
+                  description: |-
+                    A new industry for the style profile. At most 255 characters. Send an empty string to
+                    clear it.
+                  type: string
+                  example: Legal
+                glossary_ids:
+                  description: |-
+                    The IDs of the glossaries to link, highest priority first. The order only takes effect
+                    with `glossary_priority_order_enabled`. Replaces the linked glossaries in full. Send an
+                    empty list to unlink all of them.
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example:
+                  - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
+                style_rule_ids:
+                  description: |-
+                    The IDs of the style rule lists to link. At most one style rule list per target
+                    language. Replaces the linked style rule lists in full. Send an empty list to unlink
+                    all of them.
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example:
+                  - bd0a38f3-1831-440b-a8dd-2c702e2325ab
+                translation_memory_ids:
+                  description: |-
+                    The IDs of the translation memories to link. At most one translation memory per source
+                    language. Replaces the linked translation memories in full. Send an empty list to
+                    unlink all of them.
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example:
+                  - a74d88fb-ed2a-4943-a664-a4512398b994
+                glossary_priority_order_enabled:
+                  description: |-
+                    Whether the order of `glossary_ids` sets priority: when two linked glossaries define the
+                    same source term, the one listed first wins. When `false`, the order has no effect.
+                  type: boolean
+                  example: true
+            examples:
+              RenameOnly:
+                summary: Rename only
+                value:
+                  name: Legal, German (2026)
+              ClearTheDescription:
+                summary: Clear the description
+                value:
+                  description: ''
+              ReplaceTheLinkedGlossaries:
+                summary: Replace the linked glossaries
+                value:
+                  glossary_ids:
+                  - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
+                  - 7b2f6d84-3c15-4e90-8a72-d5e1490bc637
+      responses:
+        200:
+          description: Returns the updated style profile.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StyleProfile'
+              examples:
+                Basic:
+                  value:
+                    style_profile_id: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
+                    name: Legal, German (2026)
+                    description: Contract wording for the German market.
+                    industry: Legal
+                    glossary_ids:
+                    - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
+                    - 7b2f6d84-3c15-4e90-8a72-d5e1490bc637
+                    style_rule_ids:
+                    - bd0a38f3-1831-440b-a8dd-2c702e2325ab
+                    translation_memory_ids:
+                    - a74d88fb-ed2a-4943-a664-a4512398b994
+                    glossary_priority_order_enabled: true
+                    creation_time: '2026-04-01T16:34:25.223Z'
+                    updated_time: '2026-08-20T13:47:51.902Z'
+        400:
+          description: |-
+            The request was rejected and the style profile was not changed. This is returned for a
+            malformed request body, for an empty `name`, for a value that is longer than the field allows,
+            and for a component ID that is not a valid UUID or that names a component your account cannot
+            access. The message names the list that contains the bad ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                UnusableComponentId:
+                  summary: Unusable component ID
+                  value:
+                    message: "Bad request. Reason: One or more translation memory ids do not exist or are not accessible. Check 'translation_memory_ids'."
+                EmptyName:
+                  summary: Empty name
+                  value:
+                    message: "Bad request. Reason: The field Name must be a string or array type with a minimum length of '1'."
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenScoped'
+        404:
+          description: |-
+            The style profile could not be found. This is also returned for a style profile your account
+            can view but not edit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
+    delete:
+      tags:
+      - ManageStyleProfiles
+      summary: Delete a style profile
+      operationId: deleteStyleProfile
+      description: |-
+        Delete a style profile. Only the account that owns a style profile can delete it. A style profile
+        that was shared with your account returns `404 Not Found`.
+
+        The glossaries, style rule lists and translation memories the style profile links are not deleted.
+        Translation requests that pass the deleted `style_profile_id` fail after this call, so update your
+        integration before deleting.
+
+        Requires an API key with the `style_profiles:write` scope.
+      parameters:
+        - name: style_profile_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/StyleProfileId'
+          description: The ID of the style profile to delete.
+      responses:
+        204:
+          description: The style profile was deleted. The response has no body.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/ForbiddenScoped'
+        404:
+          description: |-
+            The style profile could not be found. This is also returned for a style profile that was
+            shared with your account, because only the owner can delete it.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          $ref: '#/components/responses/TooManyRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
   /v3/style_rules:
     get:
       summary: Retrieve style rule lists
@@ -5093,6 +5708,13 @@ components:
         Setting the limit to `null` disables the limit, effectively allowing unlimited usage.
       type: number
       example: 3600000
+    ApiKeyUsageSpeechToSpeechMilliseconds:
+      description: |
+        Restricts the number of milliseconds of speech-to-speech that can be consumed by an API key in a one-month usage period.
+        Setting the limit to `0` means the API key will not be able to consume speech-to-speech milliseconds.
+        Setting the limit to `null` disables the limit, effectively allowing unlimited usage.
+      type: number
+      example: 3600000
     ApiKey:
       description: The API key.
       type: object
@@ -5121,6 +5743,8 @@ components:
               $ref: '#/components/schemas/ApiKeyUsageCharacters'
             speech_to_text_milliseconds:
               $ref: '#/components/schemas/ApiKeyUsageSpeechToTextMilliseconds'
+            speech_to_speech_milliseconds:
+              $ref: '#/components/schemas/ApiKeyUsageSpeechToSpeechMilliseconds'
     ConfiguredRules:
       description: The enabled rules for the style rule list including what option
         was selected for each rule. This schema combines rules from all supported
@@ -6402,6 +7026,89 @@ components:
           type: string
           description: Optional source language of the custom instruction
           example: "en"
+    StyleProfile:
+      type: object
+      required:
+        - style_profile_id
+        - name
+        - glossary_ids
+        - style_rule_ids
+        - translation_memory_ids
+        - glossary_priority_order_enabled
+        - creation_time
+        - updated_time
+      properties:
+        style_profile_id:
+          $ref: '#/components/schemas/StyleProfileId'
+        name:
+          description: |-
+            Name associated with the style profile. At most 255 characters.
+          type: string
+          example: Legal, German
+        description:
+          description: |-
+            Free-text description of the style profile. At most 1000 characters. Omitted from the response
+            when the style profile has no description.
+          type: string
+          example: Contract wording for the German market.
+        industry:
+          description: |-
+            The industry the style profile is written for. At most 255 characters. Omitted from the response
+            when the style profile has no industry.
+          type: string
+          example: Legal
+        glossary_ids:
+          description: |-
+            The IDs of the glossaries linked to the style profile, highest priority first. The order only
+            takes effect with `glossary_priority_order_enabled`.
+          type: array
+          items:
+            type: string
+            format: uuid
+          example:
+          - 4d0a2e1c-6b93-4f7a-8d15-2c6e9a3b7f81
+        style_rule_ids:
+          description: |-
+            The IDs of the style rule lists linked to the style profile. A style profile links at most one
+            style rule list per target language.
+          type: array
+          items:
+            type: string
+            format: uuid
+          example:
+          - bd0a38f3-1831-440b-a8dd-2c702e2325ab
+        translation_memory_ids:
+          description: |-
+            The IDs of the translation memories linked to the style profile. A style profile links at most
+            one translation memory per source language.
+          type: array
+          items:
+            type: string
+            format: uuid
+          example:
+          - a74d88fb-ed2a-4943-a664-a4512398b994
+        glossary_priority_order_enabled:
+          description: |-
+            Whether the order of `glossary_ids` sets priority: when two linked glossaries define the same
+            source term, the one listed first wins. When `false`, the order has no effect.
+          type: boolean
+          example: true
+        creation_time:
+          description: 'The creation time of the style profile in the ISO 8601-1:2019 format (e.g.: `2021-08-03T14:16:18.329Z`).'
+          type: string
+          format: date-time
+          example: '2026-04-01T16:34:25.223Z'
+        updated_time:
+          description: 'The time of the last update to the style profile in the ISO 8601-1:2019 format (e.g.: `2021-08-03T14:16:18.329Z`).'
+          type: string
+          format: date-time
+          example: '2026-08-06T09:12:44.108Z'
+    StyleProfileId:
+      type: string
+      format: uuid
+      description: |-
+        A unique ID assigned to a style profile.
+      example: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
     StyleRuleList:
       type: object
       required:
@@ -6988,31 +7695,88 @@ components:
       description: The source language of the translation memory.
       type: string
       enum:
+      - ar
+      - bg
+      - cs
+      - da
       - de
+      - el
       - en
       - es
+      - et
+      - fi
       - fr
+      - he
+      - hu
+      - id
       - it
       - ja
       - ko
+      - lt
+      - lv
+      - nb
+      - nl
+      - pl
+      - pt
+      - ro
+      - ru
+      - sk
+      - sl
+      - sv
+      - th
+      - tr
+      - uk
+      - vi
       - zh
       example: en
     TranslationMemoryTargetLanguage:
       description: The list of target languages available in the translation memory. A translation memory's target language must be compatible with the `target_lang` specified in a translation request.
       type: string
       enum:
+      - ar
+      - bg
+      - cs
+      - da
       - de
+      - de-ch
+      - de-de
+      - el
       - en
       - en-gb
       - en-us
       - es
       - es-419
+      - es-es
+      - et
+      - fi
       - fr
+      - fr-ca
+      - fr-fr
+      - he
+      - hu
+      - id
       - it
       - ja
       - ko
+      - lt
+      - lv
+      - nb
+      - nl
+      - pl
+      - pt-br
+      - pt-pt
+      - ro
+      - ru
+      - sk
+      - sl
+      - sv
+      - th
+      - tr
+      - uk
+      - vi
       - zh
       - zh-hans
+      - zh-hant
       example: es
     TranslationMemorySegment:
       description: A source segment stored in a translation memory, with its translations.
