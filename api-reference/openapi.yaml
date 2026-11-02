@@ -1117,8 +1117,9 @@ paths:
                     style rule list for the target language, and the translation memories whose source language matches
                     the document. A component that does not fit the language pair is left out; this is not an error.
 
-                    Cannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id` or
-                    `translation_memory_threshold`. A request that combines them is rejected with `400 Bad Request`.
+                    Cannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,
+                    `translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected
+                    with `400 Bad Request`.
                     A style profile that does not exist or that your account cannot access is not rejected at upload:
                     the document status reports an error with the message `Style profile not found.`.
                   type: string
