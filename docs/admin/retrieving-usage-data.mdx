@@ -17,11 +17,12 @@ Consumption data in the account UI, in CSV exports, and in the [Admin API analyt
 | --- | --- | --- | --- | --- |
 | [API Keys & Limits tab](#api-keys-and-limits-tab) | Per API key | Current usage period only | Previous UTC day | Account UI |
 | [API Usage tab](#api-usage-tab) | Account total (plus year-to-date on yearly plans) | Current usage period (and yearly period) | Previous UTC day | Account UI |
+| [Top language pairs tab](#top-language-pairs-tab) (beta) | Account total, top 20 language pairs | Same presets as the [language pair-level CSV report](#csv-export) | Previous UTC day | Account UI |
 | [CSV export](#csv-export) | Per API key, per custom tag, per language pair, or per document | Preset ranges for all reports; custom ranges up to 4 months and optional grouping by day for key-level and tag-level reports | Previous UTC day | CSV download |
 | [`/usage` endpoint](#the-usage-endpoint) | Account total | Current usage period only | Near-real-time (within minutes) | REST API |
 | [Admin API analytics](#admin-api-analytics) | Per API key or per custom tag | Custom date range, optional grouping by day | Previous UTC day | REST API |
 
-Use the **account UI** for a quick check while signed in, the **CSV export** for detailed or offline analysis per key, per custom tag, per language pair, or per document, the **`/usage` endpoint** for programmatic near-real-time quota checks, and the **Admin API analytics endpoints** for programmatic reporting and cost attribution.
+Use the **account UI** for a quick check while signed in (including your top language pairs), the **CSV export** for detailed or offline analysis per key, per custom tag, per language pair, or per document, the **`/usage` endpoint** for programmatic near-real-time quota checks, and the **Admin API analytics endpoints** for programmatic reporting and cost attribution.
 
 ## API Keys and Limits tab
 
@@ -45,13 +46,33 @@ To check your account totals, open the [API Usage tab](https://www.deepl.com/you
 ![](/_assets/images/api-growth-annual-usage-tab.png)
 </Frame>
 
+### Top language pairs tab
+
+The "Top language pairs" sub-tab (beta) shows your 20 most-used source-target language pairs, ranked by consumption for the selected period. Each row shows the source language, the target language, and the total consumption, with all characters (translation and text improvement) rolled up into a single sum.
+
+To open it, go to the [API Usage tab](https://www.deepl.com/your-account/usage) and select "Top language pairs". It's generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
+
+<Note>
+Beta means this is a new feature that may change. Feedback is welcome.
+</Note>
+
+<Frame caption="The Top language pairs tab">
+![The Top language pairs tab in the API Usage section](/_assets/images/top-language-pairs-tab.png)
+</Frame>
+
+Use the period dropdown to choose a time range. The tab offers the same presets as the language pair-level CSV report, listed in the [CSV export section](#csv-export).
+
+If your account has speech-to-text (STT) or speech-to-speech (STS) usage, toggles above the table let you switch the ranking between "Characters," "Speech-to-text minutes," and "Speech-to-speech minutes."
+
+To get every language pair rather than only the top 20, click "Export full report". It downloads the full language pair-level report, covering all usage units, for the selected time period. This is the same file you get from the [CSV export](#csv-export) path.
+
 ## CSV export
 
 Generate a CSV report of your usage for a chosen time period. Four report types are available:
 
 - **API key-level report**: characters translated per API key, including a column that breaks out text improvement (Write API) characters separately. Key-level usage is not broken out on invoices; retrieve it via CSV export, the "API Keys & Limits" tab, or the [Admin API analytics endpoints](#admin-api-analytics).
 - **Custom tag-level report**: characters translated per [custom reporting tag](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags). Only tagged requests appear in this report, so results reflect a subset of total usage unless every request is tagged.
-- **Language pair-level report**: characters translated per source-target language pair. Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
+- **Language pair-level report**: usage per source-target language pair, including translation and text improvement (Write API) characters and STT and STS minutes. Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it. A top-20 view of the same data is available in the [Top language pairs tab](#top-language-pairs-tab).
 - **Document translation report**: one row per translated document, with the document type, language pair, input characters, billed characters (reflecting any [billing minimum](/docs/best-practices/document-translations#billing-minimums) applied), and whether a glossary was used. Use it to trace document translation usage back to individual documents. Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
 
 To download a report, click "Download CSV usage report" on the [API Keys & Limits tab](https://www.deepl.com/your-account/keys) or the [API Usage tab](https://www.deepl.com/your-account/usage) and select "API key-level report," "Custom tag-level report," "Language pair-level report," or "Document translation report" from the dropdown. Then select a time period and click "Download your report".
