@@ -9,6 +9,11 @@ rss: true
 </Update>
 
 <Update label="November 2026">
+## November 3 - Top Language Pairs Tab (Beta)
+- The API Usage tab in your DeepL account now has a "Top language pairs" sub-tab that shows your top 20 source-target language pairs by consumption for a selected period. If your account has speech-to-text or speech-to-speech usage, you can also rank language pairs by those minutes.
+- Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it. The tab is in beta and may change; feedback is welcome.
+- Click "Export full report" to download the complete language pair-level report. See [Top language pairs tab](/docs/admin/retrieving-usage-data#top-language-pairs-tab) in the usage data guide for details.
+
 ## November 3 - Glossaries for Language Variants
 - A [glossary](/docs/customize/managing-glossaries) holds dictionaries that map source terms to target terms, one dictionary per language pair. A dictionary could previously only target a base language such as `pt`, and it applied to every variant of that language. You can now also create a dictionary for a specific variant, such as `pt-BR` or `pt-PT`, so terminology that differs between variants stays separate within one glossary.
 - Set the variant code as the dictionary's `target_lang` in the [v3 glossary endpoints](/api-reference/multilingual-glossaries/create-a-glossary). Supported variant targets are `de-CH`, `de-DE`, `en-GB`, `en-US`, `es-419`, `es-ES`, `fr-CA`, `fr-FR`, `pt-BR`, `pt-PT`, `zh-Hans`, and `zh-Hant`. Source languages stay base languages. The current list is returned by [`GET /v3/languages?resource=glossary`](/docs/languages/using-the-languages-api).
