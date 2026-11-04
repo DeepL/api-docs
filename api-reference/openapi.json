@@ -10704,7 +10704,7 @@
         "example": "html"
       },
       "TagHandlingVersionOption": {
-        "description": "Sets which version of the tag handling algorithm should be used. Options currently available:\n* `v1`: Traditional algorithm (will become deprecated in the future). This is the default for accounts that used tag handling before December 1, 2025.\n* `v2`: Improved algorithm released in October 2025. This is the default for all other accounts.\n\nThe `tag_handling_version` field in the response shows which version was applied.",
+        "description": "Sets which version of the tag handling algorithm should be used. Options currently available:\n* `v1`: Traditional algorithm (will become deprecated in the future).\n* `v2`: Improved algorithm released in October 2025. This is the default.\n\nThe `tag_handling_version` field in the response shows which version was applied.",
         "type": "string",
         "enum": [
           "v2",

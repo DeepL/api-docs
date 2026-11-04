@@ -8085,8 +8085,8 @@ components:
     TagHandlingVersionOption:
       description: |-
         Sets which version of the tag handling algorithm should be used. Options currently available:
-        * `v1`: Traditional algorithm (will become deprecated in the future). This is the default for accounts that used tag handling before December 1, 2025.
-        * `v2`: Improved algorithm released in October 2025. This is the default for all other accounts.
+        * `v1`: Traditional algorithm (will become deprecated in the future).
+        * `v2`: Improved algorithm released in October 2025. This is the default.
 
         The `tag_handling_version` field in the response shows which version was applied.
 
