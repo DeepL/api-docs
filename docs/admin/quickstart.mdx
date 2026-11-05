@@ -21,7 +21,7 @@ In this tutorial, we'll use the Admin API to provision a new developer API key f
 - `curl` installed on your machine
 
 <Note>
-**Using a regional endpoint?** If your account is assigned to a [regional endpoint](/docs/getting-started/regional-endpoints#admin-api), replace `https://api.deepl.com` with your regional endpoint in every request in this tutorial. Admin keys work only with the endpoint of your account's region.
+**Using a regional endpoint?** If your account is assigned to a [regional endpoint](/docs/getting-started/regional-endpoints#admin-api), replace `https://api.deepl.com` with your regional endpoint in every request in this tutorial.
 </Note>
 
 <Tip>
@@ -144,7 +144,7 @@ Once the key reaches its character limit, requests using it return `456 Quota ex
 
 After the team has started using the key, let's retrieve a usage report to see how much quota each key has consumed. We'll group the results by API key so we can see per-key totals.
 
-Replace the dates with a range that covers the period you want to inspect. Date ranges can span up to 366 days, and data is available up to and including the previous UTC calendar day. If your account uses a [regional endpoint](/docs/getting-started/regional-endpoints#admin-api), usage data is still retrieved from the EU.
+Replace the dates with a range that covers the period you want to inspect. Date ranges can span up to 366 days, and data is available up to and including the previous UTC calendar day. If your account uses a [regional endpoint](/docs/getting-started/regional-endpoints#admin-api), send this request to that endpoint. Responses can take longer than from `api.deepl.com`; see the linked page for details.
 
 ```bash
 curl "https://api.deepl.com/v2/admin/analytics?start_date=2026-06-01&end_date=2026-07-01&group_by=key" \
