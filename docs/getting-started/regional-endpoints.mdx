@@ -176,7 +176,15 @@ While API keys are not region-specific, each DeepL account is restricted to a si
 
 ### API compatibility
 
-Regional endpoints support all DeepL API functionality except the Admin Analytics API. These endpoints are only available on the standard `api.deepl.com` endpoint. 
+Regional endpoints support all DeepL API functionality, including the [Admin API](/docs/admin/overview).
+
+### Admin API
+
+If your account uses a regional endpoint, send Admin API requests (key management and usage analytics) to that endpoint, for example `https://api-us.deepl.com/v2/admin/analytics`. Use an admin key from your account, as you would for any other request. Like developer keys, admin keys work only with the endpoint of the region your account is assigned to; on any other endpoint they return a 403 error (`Your account is denied access`).
+
+<Note>
+Currently, usage data returned by the Admin API analytics endpoints is retrieved from the EU. Because of this, responses from regional endpoints can take longer than from `api.deepl.com`, especially for `api-jp.deepl.com`. Set a generous request timeout.
+</Note>
 
 ### Glossaries and style rules
 
@@ -193,4 +201,4 @@ For more details, see the [Style rules documentation](/docs/customize/using-styl
 - [Client libraries](/docs/getting-started/client-libraries) - Language-specific client library documentation and configuration
 - [Authentication and access](/docs/getting-started/auth) - API authentication methods and security best practices
 - [Text translation](/api-reference/translate/request-translation) - Text translation API reference
-- [Admin API](/docs/admin/overview) - Programmatic API key management for enterprise administrators
+- [Admin API](/docs/admin/overview) - Programmatic API key management and usage analytics for enterprise administrators
