@@ -11,7 +11,8 @@ rss: true
 <Update label="November 2026">
 ## November 4 - Admin API on Regional Endpoints
 - The [Admin API](/docs/admin/overview) lets you manage API keys and retrieve [usage analytics](/api-reference/admin-api/get-usage-analytics) programmatically. It is now available on regional endpoints. If your account uses a [regional endpoint](/docs/getting-started/regional-endpoints#admin-api), send Admin API requests to that endpoint with your account's admin key.
-- Usage data is still retrieved from the EU. Use the same paths on your regional endpoint.
+- Request paths, parameters, and responses are the same as on `api.deepl.com`.
+- Currently, usage analytics data is retrieved from the EU, so responses from regional endpoints can take longer than from `api.deepl.com`.
 
 ## November 3 - Top Language Pairs Tab (Beta)
 - The API Usage tab in your DeepL account now has a "Top language pairs" sub-tab that shows your top 20 source-target language pairs by consumption for a selected period. If your account has speech-to-text or speech-to-speech usage, you can also rank language pairs by those minutes.
