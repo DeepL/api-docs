@@ -18,7 +18,7 @@ The Admin API uses its own key type: admin keys, which always carry an `:adm` su
 
 `Authorization: DeepL-Auth-Key [yourAdminKey]`
 
-Admin API endpoints are available on the Pro endpoint `https://api.deepl.com`. See the [Admin API reference](/api-reference/admin-api/managing-developer-keys/create-key) for request and response schemas.
+Admin API endpoints are available on the Pro endpoint `https://api.deepl.com` and, for accounts assigned to a [regional endpoint](/docs/getting-started/regional-endpoints#admin-api), on that regional endpoint. Accounts assigned to a regional endpoint must send Admin API requests to that endpoint; other endpoints return a 403 error. See the [Admin API reference](/api-reference/admin-api/managing-developer-keys/create-key) for request and response schemas.
 
 ## Start here
 
