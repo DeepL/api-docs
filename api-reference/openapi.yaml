@@ -301,6 +301,15 @@ paths:
           - day
           default: period
         example: "day"
+      - name: page_size
+        in: query
+        required: false
+        description: The maximum number of usage items to return per page, between 1 and 1000. Values outside this range are rejected with a 400 error.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+        example: 100
       - name: page
         in: query
         required: false
@@ -5736,6 +5745,11 @@ components:
           description: Flag indicating whether the API key is deactivated. The default value is `false`.
           type: boolean
           example: true
+        secret:
+          description: The API key secret, to use in the `Authorization` header. Returned only in the response to creating a key, and `null` in every other response. Store it when you create the key, because it can't be retrieved again.
+          type: string
+          nullable: true
+          example: 0aa1b2c3-d4e5-f6a7-b8c9-d0e1f2a3b4c5:fx
         usage_limits:
           description: Usage limits for the API key.
           type: object
@@ -6992,7 +7006,6 @@ components:
       type: object
       required:
       - name
-      - dictionaries
       properties:
         name:
           description: Name to be associated with the glossary.
@@ -7275,7 +7288,7 @@ components:
     GlossaryEntriesFormat:
       description: |-
         The format in which the glossary entries are provided. Formats currently available:
-        - `tsv` (default) - tab-separated values
+        - `tsv` - tab-separated values
         - `csv` - comma-separated values
 
         See [Supported Glossary Formats](/docs/customize/managing-glossaries#entry-formats) for details about each format.
@@ -7284,7 +7297,6 @@ components:
       - tsv
       - csv
       example: tsv
-      default: tsv
     GlossaryEntryCount:
       description: The number of entries in the glossary.
       type: integer
@@ -7561,7 +7573,6 @@ components:
       type: object
       required:
         - name
-        - term_lists
       properties:
         name:
           description: Name for the Spoken Terms collection.
@@ -8765,6 +8776,10 @@ components:
           type: number
           description: Duration of speech-to-text usage in minutes.
           example: 107.46
+        speech_to_speech_minutes:
+          type: number
+          description: Duration of speech-to-speech usage in minutes.
+          example: 4.2
     KeyAndDayUsageItem:
       type: object
       description: Usage statistics for a specific API key and optionally a specific date.
