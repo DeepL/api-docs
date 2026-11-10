@@ -5964,9 +5964,9 @@
               "type": "integer",
               "default": 10,
               "minimum": 1,
-              "maximum": 10
+              "maximum": 25
             },
-            "description": "The maximum number of style rule lists to return. Values above 10 are reduced to 10."
+            "description": "The maximum number of style rule lists to return. Values above 25 are reduced to 25."
           },
           {
             "name": "detailed",
