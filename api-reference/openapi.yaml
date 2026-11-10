@@ -4436,7 +4436,7 @@ paths:
             default: 10
             minimum: 1
             maximum: 25
-          description: The maximum number of style rule lists to return. Values above 25 are reduced to 25.
+          description: The maximum number of style rule lists to return.
         - name: detailed
           in: query
           schema:
@@ -7012,7 +7012,7 @@ components:
           type: string
           example: My Glossary
         dictionaries:
-          description: Dictionaries to populate the glossary with. Omit to create an empty glossary and add dictionaries later with `PUT /v3/glossaries/{glossary_id}/dictionaries`.
+          description: Dictionaries to populate the glossary with.
           type: array
           items:
             $ref: '#/components/schemas/GlossaryDictionary'
@@ -7290,8 +7290,6 @@ components:
         The format in which the glossary entries are provided. Formats currently available:
         - `tsv` - tab-separated values
         - `csv` - comma-separated values
-
-        Required for every dictionary that includes `entries`. A dictionary without it is rejected with a 400 error.
 
         See [Supported Glossary Formats](/docs/customize/managing-glossaries#entry-formats) for details about each format.
       type: string
@@ -7582,7 +7580,7 @@ components:
           maxLength: 1024
           example: Technical Terms
         term_lists:
-          description: Array of term lists, one per language. Omit to create an empty collection and add term lists later.
+          description: Array of term lists, one per language.
           type: array
           items:
             $ref: '#/components/schemas/SpokenTermsListInput'
@@ -7613,7 +7611,7 @@ components:
           maxLength: 1024
           example: Updated Technical Terms
         term_lists:
-          description: Term lists to merge with existing lists. Currently accepts at most one term list per request; sending more returns a 400 error.
+          description: Term lists to merge with existing lists.
           type: array
           items:
             $ref: '#/components/schemas/SpokenTermsListInput'
