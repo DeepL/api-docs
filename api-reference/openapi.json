@@ -11049,7 +11049,7 @@
       },
       "VoiceSourceLanguageMode": {
         "type": "string",
-        "description": "Controls how the source_language value is used.\n- `auto`: Treats source language as a hint; server can override\n- `fixed`: Treats source language as mandatory; server must use this language. Requires\n  `source_language`.",
+        "description": "Controls how the source_language value is used.\n- `auto`: Treats source language as a hint; server can override\n- `fixed`: Treats source language as mandatory; server must use this language. Requires `source_language`.",
         "enum": [
           "auto",
           "fixed"

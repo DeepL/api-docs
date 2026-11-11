@@ -8465,8 +8465,7 @@ components:
       description: |-
         Controls how the source_language value is used.
         - `auto`: Treats source language as a hint; server can override
-        - `fixed`: Treats source language as mandatory; server must use this language. Requires
-          `source_language`.
+        - `fixed`: Treats source language as mandatory; server must use this language. Requires `source_language`.
       enum:
         - auto
         - fixed
