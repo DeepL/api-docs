@@ -10999,7 +10999,7 @@
       },
       "VoiceSourceLanguage": {
         "type": "string",
-        "description": "The source language of the audio stream. It can be left empty or must be one of the supported Voice API source languages and comply with IETF BCP 47 language tags.\nNote: Some source transcription languages are provided through external service partners. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\n",
+        "description": "The source language of the audio stream. Must be one of the supported Voice API source languages and comply with IETF BCP 47 language tags. It can be left empty only when `source_language_mode` is `auto`.\nNote: Some source transcription languages are provided through external service partners. See the [supported languages table](/docs/voice/supported-voice-languages) for details.\n",
         "enum": [
           "ar",
           "bg",
@@ -11049,7 +11049,7 @@
       },
       "VoiceSourceLanguageMode": {
         "type": "string",
-        "description": "Controls how the source_language value is used.\n- `auto`: Treats source language as a hint; server can override\n- `fixed`: Treats source language as mandatory; server must use this language",
+        "description": "Controls how the source_language value is used.\n- `auto`: Treats source language as a hint; server can override\n- `fixed`: Treats source language as mandatory; server must use this language. Requires\n  `source_language`.",
         "enum": [
           "auto",
           "fixed"
