@@ -1,0 +1,118 @@
+---
+openapi: get /v2/admin/analytics/language-pairs
+title: "Get language pair usage analytics"
+description: "Learn how to retrieve DeepL API usage per source and target language pair for a date range, optionally grouped by API key and aggregated by day."
+---
+
+## Availability
+
+Language pair-level data is generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it.
+
+If your admin key belongs to an account without language pair-level data, the request succeeds and returns an empty `language_pair_usages` array.
+
+## Date range
+
+Specify the reporting window using the required `start_date` and `end_date` parameters in ISO 8601 date format (e.g., `2026-10-01`). Both are interpreted in UTC.
+
+- `start_date` can't be after the current UTC day
+- `start_date` can't be more than 63 days before the current UTC day
+
+Requests that break either rule return a `400` error.
+
+Usage data is available up to and including the previous UTC calendar day, so that is the latest day `end_date` can include.
+
+## Grouping and aggregation
+
+Two optional parameters control how usage is organized.
+
+| **Parameter** | **Value** | **Description** |
+|:---|:---|:---|
+| `group_by` | (omitted) | Returns usage per language pair, across all API keys |
+| `group_by` | `key` | Returns usage per language pair and API key |
+| `aggregate_by` | `period` (default) | Returns totals over the entire date range |
+| `aggregate_by` | `day` | Returns one row per UTC day |
+
+`group_by` accepts a comma-separated list of dimensions. Currently `key` is the only supported value. Support for additional dimensions may be added in a future update. The two parameters combine: `group_by=key&aggregate_by=day` returns one row per language pair, API key, and day.
+
+## Response structure
+
+The response contains a `language_pair_usage_report` object with the following fields:
+
+| **Field** | **Description** |
+|:---|:---|
+| `group_by` | The dimensions used for grouping (for example `["key"]`). Omitted if the request has no `group_by` |
+| `aggregate_by` | The aggregation method used (`period` or `day`) |
+| `start_date` | Start of the reporting period (ISO 8601 datetime) |
+| `end_date` | End of the reporting period (ISO 8601 datetime) |
+| `next_page` | Page number of the next page of results. `null` on the last page |
+| `language_pair_usages` | Array of usage entries, one per language pair (and per API key and day, depending on the request) |
+
+Each entry in `language_pair_usages` includes:
+
+- `source_language` and `target_language`: the language pair
+- `api_key` and `api_key_label`: the masked API key and its label, returned only when `group_by` includes `key`
+- `usage_date`: the day the usage was recorded (ISO 8601 datetime), returned only when `aggregate_by` is `day`
+- `usage`: usage split by service type
+
+Usage for API keys that are no longer on the account is returned with `api_key` set to `-` and `api_key_label` set to `unknown`.
+
+### Usage breakdown
+
+| **Field** | **Description** |
+|:---|:---|
+| `total_characters` | Combined character usage across character-based services |
+| `text_translation_characters` | Characters used for text translation |
+| `document_translation_characters` | Characters used for document translation |
+| `text_improvement_characters` | Characters used for text improvement (rephrasing) |
+| `speech_to_text_minutes` | Minutes of speech-to-text usage, rounded to two decimal places |
+| `speech_to_speech_minutes` | Minutes of speech-to-speech usage, rounded to two decimal places |
+
+Voice usage is reported in minutes and is not included in `total_characters`, which covers character-based services only.
+
+## Pagination
+
+Results are paginated. `next_page` is the page number to send as the `page` parameter to retrieve the following page. It is `null` on the last page.
+
+## Example
+
+The following request retrieves daily usage per language pair and API key for a two-week range.
+
+```bash
+curl "https://api.deepl.com/v2/admin/analytics/language-pairs?start_date=2026-10-01&end_date=2026-10-14&group_by=key&aggregate_by=day" \
+  -H "Authorization: DeepL-Auth-Key YOUR_ADMIN_KEY"
+```
+
+The response contains one entry per language pair, API key, and day. This example shows a single entry:
+
+```json
+{
+  "language_pair_usage_report": {
+    "group_by": ["key"],
+    "aggregate_by": "day",
+    "start_date": "2026-10-01T00:00:00",
+    "end_date": "2026-10-14T00:00:00",
+    "next_page": null,
+    "language_pair_usages": [
+      {
+        "source_language": "en",
+        "target_language": "ja",
+        "api_key": "6909****92c8",
+        "api_key_label": "Production key",
+        "usage_date": "2026-10-02T00:00:00Z",
+        "usage": {
+          "total_characters": 120400,
+          "text_translation_characters": 100000,
+          "document_translation_characters": 20400,
+          "text_improvement_characters": 0,
+          "speech_to_text_minutes": 0,
+          "speech_to_speech_minutes": 0
+        }
+      }
+    ]
+  }
+}
+```
+
+<Tip>
+For a one-off download of the same data, use the [language pair-level CSV export](/docs/admin/retrieving-usage-data#csv-export) in your account.
+</Tip>

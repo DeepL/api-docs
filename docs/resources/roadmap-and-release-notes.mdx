@@ -9,6 +9,12 @@ rss: true
 </Update>
 
 <Update label="November 2026">
+## November 12 - Language Pair Usage Analytics in the Admin API
+- The new [`GET /v2/admin/analytics/language-pairs`](/api-reference/admin-api/get-language-pair-usage-analytics) endpoint returns your API usage per source and target language pair. Use it to build per-language-pair dashboards or cost reports.
+- Set `aggregate_by=day` for a daily time series, or leave it at the default `period` for totals over the date range. Set `group_by=key` to split each language pair by API key. Results are paginated.
+- Language pair-level data is generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it. For accounts without this data, the request succeeds and returns an empty `language_pair_usages` array.
+- See [Retrieving Usage Data](/docs/admin/retrieving-usage-data#admin-api-analytics) for all usage data sources.
+
 ## November 3 - Top Language Pairs Tab (Beta)
 - The API Usage tab in your DeepL account now has a "Top language pairs" sub-tab that shows your top 20 source-target language pairs by consumption for a selected period. If your account has speech-to-text or speech-to-speech usage, you can also rank language pairs by those minutes.
 - Generally available on the API Enterprise plan. On the API Pro plan, it's available on request; contact your customer success manager to enable it. The tab is in beta and may change; feedback is welcome.

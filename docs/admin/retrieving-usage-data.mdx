@@ -20,7 +20,7 @@ Consumption data in the account UI, in CSV exports, and in the [Admin API analyt
 | [Top language pairs tab](#top-language-pairs-tab) (beta) | Account total, top 20 language pairs | Same presets as the [language pair-level CSV report](#csv-export) | Previous UTC day | Account UI |
 | [CSV export](#csv-export) | Per API key, per custom tag, per language pair, or per document | Preset ranges for all reports; custom ranges up to 4 months and optional grouping by day for key-level and tag-level reports | Previous UTC day | CSV download |
 | [`/usage` endpoint](#the-usage-endpoint) | Account total | Current usage period only | Near-real-time (within minutes) | REST API |
-| [Admin API analytics](#admin-api-analytics) | Per API key or per custom tag | Custom date range, optional grouping by day | Previous UTC day | REST API |
+| [Admin API analytics](#admin-api-analytics) | Per API key, per custom tag, or per language pair | Custom date range, optional grouping by day | Previous UTC day | REST API |
 
 Use the **account UI** for a quick check while signed in (including your top language pairs), the **CSV export** for detailed or offline analysis per key, per custom tag, per language pair, or per document, the **`/usage` endpoint** for programmatic near-real-time quota checks, and the **Admin API analytics endpoints** for programmatic reporting and cost attribution.
 
@@ -111,10 +111,11 @@ The [`/usage` endpoint](/api-reference/usage-and-quota/check-usage-and-limits) r
 
 ## Admin API analytics
 
-The [Admin API](/docs/admin/overview#the-admin-api) provides programmatic access to usage data over a custom date range, with optional grouping by day. It requires an [admin key](/docs/admin/managing-api-keys#manage-admin-api-keys) for authentication. Two endpoints are available:
+The [Admin API](/docs/admin/overview#the-admin-api) provides programmatic access to usage data over a custom date range, with optional grouping by day. It requires an [admin key](/docs/admin/managing-api-keys#manage-admin-api-keys) for authentication. Three endpoints are available:
 
 - [Get usage analytics](/api-reference/admin-api/get-usage-analytics) returns usage statistics across all services (text translation, document translation, text improvement, and speech-to-text), in total or grouped by API key
 - [Get custom tag usage analytics](/api-reference/admin-api/get-custom-tag-usage-analytics) returns usage broken down by custom tag
+- [Get language pair usage analytics](/api-reference/admin-api/get-language-pair-usage-analytics) returns usage broken down by source and target language pair, optionally per API key. See the endpoint page for plan availability
 
 Custom tags are an optional dimension for cost attribution: attach a tag to individual API requests with the `X-DeepL-Reporting-Tag` header to track consumption by team, project, or any other category. Only tagged requests appear in custom-tag analytics, so results reflect a subset of total usage unless every request is tagged. See [How to use custom reporting tags](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags) for setup and naming guidance. If you prefer a download over an API call, the same per-tag data is available as a [custom tag-level CSV export](#csv-export).
 
