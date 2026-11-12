@@ -9,7 +9,7 @@ info:
   contact:
     name: DeepL - Contact us
     url: https://www.deepl.com/contact-us
-  version: 3.14.0
+  version: 3.15.0
 externalDocs:
   description: DeepL Pro - Plans and pricing
   url: https://www.deepl.com/pro#developer
@@ -8578,8 +8578,9 @@ components:
     VoiceSourceLanguage:
       type: string
       description: >
-        The source language of the audio stream. It can be left empty or must be one of the
-        supported Voice API source languages and comply with IETF BCP 47 language tags.
+        The source language of the audio stream. Must be one of the supported Voice API source
+        languages and comply with IETF BCP 47 language tags. It can be left empty only when
+        `source_language_mode` is `auto`.
 
         Note: Some source transcription languages are provided through external service partners.
         See the [supported languages table](/docs/voice/supported-voice-languages) for details.
@@ -8633,7 +8634,7 @@ components:
       description: |-
         Controls how the source_language value is used.
         - `auto`: Treats source language as a hint; server can override
-        - `fixed`: Treats source language as mandatory; server must use this language
+        - `fixed`: Treats source language as mandatory; server must use this language. Requires `source_language`.
       enum:
         - auto
         - fixed
