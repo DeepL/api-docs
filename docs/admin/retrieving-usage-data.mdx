@@ -118,4 +118,6 @@ The [Admin API](/docs/admin/overview#the-admin-api) provides programmatic access
 
 Custom tags are an optional dimension for cost attribution: attach a tag to individual API requests with the `X-DeepL-Reporting-Tag` header to track consumption by team, project, or any other category. Only tagged requests appear in custom-tag analytics, so results reflect a subset of total usage unless every request is tagged. See [How to use custom reporting tags](/docs/learning-how-tos/examples-and-guides/how-to-use-custom-reporting-tags) for setup and naming guidance. If you prefer a download over an API call, the same per-tag data is available as a [custom tag-level CSV export](#csv-export).
 
+If your account uses a [regional endpoint](/docs/getting-started/regional-endpoints#admin-api), call the analytics endpoints on that endpoint with an admin key from your account. Currently, usage data is retrieved from the EU, so responses can take longer than from `api.deepl.com`, especially for accounts in Japan. See the linked page for timeout guidance.
+
 For a worked example of pulling analytics data into a dashboard, see the [usage analytics dashboard cookbook](/docs/learning-how-tos/cookbook/usage-analytics-dashboard).
