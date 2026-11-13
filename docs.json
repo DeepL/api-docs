@@ -414,7 +414,8 @@
                 "group": "Organization Usage Analytics",
                 "pages": [
                   "api-reference/admin-api/get-usage-analytics",
-                  "api-reference/admin-api/get-custom-tag-usage-analytics"
+                  "api-reference/admin-api/get-custom-tag-usage-analytics",
+                  "api-reference/admin-api/get-language-pair-usage-analytics"
                 ],
                 "drilldown": false
               }
