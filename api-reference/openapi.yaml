@@ -550,16 +550,46 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Error message describing the issue.
+                oneOf:
+                - type: object
+                  description: Returned when the date range is rejected.
+                  properties:
+                    message:
+                      type: string
+                      description: Error message describing the issue.
+                - type: object
+                  description: Returned when a query parameter fails validation.
+                  properties:
+                    type:
+                      type: string
+                    title:
+                      type: string
+                    status:
+                      type: integer
+                    errors:
+                      type: object
+                      description: Validation messages, keyed by parameter name.
+                      additionalProperties:
+                        type: array
+                        items:
+                          type: string
+                    traceId:
+                      type: string
               examples:
+                startDateInFuture:
+                  summary: start_date after the current UTC day
+                  value:
+                    message: "Bad request. Reason: start_date must not be after the current UTC day"
                 invalidGroupBy:
                   summary: Invalid group_by parameter value
                   value:
-                    message: "Value for 'group_by' not supported. Allowed: 'key'. The parameter can be omitted."
+                    type: "https://tools.ietf.org/html/rfc9110#section-15.5.1"
+                    title: "One or more validation errors occurred."
+                    status: 400
+                    errors:
+                      group_by:
+                      - "Value for 'group_by' not supported. Allowed: 'key'. The parameter can be omitted."
+                    traceId: "00-0123456789abcdef0123456789abcdef-0123456789abcdef-01"
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
