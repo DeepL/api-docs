@@ -157,7 +157,7 @@ A finished evaluation returns HTTP 200 whether it succeeded or failed, so branch
 }
 ```
 
-Store the report as soon as it's `done`: reports are kept for [24 hours](/api-reference/quality-evaluation/poll#report-retention) after the evaluation finishes, and polling after that returns HTTP 404. For the severity and issue-type vocabulary, how to resolve `source_spans` and `target_spans`, and the applied glossary term pairs a report returns per segment, see the [quality evaluation reference](/api-reference/quality-evaluation/poll).
+Store the report as soon as it's `done`: reports are kept for [24 hours](/api-reference/quality-evaluation/poll#report-retention) after the evaluation finishes, and polling after that returns HTTP 404. For the severity and issue-type vocabulary, how to resolve `source_spans` and `target_spans`, and the applied glossary term pairs and translation memory matches a report returns per segment, see the [quality evaluation reference](/api-reference/quality-evaluation/poll).
 
 ### Document format conversions
 By default, the translated document comes back in the same format as the input. Two conversions differ:

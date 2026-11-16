@@ -39,6 +39,8 @@ Both fields are omitted when the text is unavailable for a segment. An issue on 
 
 `applied_glossary_term_pairs` lists the glossary term pairs applied to a segment when the document was translated. It is omitted for segments where no glossary term pair was applied. Each item gives the `source_term`, `target_term`, and the spans in `target` where the target term was applied.
 
+`translation_memory_matches` holds the translation memory entry that the translation selected for a segment, for documents translated with a [`translation_memory_id`](/api-reference/document/upload-and-translate-a-document#body-translation-memory-id). It holds at most one match, which honors the document's [`translation_memory_threshold`](/api-reference/document/upload-and-translate-a-document#body-translation-memory-threshold), and is omitted for segments without a match. Each match gives the entry's `source` and `target`, its `match_score` from 0 to 100 (100 is an exact match), and the `translation_memory_id`, which is `null` when the match carries no translation memory ID. Translation memories applied through `style_profile_id` produce no matches, because quality evaluation does not support style profiles yet.
+
 ## Span ranges
 
 Each span describes a half-open interval over the segment's source or target text. `start` is the index of the first Unicode code point in the span; `end` is one past the last. The span covers the substring `text[start:end]` in Python-style slicing, and its length is `end - start`. For example:
@@ -89,7 +91,7 @@ Every issue carries a `type`, the top-level category, and a `sub_type`, which na
 | `Style` | `Awkward` | The text is written in an awkward style. |
 | `Style` | `Inconsistent style` | The text uses inconsistent stylistic conventions across sections. |
 | `Miscellaneous` | Not enumerated | An error that does not fall into the other categories but is nonetheless clearly identifiable as a mistake. The sub-types of this type are not a fixed set, so read `sub_type` as free text. |
-| `InternalTQEError` | `SegmentTooLarge` | The segment's source and target exceed 10,000 characters combined, so it was not analyzed. Reported with severity `Critical`. |
+| `InternalTQEError` | `SegmentTooLarge` | The segment was not analyzed because it is too long: source and target together exceed 10,000 characters, or the segment is too large for the model's context window. Reported with severity `Critical`. |
 
 An issue of this type reports that a segment could not be evaluated rather than a defect in the translation. The rest of the document is evaluated normally.
 
