@@ -8,7 +8,7 @@ public: true
 DeepL offers several ways to retrieve usage data so you can track character and minute consumption and the associated costs. This guide compares the available data sources and shows how to use each one.
 
 <Info>
-Consumption data in the account UI, in CSV exports, and in the [Admin API analytics endpoints](/api-reference/admin-api/get-usage-analytics) is complete up to and including the previous UTC calendar day. Language pair reports in the account UI also let you include the current day in a custom range; that day's data lags by a few hours and might be incomplete. For near-real-time data, use the [`/usage` endpoint](/api-reference/usage-and-quota/check-usage-and-limits).
+Consumption data in the account UI, in CSV exports, and in the [Admin API analytics endpoints](/api-reference/admin-api/get-usage-analytics) is complete up to and including the previous UTC calendar day. Custom date ranges in CSV exports and in the Top language pairs tab can also include the current day; that day's data lags by a few hours and might be incomplete. For near-real-time data, use the [`/usage` endpoint](/api-reference/usage-and-quota/check-usage-and-limits).
 </Info>
 
 ## Choose a data source
@@ -18,7 +18,7 @@ Consumption data in the account UI, in CSV exports, and in the [Admin API analyt
 | [API Keys & Limits tab](#api-keys-and-limits-tab) | Per API key | Current usage period only | Previous UTC day | Account UI |
 | [API Usage tab](#api-usage-tab) | Account total (plus year-to-date on yearly plans) | Current usage period (and yearly period) | Previous UTC day | Account UI |
 | [Top language pairs tab](#top-language-pairs-tab) (beta) | Account total, top 20 language pairs | Presets or custom range | Previous UTC day (current day optional, partial) | Account UI |
-| [CSV export](#csv-export) | Per API key, per custom tag, per language pair, or per document | Presets for all reports; custom ranges for all except document translation | Previous UTC day (current day optional for language pair reports, partial) | CSV download |
+| [CSV export](#csv-export) | Per API key, per custom tag, per language pair, or per document | Presets for all reports; custom ranges for all except document translation | Previous UTC day (current day optional in custom ranges, partial) | CSV download |
 | [`/usage` endpoint](#the-usage-endpoint) | Account total | Current usage period only | Near-real-time (within minutes) | REST API |
 | [Admin API analytics](#admin-api-analytics) | Per API key, per custom tag, or per language pair | Custom date range, optional grouping by day | Previous UTC day | REST API |
 
@@ -89,10 +89,10 @@ Select one of the presets or a custom date range (on UTC calendar days). Custom 
 | --- | --- |
 | API key-level | Up to 4 months |
 | Custom tag-level | Up to 4 months |
-| Language pair-level | Up to 63 days, can include the current day |
+| Language pair-level | Up to 63 days |
 | Document translation | Not available (presets only) |
 
-For the language pair-level report, data for the current day lags by a few hours, and only data through the previous UTC calendar day is guaranteed complete. This also applies to the [Top language pairs tab](#top-language-pairs-tab).
+A custom range can include the current day. Data for the current day lags by a few hours, and only data through the previous UTC calendar day is guaranteed complete. The same applies to the [Top language pairs tab](#top-language-pairs-tab).
 
 For the API key-level and custom tag-level reports, presets cover rolling windows from the last 24 hours up to the last year, as well as calendar months and usage periods. The language pair-level and document translation reports offer these presets:
 
