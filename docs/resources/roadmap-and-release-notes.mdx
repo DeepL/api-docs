@@ -9,6 +9,11 @@ rss: true
 </Update>
 
 <Update label="November 2026">
+## November 17 - Custom Date Ranges for Language Pair Reports
+- The language pair-level CSV export and the "Top language pairs" tab in your DeepL account now support custom date ranges of up to 63 days, in addition to the existing presets. Use a custom range to report on an exact period that the presets don't cover.
+- A custom range can include the current day. Data for the current day lags by a few hours, and only data through the previous UTC calendar day is guaranteed complete.
+- See [Top language pairs tab](/docs/admin/retrieving-usage-data#top-language-pairs-tab) and [CSV export](/docs/admin/retrieving-usage-data#csv-export) in the usage data guide for details.
+
 ## November 13 - Language Pair Usage Analytics in the Admin API
 - The new [`GET /v2/admin/analytics/language-pairs`](/api-reference/admin-api/get-language-pair-usage-analytics) endpoint returns your API usage per source and target language pair. Use it to build per-language-pair dashboards or cost reports.
 - Set `aggregate_by=day` for a daily time series, or leave it at the default `period` for totals over the date range. Set `group_by=key` to split each language pair by API key. Results are paginated.
