@@ -9,7 +9,7 @@ info:
   contact:
     name: DeepL - Contact us
     url: https://www.deepl.com/contact-us
-  version: 3.16.0
+  version: 3.17.0
 externalDocs:
   description: DeepL Pro - Plans and pricing
   url: https://www.deepl.com/pro#developer
@@ -5555,6 +5555,11 @@ paths:
                     segment_score: 62
                     source: Please share these results with your teams by Friday.
                     target: Bitte teilen Sie diese Ergebnisse mit Ihrem Team.
+                    translation_memory_matches:
+                      - translation_memory_id: a74d88fb-ed2a-4943-a664-a4512398b994
+                        source: Please share these results with your team.
+                        target: Bitte teilen Sie diese Ergebnisse mit Ihrem Team.
+                        match_score: 81
                     errors:
                       - type: Accuracy
                         sub_type: Omission
@@ -9558,6 +9563,11 @@ components:
           description: Glossary term pairs applied to this segment when the document was translated, so you can tell which customizations were in play where an issue was reported. Omitted when no term pair was applied.
           items:
             $ref: '#/components/schemas/QualityEvaluationAppliedGlossaryTermPair'
+        translation_memory_matches:
+          type: array
+          description: The translation memory match that the translation selected for this segment, for documents translated with `translation_memory_id`. Holds at most one match, which honors the document's [`translation_memory_threshold`](/api-reference/document/upload-and-translate-a-document#body-translation-memory-threshold). Omitted when the segment has no match. Translation memories applied through `style_profile_id` produce no matches. See [Segment text](/api-reference/quality-evaluations/poll#segment-text).
+          items:
+            $ref: '#/components/schemas/QualityEvaluationTranslationMemoryMatch'
         errors:
           type: array
           description: Quality issues identified in this segment. Empty if no issues were found.
@@ -9584,6 +9594,35 @@ components:
           description: Spans in `target` where the target term was applied, using the same convention as `source_spans` and `target_spans`. See [Span ranges](/api-reference/quality-evaluations/poll#span-ranges).
           items:
             $ref: '#/components/schemas/QualityEvaluationSpan'
+    QualityEvaluationTranslationMemoryMatch:
+      type: object
+      description: A translation memory entry that the translation selected for the segment.
+      required:
+        - translation_memory_id
+        - source
+        - target
+        - match_score
+      properties:
+        translation_memory_id:
+          type: string
+          nullable: true
+          description: The ID of the translation memory the entry belongs to. `null` when the match carries no translation memory ID.
+          example: a74d88fb-ed2a-4943-a664-a4512398b994
+        source:
+          type: string
+          description: The source-language text of the translation memory entry.
+          example: Please share these results with your team.
+        target:
+          type: string
+          description: The target-language text of the translation memory entry.
+          example: Bitte teilen Sie diese Ergebnisse mit Ihrem Team.
+        match_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: How closely the source of the translation memory entry matches the segment's `source`, where 100 is an exact match.
+          example: 81
     QualityEvaluationIssue:
       type: object
       required:

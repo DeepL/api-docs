@@ -9,6 +9,12 @@ rss: true
 </Update>
 
 <Update label="November 2026">
+## November 16 - Quality Evaluation: Translation Memory Matches and Wider SegmentTooLarge (Beta)
+- A [quality evaluation](/docs/best-practices/document-translations#requesting-a-quality-evaluation) report lists the translation issues DeepL detected in each segment of a translated document. For documents translated with a [translation memory](/docs/customize/using-translation-memories), the report now also returns, per segment, the translation memory entry the translation selected for it, so you can see where stored translations were in play when an issue was reported.
+- [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluations/poll#segment-text) returns the entry in `translation_memory_matches`, with its source and target text and a match score. There is at most one match per segment, and it honors the document's [`translation_memory_threshold`](/api-reference/document/upload-and-translate-a-document#body-translation-memory-threshold). Translation memories applied through `style_profile_id` produce no matches, because quality evaluation does not support style profiles yet.
+- The `SegmentTooLarge` issue sub-type now also covers segments too large for the model's context window, in addition to segments whose source and target together exceed 10,000 characters. See [Type and sub-type values](/api-reference/quality-evaluations/poll#type-and-sub-type-values).
+- Quality evaluation is in beta and available to select customers only.
+
 ## November 13 - Language Pair Usage Analytics in the Admin API
 - The new [`GET /v2/admin/analytics/language-pairs`](/api-reference/admin-api/get-language-pair-usage-analytics) endpoint returns your API usage per source and target language pair. Use it to build per-language-pair dashboards or cost reports.
 - Set `aggregate_by=day` for a daily time series, or leave it at the default `period` for totals over the date range. Set `group_by=key` to split each language pair by API key. Results are paginated.
