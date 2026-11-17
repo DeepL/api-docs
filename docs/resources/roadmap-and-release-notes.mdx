@@ -9,6 +9,11 @@ rss: true
 </Update>
 
 <Update label="November 2026">
+## November 17 - Custom Date Ranges for Language Pair Reports
+- The language pair-level CSV export and the "Top language pairs" tab in your DeepL account now support custom date ranges of up to 63 days, in addition to the existing presets. Use a custom range to report on an exact period that the presets don't cover.
+- A custom range can include the current day. Data for the current day lags by a few hours, and only data through the previous UTC calendar day is guaranteed complete.
+- See [Top language pairs tab](/docs/admin/retrieving-usage-data#top-language-pairs-tab) and [CSV export](/docs/admin/retrieving-usage-data#csv-export) in the usage data guide for details.
+
 ## November 16 - Quality Evaluation: Translation Memory Matches and Wider SegmentTooLarge (Beta)
 - A [quality evaluation](/docs/best-practices/document-translations#requesting-a-quality-evaluation) report lists the translation issues DeepL detected in each segment of a translated document. For documents translated with a [translation memory](/docs/customize/using-translation-memories), the report now also returns, per segment, the translation memory entry the translation selected for it, so you can see where stored translations were in play when an issue was reported.
 - [`GET /v1/quality-evaluations/{job_id}`](/api-reference/quality-evaluations/poll#segment-text) returns the entry in `translation_memory_matches`, with its source and target text and a match score. There is at most one match per segment, and it honors the document's [`translation_memory_threshold`](/api-reference/document/upload-and-translate-a-document#body-translation-memory-threshold). Translation memories applied through `style_profile_id` produce no matches, because quality evaluation does not support style profiles yet.

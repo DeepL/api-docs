@@ -8,7 +8,7 @@ public: true
 DeepL offers several ways to retrieve usage data so you can track character and minute consumption and the associated costs. This guide compares the available data sources and shows how to use each one.
 
 <Info>
-Consumption data in the account UI, in CSV exports, and in the [Admin API analytics endpoints](/api-reference/admin-api/get-usage-analytics) is available up to and including the previous UTC calendar day. For near-real-time data, use the [`/usage` endpoint](/api-reference/usage-and-quota/check-usage-and-limits).
+Consumption data in the account UI, in CSV exports, and in the [Admin API analytics endpoints](/api-reference/admin-api/get-usage-analytics) is complete up to and including the previous UTC calendar day. Custom date ranges in CSV exports and in the Top language pairs tab can also include the current day; that day's data lags by a few hours and might be incomplete. For near-real-time data, use the [`/usage` endpoint](/api-reference/usage-and-quota/check-usage-and-limits).
 </Info>
 
 ## Choose a data source
@@ -17,8 +17,8 @@ Consumption data in the account UI, in CSV exports, and in the [Admin API analyt
 | --- | --- | --- | --- | --- |
 | [API Keys & Limits tab](#api-keys-and-limits-tab) | Per API key | Current usage period only | Previous UTC day | Account UI |
 | [API Usage tab](#api-usage-tab) | Account total (plus year-to-date on yearly plans) | Current usage period (and yearly period) | Previous UTC day | Account UI |
-| [Top language pairs tab](#top-language-pairs-tab) (beta) | Account total, top 20 language pairs | Same presets as the [language pair-level CSV report](#csv-export) | Previous UTC day | Account UI |
-| [CSV export](#csv-export) | Per API key, per custom tag, per language pair, or per document | Preset ranges for all reports; custom ranges up to 4 months and optional grouping by day for key-level and tag-level reports | Previous UTC day | CSV download |
+| [Top language pairs tab](#top-language-pairs-tab) (beta) | Account total, top 20 language pairs | Presets or custom range | Previous UTC day (current day optional, partial) | Account UI |
+| [CSV export](#csv-export) | Per API key, per custom tag, per language pair, or per document | Presets for all reports; custom ranges for all except document translation | Previous UTC day (current day optional in custom ranges, partial) | CSV download |
 | [`/usage` endpoint](#the-usage-endpoint) | Account total | Current usage period only | Near-real-time (within minutes) | REST API |
 | [Admin API analytics](#admin-api-analytics) | Per API key, per custom tag, or per language pair | Custom date range, optional grouping by day | Previous UTC day | REST API |
 
@@ -60,7 +60,9 @@ Beta means this is a new feature that may change. Feedback is welcome.
 ![The Top language pairs tab in the API Usage section](/_assets/images/top-language-pairs-tab.png)
 </Frame>
 
-Use the period dropdown to choose a time range. The tab offers the same presets as the language pair-level CSV report, listed in the [CSV export section](#csv-export).
+Use the period dropdown to choose a preset or a custom date range. The presets are the same as for the language pair-level CSV report, and the range limits are the same; see [CSV export](#csv-export).
+
+A custom range can include the current day. That day's data is partial, so end the range on the previous UTC day for complete results.
 
 If your account has speech-to-text (STT) or speech-to-speech (STS) usage, toggles above the table let you switch the ranking between "Characters," "Speech-to-text minutes," and "Speech-to-speech minutes."
 
@@ -81,7 +83,16 @@ To download a report, click "Download CSV usage report" on the [API Keys & Limit
 ![](/_assets/images/download-csv-usage-report.png)
 </Frame>
 
-Select one of the presets or, for the API key-level and custom tag-level reports, a custom date range of up to 4 months (on UTC calendar days). The language pair-level and document translation reports currently support presets only.
+Select one of the presets or a custom date range (on UTC calendar days). Custom range limits differ by report:
+
+| **Report** | **Custom date range** |
+| --- | --- |
+| API key-level | Up to 4 months |
+| Custom tag-level | Up to 4 months |
+| Language pair-level | Up to 63 days |
+| Document translation | Not available (presets only) |
+
+A custom range can include the current day. Data for the current day lags by a few hours, and only data through the previous UTC calendar day is guaranteed complete. The same applies to the [Top language pairs tab](#top-language-pairs-tab).
 
 For the API key-level and custom tag-level reports, presets cover rolling windows from the last 24 hours up to the last year, as well as calendar months and usage periods. The language pair-level and document translation reports offer these presets:
 
