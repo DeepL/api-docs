@@ -337,7 +337,6 @@
               },
               {
                 "group": "Example Documents",
-                "tag": "BETA",
                 "pages": [
                   "api-reference/example-documents/list-example-documents",
                   "api-reference/example-documents/retrieve-an-example-document",
