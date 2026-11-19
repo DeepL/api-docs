@@ -132,7 +132,7 @@ tags:
     translation memory does not exist or does not cover the requested language pair.
 - name: ExampleDocuments
   description: |-
-    **Alpha.** The example document endpoints allow you to manage your account's example documents.
+    **Beta.** The example document endpoints allow you to manage your account's example documents.
     An example document is a document written in the language you translate into. Translations that
     reference it adapt to its style, tone, and terminology. You can import a document, list and
     retrieve your example documents, and delete one. Editing an existing example document is not

@@ -71,7 +71,7 @@
     },
     {
       "name": "ExampleDocuments",
-      "description": "**Alpha.** The example document endpoints allow you to manage your account's example documents.\nAn example document is a document written in the language you translate into. Translations that\nreference it adapt to its style, tone, and terminology. You can import a document, list and\nretrieve your example documents, and delete one. Editing an existing example document is not\nsupported; import a new one instead.\n\nImporting runs as a background job. Create the job, upload the file, then poll\n`GET /v3/example_documents/jobs/{job_id}` until it reports `completed`.\n\nExample documents can be used in text translation requests on `POST /v2/translate` by listing their\nIDs in `customizations.example_document_ids`. A request that references an example document the account\ncannot access fails with `404`."
+      "description": "**Beta.** The example document endpoints allow you to manage your account's example documents.\nAn example document is a document written in the language you translate into. Translations that\nreference it adapt to its style, tone, and terminology. You can import a document, list and\nretrieve your example documents, and delete one. Editing an existing example document is not\nsupported; import a new one instead.\n\nImporting runs as a background job. Create the job, upload the file, then poll\n`GET /v3/example_documents/jobs/{job_id}` until it reports `completed`.\n\nExample documents can be used in text translation requests on `POST /v2/translate` by listing their\nIDs in `customizations.example_document_ids`. A request that references an example document the account\ncannot access fails with `404`."
     },
     {
       "name": "VoiceAPI",
