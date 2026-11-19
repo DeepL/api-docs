@@ -201,6 +201,12 @@
             "pages": [
               "docs/customize/using-style-profiles"
             ]
+          },
+          {
+            "group": "Example Documents",
+            "pages": [
+              "docs/customize/using-example-documents"
+            ]
           }
         ]
       },
@@ -326,6 +332,18 @@
                   "api-reference/style-rules/get-custom-instruction",
                   "api-reference/style-rules/update-custom-instruction",
                   "api-reference/style-rules/delete-custom-instruction"
+                ],
+                "drilldown": false
+              },
+              {
+                "group": "Example Documents",
+                "tag": "ALPHA",
+                "pages": [
+                  "api-reference/example-documents/list-example-documents",
+                  "api-reference/example-documents/retrieve-an-example-document",
+                  "api-reference/example-documents/import-an-example-document",
+                  "api-reference/example-documents/retrieve-an-example-document-import-job",
+                  "api-reference/example-documents/delete-an-example-document"
                 ],
                 "drilldown": false
               },

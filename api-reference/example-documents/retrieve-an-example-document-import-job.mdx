@@ -1,0 +1,24 @@
+---
+openapi: get /v3/example_documents/jobs/{job_id}
+title: "Retrieve an import job"
+description: "Poll an example document import job and read its status values, result, and failure messages."
+---
+
+The statuses `completed`, `failed`, and `expired` are final. `awaiting_input` and `processing` are transient.
+
+<Note>
+  A job can stay at `awaiting_input` for up to a minute after the upload succeeds, because uploads are picked up periodically rather than instantly.
+</Note>
+
+## Failure messages
+
+| **Message** | **Cause** |
+| --- | --- |
+| `The uploaded document could not be read.` | The file is damaged, or its content does not match the extension of the declared file name |
+| `The document's language could not be detected or is not supported.` | No language could be determined for the document, or it is written in a language example documents do not support |
+| `The document is too large to import.` | The document contains more text than an example document can hold |
+| `The import ran out of resources; please try again.` | A temporary condition on DeepL's side |
+
+## Source file
+
+`source_file` reports the declared `content_type` and `content_length`. The declared file name is not returned; `parameters.display_name` holds the name of the example document, which defaults to the file name.
