@@ -1,0 +1,173 @@
+---
+title: "Adapting Translations with Example Documents"
+sidebarTitle: "Using Example Documents"
+description: "Import a document written in your target language and reference it in translation requests so translations adapt to its style, tone, and terminology."
+covers: [Customize]
+---
+
+An example document is a document written in the language you translate into, such as a published newsletter, a product manual, or a past report. When a translation request references it, DeepL adapts the translation to the document's style, tone, and terminology.
+
+Use this guide when you already have published text in your target language that shows how translations should read, and you want to store it once and reuse it across requests. To send a few source and target sentence pairs with each request instead, see [Using adaptive translation](/docs/customize/using-adaptive-translation).
+
+## Prerequisites
+
+- A DeepL API authentication key for an account with example documents enabled, exported as `API_KEY`. A scoped key needs the scopes listed under [permission scopes](/docs/admin/permission-scopes).
+- A document in a [supported file format and language](/api-reference/example-documents/import-an-example-document#supported-file-formats)
+
+The steps below use `member-newsletter.txt`, a German customer newsletter that addresses readers informally and uses gender-inclusive forms such as "Kund:innen".
+
+## Step 1: Create the import job
+
+Declare the file you are going to upload. Send its name and its size in bytes, and optionally a name for the example document.
+
+```sh Example request
+curl -X POST https://api.deepl.com/v3/example_documents/import \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "source_file": {
+      "file_name": "member-newsletter.txt",
+      "content_length": 1070
+    },
+    "parameters": {
+      "display_name": "Member newsletter"
+    }
+}'
+```
+
+```json Example response
+{
+  "job_id": "31909c14-3f7e-4a1f-8b08-38f04ced7f45",
+  "upload_url": "https://assets.deepl.com/upload/31909c14-3f7e-4a1f-8b08-38f04ced7f45",
+  "expires_at": "2026-11-19T09:52:09.410Z"
+}
+```
+
+Keep the job ID for Step 3, and export the upload URL as `UPLOAD_URL` for Step 2. The URL stops working at the expiry time in the response.
+
+To get the size of a file in bytes, run `wc -c < member-newsletter.txt`.
+
+## Step 2: Upload the file
+
+Send the file to the upload URL with a `PUT` request. The URL is already signed, so leave out the `Authorization` header.
+
+```sh Example request
+curl -X PUT "$UPLOAD_URL" \
+  --data-binary @member-newsletter.txt
+```
+
+A successful upload returns `201 Created`. Processing starts on its own, so there is no call to confirm the upload.
+
+## Step 3: Wait for the import to finish
+
+Poll the job until its status is `completed`, `failed`, or `expired`. Imports of short documents typically finish within a minute.
+
+```sh Example request
+curl -X GET https://api.deepl.com/v3/example_documents/jobs/31909c14-3f7e-4a1f-8b08-38f04ced7f45 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+```json Example response
+{
+  "job_id": "31909c14-3f7e-4a1f-8b08-38f04ced7f45",
+  "product": "example_document",
+  "operation": "import",
+  "creation_time": "2026-11-19T09:37:09.355654Z",
+  "updated_time": "2026-11-19T09:38:46.107064Z",
+  "source_file": {
+    "content_type": "",
+    "content_length": 1070
+  },
+  "parameters": {
+    "display_name": "Member newsletter"
+  },
+  "results": [
+    {
+      "status": "completed",
+      "example_document_id": "32f1815a-be0b-4ed8-9e73-d375f0131295",
+      "skipped_chunk_count": 0
+    }
+  ]
+}
+```
+
+Copy the example document ID from the result. If the status is `failed`, the result carries a message instead. See the [import job reference](/api-reference/example-documents/retrieve-an-example-document-import-job) for the status values and failure messages.
+
+## Step 4: Translate with the example document
+
+Reference the example document in a [text translation request](/api-reference/translate/request-translation). Send the request as JSON and translate into the language the document is written in.
+
+```sh Example request
+curl -X POST https://api.deepl.com/v2/translate \
+  --header "Authorization: DeepL-Auth-Key $API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "text": [
+      "Dear customers, thank you for your feedback. Our employees will contact all participants next week, and you will find the new features in your account."
+    ],
+    "source_lang": "EN",
+    "target_lang": "DE",
+    "customizations": {
+      "example_document_ids": ["32f1815a-be0b-4ed8-9e73-d375f0131295"]
+    }
+}'
+```
+
+```json Example response
+{
+  "translations": [
+    {
+      "text": "Liebe Kund:innen, vielen Dank für dein Feedback. Unsere Mitarbeiter:innen werden sich nächste Woche mit allen Teilnehmer:innen in Verbindung setzen, und du wirst die neuen Funktionen in deinem Konto vorfinden.",
+      "detected_source_language": "EN"
+    }
+  ]
+}
+```
+
+If you want to apply several example documents, list up to 10 IDs. Documents that are not written in the target language of the request are left out without an error, so one list can cover several target languages.
+
+<Warning>
+  Example documents are only applied to requests with a JSON body. In a form-encoded request they are ignored, and the response is a normal `200` with an unadapted translation.
+</Warning>
+
+## Verify the result
+
+Nothing in the response says whether an example document was applied. To confirm it, send the same request without the example document and compare the two translations.
+
+```json Example response without the example document
+{
+  "translations": [
+    {
+      "text": "Liebe Kunden, vielen Dank für Ihr Feedback. Unsere Mitarbeiter werden sich nächste Woche mit allen Teilnehmern in Verbindung setzen, und Sie werden die neuen Funktionen in Ihrem Konto vorfinden.",
+      "detected_source_language": "EN"
+    }
+  ]
+}
+```
+
+With the example document, the translation picks up the newsletter's informal address ("dein" instead of "Ihr") and its gender-inclusive forms. "Teilnehmer:innen" follows the document's pattern for a sentence the document does not contain.
+
+## Remove an example document
+
+To see which example documents your account holds, [list them](/api-reference/example-documents/list-example-documents). When a document is out of date, [delete it](/api-reference/example-documents/delete-an-example-document) and import the new version, because an imported document cannot be edited.
+
+Remove the ID from your translation requests before you delete the document. A request that references a deleted example document fails.
+
+```sh Example request
+curl -X DELETE https://api.deepl.com/v3/example_documents/32f1815a-be0b-4ed8-9e73-d375f0131295 \
+  --header "Authorization: DeepL-Auth-Key $API_KEY"
+```
+
+A successful delete returns `204 No Content` with an empty body.
+
+## Troubleshooting
+
+| **Problem** | **Cause** | **Solution** |
+| --- | --- | --- |
+| The job stays at `awaiting_input` after the upload | Uploads are picked up periodically, which can take up to a minute | Keep polling. If the status does not change, check that the `PUT` request returned `201` |
+| The job reports `expired` | The file was not uploaded before the upload URL expired | Create a new import job and upload to the new URL |
+| The job reports `failed` | The file could not be read, or its language is not supported | Look up the message in the [failure messages](/api-reference/example-documents/retrieve-an-example-document-import-job#failure-messages), fix the file, and create a new import job |
+| The import request is rejected as an unsupported file format | The declared file name has no extension or one that is not supported | Convert the document to a [supported format](/api-reference/example-documents/import-an-example-document#supported-file-formats) |
+| The import request returns `456` | The account holds the maximum number of example documents | Delete an example document you no longer need |
+| The translation request returns `404` | The ID does not exist, was deleted, or belongs to another account | List your example documents and use an ID from the list |
+| The translation comes back unadapted | The document is not written in the target language, the request is form-encoded, or the text gives the model nothing to adapt | Check the document's language and the request format, then compare against a request without the document |

@@ -100,6 +100,21 @@ Each scope grants a [scoped API key](/docs/admin/api-key-permissions) access to 
     | `DELETE` | [`/v3/translation_memories/{translation_memory_id}`](/api-reference/translation-memory/delete-a-translation-memory) |
   </Accordion>
 
+  <Accordion title="Retrieve example documents and import jobs (example_documents:read)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `GET` | [`/v3/example_documents`](/api-reference/example-documents/list-example-documents) |
+    | `GET` | [`/v3/example_documents/{example_document_id}`](/api-reference/example-documents/retrieve-an-example-document) |
+    | `GET` | [`/v3/example_documents/jobs/{job_id}`](/api-reference/example-documents/retrieve-an-example-document-import-job) |
+  </Accordion>
+
+  <Accordion title="Import and delete example documents (example_documents:write)">
+    | **Method** | **Endpoint** |
+    | --- | --- |
+    | `POST` | [`/v3/example_documents/import`](/api-reference/example-documents/import-an-example-document) |
+    | `DELETE` | [`/v3/example_documents/{example_document_id}`](/api-reference/example-documents/delete-an-example-document) |
+  </Accordion>
+
   <Accordion title="Retrieve languages and resources (languages:read)">
     | **Method** | **Endpoint** |
     | --- | --- |
