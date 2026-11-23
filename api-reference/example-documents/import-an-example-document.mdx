@@ -1,0 +1,48 @@
+---
+openapi: post /v3/example_documents/import
+title: "Import an example document"
+description: "Create an example document by declaring a file, uploading it to a signed URL, and polling the import job."
+---
+
+Importing a file is the only way to create an example document. The request body describes the file you intend to upload; it does not carry the file. DeepL returns a signed `upload_url`, the file is uploaded to that URL, and processing starts automatically once the upload finishes.
+
+For a walkthrough of the full flow with example requests, see [Adapting translations with example documents](/docs/customize/using-example-documents).
+
+## Supported file formats
+
+The extension of `file_name` selects how the file is read. Any other extension is rejected with `400 Bad Request`.
+
+| **Format** | **Extensions** |
+| --- | --- |
+| Plain text | `txt` |
+| Microsoft Word | `docx` |
+| Microsoft PowerPoint | `pptx` |
+| Microsoft Excel | `xlsx` |
+| HTML | `htm`, `html` |
+| Markdown | `md` |
+| SubRip subtitles | `srt` |
+| XLIFF 2.0 and 2.1 | `xlf`, `xliff` |
+| PDF | `pdf` |
+
+## Limits
+
+| **Limit** | **Value** |
+| --- | ---: |
+| File size | 1 GB |
+| File name length | 100 characters |
+| Content type length | 127 characters |
+| Example document name length | 100 characters |
+| Example documents per list page | 100 |
+| Example documents per translation request | 10 |
+
+## Behavior to be aware of
+
+A `202 Accepted` means the job exists, not that an example document does. Until the upload completes and the job reports `completed`, there is no `example_document_id` to reference.
+
+The declared `content_type` is not checked against the file extension. The extension of `file_name` alone decides how the file is read.
+
+If `expires_at` passes before the file is uploaded, the signed URL stops working and the job reports `expired`. Create a new import job to get a fresh URL.
+
+The language of the document is detected during import and is not part of the request. Example documents are currently applied to translations into English, German, French, Italian, and Spanish, including their regional variants. A document in another language has no effect on translations. See [Languages supported](/docs/getting-started/supported-languages) for the full list.
+
+If your account has reached its example document limit, the request returns `456`. An import job that is still waiting for its upload counts toward the limit until it expires.

@@ -130,6 +130,20 @@ tags:
     `translation_memory_threshold` which defines the minimum matching percentage required for a translation memory
     segment to be applied (recommended to be 75% or higher). A translation request fails with `404` if the
     translation memory does not exist or does not cover the requested language pair.
+- name: ExampleDocuments
+  description: |-
+    The example document endpoints allow you to manage your account's example documents.
+    An example document is a document written in the language you translate into. Translations that
+    reference it adapt to its style, tone, and terminology. You can import a document, list and
+    retrieve your example documents, and delete one. Editing an existing example document is not
+    supported; import a new one instead.
+
+    Importing runs as a background job. Create the job, upload the file, then poll
+    `GET /v3/example_documents/jobs/{job_id}` until it reports `completed`.
+
+    Example documents can be used in text translation requests on `POST /v2/translate` by listing their
+    IDs in `customizations.example_document_ids`. A request that references an example document the account
+    cannot access fails with `404`.
 - name: VoiceAPI
   description: |-
     The Voice API provides real-time voice transcription and translation services.
@@ -3161,6 +3175,7 @@ paths:
                         - write
                         - style_rules
                         - translation_memory
+                        - example_documents
                       example: translate_text
                     features:
                       description: |-
@@ -3187,6 +3202,7 @@ paths:
                               - translated_speech
                               - spoken_terms
                               - translation_memory
+                              - example_documents
                           needs_source_support:
                             description: If `true`, the source language must support this feature for it to be available. Defaults to `false` if absent.
                             type: boolean
@@ -3253,11 +3269,13 @@ paths:
               - write
               - style_rules
               - translation_memory
+              - example_documents
           example: translate_text
           x-default: translate_text
           description: |-
             The resource to retrieve languages for. Supported values: `translate_text`, `translate_document`,
-            `glossary`, `voice`, `write`, `style_rules`, `translation_memory`.
+            `glossary`, `voice`, `write`, `style_rules`, `translation_memory`,
+            `example_documents`.
         - name: include
           in: query
           required: false
@@ -4061,6 +4079,448 @@ paths:
           description: |-
             An export of this translation memory is already in progress. Poll that job instead of starting
             another export.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
+  /v3/example_documents:
+    get:
+      tags:
+      - ExampleDocuments
+      summary: List example documents
+      operationId: listExampleDocuments
+      description: |-
+        Retrieve a list of the example documents owned by the authenticated account, newest first.
+
+        Only fully imported example documents are listed. A document that is still importing is
+        visible through its [import job](/api-reference/example-documents/retrieve-an-example-document-import-job).
+
+        Requires an API key with the `example_documents:read` scope.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: |-
+            The index of the page to return, starting at 0. Use with `page_size` to get the next page of
+            example documents. A negative value is rejected with `400 Bad Request`.
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+          description: |-
+            The maximum number of example documents to return. A value above the
+            [largest page size](/api-reference/example-documents/import-an-example-document#limits) is reduced to it. A value below 1 is rejected with
+            `400 Bad Request`.
+      responses:
+        '200':
+          description: Returns a list of example documents.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  example_documents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExampleDocument'
+                  total_count:
+                    type: integer
+                    description: The total number of example documents available.
+                    example: 2
+              examples:
+                Basic:
+                  value:
+                    example_documents:
+                    - example_document_id: 32f1815a-be0b-4ed8-9e73-d375f0131295
+                      name: Member newsletter
+                      source_language: de
+                      creation_time: '2026-11-19T09:38:46.107Z'
+                    - example_document_id: 2c4f8a16-7d3b-4e59-a1c0-6b9d5e8f3a72
+                      name: Annual report 2025
+                      source_language: en
+                      creation_time: '2026-10-15T09:40:40.922Z'
+                    total_count: 2
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ForbiddenScoped'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
+  /v3/example_documents/import:
+    post:
+      tags:
+      - ExampleDocuments
+      summary: Import an example document
+      operationId: createExampleDocumentImport
+      description: |-
+        Create an example document by importing a file.
+
+        This endpoint does not accept the file itself. It returns a short-lived `upload_url`, and you
+        upload the file to that URL with a separate `PUT` request. Processing starts automatically
+        once the upload completes, so there is no third call to confirm it.
+
+        1. `POST /v3/example_documents/import` with the file's name and size. The response returns a
+           `job_id`, an `upload_url`, and the `expires_at` time after which the URL stops working.
+        2. `PUT` the file to `upload_url`. Do not send your `Authorization` header on this request,
+           because the URL is already signed.
+        3. Poll [Retrieve an import job](/api-reference/example-documents/retrieve-an-example-document-import-job)
+           until the status is `completed`. The new `example_document_id` is on the job result.
+
+        The request body must be JSON. Any other content type is rejected with
+        `415 Unsupported Media Type`.
+
+        Requires an API key with the `example_documents:write` scope.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - source_file
+              properties:
+                source_file:
+                  type: object
+                  required:
+                  - file_name
+                  - content_length
+                  properties:
+                    file_name:
+                      description: |-
+                        The name of the file you intend to upload, including its extension. The extension
+                        selects how the file is read and must belong to a
+                        [supported file format](/api-reference/example-documents/import-an-example-document#supported-file-formats).
+                        A missing name, a name over the [length limit](/api-reference/example-documents/import-an-example-document#limits),
+                        or an unsupported extension is rejected with `400 Bad Request`.
+                      type: string
+                      example: member-newsletter.txt
+                    content_type:
+                      description: |-
+                        The MIME type of the file. Optional. A value over the
+                        [length limit](/api-reference/example-documents/import-an-example-document#limits) is rejected with `400 Bad Request`.
+                      type: string
+                      example: text/plain
+                    content_length:
+                      description: |-
+                        The size of the file in bytes. Must be greater than 0. A missing or zero value, or
+                        one over the [file size limit](/api-reference/example-documents/import-an-example-document#limits), is rejected with `400 Bad Request`.
+                      type: integer
+                      format: int64
+                      minimum: 1
+                      example: 1070
+                parameters:
+                  type: object
+                  properties:
+                    display_name:
+                      description: |-
+                        The name to give the new example document. A value over the
+                        [length limit](/api-reference/example-documents/import-an-example-document#limits) is rejected with `400 Bad Request`. If you omit this, the
+                        example document is named after the file.
+                      type: string
+                      example: Member newsletter
+            examples:
+              Basic:
+                value:
+                  source_file:
+                    file_name: member-newsletter.txt
+                    content_type: text/plain
+                    content_length: 1070
+                  parameters:
+                    display_name: Member newsletter
+      responses:
+        '202':
+          description: |-
+            The import job was created. Upload the file to `upload_url` before `expires_at`.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - job_id
+                - upload_url
+                - expires_at
+                properties:
+                  job_id:
+                    description: The identifier of the import job. Use it to poll the job's status.
+                    type: string
+                    format: uuid
+                    example: 31909c14-3f7e-4a1f-8b08-38f04ced7f45
+                  upload_url:
+                    description: |-
+                      A signed URL to `PUT` the file to. Do not send your `Authorization` header with the
+                      upload request.
+                    type: string
+                    format: uri
+                    example: https://assets.deepl.com/upload/31909c14-3f7e-4a1f-8b08-38f04ced7f45
+                  expires_at:
+                    description: |-
+                      The time the `upload_url` stops accepting uploads, in the ISO 8601-1:2019 format. After
+                      this time, create a new import job.
+                    type: string
+                    format: date-time
+                    example: '2026-11-19T09:52:09.410Z'
+              examples:
+                Basic:
+                  value:
+                    job_id: 31909c14-3f7e-4a1f-8b08-38f04ced7f45
+                    upload_url: https://assets.deepl.com/upload/31909c14-3f7e-4a1f-8b08-38f04ced7f45
+                    expires_at: '2026-11-19T09:52:09.410Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ForbiddenScoped'
+        '415':
+          description: The request body is not JSON. Set the `Content-Type` header to `application/json`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '456':
+          description: |-
+            You have reached the maximum number of example documents for your account. Delete an
+            example document before importing another one.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
+  /v3/example_documents/jobs/{job_id}:
+    get:
+      tags:
+      - ExampleDocuments
+      summary: Retrieve an import job
+      operationId: getExampleDocumentJob
+      description: |-
+        Retrieve the status of an example document import job.
+
+        Poll this endpoint after creating a job. The single entry in `results` carries the status and,
+        once the import finishes, the new `example_document_id`.
+
+        Requires an API key with the `example_documents:read` scope.
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The identifier of the job, returned when you created the import.
+          example: 31909c14-3f7e-4a1f-8b08-38f04ced7f45
+      responses:
+        '200':
+          description: Returns the current state of the job.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleDocumentJob'
+              examples:
+                Awaiting upload:
+                  value:
+                    job_id: 31909c14-3f7e-4a1f-8b08-38f04ced7f45
+                    product: example_document
+                    operation: import
+                    creation_time: '2026-11-19T09:37:09.355Z'
+                    updated_time: '2026-11-19T09:37:09.355Z'
+                    source_file:
+                      content_type: text/plain
+                      content_length: 1070
+                    parameters:
+                      display_name: Member newsletter
+                    results:
+                    - status: awaiting_input
+                      status_metadata:
+                        required_action: Waiting for upload
+                Completed:
+                  value:
+                    job_id: 31909c14-3f7e-4a1f-8b08-38f04ced7f45
+                    product: example_document
+                    operation: import
+                    creation_time: '2026-11-19T09:37:09.355Z'
+                    updated_time: '2026-11-19T09:38:46.107Z'
+                    source_file:
+                      content_type: text/plain
+                      content_length: 1070
+                    parameters:
+                      display_name: Member newsletter
+                    results:
+                    - status: completed
+                      example_document_id: 32f1815a-be0b-4ed8-9e73-d375f0131295
+                      skipped_chunk_count: 0
+                Failed:
+                  value:
+                    job_id: 31909c14-3f7e-4a1f-8b08-38f04ced7f45
+                    product: example_document
+                    operation: import
+                    creation_time: '2026-11-19T09:37:09.355Z'
+                    updated_time: '2026-11-19T09:37:41.802Z'
+                    source_file:
+                      content_type: text/plain
+                      content_length: 1070
+                    parameters:
+                      display_name: Member newsletter
+                    results:
+                    - status: failed
+                      error:
+                        message: The uploaded document could not be read.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ForbiddenScoped'
+        '404':
+          description: |-
+            The job could not be found. This is also returned for a `job_id` that is not a UUID and for a
+            job that belongs to another account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
+  /v3/example_documents/{example_document_id}:
+    get:
+      tags:
+      - ExampleDocuments
+      summary: Retrieve an example document
+      operationId: getExampleDocument
+      description: |-
+        Retrieve a single example document by its ID, including its name and language.
+
+        The content of an example document cannot be retrieved.
+
+        Requires an API key with the `example_documents:read` scope.
+      parameters:
+        - name: example_document_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ExampleDocumentId'
+          description: |-
+            The ID of the example document to retrieve. A value that is not a UUID is rejected with
+            `400 Bad Request`.
+      responses:
+        '200':
+          description: Returns the example document.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleDocument'
+              examples:
+                Basic:
+                  value:
+                    example_document_id: 32f1815a-be0b-4ed8-9e73-d375f0131295
+                    name: Member newsletter
+                    source_language: de
+                    creation_time: '2026-11-19T09:38:46.107Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ForbiddenScoped'
+        '404':
+          description: |-
+            The example document could not be found. This is also returned for an example document that
+            belongs to another account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      security:
+      - auth_header: []
+    delete:
+      tags:
+      - ExampleDocuments
+      summary: Delete an example document
+      operationId: deleteExampleDocument
+      description: |-
+        Delete an example document.
+
+        Deletion is permanent and cannot be undone. Translation requests that pass the deleted
+        `example_document_id` fail with `404 Not Found` after this call, so update your integration
+        before deleting.
+
+        Deleting an example document that was already deleted succeeds with `204 No Content`.
+
+        Requires an API key with the `example_documents:write` scope.
+      parameters:
+        - name: example_document_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ExampleDocumentId'
+          description: |-
+            The ID of the example document to delete. A value that is not a UUID is rejected with
+            `400 Bad Request`.
+      responses:
+        '204':
+          description: The example document was deleted. The response has no body.
+          headers:
+            X-Trace-ID:
+              $ref: '#/components/headers/X-Trace-ID'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ForbiddenScoped'
+        '404':
+          description: |-
+            The example document could not be found. This is also returned for an example document that
+            belongs to another account.
           content:
             application/json:
               schema:
@@ -7912,6 +8372,156 @@ components:
 
         For the full list of supported source languages, see [supported languages](https://developers.deepl.com/docs/getting-started/supported-languages) or query the [`GET /v3/languages` endpoint](https://developers.deepl.com/docs/languages/using-the-languages-api).
       example: EN
+    ExampleDocument:
+      type: object
+      required:
+        - example_document_id
+        - name
+        - source_language
+        - creation_time
+      properties:
+        example_document_id:
+          $ref: '#/components/schemas/ExampleDocumentId'
+        name:
+          description: Name associated with the example document.
+          type: string
+          example: Member newsletter
+        source_language:
+          description: |-
+            The language the example document is written in, detected during import. The document is
+            applied to translations into this language.
+          type: string
+          example: de
+        creation_time:
+          description: 'The creation time of the example document in the ISO 8601-1:2019 format (e.g.: `2021-08-03T14:16:18.329Z`).'
+          type: string
+          format: date-time
+          example: '2026-11-19T09:38:46.107Z'
+    ExampleDocumentId:
+      type: string
+      format: uuid
+      description: |-
+        A unique ID assigned to an example document.
+      example: 32f1815a-be0b-4ed8-9e73-d375f0131295
+    ExampleDocumentJob:
+      description: The state of an example document import job.
+      type: object
+      required:
+      - job_id
+      - product
+      - operation
+      - creation_time
+      - updated_time
+      - parameters
+      - results
+      properties:
+        job_id:
+          description: The identifier of the job.
+          type: string
+          format: uuid
+          example: 31909c14-3f7e-4a1f-8b08-38f04ced7f45
+        product:
+          description: The DeepL product the job belongs to. Always `example_document`.
+          type: string
+          example: example_document
+        operation:
+          description: Which kind of job this is. Always `import`.
+          type: string
+          enum:
+          - import
+          example: import
+        creation_time:
+          description: The time the job was created, in the ISO 8601-1:2019 format.
+          type: string
+          format: date-time
+          example: '2026-11-19T09:37:09.355Z'
+        updated_time:
+          description: The time the job last changed state, in the ISO 8601-1:2019 format.
+          type: string
+          format: date-time
+          example: '2026-11-19T09:38:46.107Z'
+        source_file:
+          description: The file declared when the import job was created.
+          type: object
+          properties:
+            content_type:
+              description: |-
+                The MIME type declared for the uploaded file. An empty string if none was declared.
+              type: string
+              example: text/plain
+            content_length:
+              description: The size in bytes declared for the uploaded file.
+              type: integer
+              format: int64
+              example: 1070
+        parameters:
+          description: The parameters the job was created with.
+          type: object
+          properties:
+            display_name:
+              description: |-
+                The name given to the example document the import creates. The file name if no
+                `display_name` was sent.
+              type: string
+              example: Member newsletter
+        results:
+          description: |-
+            The job's outcome. This array always holds exactly one entry. It is an array so that jobs
+            producing multiple outputs can be represented without a breaking change.
+          type: array
+          items:
+            $ref: '#/components/schemas/ExampleDocumentJobResult'
+    ExampleDocumentJobResult:
+      description: The status of an example document import job and, once it finishes, its output.
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          description: |-
+            The job's current state:
+             * `awaiting_input` - the job exists but the file has not been uploaded yet
+             * `processing` - the file was received and is being processed
+             * `completed` - the job finished successfully
+             * `failed` - the job did not finish; see `error`
+             * `expired` - the upload URL expired before a file was uploaded; create a new job
+          type: string
+          enum:
+          - awaiting_input
+          - processing
+          - completed
+          - failed
+          - expired
+          example: completed
+        status_metadata:
+          description: |-
+            Extra context for states that need you to act. Present only when there is something to do.
+          type: object
+          properties:
+            required_action:
+              description: What the job is waiting for.
+              type: string
+              example: Waiting for upload
+        example_document_id:
+          description: The ID of the example document the import created. Present on completed jobs only.
+          type: string
+          format: uuid
+          example: 32f1815a-be0b-4ed8-9e73-d375f0131295
+        skipped_chunk_count:
+          description: |-
+            The number of passages of the document that were not stored. Present on completed jobs
+            only. A non-zero value does not mean the import failed.
+          type: integer
+          format: int64
+          example: 0
+        error:
+          description: Why the job failed. Present only when `status` is `failed`.
+          type: object
+          properties:
+            message:
+              description: A description of the failure.
+              type: string
+              example: The uploaded document could not be read.
     TranslationMemory:
       type: object
       required:
