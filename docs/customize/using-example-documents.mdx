@@ -12,7 +12,7 @@ Use this guide when you already have published text in your target language that
 ## Prerequisites
 
 - A DeepL API authentication key for an account with example documents enabled, exported as `API_KEY`. A scoped key needs the scopes listed under [permission scopes](/docs/admin/permission-scopes).
-- A document in a [supported file format and language](/api-reference/example-documents/import-an-example-document#supported-file-formats)
+- A document in a [supported file format](/api-reference/example-documents/import-an-example-document#supported-file-formats), written in a [language that supports example documents](/docs/getting-started/supported-languages). To check programmatically, call [`GET /v3/languages?resource=example_documents`](/docs/languages/using-the-languages-api).
 
 The steps below use `member-newsletter.txt`, a German customer newsletter that addresses readers informally and uses gender-inclusive forms such as "Kund:innen".
 

@@ -88,7 +88,7 @@ const rows = (translateText, { write = [], styleRules = [], tm = [] } = {}) =>
   buildRows(translateText, [write, styleRules, tm]);
 
 test('buildRows maps API flags to table columns', () => {
-  const [de] = rows([lang('de', 'German', { glossary: {}, tag_handling: {} })], {
+  const [de] = rows([lang('de', 'German', { glossary: {}, tag_handling: {}, example_documents: {} })], {
     write: [lang('de', 'German')],
     tm: [lang('de', 'German')],
   });
@@ -100,6 +100,7 @@ test('buildRows maps API flags to table columns', () => {
     isBeta: false,
     glossaries: true,
     tagHandling: true,
+    exampleDocuments: true,
     textImprovement: true,
     translationMemory: true,
     styleRules: false,

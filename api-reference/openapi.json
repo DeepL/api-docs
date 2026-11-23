@@ -4282,7 +4282,8 @@
                           "voice",
                           "write",
                           "style_rules",
-                          "translation_memory"
+                          "translation_memory",
+                          "example_documents"
                         ],
                         "example": "translate_text"
                       },
@@ -4309,7 +4310,8 @@
                                 "transcription",
                                 "translated_speech",
                                 "spoken_terms",
-                                "translation_memory"
+                                "translation_memory",
+                                "example_documents"
                               ]
                             },
                             "needs_source_support": {
@@ -4420,12 +4422,13 @@
                 "voice",
                 "write",
                 "style_rules",
-                "translation_memory"
+                "translation_memory",
+                "example_documents"
               ]
             },
             "example": "translate_text",
             "x-default": "translate_text",
-            "description": "The resource to retrieve languages for. Supported values: `translate_text`, `translate_document`,\n`glossary`, `voice`, `write`, `style_rules`, `translation_memory`."
+            "description": "The resource to retrieve languages for. Supported values: `translate_text`, `translate_document`,\n`glossary`, `voice`, `write`, `style_rules`, `translation_memory`,\n`example_documents`."
           },
           {
             "name": "include",

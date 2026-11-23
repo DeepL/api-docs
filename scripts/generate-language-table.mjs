@@ -50,6 +50,7 @@ export function buildRows(translateText, featureLists) {
       isBeta: lang.status !== 'stable',
       glossaries: 'glossary' in lang.features,
       tagHandling: 'tag_handling' in lang.features,
+      exampleDocuments: 'example_documents' in lang.features,
       textImprovement: false,
       translationMemory: false,
       styleRules: false,
@@ -81,7 +82,7 @@ export function renderRow(l) {
     `translation: ${l.translation}, isVariant: ${l.isVariant},${beta} ` +
     `glossaries: ${l.glossaries}, tagHandling: ${l.tagHandling}, ` +
     `textImprovement: ${l.textImprovement}, translationMemory: ${l.translationMemory}, ` +
-    `styleRules: ${l.styleRules} },`
+    `styleRules: ${l.styleRules}, exampleDocuments: ${l.exampleDocuments} },`
   );
 }
 

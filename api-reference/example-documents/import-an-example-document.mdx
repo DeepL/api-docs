@@ -43,6 +43,6 @@ The declared `content_type` is not checked against the file extension. The exten
 
 If `expires_at` passes before the file is uploaded, the signed URL stops working and the job reports `expired`. Create a new import job to get a fresh URL.
 
-The language of the document is detected during import and is not part of the request. Example documents are currently applied to translations into English, German, French, Italian, and Spanish. A document in another language has no effect on translations.
+The language of the document is detected during import and is not part of the request. Example documents are currently applied to translations into English, German, French, Italian, and Spanish, including their regional variants. A document in another language has no effect on translations. See [Languages supported](/docs/getting-started/supported-languages) for the full list.
 
 If your account has reached its example document limit, the request returns `456`. An import job that is still waiting for its upload counts toward the limit until it expires.
