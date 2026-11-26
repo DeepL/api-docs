@@ -923,10 +923,10 @@ paths:
                     text. A component that does not fit a text's language pair is left out for that text; this is not an
                     error.
 
-                    Cannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,
-                    `translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected
-                    with `400 Bad Request`. A style profile that does not exist or that your account cannot access is
-                    rejected with `404 Not Found`.
+                    Cannot be combined with `customizations`, `glossary_id`, `glossary_ids`, `style_id`,
+                    `translation_memory_id`, `translation_memory_threshold` or `custom_instructions`. A request that
+                    combines them is rejected with `400 Bad Request`. A style profile that does not exist or that your
+                    account cannot access is rejected with `404 Not Found`.
                   type: string
                   format: uuid
                   example: 3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47
@@ -937,18 +937,20 @@ paths:
                     this object over the individual customization parameters. Each field behaves like the
                     parameter it corresponds to.
 
-                    Cannot be used together with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,
-                    `translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected
-                    with `400 Bad Request` naming the conflicting parameter. Accepted in JSON request bodies only.
+                    Cannot be used together with `style_profile_id`, `glossary_id`, `glossary_ids`, `style_id`,
+                    `translation_memory_id`, `translation_memory_threshold` or `custom_instructions`. A request that
+                    combines them is rejected with `400 Bad Request` naming the conflicting parameter.
 
-                    Available for accounts that have it enabled. Contact your DeepL representative to request access.
+                    Accepted in JSON request bodies only. In a form-encoded request the object is ignored and the
+                    text is translated without these customizations.
                   type: object
                   properties:
                     glossary_ids:
                       description: |-
                         Up to 5 glossaries to use for the translation, in the order they should be applied. Corresponds to
-                        `glossary_ids`: requires `source_lang`, and every listed glossary must contain a dictionary for the
-                        requested language pair.
+                        `glossary_ids`: every listed glossary must contain a dictionary for the language pair of the
+                        request. If `source_lang` is omitted, DeepL detects the source language and uses the
+                        dictionaries for the detected language pair.
                       type: array
                       items:
                         type: string
@@ -994,12 +996,10 @@ paths:
                             example: 75
                     example_document_ids:
                       description: |-
-                        Up to 10 example documents whose translations the model adapts to, in the order they should be
-                        applied. A document must be fully imported and written in the target language; a document that
-                        does not fit the request's language pair is left out. An ID your account cannot access is rejected
-                        with `404 Not Found`.
-
-                        Available for accounts with example documents enabled.
+                        Up to 10 [example documents](/docs/customize/using-example-documents) whose style, tone and
+                        terminology the translation adapts to, in the order they should be applied. A document must be
+                        fully imported and written in the target language; a document in another language is left out
+                        without an error. An ID your account cannot access is rejected with `404 Not Found`.
                       type: array
                       items:
                         type: string

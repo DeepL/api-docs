@@ -1111,17 +1111,17 @@
                     }
                   },
                   "style_profile_id": {
-                    "description": "Translate with a [style profile](/api-reference/style-profiles/list-all-style-profiles): its glossaries,\nstyle rule lists and translation memories through one ID. The profile is applied per text once the\nsource language is known: the glossaries with a dictionary for the text's language pair, the style\nrule list for the target language, and the translation memories whose source language matches the\ntext. A component that does not fit a text's language pair is left out for that text; this is not an\nerror.\n\nCannot be combined with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,\n`translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected\nwith `400 Bad Request`. A style profile that does not exist or that your account cannot access is\nrejected with `404 Not Found`.",
+                    "description": "Translate with a [style profile](/api-reference/style-profiles/list-all-style-profiles): its glossaries,\nstyle rule lists and translation memories through one ID. The profile is applied per text once the\nsource language is known: the glossaries with a dictionary for the text's language pair, the style\nrule list for the target language, and the translation memories whose source language matches the\ntext. A component that does not fit a text's language pair is left out for that text; this is not an\nerror.\n\nCannot be combined with `customizations`, `glossary_id`, `glossary_ids`, `style_id`,\n`translation_memory_id`, `translation_memory_threshold` or `custom_instructions`. A request that\ncombines them is rejected with `400 Bad Request`. A style profile that does not exist or that your\naccount cannot access is rejected with `404 Not Found`.",
                     "type": "string",
                     "format": "uuid",
                     "example": "3f1c9d0e-7a24-4b58-9c31-8f0e5d2a1b47"
                   },
                   "customizations": {
-                    "description": "All customizations of the request in one object: glossaries, a style rule list, custom\ninstructions, a translation memory and example documents. For new integrations we recommend\nthis object over the individual customization parameters. Each field behaves like the\nparameter it corresponds to.\n\nCannot be used together with `glossary_id`, `glossary_ids`, `style_id`, `translation_memory_id`,\n`translation_memory_threshold` or `custom_instructions`. A request that combines them is rejected\nwith `400 Bad Request` naming the conflicting parameter. Accepted in JSON request bodies only.\n\nAvailable for accounts that have it enabled. Contact your DeepL representative to request access.",
+                    "description": "All customizations of the request in one object: glossaries, a style rule list, custom\ninstructions, a translation memory and example documents. For new integrations we recommend\nthis object over the individual customization parameters. Each field behaves like the\nparameter it corresponds to.\n\nCannot be used together with `style_profile_id`, `glossary_id`, `glossary_ids`, `style_id`,\n`translation_memory_id`, `translation_memory_threshold` or `custom_instructions`. A request that\ncombines them is rejected with `400 Bad Request` naming the conflicting parameter.\n\nAccepted in JSON request bodies only. In a form-encoded request the object is ignored and the\ntext is translated without these customizations.",
                     "type": "object",
                     "properties": {
                       "glossary_ids": {
-                        "description": "Up to 5 glossaries to use for the translation, in the order they should be applied. Corresponds to\n`glossary_ids`: requires `source_lang`, and every listed glossary must contain a dictionary for the\nrequested language pair.",
+                        "description": "Up to 5 glossaries to use for the translation, in the order they should be applied. Corresponds to\n`glossary_ids`: every listed glossary must contain a dictionary for the language pair of the\nrequest. If `source_lang` is omitted, DeepL detects the source language and uses the\ndictionaries for the detected language pair.",
                         "type": "array",
                         "items": {
                           "type": "string",
@@ -1167,7 +1167,7 @@
                         }
                       },
                       "example_document_ids": {
-                        "description": "Up to 10 example documents whose translations the model adapts to, in the order they should be\napplied. A document must be fully imported and written in the target language; a document that\ndoes not fit the request's language pair is left out. An ID your account cannot access is rejected\nwith `404 Not Found`.\n\nAvailable for accounts with example documents enabled.",
+                        "description": "Up to 10 [example documents](/docs/customize/using-example-documents) whose style, tone and\nterminology the translation adapts to, in the order they should be applied. A document must be\nfully imported and written in the target language; a document in another language is left out\nwithout an error. An ID your account cannot access is rejected with `404 Not Found`.",
                         "type": "array",
                         "items": {
                           "type": "string",
