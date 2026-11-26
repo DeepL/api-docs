@@ -1,6 +1,6 @@
 ---
 title: "Using Translation Memories"
-description: "Learn how to retrieve your translation memories and use them in translation requests"
+description: "Learn how to retrieve your translation memories, use them in translation requests, and see which parts of a translation came from them"
 covers: [Customize]
 public: true
 ---
@@ -11,7 +11,7 @@ Translation memories store and reuse previously created translations. When you t
 
 ## What you'll learn
 
-In this tutorial, we'll retrieve the translation memories on your account, use one in a translation request, and adjust the matching threshold to control how closely source text must match a stored segment.
+In this tutorial, we'll retrieve the translation memories on your account, use one in a translation request, adjust the matching threshold to control how closely source text must match a stored segment, and see which parts of a translation came from the translation memory.
 
 ## Before you begin
 
@@ -163,6 +163,58 @@ curl -X POST 'https://api.deepl.com/v2/translate' \
 
 With a threshold of `100`, "Halloo Welt!" is no longer an exact match for "Hallo Welt!", so the translation memory segment is not applied. DeepL falls back to its default translation: "Hello world!".
 
+## Step 4: See which segments came from the translation memory
+
+Finally, let's find out which parts of a translation came from the translation memory, for example so that only freshly translated text goes to human review. We'll send a text with two sentences, only the first of which is stored, and set `show_translation_memory_matches` to `true`.
+
+```sh
+curl -X POST 'https://api.deepl.com/v2/translate' \
+--header 'Authorization: DeepL-Auth-Key [yourAuthKey]' \
+--header 'Content-Type: application/json' \
+--data '{
+  "text": [
+    "Hallo Welt! Wie geht es dir?"
+  ],
+  "target_lang": "EN",
+  "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+  "show_translation_memory_matches": true
+}'
+```
+
+**Expected output:**
+
+```json
+{
+  "translations": [
+    {
+      "detected_source_language": "DE",
+      "text": "Hello everyone! How are you?",
+      "customizations": {
+        "translation_memory_matches": [
+          {
+            "translation_memory_id": "a74d88fb-ed2a-4943-a664-a4512398b994",
+            "segment_id": "8b1d5c2e-3f4a-4b6c-9d7e-0f1a2b3c4d5e",
+            "match_score": 100,
+            "text_ranges": [
+              { "start": 0, "end": 15 }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Each entry names the stored segment that was used, its match score, and the `text_ranges` it covers in `text`, counted in Unicode code points. Here, "Hello everyone!" (code points 0 up to, but not including, 15) came from the translation memory, while "How are you?" was freshly translated. An empty `translation_memory_matches` list means nothing from the translation memory reached the output.
+
+Two things to notice about ranges:
+
+- `end` is exclusive, so a range covers `text[start:end]`
+- A range that does not start the text includes the whitespace before the segment. Trim it if you display or compare the ranged text.
+
+For the full behavior, including fuzzy matches, tag handling, and style profiles, see the [`show_translation_memory_matches` parameter reference](/api-reference/translate/request-translation#body-show-translation-memory-matches).
+
 ## What you've accomplished
 
 You've learned how to:
@@ -170,9 +222,11 @@ You've learned how to:
 - Retrieve the translation memories on your account
 - Use a translation memory in a translation request
 - Control the matching threshold to tune how closely source text must match a stored segment
+- Find out which segments of a translation came from the translation memory
 
 ## See also
 
 - [List translation memories](/api-reference/translation-memory/list-translation-memories) — API reference
 - [Text translation endpoint](/api-reference/translate/request-translation#body-translation-memory-id) — `translation_memory_id` and `translation_memory_threshold` parameter reference
+- [`show_translation_memory_matches` parameter](/api-reference/translate/request-translation#body-show-translation-memory-matches) on the text translation endpoint
 - [Supported languages](/docs/getting-started/supported-languages) — check which languages support translation memories

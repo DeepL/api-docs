@@ -9,6 +9,12 @@ rss: true
 </Update>
 
 <Update label="November 2026">
+## November 26 - Translation Memory Matches in Text Translation
+- A [translation memory](/docs/customize/using-translation-memories) reuses your stored translations for matching segments. [`POST /v2/translate`](/api-reference/translate/request-translation) can now report which stored segments made it into each translated text and where, so you can, for example, send only the freshly translated parts to human review.
+- Set [`show_translation_memory_matches`](/api-reference/translate/request-translation#body-show-translation-memory-matches) to `true` on a request with a `translation_memory_id` or a `style_profile_id`. Each translation then returns `customizations.translation_memory_matches`, with the translation memory ID, segment ID, match score, and the `text_ranges` the segment covers in `text`, counted in Unicode code points. An empty list means nothing from the translation memory reached the output.
+- `text_ranges` is omitted when `tag_handling` is set. A request without a translation memory or a style profile is rejected with `400 Bad Request`.
+- See [See which segments came from the translation memory](/docs/customize/using-translation-memories#step-4-see-which-segments-came-from-the-translation-memory) for an example.
+
 ## November 17 - Custom Date Ranges for Language Pair Reports
 - The language pair-level CSV export and the "Top language pairs" tab in your DeepL account now support custom date ranges of up to 63 days, in addition to the existing presets. Use a custom range to report on an exact period that the presets don't cover.
 - A custom range can include the current day. Data for the current day lags by a few hours, and only data through the previous UTC calendar day is guaranteed complete.
