@@ -9,6 +9,14 @@ rss: true
 </Update>
 
 <Update label="November 2026">
+## November 24 - Example Documents API
+- An [example document](/docs/customize/using-example-documents) is a document written in the language you translate into, such as a published newsletter or a product manual. When a translation request references it, DeepL adapts the translation to the document's style, tone, and terminology. You can now import, list, retrieve, and delete example documents through the API.
+- [`POST /v3/example_documents/import`](/api-reference/example-documents/import-an-example-document) creates an example document from a file. The request declares the file and returns a signed upload URL plus a `job_id`; you upload the file to that URL and poll [`GET /v3/example_documents/jobs/{job_id}`](/api-reference/example-documents/retrieve-an-example-document-import-job) for the new `example_document_id`.
+- [`GET /v3/example_documents`](/api-reference/example-documents/list-example-documents) lists the example documents on your account, [`GET /v3/example_documents/{example_document_id}`](/api-reference/example-documents/retrieve-an-example-document) retrieves a single one, and [`DELETE /v3/example_documents/{example_document_id}`](/api-reference/example-documents/delete-an-example-document) permanently deletes one.
+- To translate with example documents, pass up to 10 IDs in `customizations.example_document_ids` on [`POST /v2/translate`](/api-reference/translate/request-translation). The request must have a JSON body. Document translation does not support example documents yet.
+- Example documents are applied to translations into German, English, Spanish, French, and Italian, including their regional variants. The current list is returned by [`GET /v3/languages?resource=example_documents`](/docs/languages/using-the-languages-api) and shown in [Languages supported](/docs/getting-started/supported-languages).
+- Scoped API keys can be limited with the new `example_documents:read` and `example_documents:write` scopes. See [permission scopes](/docs/admin/permission-scopes).
+
 ## November 17 - Custom Date Ranges for Language Pair Reports
 - The language pair-level CSV export and the "Top language pairs" tab in your DeepL account now support custom date ranges of up to 63 days, in addition to the existing presets. Use a custom range to report on an exact period that the presets don't cover.
 - A custom range can include the current day. Data for the current day lags by a few hours, and only data through the previous UTC calendar day is guaranteed complete.
