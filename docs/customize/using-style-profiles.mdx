@@ -75,7 +75,7 @@ A style profile replaces the individual customization parameters. A request that
 
 If the style profile doesn't exist or your account can't access it, `/v2/translate` returns `404 Not Found`. `/v2/document` accepts the upload and reports the error in the [document status](/api-reference/document/check-document-status) with the message `Style profile not found.`.
 
-All `model_type` values are supported. Translation memories linked through a profile use the default matching threshold of 75.
+All `model_type` values are supported. Translation memories linked through a profile use the default matching threshold of 75. To see which parts of a text translation came from the profile's translation memory, see [Using Translation Memories](/docs/customize/using-translation-memories#step-4-see-which-segments-came-from-the-translation-memory).
 
 ## Set the glossary priority
 
